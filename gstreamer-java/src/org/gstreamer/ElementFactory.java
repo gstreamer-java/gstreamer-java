@@ -19,8 +19,7 @@ public class ElementFactory extends GstObject {
     /**
      * Creates a new instance of ElementFactory
      */
-    
-    protected ElementFactory(Pointer ptr, boolean ownsHandle, boolean needRef) {
+    ElementFactory(Pointer ptr, boolean ownsHandle, boolean needRef) {
         super(ptr, ownsHandle, needRef);
         logger.entering("ElementFactory", "<init>", new Object[] { ptr, ownsHandle, needRef });
     }
@@ -28,7 +27,7 @@ public class ElementFactory extends GstObject {
      * Creates a new element from the factory.
      *
      * @param name the name to assign to the created Element
-     * @return A new GstEElement
+     * @return A new {@link Element}
      */
     public Element create(String name) {
         logger.entering("ElementFactory", "create", name);
@@ -41,6 +40,8 @@ public class ElementFactory extends GstObject {
     }
     /**
      * Returns the name of the person who wrote the factory.
+     * 
+     * @return The name of the author
      */
     public String getAuthor() {
         logger.entering("ElementFactory", "getAuthor");
@@ -48,6 +49,8 @@ public class ElementFactory extends GstObject {
     }
     /**
      * Returns a description of the factory.
+     * 
+     * @return A brief description of the factory.
      */
     public String getDescription() {
         logger.entering("ElementFactory", "getDescription");
@@ -55,27 +58,39 @@ public class ElementFactory extends GstObject {
     }
     /**
      * Returns the long, English name for the factory.
+     * 
+     * @return The long, English name for the factory.
      */
     public String getLongName() {
         logger.entering("ElementFactory", "getLongName");
         return gst.gst_element_factory_get_longname(handle());
     }
+    
     /**
      * Returns a string describing the type of factory.
      * This is an unordered list separated with slashes ('/').
+     * 
+     * @return The description of the type of factory.
      */
     public String getKlass() {
         logger.entering("ElementFactory", "getKlass");
         return gst.gst_element_factory_get_klass(handle());
     }
     
+    /**
+     * Retrieve a handle to a factory that can produce @{link Element}s
+     * 
+     * @param name The type of @{link Element} to produce.
+     * @return An ElementFactory that will produce @{link Element}s of the 
+     * desired type.
+     */
     public static ElementFactory find(String name) {
         logger.entering("ElementFactory", "find", name);
         Pointer f = gst.gst_element_factory_find(name);
         if (f == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: " + name);
         }
-        return new ElementFactory(f, true, true);
+        return ElementFactory.instanceFor(f, true, true);
     }
     /**
      * Creates a new Element from the specified factory.
