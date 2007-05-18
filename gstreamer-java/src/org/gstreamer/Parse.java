@@ -23,7 +23,7 @@ public class Parse {
         if (!p.isValid()) {
             throw new GError(err.getValue());
         }
-        return Element.instanceFor(p, true, true);
+        return Element.instanceFor(p, true);
     }
     public static Element launch(String... pipeline) throws GError {
         PointerByReference err = new PointerByReference();
@@ -31,6 +31,6 @@ public class Parse {
         if (!p.isValid()) {
             throw new GError(err.getValue());
         }
-        return Element.instanceFor(p, true, true);
+        return Element.instanceFor(p, true);
     }
 }
