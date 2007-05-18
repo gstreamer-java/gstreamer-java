@@ -222,6 +222,12 @@ public class Element extends GstObject {
     public static Element instanceFor(Pointer ptr, boolean ownsHandle, boolean needRef) {
         return (Element) GstObject.instanceFor(ptr, Element.class, ownsHandle, needRef);
     }
+    static Element instanceFor(Pointer ptr) {
+        return (Element) GstObject.instanceFor(ptr, Element.class);
+    }
+    static Element instanceFor(Pointer ptr, boolean needRef) {
+        return instanceFor(ptr, true, needRef);
+    }
     private Map<HandoffListener, HANDOFF> handoffMap =
             new ConcurrentHashMap<HandoffListener, HANDOFF>();
     private Map<ElementListener, ElementListenerProxy> listenerMap =
