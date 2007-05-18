@@ -31,7 +31,7 @@ public class MiniObject extends NativeObject {
     void disposeNativeHandle(Pointer ptr) {
         gst.gst_mini_object_unref(ptr);
     }
-    public static MiniObject instanceFor(Pointer ptr, Class defaultClass, boolean ownsHandle, boolean needRef) {
+    public static MiniObject instanceFor(Pointer ptr, Class defaultClass, boolean needRef) {
         // Try to retrieve an existing instance for the pointer
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj != null) {
@@ -42,6 +42,6 @@ public class MiniObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (MiniObject) NativeObject.instanceFor(ptr, cls, ownsHandle, needRef);
+        return (MiniObject) NativeObject.instanceFor(ptr, cls, true, needRef);
     }
 }

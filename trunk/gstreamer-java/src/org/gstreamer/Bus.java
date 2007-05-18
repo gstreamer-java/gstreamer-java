@@ -73,7 +73,7 @@ class BusListenerProxy implements GstAPI.BusCallback {
             if (l == null) {
                 return false;
             }
-            Element src = Element.instanceFor(msg.src, true, true);
+            Element src = Element.instanceFor(msg.src, true);
             PointerByReference clock = new PointerByReference();
             LongByReference seg = new LongByReference();
             IntByReference fmt = new IntByReference(Format.TIME.intValue());

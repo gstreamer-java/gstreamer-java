@@ -121,10 +121,10 @@ public class GstObject extends NativeObject {
         return (GstObject) NativeObject.instanceFor(ptr);
     }
     public static GstObject instanceFor(Pointer ptr, Class defaultClass) {
-        return instanceFor(ptr, defaultClass, true, true);
+        return instanceFor(ptr, defaultClass, true);
     }
-    public static GstObject instanceFor(Pointer ptr, Class defaultClass, boolean ownsHandle, boolean needRef) {
-        logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, ownsHandle, needRef });
+    public static GstObject instanceFor(Pointer ptr, Class defaultClass, boolean needRef) {
+        logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, needRef });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
             return null;
@@ -139,7 +139,7 @@ public class GstObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (GstObject) NativeObject.instanceFor(ptr, cls, ownsHandle, needRef);
+        return (GstObject) NativeObject.instanceFor(ptr, cls, true, needRef);
     }
     private class SignalCallback {
         protected SignalCallback(String signal, Callback cb) {

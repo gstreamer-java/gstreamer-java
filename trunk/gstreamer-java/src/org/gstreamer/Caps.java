@@ -60,8 +60,8 @@ public class Caps extends NativeObject {
         return Structure.instanceFor(gst.gst_caps_get_structure(handle(), index), false, false);
     }
 
-    public static Caps instanceFor(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        return (Caps) NativeObject.instanceFor(ptr, Caps.class, ownsHandle, needRef);
+    public static Caps instanceFor(Pointer ptr, boolean needRef) {
+        return (Caps) NativeObject.instanceFor(ptr, Caps.class, true, needRef);
     }
     
     void ref() {
