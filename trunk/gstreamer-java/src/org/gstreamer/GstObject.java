@@ -122,6 +122,10 @@ public class GstObject extends NativeObject {
     }
     public static GstObject instanceFor(Pointer ptr, Class defaultClass, boolean ownsHandle, boolean needRef) {
         logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, ownsHandle, needRef });
+        // Ignore null pointers
+        if (ptr == null || !ptr.isValid()) {
+            return null;
+        }
         // Try to retrieve an existing instance for the pointer
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj != null) {

@@ -79,6 +79,10 @@ abstract class NativeObject {
     }
     public static NativeObject instanceFor(Pointer ptr, Class cls, boolean ownsHandle, boolean needRef) {
         logger.entering("NativeObject", "instanceFor", new Object[] { ptr, ownsHandle, needRef });
+        // Ignore null pointers
+        if (ptr == null || !ptr.isValid()) {
+            return null;
+        }
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj == null || !(cls.isInstance(obj))) {
             try {
