@@ -69,7 +69,7 @@ public class SwingVideoTest {
         videosink = panel.getElement();
         
         System.out.println("Adding elements to pipeline");
-        pipeline.add(fakesrc, flt, videosink);
+        pipeline.addMany(fakesrc, flt, videosink);
         fakesrc.link(flt, videosink);
         pipeline.setState(State.PLAYING);
         loop.startInBackground();

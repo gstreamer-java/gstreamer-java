@@ -61,7 +61,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
         Element conv = ElementFactory.make("ffmpegcolorspace", "conv");
         videofilter = ElementFactory.make("capsfilter", "videoflt");
         videofilter.setCaps(new Caps("video/x-raw-rgb, bpp=32, depth=24"));
-        bin.add(conv, videofilter, fakesink);
+        bin.addMany(conv, videofilter, fakesink);
         conv.link(videofilter, fakesink);
         
         if (openglEnabled) {

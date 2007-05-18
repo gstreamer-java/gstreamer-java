@@ -53,7 +53,7 @@ public class FakeSrcTest {
         panel.setPreferredSize(new Dimension(width, height));
         frame.add(panel, BorderLayout.CENTER);
         videosink = panel.getElement();
-        pipeline.add(fakesrc, flt, conv, videosink);
+        pipeline.addMany(fakesrc, flt, conv, videosink);
         fakesrc.link(flt, conv, videosink);
         fakesrc.set("signal-handoffs", true);
         fakesrc.set("sizemax", width * height * 2);

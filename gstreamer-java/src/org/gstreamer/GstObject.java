@@ -120,6 +120,9 @@ public class GstObject extends NativeObject {
     static GstObject instanceFor(Pointer ptr) {
         return (GstObject) NativeObject.instanceFor(ptr);
     }
+    public static GstObject instanceFor(Pointer ptr, Class defaultClass) {
+        return instanceFor(ptr, defaultClass, true, true);
+    }
     public static GstObject instanceFor(Pointer ptr, Class defaultClass, boolean ownsHandle, boolean needRef) {
         logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, ownsHandle, needRef });
         // Ignore null pointers

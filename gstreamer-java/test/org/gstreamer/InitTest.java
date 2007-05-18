@@ -3,7 +3,7 @@
  * JUnit 4.x based test
  */
 
-package org.gstreamer.test;
+package org.gstreamer;
 
 import org.gstreamer.Gst;
 import org.junit.After;
