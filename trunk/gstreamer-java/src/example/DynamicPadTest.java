@@ -33,7 +33,7 @@ public class DynamicPadTest {
         /* you would normally check that the elements were created properly */
         
         /* put together a pipeline */
-        pipeline.add(source, demux);
+        pipeline.addMany(source, demux);
         Pad src = source.getPad("src");
         Pad sink = demux.getPad("sink");
         src.link(sink);

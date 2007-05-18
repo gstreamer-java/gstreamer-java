@@ -60,10 +60,10 @@ public interface GstAPI extends Library {
     /* factory management */
     Pointer gst_element_get_factory(Pointer element);
     Pointer gst_element_get_bus(Pointer element);
-
+    
     /*
      * GstGhostPad functions
-     */ 
+     */
     Pointer gst_ghost_pad_new(String name, Pointer target);
     Pointer gst_ghost_pad_new_no_target(String name, int direction);
     
@@ -79,17 +79,33 @@ public interface GstAPI extends Library {
     void gst_object_set_name(Pointer ptr, String name);
     Pointer gst_object_get_name(Pointer ptr); // returns a string - needs to be freed
     
-    
+    /*
+     * GstBin functions
+     */
     Pointer gst_bin_new(String name);
+    long gst_bin_get_type();
     boolean gst_bin_add(Pointer bin, Pointer element);
     boolean gst_bin_remove(Pointer bin, Pointer element);
-    long gst_bin_get_type();
+    Pointer gst_bin_get_by_name(Pointer bin, String name);
+    Pointer gst_bin_get_by_name_recurse_up(Pointer bin, String name);
+    Pointer gst_bin_iterate_elements(Pointer bin);
+    Pointer gst_bin_iterate_sorted(Pointer bin);
+    Pointer gst_bin_iterate_recurse(Pointer bin);
+    Pointer gst_bin_iterate_sinks(Pointer bin);
+    Pointer gst_bin_iterate_sources(Pointer bin);
     
+    /*
+     * GstMiniObject functions
+     */
     void gst_mini_object_ref(Pointer ptr);
     void gst_mini_object_unref(Pointer ptr);
     
-    
-    
+    /*
+     * GstIterator functions
+     */
+    void gst_iterator_free(Pointer iter);
+    int gst_iterator_next(Pointer iter, PointerByReference next);
+    void gst_iterator_resync(Pointer iter);
     
     /*
      * GstBus functions
