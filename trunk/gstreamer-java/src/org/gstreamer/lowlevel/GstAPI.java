@@ -239,7 +239,11 @@ public interface GstAPI extends Library {
     Pointer gst_pad_get_caps(Pointer pad);
     Pointer gst_pad_get_name(Pointer pad); // Returns a string that needs to be freed
     int gst_pad_link(Pointer src, Pointer sink);
-    int gst_pad_unlink(Pointer src, Pointer sink);
+    boolean gst_pad_unlink(Pointer src, Pointer sink);
+    boolean gst_pad_is_linked(Pointer pad);
+    boolean gst_pad_can_link(Pointer srcpad, Pointer sinkpad);
+    int gst_pad_get_direction(Pointer pad);
+    Pointer gst_pad_get_parent_element(Pointer pad);
     long gst_buffer_get_type();
     
     

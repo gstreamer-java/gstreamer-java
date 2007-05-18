@@ -38,11 +38,20 @@ public class Pad extends GstObject {
         return gst.gst_pad_peer_accept_caps(handle(), caps.handle());
     }
     
-    public void link(Pad sink) {
-        gst.gst_pad_link(handle(), sink.handle());
+    public PadLinkReturn link(Pad sink) {
+        return PadLinkReturn.valueOf(gst.gst_pad_link(handle(), sink.handle()));
     }
-    public void unlink(Pad sink) {
-        gst.gst_pad_unlink(handle(), sink.handle());
+    public boolean unlink(Pad sink) {
+        return gst.gst_pad_unlink(handle(), sink.handle());
+    }
+    public boolean isLinked() {
+        return gst.gst_pad_is_linked(handle());
+    }
+    public PadDirection getDirection() {
+        return PadDirection.valueOf(gst.gst_pad_get_direction(handle()));
+    }
+    public Element getParentElement() {
+        return Element.instanceFor(gst.gst_pad_get_parent_element(handle()), false);
     }
     public static interface HAVEDATA {
         public boolean haveData(Pad pad, Buffer buffer);
