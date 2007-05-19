@@ -18,13 +18,13 @@ public class Structure extends NativeObject {
      * Creates a new instance of Structure
      */
     Structure(Pointer ptr) {
-        this(ptr, true, false);
+        this(ptr, false, true);
     }
     protected Structure(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    protected Structure(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Structure(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     public Structure(String data) {
         this(gst.gst_structure_from_string(data, new PointerByReference()), true, false);

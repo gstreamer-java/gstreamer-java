@@ -16,17 +16,17 @@ public class PlayBin extends Pipeline {
      * Creates a new instance of PlayBin
      */
     public PlayBin(String name) {
-        this(ElementFactory.makeRawElement("playbin", name), true, true);
+        super(ElementFactory.makeRawElement("playbin", name));
     }
     public PlayBin(String name, URI uri) {
         this(name);
         setURI(uri);
     }
     PlayBin(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
-    PlayBin(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    PlayBin(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     public void setInputFile(File f) {
         setURI(f.toURI());

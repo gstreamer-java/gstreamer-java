@@ -20,12 +20,11 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 class GstIterator<T> extends NativeObject implements java.lang.Iterable<T> {
     private Class objectType;
     GstIterator(Pointer ptr, Class cls) {
-        super(ptr, true, false);
+        super(ptr, false, true);
         objectType = cls;
     }
     GstIterator(Pointer ptr) {
-        super(ptr, true, false);
-        objectType = GstObject.class;
+        this(ptr, GstObject.class);
     }
     public Iterator<T> iterator() {
         return new IteratorImpl<T>();
@@ -54,9 +53,9 @@ class GstIterator<T> extends NativeObject implements java.lang.Iterable<T> {
             PointerByReference nextRef = new PointerByReference();
             if (gst.gst_iterator_next(handle(), nextRef) == 1) {
                 if (GstObject.class.isAssignableFrom(objectType)) {
-                    return (T) GstObject.instanceFor(nextRef.getValue(), objectType, true, false);
+                    return (T) GstObject.instanceFor(nextRef.getValue(), objectType, false);
                 } else {
-                    return (T) NativeObject.instanceFor(nextRef.getValue(), objectType, true, false);
+                    return (T) NativeObject.instanceFor(nextRef.getValue(), objectType, false);
                 }
             }
             return null;

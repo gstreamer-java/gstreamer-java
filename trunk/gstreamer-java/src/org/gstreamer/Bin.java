@@ -24,24 +24,34 @@ public class Bin extends Element {
      * @param name The Name to assign to the new Bin
      */
     public Bin(String name) {
-        this(gst.gst_bin_new(name), true, true);
+        super(gst.gst_bin_new(name));
     }
+    
+    /**
+     *
+     * @param ptr
+     */
+    protected Bin(Pointer ptr) {
+        super(ptr);
+    }
+    
     /**
      *
      * @param ptr
      * @param needRef
      */
     protected Bin(Pointer ptr, boolean needRef) {
-        super(ptr, true, needRef);
+        super(ptr, needRef);
     }
     /**
      *
      * @param ptr C Pointer to the underlying GstBin
-     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
      * @param needRef
+     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
+     * 
      */
-    protected Bin(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Bin(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     
     /**

@@ -21,10 +21,10 @@ abstract class NativeObject {
     static Level LIFECYCLE = Level.FINE;
     /** Creates a new instance of NativeObject */
     NativeObject(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    NativeObject(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        logger.entering("NativeObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
+    NativeObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        logger.entering("NativeObject", "<init>", new Object[] { ptr, needRef, ownsHandle });
         logger.log(LIFECYCLE, "Creating " + getClass().getSimpleName() + " (" + ptr + ")");
         this.handle = ptr;
         this.ownsHandle = new AtomicBoolean(ownsHandle);
@@ -90,7 +90,7 @@ abstract class NativeObject {
         if (obj == null || !(cls.isInstance(obj))) {
             try {
                 Constructor constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
-                obj = (NativeObject) constructor.newInstance(ptr, ownsHandle, needRef);
+                obj = (NativeObject) constructor.newInstance(ptr, needRef, ownsHandle);
             } catch (SecurityException ex) {
                 throw new RuntimeException(ex);
             } catch (IllegalAccessException ex) {

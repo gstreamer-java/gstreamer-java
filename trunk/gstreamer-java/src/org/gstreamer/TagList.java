@@ -27,10 +27,10 @@ public class TagList extends NativeObject {
      * Creates a new instance of TagList
      */
     TagList(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    TagList(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    TagList(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     TagList(Pointer ptr) {
         this(ptr, true, true);

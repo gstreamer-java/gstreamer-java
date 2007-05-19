@@ -25,22 +25,22 @@ public class Caps extends NativeObject {
         this(gst.gst_caps_from_string(caps));
     }
     Caps(Pointer ptr) {
-        this(ptr, true, false);
+        this(ptr, false);
     }
     Caps(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    Caps(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    Caps(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     public int size() {
         return gst.gst_caps_get_size(handle());
     }
     public Caps copy() {
-        return new Caps(gst.gst_caps_copy(handle()), true, false);
+        return new Caps(gst.gst_caps_copy(handle()));
     }
     public Caps union(Caps other) {
-        return new Caps(gst.gst_caps_union(handle(), other.handle()), true, false);
+        return new Caps(gst.gst_caps_union(handle(), other.handle()));
     }
     public void merge(Caps other) {
         gst.gst_caps_merge(handle(), other.handle());

@@ -19,9 +19,9 @@ public class ElementFactory extends GstObject {
     /**
      * Creates a new instance of ElementFactory
      */
-    ElementFactory(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
-        logger.entering("ElementFactory", "<init>", new Object[] { ptr, ownsHandle, needRef });
+    ElementFactory(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
+        logger.entering("ElementFactory", "<init>", new Object[] { ptr, needRef, ownsHandle});
     }
     /**
      * Creates a new element from the factory.
