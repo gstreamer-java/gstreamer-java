@@ -4,6 +4,8 @@
 
 package org.gstreamer.lowlevel;
 
+import com.sun.jna.NativeLong;
+
 /**
  *
  */
@@ -36,6 +38,9 @@ public enum GType {
     }
     public long longValue() {
         return type;
+    }
+    public static final GType valueOf(NativeLong type) {
+        return valueOf(type.longValue());
     }
     public static final GType valueOf(long type) {
         for (GType t : values()) {

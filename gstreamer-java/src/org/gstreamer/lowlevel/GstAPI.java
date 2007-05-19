@@ -27,12 +27,12 @@ public interface GstAPI extends Library {
     /*
      * GstElementFactory methods
      */
-    long gst_element_factory_get_type();
+    NativeLong gst_element_factory_get_type();
     Pointer gst_element_factory_find(String factoryName);
     Pointer gst_element_factory_make(String factoryName, String elementName);
     
     Pointer gst_element_factory_create(Pointer factory, String elementName);
-    int gst_element_factory_get_element_type(Pointer factory);
+    NativeLong gst_element_factory_get_element_type(Pointer factory);
     String gst_element_factory_get_longname(Pointer factory);
     String gst_element_factory_get_klass(Pointer factory);
     String gst_element_factory_get_description(Pointer factory);
@@ -43,7 +43,7 @@ public interface GstAPI extends Library {
     /*
      * GstElement methods
      */
-    long gst_element_get_type();
+    NativeLong gst_element_get_type();
     int gst_element_set_state(Pointer elem, int state);
     int gst_element_get_state(Pointer elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Pointer elem, IntByReference fmt, LongByReference pos);
@@ -69,7 +69,7 @@ public interface GstAPI extends Library {
     
     
     Pointer gst_pipeline_new(String name);
-    long gst_pipeline_get_type();
+    NativeLong gst_pipeline_get_type();
     Pointer gst_pipeline_get_bus(Pointer ptr);
     
     void gst_object_ref(Pointer ptr);
@@ -83,7 +83,7 @@ public interface GstAPI extends Library {
      * GstBin functions
      */
     Pointer gst_bin_new(String name);
-    long gst_bin_get_type();
+    NativeLong gst_bin_get_type();
     boolean gst_bin_add(Pointer bin, Pointer element);
     boolean gst_bin_remove(Pointer bin, Pointer element);
     Pointer gst_bin_get_by_name(Pointer bin, String name);
@@ -110,7 +110,7 @@ public interface GstAPI extends Library {
     /*
      * GstBus functions
      * */
-    long gst_bus_get_type();
+    NativeLong gst_bus_get_type();
     void gst_bus_set_flushing(Pointer ptr, int flushing);
     interface BusCallback extends Callback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
@@ -121,7 +121,7 @@ public interface GstAPI extends Library {
     /*
      * GstMessage functions
      */
-    long gst_message_get_type();
+    NativeLong gst_message_get_type();
     int gst_message_type(Pointer msg);
     void gst_message_parse_segment_start(Pointer msg, IntByReference format, LongByReference segment);
     void gst_message_parse_state_changed(Pointer msg, IntByReference o, IntByReference n, IntByReference p);
@@ -140,7 +140,7 @@ public interface GstAPI extends Library {
     /*
      * GstCaps functions
      */
-    long gst_caps_get_type();
+    NativeLong gst_caps_get_type();
     Pointer gst_caps_new_empty();
     Pointer gst_caps_new_any();
     Pointer gst_caps_ref(Pointer caps);
@@ -205,7 +205,7 @@ public interface GstAPI extends Library {
     boolean gst_tag_list_get_string_index(Pointer list, String tag, int index, PointerByReference value);
     
     boolean gst_tag_exists(String tag);
-    long gst_tag_get_type(String tag);
+    NativeLong gst_tag_get_type(String tag);
     String gst_tag_get_nick(String tag);
     String gst_tag_get_description(String tag);
     int gst_tag_get_flag(String tag);
@@ -214,7 +214,7 @@ public interface GstAPI extends Library {
     /*
      * GstClock functions
      */
-    long gst_clock_get_type();
+    NativeLong gst_clock_get_type();
     long gst_clock_set_resolution(Pointer clock, long resolution);
     long gst_clock_get_resolution(Pointer clock);
     long gst_clock_get_time(Pointer clock);
@@ -233,7 +233,7 @@ public interface GstAPI extends Library {
     /*
      * GstPad functions
      */
-    long gst_pad_get_type();
+    NativeLong gst_pad_get_type();
     boolean gst_pad_peer_accept_caps(Pointer pad, Pointer caps);
     boolean gst_pad_set_caps(Pointer pad, Pointer caps);
     Pointer gst_pad_get_caps(Pointer pad);
@@ -244,7 +244,7 @@ public interface GstAPI extends Library {
     boolean gst_pad_can_link(Pointer srcpad, Pointer sinkpad);
     int gst_pad_get_direction(Pointer pad);
     Pointer gst_pad_get_parent_element(Pointer pad);
-    long gst_buffer_get_type();
+    NativeLong gst_buffer_get_type();
     
     
 }

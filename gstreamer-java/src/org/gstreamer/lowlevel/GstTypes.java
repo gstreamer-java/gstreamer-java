@@ -4,6 +4,7 @@
 
 package org.gstreamer.lowlevel;
 
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,23 +26,17 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class GstTypes {
     private static final Logger logger = Logger.getLogger(GstTypes.class.getName());
-    private static final int GTypeSize = Pointer.SIZE;  // Assumes sizeof pointer == sizeof long
-
+    
     private GstTypes() {
     }
     public static final boolean isGType(Pointer p, long type) {
-        return getGType(p) == type;
+        return getGType(p).longValue() == type;
     }
-    public static final long getGType(Pointer ptr) {
+    public static final NativeLong getGType(Pointer ptr) {
         // Retrieve ptr->g_class
         Pointer g_class = ptr.getPointer(0);
-        
         // Now return g_class->gtype
-        if (GTypeSize == 8) {
-            return g_class.getLong(0);
-        } else {
-            return g_class.getInt(0);
-        }
+        return g_class.getNativeLong(0);
     }
     public static final Class classFor(Pointer ptr) {
         Pointer g_class = ptr.getPointer(0);
@@ -50,7 +45,7 @@ public class GstTypes {
         if (cls != null) {
             return cls;
         }
-        long type = GTypeSize == 8 ? g_class.getLong(0) : g_class.getInt(0);
+        NativeLong type = g_class.getNativeLong(0);
         logger.finer("Type of " + ptr + " = " + type);
         cls = typeMap.get(type);
         if (cls != null) {
@@ -59,15 +54,11 @@ public class GstTypes {
         }
         return cls;
     }
-    private static final void registerGType(long type, Class cls) {
-        if (GTypeSize == 4) {
-            // On 32 bit systems, just use the bottom int of the type
-            type = ((int) type & 0xffffffff);
-        }
+    private static final void registerGType(NativeLong type, Class cls) {
         logger.fine("Registering gtype " + type + " = " + cls);
         typeMap.put(type, cls);
     }
-    private static Map<Long, Class> typeMap = new HashMap<Long, Class>();
+    private static Map<NativeLong, Class> typeMap = new HashMap<NativeLong, Class>();
     private static Map<Pointer, Class> gTypeInstanceMap = Collections.synchronizedMap(new HashMap<Pointer, Class>());
     static {
         // GstObject types
