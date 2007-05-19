@@ -29,6 +29,6 @@ public class Pipeline extends Bin {
     
     @Override
     public Bus getBus() {
-        return Bus.instanceFor(gst.gst_pipeline_get_bus(handle()), false);
+        return Bus.objectFor(gst.gst_pipeline_get_bus(handle()), false);
     }
 }

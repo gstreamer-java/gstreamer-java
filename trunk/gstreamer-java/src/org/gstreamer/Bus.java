@@ -51,7 +51,7 @@ public class Bus extends GstObject {
     public void setFlushing(boolean flushing) {
         gst.gst_bus_set_flushing(busHandle(), flushing ? 1 : 0);
     }
-    public static Bus instanceFor(Pointer ptr, boolean needRef) {
+    public static Bus objectFor(Pointer ptr, boolean needRef) {
         return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
     }
     
@@ -73,7 +73,7 @@ class BusListenerProxy implements GstAPI.BusCallback {
             if (l == null) {
                 return false;
             }
-            Element src = Element.instanceFor(msg.src, true);
+            Element src = Element.objectFor(msg.src);
             PointerByReference clock = new PointerByReference();
             LongByReference seg = new LongByReference();
             IntByReference fmt = new IntByReference(Format.TIME.intValue());

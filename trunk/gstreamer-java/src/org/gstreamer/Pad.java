@@ -26,12 +26,12 @@ public class Pad extends GstObject {
         super(ptr, needRef, ownsHandle);
     }
     
-    public static Pad instanceFor(Pointer ptr, boolean needRef) {
+    public static Pad objectFor(Pointer ptr, boolean needRef) {
         return (Pad) GstObject.objectFor(ptr, Pad.class, needRef);
     }
     
     public Caps getCaps() {
-        return Caps.instanceFor(gst.gst_pad_get_caps(handle()), false);
+        return Caps.objectFor(gst.gst_pad_get_caps(handle()), false);
     }
     public boolean setCaps(Caps caps) {
         return gst.gst_pad_set_caps(handle(), caps.handle());
@@ -53,7 +53,7 @@ public class Pad extends GstObject {
         return PadDirection.valueOf(gst.gst_pad_get_direction(handle()));
     }
     public Element getParentElement() {
-        return Element.instanceFor(gst.gst_pad_get_parent_element(handle()), false);
+        return Element.objectFor(gst.gst_pad_get_parent_element(handle()), false);
     }
     public static interface HAVEDATA {
         public boolean haveData(Pad pad, Buffer buffer);
@@ -68,16 +68,16 @@ public class Pad extends GstObject {
         public void requestLink(Pad pad);
     }
     public void connect(final HAVEDATA listener) {
-        connect("have-data", HAVEDATA.class, listener, new Callback() {
+        connect("have-data", HAVEDATA.class, listener,new Callback() {
             public boolean callback(Pointer pad, Pointer buffer) {
-                return listener.haveData(instanceFor(pad, true), new Buffer(buffer, true));
+                return listener.haveData(objectFor(pad, true), new Buffer(buffer, true));
             }
         });
     }
     public void connect(final LINKED listener) {
-        connect("linked", LINKED.class, listener, new Callback() {
+        connect("linked", LINKED.class, listener,new Callback() {
             public void callback(Pointer pad, Pointer peer) {
-                listener.linked(instanceFor(pad, true), instanceFor(peer, true));
+                listener.linked(objectFor(pad,true),objectFor(peer, true));
             }
         });
     }
@@ -86,9 +86,9 @@ public class Pad extends GstObject {
     }
     
     public void connect(final UNLINKED listener) {
-        connect("unlinked", LINKED.class, listener, new Callback() {
+        connect("unlinked", LINKED.class, listener,new Callback() {
             public void callback(Pointer pad, Pointer peer) {
-                listener.unlinked(instanceFor(pad, true), instanceFor(peer, true));
+                listener.unlinked(objectFor(pad,true),objectFor(peer, true));
             }
         });
     }
@@ -98,9 +98,9 @@ public class Pad extends GstObject {
     
     
     public void connect(final REQUESTLINK listener) {
-        connect("request-link", REQUESTLINK.class, listener, new Callback() {
+        connect("request-link", REQUESTLINK.class, listener,new Callback() {
             public void callback(Pointer pad, Pointer peer) {
-                listener.requestLink(instanceFor(pad, true));
+                listener.requestLink(objectFor(pad, true));
             }
         });
     }
