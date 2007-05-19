@@ -16,10 +16,10 @@ public class GMainLoop extends NativeObject implements Runnable {
     
     /** Creates a new instance of GMainLoop */
     public GMainLoop() {
-        this(glib.g_main_loop_new(null, false), true, false);
+        this(glib.g_main_loop_new(null, false), false, true);
     }
-    GMainLoop(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    GMainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     public void quit() {
         glib.g_main_loop_quit(handle());

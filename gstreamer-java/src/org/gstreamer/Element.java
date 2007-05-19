@@ -26,13 +26,13 @@ public class Element extends GstObject {
     
     /** Creates a new instance of GstElement */
     protected Element(Pointer ptr) {
-        this(ptr, true, true); // By default, Owns the handle and needs to ref+sink it to retain it
+        super(ptr);
     }
     protected Element(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
-    protected Element(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Element(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     
     public boolean link(Element e) {

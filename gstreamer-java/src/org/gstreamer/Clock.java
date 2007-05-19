@@ -11,7 +11,7 @@ import com.sun.jna.Pointer;
  */
 public class Clock extends GstObject {
 
-    public Clock(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    public Clock(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
 }

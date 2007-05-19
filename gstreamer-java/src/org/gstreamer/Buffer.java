@@ -17,10 +17,10 @@ public class Buffer extends MiniObject {
      * Creates a new instance of Buffer
      */
     Buffer(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    Buffer(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    Buffer(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
         struct = new BufferStruct(ptr);
     }
     public int getSize() {

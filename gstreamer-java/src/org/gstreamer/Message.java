@@ -15,9 +15,9 @@ public class Message extends MiniObject {
      * Creates a new instance of Message
      */
     protected Message(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
-    public Message(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Message(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
 }

@@ -31,10 +31,10 @@ public class Bus extends GstObject {
      * Creates a new instance of Bus
      */
     public Bus(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
-    public Bus(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    public Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     public void addBusListener(BusListener l) {
         int id = gst.gst_bus_add_watch(handle(), new BusListenerProxy(l), null);

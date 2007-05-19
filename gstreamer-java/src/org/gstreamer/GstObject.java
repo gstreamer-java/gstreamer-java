@@ -29,6 +29,7 @@ public class GstObject extends NativeObject {
     
     /** Creates a new instance of GstObject */
     protected GstObject(Pointer ptr) {
+        // By default, Owns the handle and needs to ref+sink it to retain it
         this(ptr, true, true);
     }
     /**
@@ -37,7 +38,7 @@ public class GstObject extends NativeObject {
      * @param needRef
      */
     protected GstObject(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
     /**
      * Wraps an underlying C GstObject with a Java object
@@ -46,8 +47,8 @@ public class GstObject extends NativeObject {
      * @param needRef Whether the reference count of the underlying object needs
      *                to be incremented immediately to retain a reference.
      */
-    protected GstObject(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, false); // increase the refcount here
+    protected GstObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, false, ownsHandle); // increase the refcount here
         logger.entering("GstObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
         if (ownsHandle) {
             strongReferences.add(this);
@@ -173,7 +174,7 @@ public class GstObject extends NativeObject {
         }
         m.put(listener, new SignalCallback(signal, cb));
     }
-
+    
     void disconnect(Class listenerClass, Object listener) {
         synchronized (listeners) {
             Map<Object, SignalCallback> m = listeners.get(listenerClass);

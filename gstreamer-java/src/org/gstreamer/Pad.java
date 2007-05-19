@@ -19,14 +19,15 @@ public class Pad extends GstObject {
      */
     
     Pad(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
     
-    protected Pad(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Pad(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
+    
     public static Pad instanceFor(Pointer ptr, boolean needRef) {
-        return (Pad) GstObject.instanceFor(ptr, Pad.class, true, needRef);
+        return (Pad) GstObject.instanceFor(ptr, Pad.class, needRef);
     }
     
     public Caps getCaps() {

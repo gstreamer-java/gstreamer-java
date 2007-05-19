@@ -15,13 +15,16 @@ public class Pipeline extends Bin {
      * Creates a new instance of Pipeline
      */
     public Pipeline(String name) {
-        this(gst.gst_pipeline_new(name), true, true);
+        super(gst.gst_pipeline_new(name));
+    }
+    protected Pipeline(Pointer ptr) {
+        super(ptr);
     }
     protected Pipeline(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        super(ptr, needRef);
     }
-    protected Pipeline(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    protected Pipeline(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     
     @Override

@@ -16,10 +16,10 @@ public class MiniObject extends NativeObject {
      * Creates a new instance of MiniObject
      */
     MiniObject(Pointer ptr, boolean needRef) {
-        this(ptr, true, needRef);
+        this(ptr, needRef, true);
     }
-    MiniObject(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        super(ptr, ownsHandle, needRef);
+    MiniObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
     }
     void ref() {
         gst.gst_mini_object_ref(handle());
@@ -42,6 +42,6 @@ public class MiniObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (MiniObject) NativeObject.instanceFor(ptr, cls, true, needRef);
+        return (MiniObject) NativeObject.instanceFor(ptr, cls, needRef);
     }
 }
