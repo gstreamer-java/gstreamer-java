@@ -30,6 +30,7 @@ public class ElementFactoryTest {
     
     @AfterClass
     public static void tearDownClass() throws Exception {
+        Gst.deinit();
     }
     
     @Before
