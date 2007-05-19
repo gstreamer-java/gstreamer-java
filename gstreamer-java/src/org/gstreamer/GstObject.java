@@ -139,7 +139,7 @@ public class GstObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (GstObject) NativeObject.instanceFor(ptr, cls, true, needRef);
+        return (GstObject) NativeObject.instanceFor(ptr, cls, needRef);
     }
     private class SignalCallback {
         protected SignalCallback(String signal, Callback cb) {
