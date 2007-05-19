@@ -51,8 +51,8 @@ public class Bus extends GstObject {
     public void setFlushing(boolean flushing) {
         gst.gst_bus_set_flushing(busHandle(), flushing ? 1 : 0);
     }
-    public static Bus instanceFor(Pointer ptr, boolean ownsHandle, boolean needRef) {
-        return (Bus) NativeObject.instanceFor(ptr, Bus.class, ownsHandle, needRef);
+    public static Bus instanceFor(Pointer ptr, boolean needRef) {
+        return (Bus) GstObject.instanceFor(ptr, Bus.class, needRef);
     }
     
     protected Pointer busHandle() { return handle(); }
