@@ -36,7 +36,7 @@ public class ElementFactory extends GstObject {
         if (elem == null || !elem.isValid()) {
             throw new IllegalArgumentException("Cannot create GstElement");
         }
-        return new Element(elem);
+        return Element.objectFor(elem);
     }
     /**
      * Returns the name of the person who wrote the factory.
@@ -101,7 +101,7 @@ public class ElementFactory extends GstObject {
      */
     public static Element make(String factoryName, String name) {
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
-        return new Element(makeRawElement(factoryName, name));
+        return Element.objectFor(makeRawElement(factoryName, name));
     }
     static ElementFactory objectFor(Pointer ptr, boolean needRef) {
         logger.entering("ElementFactory", "objectFor", new Object[] { ptr, needRef });
