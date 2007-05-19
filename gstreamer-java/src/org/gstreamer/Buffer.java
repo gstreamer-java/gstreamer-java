@@ -33,7 +33,7 @@ public class Buffer extends MiniObject {
         return struct.timestamp;
     }
     public Caps getCaps() {
-        return Caps.instanceFor(struct.caps, true);
+        return Caps.objectFor(struct.caps, true);
     }
     public void write(int bufferOffset, byte[] data, int offset, int length) {
         struct.data.write(bufferOffset, data, offset, length);
@@ -50,8 +50,8 @@ public class Buffer extends MiniObject {
     public ByteBuffer getByteBuffer() {
         return struct.data.getByteBuffer(0, struct.size);
     }
-    public static Buffer instanceFor(Pointer ptr, boolean needRef) {
-        return (Buffer) MiniObject.instanceFor(ptr, Buffer.class, needRef);
+    public static Buffer objectFor(Pointer ptr, boolean needRef) {
+        return (Buffer) MiniObject.objectFor(ptr, Buffer.class, needRef);
     }
     private BufferStruct struct;
 }

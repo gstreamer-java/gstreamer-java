@@ -114,10 +114,10 @@ public class Bin extends Element {
         return elementList(gst.gst_bin_iterate_sources(handle()));
     }
     public Element getElementByName(String name) {
-        return Element.instanceFor(gst.gst_bin_get_by_name(handle(), name), false);
+        return Element.objectFor(gst.gst_bin_get_by_name(handle(), name), false);
     }
     public Element getElementByNameRecurseUp(String name) {
-        return Element.instanceFor(gst.gst_bin_get_by_name_recurse_up(handle(), name), false);
+        return Element.objectFor(gst.gst_bin_get_by_name_recurse_up(handle(), name), false);
     }
     public static interface ELEMENTADDED {
         public void elementAdded(Bin bin, Element elem);
@@ -128,16 +128,16 @@ public class Bin extends Element {
     
     
     public void connect(final ELEMENTADDED listener) {
-        connect("element-added", ELEMENTADDED.class, listener, new Callback() {
+        connect("element-added", ELEMENTADDED.class, listener,new Callback() {
             public void callback(Pointer bin, Pointer elem, Pointer user_data) {
-                listener.elementAdded(Bin.this, Element.instanceFor(elem, true));
+                listener.elementAdded(Bin.this,Element.objectFor(elem, true));
             }
         });
     }
     public void connect(final ELEMENTREMOVED listener) {
-        connect("element-removed", ELEMENTREMOVED.class, listener, new Callback() {
+        connect("element-removed", ELEMENTREMOVED.class, listener,new Callback() {
             public void callback(Pointer bin, Pointer elem, Pointer user_data) {
-                listener.elementRemoved(Bin.this, Element.instanceFor(elem, true));
+                listener.elementRemoved(Bin.this,Element.objectFor(elem, true));
             }
         });
     }

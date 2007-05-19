@@ -90,7 +90,7 @@ public class ElementFactory extends GstObject {
         if (f == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: " + name);
         }
-        return ElementFactory.instanceFor(f, true);
+        return ElementFactory.objectFor(f, true);
     }
     /**
      * Creates a new Element from the specified factory.
@@ -103,8 +103,8 @@ public class ElementFactory extends GstObject {
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
         return new Element(makeRawElement(factoryName, name));
     }
-    static ElementFactory instanceFor(Pointer ptr, boolean needRef) {
-        logger.entering("ElementFactory", "instanceFor", new Object[] { ptr, needRef });
+    static ElementFactory objectFor(Pointer ptr, boolean needRef) {
+        logger.entering("ElementFactory", "objectFor", new Object[] { ptr, needRef });
         return (ElementFactory) GstObject.objectFor(ptr, ElementFactory.class, needRef);
     }
     static Pointer makeRawElement(String factoryName, String name) {

@@ -64,7 +64,7 @@ public class Element extends GstObject {
         gobj.g_object_set(handle(), "caps", caps.handle(), null);
     }
     public Pad getPad(String padname) {
-        return Pad.instanceFor(gst.gst_element_get_pad(handle(), padname), false);
+        return Pad.objectFor(gst.gst_element_get_pad(handle(), padname), false);
     }
     public boolean addPad(Pad pad) {
         return gst.gst_element_add_pad(handle(), pad.handle());
@@ -93,10 +93,10 @@ public class Element extends GstObject {
         return new Time(duration.getValue());
     }
     public ElementFactory getFactory() {
-        return ElementFactory.instanceFor(gst.gst_element_get_factory(handle()), false);
+        return ElementFactory.objectFor(gst.gst_element_get_factory(handle()), false);
     }
     public Bus getBus() {
-        return Bus.instanceFor(gst.gst_element_get_bus(handle()), false);
+        return Bus.objectFor(gst.gst_element_get_bus(handle()), false);
     }
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
@@ -121,9 +121,9 @@ public class Element extends GstObject {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
     public void connect(final PADADDED listener) {
-        connect("pad-added", PADADDED.class, listener, new Callback() {
+        connect("pad-added", PADADDED.class, listener,new Callback() {
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padAdded(Element.this, Pad.instanceFor(pad, true));
+                listener.padAdded(Element.this,Pad.objectFor(pad, true));
             }
         });
     }
@@ -132,9 +132,9 @@ public class Element extends GstObject {
     }
     
     public void connect(final PADREMOVED listener) {
-        connect("pad-removed", PADREMOVED.class, listener, new Callback() {
+        connect("pad-removed", PADREMOVED.class, listener,new Callback() {
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padRemoved(Element.this, Pad.instanceFor(pad, true));
+                listener.padRemoved(Element.this,Pad.objectFor(pad, true));
             }
         });
     }
@@ -153,11 +153,11 @@ public class Element extends GstObject {
         disconnect(NOMOREPADS.class, listener);
     }
     public void connect(final HANDOFF listener) {
-        connect("handoff", HANDOFF.class, listener, new Callback() {
+        connect("handoff", HANDOFF.class, listener,new Callback() {
             public void callback(Pointer srcPtr, Pointer bufPtr, Pointer padPtr, Pointer user_data) {
-                Element src = Element.instanceFor(srcPtr, true);
+                Element src = Element.objectFor(srcPtr, true);
                 Buffer buffer = new Buffer(bufPtr, true);
-                Pad pad = Pad.instanceFor(padPtr, true);
+                Pad pad = Pad.objectFor(padPtr, true);
                 listener.handoff(src, buffer, pad);
             }
         });
@@ -219,10 +219,10 @@ public class Element extends GstObject {
         }
         return true;
     }
-    public static Element instanceFor(Pointer ptr, boolean needRef) {
+    public static Element objectFor(Pointer ptr, boolean needRef) {
         return (Element) GstObject.objectFor(ptr, Element.class, needRef);
     }
-    static Element instanceFor(Pointer ptr) {
+    static Element objectFor(Pointer ptr) {
         return (Element) GstObject.objectFor(ptr, Element.class);
     }
     
