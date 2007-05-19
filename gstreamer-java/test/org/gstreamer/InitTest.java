@@ -24,7 +24,8 @@ public class InitTest {
     @Test
     public void testInit() {
         String[] args = Gst.init("foo", new String[] { "--gst-plugin-spew" });
-        //assertTrue(args.length == 0);
+        assertTrue(args.length == 0);
+        Gst.deinit();
     }
     @BeforeClass
     public static void setUpClass() throws Exception {

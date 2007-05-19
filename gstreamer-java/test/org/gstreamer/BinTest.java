@@ -32,6 +32,7 @@ public class BinTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        Gst.deinit();
     }
 
     @Before
