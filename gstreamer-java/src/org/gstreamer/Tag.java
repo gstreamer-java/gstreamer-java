@@ -50,12 +50,12 @@ public enum Tag {
     BEATS_PER_MINUTE("beats-per-minute");
     
     Tag(String id) {
-        this._id = id;
+        this.id = id;
     }
      public String getId() {
-        return _id;
+        return id;
     }    
-    private String _id;
+    private String id;
 
    
 }
