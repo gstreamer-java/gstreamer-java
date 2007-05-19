@@ -42,6 +42,6 @@ public class MiniObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (MiniObject) NativeObject.instanceFor(ptr, cls, needRef);
+        return (MiniObject) NativeObject.objectFor(ptr, cls, needRef);
     }
 }

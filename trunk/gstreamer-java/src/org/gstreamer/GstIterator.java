@@ -53,9 +53,9 @@ class GstIterator<T> extends NativeObject implements java.lang.Iterable<T> {
             PointerByReference nextRef = new PointerByReference();
             if (gst.gst_iterator_next(handle(), nextRef) == 1) {
                 if (GstObject.class.isAssignableFrom(objectType)) {
-                    return (T) GstObject.instanceFor(nextRef.getValue(), objectType, false);
+                    return (T) GstObject.objectFor(nextRef.getValue(), objectType, false);
                 } else {
-                    return (T) NativeObject.instanceFor(nextRef.getValue(), objectType, false);
+                    return (T) NativeObject.objectFor(nextRef.getValue(), objectType, false);
                 }
             }
             return null;

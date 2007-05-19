@@ -61,7 +61,7 @@ public class Caps extends NativeObject {
     }
 
     public static Caps instanceFor(Pointer ptr, boolean needRef) {
-        return (Caps) NativeObject.instanceFor(ptr, Caps.class, needRef);
+        return (Caps) NativeObject.objectFor(ptr, Caps.class, needRef);
     }
     
     void ref() {

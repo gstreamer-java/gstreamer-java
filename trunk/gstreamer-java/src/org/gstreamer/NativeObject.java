@@ -77,10 +77,10 @@ abstract class NativeObject {
         }
         return ref != null ? ref.get() : null;
     }
-    public static NativeObject instanceFor(Pointer ptr, Class cls, boolean needRef) {
-        return instanceFor(ptr, cls, needRef, true);
+    public static NativeObject objectFor(Pointer ptr, Class cls, boolean needRef) {
+        return objectFor(ptr, cls, needRef, true);
     }
-    public static NativeObject instanceFor(Pointer ptr, Class cls, boolean needRef, boolean ownsHandle) {
+    public static NativeObject objectFor(Pointer ptr, Class cls, boolean needRef, boolean ownsHandle) {
         logger.entering("NativeObject", "instanceFor", new Object[] { ptr, ownsHandle, needRef });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {

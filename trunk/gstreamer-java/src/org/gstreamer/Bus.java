@@ -52,7 +52,7 @@ public class Bus extends GstObject {
         gst.gst_bus_set_flushing(busHandle(), flushing ? 1 : 0);
     }
     public static Bus instanceFor(Pointer ptr, boolean needRef) {
-        return (Bus) GstObject.instanceFor(ptr, Bus.class, needRef);
+        return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
     }
     
     protected Pointer busHandle() { return handle(); }

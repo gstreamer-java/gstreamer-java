@@ -27,7 +27,7 @@ public class Pad extends GstObject {
     }
     
     public static Pad instanceFor(Pointer ptr, boolean needRef) {
-        return (Pad) GstObject.instanceFor(ptr, Pad.class, needRef);
+        return (Pad) GstObject.objectFor(ptr, Pad.class, needRef);
     }
     
     public Caps getCaps() {

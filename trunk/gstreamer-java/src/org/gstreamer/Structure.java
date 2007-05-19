@@ -44,7 +44,7 @@ public class Structure extends NativeObject {
         return gst.gst_structure_fixate_field_nearest_int(handle(), field, target);
     }
     public static Structure instanceFor(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        return (Structure) NativeObject.instanceFor(ptr, Structure.class, needRef, ownsHandle);
+        return (Structure) NativeObject.objectFor(ptr, Structure.class, needRef, ownsHandle);
     }
     
     //--------------------------------------------------------------------------

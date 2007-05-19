@@ -118,13 +118,11 @@ public class GstObject extends NativeObject {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  handle() + ")");
         gobj.g_object_remove_toggle_ref(handle(), toggle, null);
     }
-    static GstObject instanceFor(Pointer ptr) {
-        return (GstObject) NativeObject.instanceFor(ptr);
+    
+    public static GstObject objectFor(Pointer ptr, Class defaultClass) {
+        return objectFor(ptr, defaultClass, true);
     }
-    public static GstObject instanceFor(Pointer ptr, Class defaultClass) {
-        return instanceFor(ptr, defaultClass, true);
-    }
-    public static GstObject instanceFor(Pointer ptr, Class defaultClass, boolean needRef) {
+    public static GstObject objectFor(Pointer ptr, Class defaultClass, boolean needRef) {
         logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, needRef });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
@@ -140,7 +138,7 @@ public class GstObject extends NativeObject {
         if (cls == null) {
             cls = defaultClass;
         }
-        return (GstObject) NativeObject.instanceFor(ptr, cls, needRef);
+        return (GstObject) NativeObject.objectFor(ptr, cls, needRef);
     }
     private class SignalCallback {
         protected SignalCallback(String signal, Callback cb) {
@@ -203,7 +201,7 @@ public class GstObject extends NativeObject {
              * it a strong ref, so the java GstObject for the underlying C object can
              * be retained for later retrieval
              */
-            GstObject o = instanceFor(ptr);
+            GstObject o = (GstObject) NativeObject.instanceFor(ptr);
             if (o == null) {
                 return;
             }
