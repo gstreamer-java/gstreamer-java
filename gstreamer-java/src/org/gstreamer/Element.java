@@ -96,7 +96,7 @@ public class Element extends GstObject {
         return ElementFactory.instanceFor(gst.gst_element_get_factory(handle()), false);
     }
     public Bus getBus() {
-        return Bus.instanceFor(gst.gst_element_get_bus(handle()), true, false);
+        return Bus.instanceFor(gst.gst_element_get_bus(handle()), false);
     }
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
