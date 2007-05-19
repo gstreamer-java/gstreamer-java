@@ -38,13 +38,13 @@ public class Bus extends GstObject {
     }
     public void addBusListener(BusListener l) {
         int id = gst.gst_bus_add_watch(handle(), new BusListenerProxy(l), null);
-        _listeners.put(l, id);
+        listeners.put(l, id);
     }
     public void removeBusListener(BusListener l) {
-        Integer val = _listeners.get(l);
+        Integer val = listeners.get(l);
         if (val != null) {
             //removeNativeListener(_handle, val);
-            _listeners.remove(l);
+            listeners.remove(l);
         }
     }
     
@@ -56,7 +56,7 @@ public class Bus extends GstObject {
     }
     
     protected Pointer busHandle() { return handle(); }
-    private Map<BusListener, Integer> _listeners = Collections.synchronizedMap(new WeakHashMap<BusListener, Integer>());
+    private Map<BusListener, Integer> listeners = Collections.synchronizedMap(new WeakHashMap<BusListener, Integer>());
 }
 class BusListenerProxy implements GstAPI.BusCallback {
     static final Logger log = Bus.logger;
