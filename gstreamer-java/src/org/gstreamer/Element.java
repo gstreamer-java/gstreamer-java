@@ -220,10 +220,10 @@ public class Element extends GstObject {
         return true;
     }
     public static Element instanceFor(Pointer ptr, boolean needRef) {
-        return (Element) GstObject.instanceFor(ptr, Element.class, true, needRef);
+        return (Element) GstObject.objectFor(ptr, Element.class, needRef);
     }
     static Element instanceFor(Pointer ptr) {
-        return (Element) GstObject.instanceFor(ptr, Element.class);
+        return (Element) GstObject.objectFor(ptr, Element.class);
     }
     
     private Map<HandoffListener, HANDOFF> handoffMap =
