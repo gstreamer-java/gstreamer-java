@@ -4,6 +4,7 @@
 
 package org.gstreamer;
 import com.sun.jna.Callback;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,7 +102,7 @@ public class GstObject extends NativeObject {
         glib.g_free(ptr);
         return s;
     }
-    protected int g_signal_connect(String signal, Callback callback) {
+    protected NativeLong g_signal_connect(String signal, Callback callback) {
         logger.entering("GstObject", "g_signal_connect", new Object[] { signal, callback });
         return gobj.g_signal_connect_data(handle(), signal, callback, null, null, 0);
     }
@@ -146,9 +147,9 @@ public class GstObject extends NativeObject {
             id = g_signal_connect(signal, cb);
         }
         synchronized protected void disconnect() {
-            if (id != 0) {
+            if (id != null) {
                 gobj.g_signal_handler_disconnect(handle(), id);
-                id = 0;
+                id = null;
             }
         }
         protected void finalize() {
@@ -156,7 +157,7 @@ public class GstObject extends NativeObject {
             disconnect();
         }
         Callback cb;
-        int id;
+        NativeLong id;
     }
     private Map<Class, Map<Object, SignalCallback>> listeners =
             new HashMap<Class, Map<Object, SignalCallback>>();

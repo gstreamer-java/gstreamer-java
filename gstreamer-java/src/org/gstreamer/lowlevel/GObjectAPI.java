@@ -7,6 +7,7 @@ package org.gstreamer.lowlevel;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 /**
@@ -21,9 +22,9 @@ public interface GObjectAPI extends Library {
     interface GClosureNotify extends Callback {
         void callback(Pointer data, Pointer closure);
     }
-    int g_signal_connect_data(Pointer obj, String signal, Callback callback, Pointer data,
+    NativeLong g_signal_connect_data(Pointer obj, String signal, Callback callback, Pointer data,
             GClosureNotify destroy_data, int connect_flags);
-    void g_signal_handler_disconnect(Pointer ptr, int id);
+    void g_signal_handler_disconnect(Pointer ptr, NativeLong id);
     boolean g_object_is_floating(Pointer obj);
     interface GToggleNotify extends Callback {
         void callback(Pointer data, Pointer obj, boolean is_last_ref);
