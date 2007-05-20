@@ -7,7 +7,7 @@ import com.sun.jna.Pointer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstAPI;
 
 /**
  *
@@ -15,7 +15,8 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 public class ElementFactory extends GstObject {
     static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
-    
+    private static GstAPI gst = GstAPI.gst;
+
     /**
      * Creates a new instance of ElementFactory
      */

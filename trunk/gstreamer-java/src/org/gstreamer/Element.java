@@ -15,15 +15,18 @@ import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
 import org.gstreamer.event.HandoffListener;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import org.gstreamer.lowlevel.GObjectAPI;
+import org.gstreamer.lowlevel.GstAPI;
+
 
 /**
  *
  */
 public class Element extends GstObject {
     static Logger logger = Logger.getLogger(Element.class.getName());
-    
+    private static GstAPI gst = GstAPI.gst;
+    private static GObjectAPI gobj = GObjectAPI.gobj;
+
     /** Creates a new instance of GstElement */
     protected Element(Pointer ptr) {
         super(ptr);

@@ -6,14 +6,16 @@ package org.gstreamer;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GlibAPI;
 
 /**
  *
  */
 public class Pad extends GstObject {
-    
+    private static GstAPI gst = GstAPI.gst;
+    private static GlibAPI glib = GlibAPI.glib;
+
     /**
      * Creates a new instance of Pad
      */

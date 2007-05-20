@@ -10,7 +10,7 @@ import com.sun.jna.Structure;
 /**
  *
  */
-public class BufferStruct extends Structure {
+public final class BufferStruct extends Structure {
     public MiniObjectStruct mini_object;
     public Pointer data;
     public int size;

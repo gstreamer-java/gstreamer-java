@@ -5,7 +5,7 @@
 package org.gstreamer;
 import com.sun.jna.Callback;
 import org.gstreamer.event.BinEvent;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstAPI;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +18,7 @@ import org.gstreamer.event.BinListener;
  *
  */
 public class Bin extends Element {
+    private static GstAPI gst = GstAPI.gst;
     
     /**
      * Creates a new instance of GstBin

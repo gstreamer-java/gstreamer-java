@@ -3,12 +3,13 @@
  */
 
 package org.gstreamer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstAPI;
 /**
  *
  */
 public class GhostPad extends Pad {
-    
+    private static GstAPI gst = GstAPI.gst;
+
     /**
      * Creates a new instance of GhostPad
      */
