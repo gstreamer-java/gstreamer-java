@@ -7,13 +7,14 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import org.gstreamer.lowlevel.GlibAPI;
 
 /**
  *
  */
 public class GMainLoop extends NativeObject implements Runnable {
-    
+    private static GlibAPI glib = GlibAPI.glib;
+
     /** Creates a new instance of GMainLoop */
     public GMainLoop() {
         this(glib.g_main_loop_new(null, false), false, true);
@@ -29,7 +30,7 @@ public class GMainLoop extends NativeObject implements Runnable {
     }
     
     public boolean isRunning() {
-        return glib.g_main_loop_is_running(handle()) != 0;
+        return glib.g_main_loop_is_running(handle());
     }
     
     public void startInBackground() {

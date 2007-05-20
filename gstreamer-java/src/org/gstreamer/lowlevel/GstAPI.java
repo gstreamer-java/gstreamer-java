@@ -115,7 +115,7 @@ public interface GstAPI extends Library {
     interface BusCallback extends Callback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
     }
-    int gst_bus_add_watch(Pointer bus, BusCallback function, Pointer data);
+    NativeLong gst_bus_add_watch(Pointer bus, BusCallback function, Pointer data);
     
     
     /*

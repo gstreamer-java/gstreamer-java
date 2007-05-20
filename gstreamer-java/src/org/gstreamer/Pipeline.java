@@ -4,13 +4,14 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstAPI;
 
 /**
  *
  */
 public class Pipeline extends Bin {
-    
+    private static GstAPI gst = GstAPI.gst;
+
     /**
      * Creates a new instance of Pipeline
      */

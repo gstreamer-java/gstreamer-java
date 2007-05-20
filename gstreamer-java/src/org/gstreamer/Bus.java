@@ -4,6 +4,7 @@
 
 package org.gstreamer;
 
+import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import java.lang.ref.WeakReference;
 import java.util.Collections;
@@ -18,15 +19,17 @@ import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.MessageType;
 import org.gstreamer.event.StateEvent;
 import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.MessageStruct;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+
+
 /**
  *
  */
 public class Bus extends GstObject {
     static final Logger logger = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
+    private static GstAPI gst = GstAPI.gst;
     /**
      * Creates a new instance of Bus
      */
@@ -37,11 +40,11 @@ public class Bus extends GstObject {
         super(ptr, needRef, ownsHandle);
     }
     public void addBusListener(BusListener l) {
-        int id = gst.gst_bus_add_watch(handle(), new BusListenerProxy(l), null);
+        NativeLong id = gst.gst_bus_add_watch(handle(), new BusListenerProxy(l), null);
         listeners.put(l, id);
     }
     public void removeBusListener(BusListener l) {
-        Integer val = listeners.get(l);
+        NativeLong val = listeners.get(l);
         if (val != null) {
             //removeNativeListener(_handle, val);
             listeners.remove(l);
@@ -56,12 +59,15 @@ public class Bus extends GstObject {
     }
     
     protected Pointer busHandle() { return handle(); }
-    private Map<BusListener, Integer> listeners = Collections.synchronizedMap(new WeakHashMap<BusListener, Integer>());
+    private Map<BusListener, NativeLong> listeners 
+            = Collections.synchronizedMap(new WeakHashMap<BusListener, NativeLong>());
 }
 class BusListenerProxy implements GstAPI.BusCallback {
     static final Logger log = Bus.logger;
     static final Level MSG_DEBUG = Bus.LOG_DEBUG;
-    
+    private static GstAPI gst = GstAPI.gst;
+    private static GlibAPI glib = GlibAPI.glib;
+
     public BusListenerProxy(BusListener l) {
         this.listenerRef = new WeakReference<BusListener>(l);
     }

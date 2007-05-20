@@ -15,9 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GBoolean;
 import org.gstreamer.lowlevel.GObjectAPI;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-import static org.gstreamer.lowlevel.GlibAPI.glib;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import org.gstreamer.lowlevel.GlibAPI;
+import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstTypes;
 
 /**
@@ -27,7 +26,10 @@ public class GstObject extends NativeObject {
     static Logger logger = Logger.getLogger(GstObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
-    
+    private static GstAPI gst = GstAPI.gst;
+    private static GObjectAPI gobj = GObjectAPI.gobj;
+    private static GlibAPI glib = GlibAPI.glib;
+
     /** Creates a new instance of GstObject */
     protected GstObject(Pointer ptr) {
         // By default, Owns the handle and needs to ref+sink it to retain it
@@ -120,10 +122,11 @@ public class GstObject extends NativeObject {
         gobj.g_object_remove_toggle_ref(handle(), toggle, null);
     }
     
-    public static GstObject objectFor(Pointer ptr, Class defaultClass) {
-        return objectFor(ptr, defaultClass, true);
+    public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass) {
+        return GstObject.objectFor(ptr, defaultClass, true);
     }
-    public static GstObject objectFor(Pointer ptr, Class defaultClass, boolean needRef) {
+    @SuppressWarnings("unchecked")
+    public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass, boolean needRef) {
         logger.entering("GstObject", "instanceFor", new Object[] { ptr, defaultClass, needRef });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
@@ -135,7 +138,7 @@ public class GstObject extends NativeObject {
             return (GstObject) obj;
         }
         // Try to figure out what type of object it is by checking its GType
-        Class cls = GstTypes.classFor(ptr);
+        Class<? extends GstObject> cls = GstTypes.classFor(ptr);
         if (cls == null) {
             cls = defaultClass;
         }
@@ -167,7 +170,7 @@ public class GstObject extends NativeObject {
         synchronized (listeners) {
             m = listeners.get(listenerClass);
             if (m == null) {
-                m = Collections.synchronizedMap(new HashMap<Object,SignalCallback>());
+                m = Collections.synchronizedMap(new HashMap<Object, SignalCallback>());
                 listeners.put(listenerClass, m);
             }
         }
@@ -217,5 +220,4 @@ public class GstObject extends NativeObject {
     };
     
     private static Set<GstObject> strongReferences = Collections.synchronizedSet(new HashSet<GstObject>());
-    
 }

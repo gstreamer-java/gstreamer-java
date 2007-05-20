@@ -30,7 +30,7 @@ public class SwingVideoTest {
     public static void main(String[] args) {
         int width = 1280, height = 720;
         //System.setProperty("sun.java2d.opengl", "true");
-        JFrame frame = new JFrame("Swing Video Test");
+        
         args = Gst.init("SwingVideoTest", args);
         System.out.println("Creating videotestsrc");
         Element bar = ElementFactory.make("videotestsrc", "source");
@@ -64,6 +64,7 @@ public class SwingVideoTest {
         System.out.println("Creating GstVideoComponent");
         GstVideoComponent panel = new GstVideoComponent();
         panel.setPreferredSize(new Dimension(width, height));
+        JFrame frame = new JFrame("Swing Video Test");
         frame.add(panel, BorderLayout.CENTER);
         
         videosink = panel.getElement();
