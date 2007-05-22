@@ -116,8 +116,18 @@ abstract class NativeObject {
     }
     
     @Override
+    public boolean equals(Object o) {
+        return o instanceof NativeObject && ((NativeObject) o).handle().equals(handle());
+    }
+    
+    @Override
     public int hashCode() {
         return handle.hashCode();
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + handle() + ")";
     }
     
     //

@@ -31,7 +31,11 @@ public class GMainLoop extends NativeObject implements Runnable {
         super(ptr, needRef, ownsHandle);
     }
     public void quit() {
-        glib.g_main_loop_quit(handle());
+        Gst.invokeLater(new Runnable() {
+            public void run() {
+                glib.g_main_loop_quit(handle());
+            }
+        });   
     }
     public void run() {
         glib.g_main_loop_run(handle());
@@ -72,7 +76,7 @@ public class GMainLoop extends NativeObject implements Runnable {
     void unref() {
         glib.g_main_loop_unref(handle());
     }
-    
+
     void disposeNativeHandle(Pointer ptr) {
         glib.g_main_loop_unref(ptr);
     }
