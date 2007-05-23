@@ -22,7 +22,7 @@ import org.gstreamer.Time;
 
 /**
  *
- 
+ *
  */
 public class ElementPositionModel extends DefaultBoundedRangeModel {
     
@@ -30,31 +30,35 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     protected ElementPositionModel(Element element) {
         this.element = element;
     }
-    private TimerTask updateTask = new TimerTask() {
-        
-        public void run() {
-            final Time position = element.getPosition();
-            final Time duration = element.getDuration();
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    updatePosition(duration, position);
-                }
-            });
-        }
-        
-    };
+    private void startPoll() {
+        timer = new java.util.Timer(true);
+        timer.schedule(new TimerTask() {
+            
+            public void run() {
+                final Time position = element.getPosition();
+                final Time duration = element.getDuration();
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        updatePosition(duration, position);
+                    }
+                });
+            }
+        }, 1000, 1000);
+    }
+    private void stopPoll() {
+        timer.cancel();
+        timer = null;
+    }
     public void addChangeListener(ChangeListener l) {
         if (listenerList.getListenerCount() == 0) {
-            timer = new java.util.Timer(true);
-            timer.schedule(updateTask, 1000, 1000);
+            startPoll();
         }
         super.addChangeListener(l);
     }
     public void removeChangeListener(ChangeListener l) {
         super.removeChangeListener(l);
         if (listenerList.getListenerCount() == 0) {
-            timer.cancel();
-            timer = null;
+            stopPoll();
         }
     }
     private void updatePosition(Time duration, Time position) {
@@ -82,13 +86,27 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         // Only seek when the slider is being dragged (live seeking), and when not automatically updating the slider
         if (!updating && getValueIsAdjusting()) {
             final Time pos = new Time((long) getValue() * Time.NANOSECONDS);
+            // We stop the poll during seeking, to stop the slider jumping back 
+            // to the old time whilst the pipeline catches up
+            if (seeking++ == 0) {
+                stopPoll();
+            }
             Gst.invokeLater(new Runnable() {
                 public void run() {
                     element.setPosition(pos);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            // Restart the poll if this is the last seek pending
+                            if (--seeking == 0) {
+                                startPoll();
+                            }
+                        }
+                    });
                 }
             });
         }
     }
+    private int seeking = 0;
     private Element element;
     private boolean updating = false;
     private java.util.Timer timer;
