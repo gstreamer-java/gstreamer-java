@@ -11,6 +11,7 @@
  */
 
 package org.gstreamer;
+
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -90,7 +91,13 @@ public class Element extends GstObject {
         gst.gst_element_get_state(handle(), state, pending, -1);
         return state.getValue() == State.PLAYING.intValue();
     }
-   
+    public void setPosition(Time t) {
+//        gst.gst_element_seek_simple(handle(), Format.TIME.intValue(), SeekFlags.NONE.intValue(),
+//                t.getNanoSeconds());
+        gst.gst_element_seek(handle(), 1.0, Format.TIME.intValue(),
+                SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
+                SeekType.SET.intValue(),t.nanoseconds(), SeekType.NONE.intValue(), 0);
+    }
     public Time getPosition() {
         IntByReference fmt = new IntByReference(Format.TIME.intValue());
         LongByReference pos = new LongByReference();

@@ -56,6 +56,9 @@ public interface GstAPI extends Library {
     int gst_element_get_state(Pointer elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Pointer elem, IntByReference fmt, LongByReference pos);
     boolean gst_element_query_duration(Pointer elem, IntByReference fmt, LongByReference pos);
+    boolean gst_element_seek(Pointer elem, double rate, int format, int flags, 
+            int cur_type, long cur, int stop_type, long stop);
+    boolean gst_element_seek_simple(Pointer elem, int format, int flags, long pos);
     boolean gst_element_link(Pointer elem1, Pointer elem2);
     void gst_element_unlink(Pointer elem1, Pointer elem2);
     Pointer gst_element_get_pad(Pointer elem, String name);

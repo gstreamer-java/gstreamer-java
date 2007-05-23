@@ -18,14 +18,7 @@ import java.io.File;
 import javax.swing.JFrame;
 import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
-import org.gstreamer.Bin;
-import org.gstreamer.Caps;
-import org.gstreamer.Element;
-import org.gstreamer.ElementFactory;
-import org.gstreamer.GhostPad;
-import org.gstreamer.PlayBin;
-import org.gstreamer.State;
-import org.gstreamer.swing.GstVideoComponent;
+import org.gstreamer.swing.GstVideoPlayer;
 
 /**
  *
@@ -37,51 +30,26 @@ public class SwingPlayer {
     }
     public static void main(String[] args) {
         //System.setProperty("sun.java2d.opengl", "True");
-        JFrame frame = new JFrame("Swing Test");
-        args = Gst.init("Swing Player", args);
-        
-        GMainLoop loop = new GMainLoop();
-        PlayBin playbin = new PlayBin("play");
-        GstVideoComponent panel = new GstVideoComponent();
-        panel.setPreferredSize(new Dimension(640, 480));
-        frame.add(panel, BorderLayout.CENTER);
-        
         if (args.length < 1) {
             System.err.println("Usage: SwingPlayer <filename>");
             System.exit(1);
         }
-        playbin.setInputFile(new File(args[0]));
         
-        Element xsink = ElementFactory.make("ximagesink", "xsink");
-        //Element xvsink = ElementFactory.make("xvimagesink", "xvsink");
-        //Element sdlsink = ElementFactory.make("sdlvideosink", "sdlsink");
-        //Element audio = ElementFactory.make("gconfaudiosink", "audio");
-        //playbin.setAudioSink(audio);
+        args = Gst.init("Swing Player", args);
+        GMainLoop loop = new GMainLoop();
         
-        playbin.setVideoSink(panel.getElement());
-        //playbin.setVideoSink(xsink);
-        //playbin.setVideoSink(getGLSink());
+        JFrame frame = new JFrame("Swing Test");        
         
-        playbin.setState(State.PLAYING);
-        loop.startInBackground();
-        frame.setSize(640, 480);
-        frame.pack();
+        GstVideoPlayer player = new GstVideoPlayer(new File(args[0]));
+        player.setPreferredSize(new Dimension(640, 480));
+        player.setControlsVisible(true);
+        frame.add(player, BorderLayout.CENTER);
+        player.play();
+        
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
         frame.setVisible(true);
-    }
-    private static Element getGLSink() {
-        Bin glbin = new Bin("glbin");
-        Element glsink = ElementFactory.make("glimagesink", "glsink");
-        //        Element videorate = ElementFactory.make("videorate", "video rate limiter");
-        //glbin.add(videorate);
-        Element rateflt = ElementFactory.make("capsfilter", "rateflt");
-        rateflt.setCaps(new Caps("video/x-raw-rgb"));
-        //        glbin.add(rateflt);
-        glbin.add(glsink);
-        //rateflt.link(glsink);
-        glsink.setCaps(new Caps("framerate=25/1"));
-        glbin.addPad(new GhostPad("sink", glsink.getPad("sink")));
-        glsink.set("sync", true);
-        return glbin;
+        
+        loop.startInBackground();
     }
 }
