@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.File;
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.swing.GstVideoPlayer;
@@ -30,26 +31,29 @@ public class SwingPlayer {
     }
     public static void main(String[] args) {
         //System.setProperty("sun.java2d.opengl", "True");
+        
+        args = Gst.init("Swing Player", args);
         if (args.length < 1) {
             System.err.println("Usage: SwingPlayer <filename>");
             System.exit(1);
         }
+        final File file = new File(args[0]);
         
-        args = Gst.init("Swing Player", args);
-        GMainLoop loop = new GMainLoop();
-        
-        JFrame frame = new JFrame("Swing Test");        
-        
-        GstVideoPlayer player = new GstVideoPlayer(new File(args[0]));
-        player.setPreferredSize(new Dimension(640, 480));
-        player.setControlsVisible(true);
-        frame.add(player, BorderLayout.CENTER);
-        player.play();
-        
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        
-        loop.startInBackground();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                
+                JFrame frame = new JFrame("Swing Test");
+                
+                GstVideoPlayer player = new GstVideoPlayer(file);
+                player.setPreferredSize(new Dimension(640, 480));
+                player.setControlsVisible(true);
+                frame.add(player, BorderLayout.CENTER);
+                player.play();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.pack();
+                frame.setVisible(true);
+            }  
+        });
+        new GMainLoop().run();
     }
 }
