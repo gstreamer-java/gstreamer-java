@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -26,7 +26,7 @@ public class Time {
         
     }
     public long getHours() {
-        return (seconds / 3600) % (24);
+        return (seconds / 3600) % 24;
     }
     public long getMinutes() {
         return (seconds / 60) % 60;
@@ -34,12 +34,14 @@ public class Time {
     public long getSeconds() {
         return seconds % 60;
     }
-    public long getNanoSeconds() {
+    public long nanoseconds() {
         return nanoseconds;
     }
+
     public String toString() {
-        return String.format("%02d:%02d:%02d", getHours(), getMinutes(), getSeconds());       
+        return String.format("%02d:%02d:%02d", getHours(), getMinutes(), getSeconds());
     }
+    public static final long NANOSECONDS = 1000000000L;
     private long seconds;
     private long nanoseconds;
 }
