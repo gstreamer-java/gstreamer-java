@@ -17,6 +17,7 @@ import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.Element;
+import org.gstreamer.Gst;
 import org.gstreamer.Time;
 
 /**
@@ -80,7 +81,12 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         super.fireStateChanged();
         // Only seek when the slider is being dragged (live seeking), and when not automatically updating the slider
         if (!updating && getValueIsAdjusting()) {
-            element.setPosition(new Time((long) getValue() * Time.NANOSECONDS));
+            final Time pos = new Time((long) getValue() * Time.NANOSECONDS);
+            Gst.invokeLater(new Runnable() {
+                public void run() {
+                    element.setPosition(pos);
+                }
+            });
         }
     }
     private Element element;
