@@ -21,6 +21,7 @@ import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JSlider;
+import javax.swing.UIManager;
 import org.gstreamer.PlayBin;
 
 /**
@@ -41,7 +42,10 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         controls.add(new JButton(playAction));
         controls.add(new JButton(pauseAction));
         controls.add(new JButton(stopAction));
+        Object oldValue = UIManager.get("Slider.paintValue");
+        UIManager.put("Slider.paintValue", Boolean.FALSE);
         JSlider slider = new JSlider(new ElementPositionModel(playbin));
+        UIManager.put("Slider.paintValue", oldValue);
         controls.add(slider);
         controls.setVisible(false);
     }
