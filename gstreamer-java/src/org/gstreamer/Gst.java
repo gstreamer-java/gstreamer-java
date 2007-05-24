@@ -108,7 +108,6 @@ public class Gst {
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         gst.gst_init(argv.argcRef, argv.argvRef);
         logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
-        mainContext = new GMainContext();
         return argv.toStringArray();
     }
     public static final String[] initCheck(String progname, String[] args) throws GError {
@@ -119,13 +118,13 @@ public class Gst {
         if (!gst.gst_init_check(argv.argcRef, argv.argvRef, errRef)) {
             throw new GError(errRef.getValue());
         }
-        mainContext = new GMainContext();
+
         return argv.toStringArray();
     }
     public static void deinit() {
         gst.gst_deinit();
     }
-    private static GMainContext mainContext;
+    private static GMainContext mainContext = new GMainContext();
     static {
         // Nasty hacks to pre-load required libraries
         if (false) {
