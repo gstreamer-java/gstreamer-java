@@ -12,6 +12,7 @@
 
 package org.gstreamer.lowlevel;
 import com.sun.jna.*;
+import com.sun.jna.ptr.PointerByReference;
 
 /**
  *
@@ -30,11 +31,35 @@ public interface GlibAPI extends Library {
      */
     
     Pointer g_main_context_new();
+    Pointer g_main_context_default();
     boolean g_main_context_pending(Pointer ctx);
     boolean g_main_context_acquire(Pointer ctx);
     void g_main_context_release(Pointer ctx);
     boolean g_main_context_is_owner(Pointer ctx);
     boolean g_main_context_wait(Pointer ctx);
+    
+    Pointer g_idle_source_new();
+    Pointer g_timeout_source_new(int interval);
+    Pointer g_timeout_source_new_seconds(int interval);
+    int g_source_attach(Pointer source, Pointer context);
+    void g_source_destroy(Pointer source);
+    Pointer g_source_ref(Pointer source);
+    void g_source_unref(Pointer source);
+    void g_source_set_callback(Pointer source, GSourceFunc callback, Pointer data, GDestroyNotify destroy);
+    boolean g_source_is_destroyed(Pointer source);
+    /*
+     * GThread functions
+     */
+    interface GThreadFunc extends Callback {
+        Pointer callback(Pointer data);
+    }
+    Pointer g_thread_create(GThreadFunc func, Pointer data, boolean joinable, PointerByReference error);
+    Pointer g_thread_self();
+    Pointer g_thread_join(Pointer thread);
+    void g_thread_yield();
+    void g_thread_set_priority(Pointer thread, int priority);
+    void g_thread_exit(Pointer retval);
+    
     
     
     interface GSourceFunc extends Callback {
@@ -45,8 +70,6 @@ public interface GlibAPI extends Library {
         void callback(Pointer data);
     }
     
-    Pointer g_timeout_source_new(int interval);
-    Pointer g_timeout_source_new_seconds(int interval);
     int g_timeout_add(int interval, GSourceFunc function, Pointer data);
     int g_timeout_add_full(int priority, int interval, GSourceFunc function,
             Pointer data, GDestroyNotify notify);

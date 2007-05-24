@@ -13,6 +13,7 @@
 package org.gstreamer;
 
 
+import org.gstreamer.lowlevel.GMainContext;
 import com.sun.jna.Function;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.LongByReference;
@@ -26,6 +27,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gstreamer.lowlevel.GSource;
 import org.gstreamer.lowlevel.GlibAPI;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
@@ -55,7 +57,8 @@ public class Gst {
     }
     private static final List<Runnable> bgTasks = new LinkedList<Runnable>();
     private static final GlibAPI.GSourceFunc bgCallback = new GlibAPI.GSourceFunc() {
-        public boolean callback(Pointer unused) {
+        public boolean callback(Pointer source) {
+//            System.out.println("Running g_idle callbacks");
             List<Runnable> tasks = new ArrayList<Runnable>();
             synchronized (bgTasks) {
                 tasks.addAll(bgTasks);
@@ -68,13 +71,17 @@ public class Gst {
         }
     };
     public static void invokeLater(final Runnable r) {
+//        System.out.println("Scheduling idle callbacks");
         synchronized (bgTasks) {
             boolean empty = bgTasks.isEmpty();
             bgTasks.add(r);
             // Only trigger the callback if there were no existing elements in the list
             // otherwise it is already triggered
             if (empty) {
-                glib.g_idle_add(bgCallback, null);
+                Pointer source = glib.g_idle_source_new();
+                glib.g_source_set_callback(source, bgCallback, source, null);
+                glib.g_source_attach(source, mainContext.handle());
+                glib.g_source_unref(source);
             }
         }
     }
@@ -89,7 +96,9 @@ public class Gst {
             throw new RuntimeException(ex.getCause());
         }
     }
-    
+    public static GMainContext getMainContext() {
+        return mainContext;
+    }
     public static final String[] init() {
         return init("unknown", new String[] {});
     }
@@ -99,22 +108,24 @@ public class Gst {
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         gst.gst_init(argv.argcRef, argv.argvRef);
         logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
+        mainContext = new GMainContext();
         return argv.toStringArray();
     }
     public static final String[] initCheck(String progname, String[] args) throws GError {
+        Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         NativeArgs argv = new NativeArgs(progname, args);
         PointerByReference errRef = new PointerByReference();
         
         if (!gst.gst_init_check(argv.argcRef, argv.argvRef, errRef)) {
             throw new GError(errRef.getValue());
         }
-        
+        mainContext = new GMainContext();
         return argv.toStringArray();
     }
     public static void deinit() {
         gst.gst_deinit();
     }
-    
+    private static GMainContext mainContext;
     static {
         // Nasty hacks to pre-load required libraries
         if (false) {

@@ -26,14 +26,14 @@ public class GMainLoop extends NativeObject implements Runnable {
     
     /** Creates a new instance of GMainLoop */
     public GMainLoop() {
-        this(glib.g_main_loop_new(null, false), false, true);
+        this(glib.g_main_loop_new(Gst.getMainContext().handle(), false), false, true);
     }
     /*
      * Due to a bug in the GTK bridge, you cannot use the Glib main loop with 
      * the GTK look and feel, so throw an exception if someone tries.
      */
     private void checkLAF() {
-        if (UIManager.getLookAndFeel().getClass() == com.sun.java.swing.plaf.gtk.GTKLookAndFeel.class) {
+        if (false && UIManager.getLookAndFeel().getClass() == com.sun.java.swing.plaf.gtk.GTKLookAndFeel.class) {
             throw new RuntimeException("Cannot use GTK look and feel with GMainLoop\n" +
                     "\nSee http://code.google.com/p/gstreamer-java/issues/detail?id=6\n");
         }
