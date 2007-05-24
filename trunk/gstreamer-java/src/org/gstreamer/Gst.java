@@ -78,7 +78,7 @@ public class Gst {
             }
         }
     }
-    public void invokeAndWait(Runnable r) {
+    public static void invokeAndWait(Runnable r) {
         FutureTask<Object> task = new FutureTask<Object>(r, null);
         invokeLater(task);
         try {
@@ -89,6 +89,7 @@ public class Gst {
             throw new RuntimeException(ex.getCause());
         }
     }
+    
     public static final String[] init() {
         return init("unknown", new String[] {});
     }
