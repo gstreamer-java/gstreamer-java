@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gstreamer.lowlevel.GSource;
 import org.gstreamer.lowlevel.GlibAPI;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
@@ -58,7 +57,7 @@ public class Gst {
     private static final List<Runnable> bgTasks = new LinkedList<Runnable>();
     private static final GlibAPI.GSourceFunc bgCallback = new GlibAPI.GSourceFunc() {
         public boolean callback(Pointer source) {
-//            System.out.println("Running g_idle callbacks");
+            //            System.out.println("Running g_idle callbacks");
             List<Runnable> tasks = new ArrayList<Runnable>();
             synchronized (bgTasks) {
                 tasks.addAll(bgTasks);
@@ -67,11 +66,12 @@ public class Gst {
             for (Runnable r : tasks) {
                 r.run();
             }
+            glib.g_source_unref(source);
             return false;
         }
     };
     public static void invokeLater(final Runnable r) {
-//        System.out.println("Scheduling idle callbacks");
+        //        System.out.println("Scheduling idle callbacks");
         synchronized (bgTasks) {
             boolean empty = bgTasks.isEmpty();
             bgTasks.add(r);
@@ -81,7 +81,6 @@ public class Gst {
                 Pointer source = glib.g_idle_source_new();
                 glib.g_source_set_callback(source, bgCallback, source, null);
                 glib.g_source_attach(source, mainContext.handle());
-                glib.g_source_unref(source);
             }
         }
     }
@@ -108,6 +107,7 @@ public class Gst {
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         gst.gst_init(argv.argcRef, argv.argvRef);
         logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
+        mainContext = new GMainContext();
         return argv.toStringArray();
     }
     public static final String[] initCheck(String progname, String[] args) throws GError {
@@ -118,13 +118,13 @@ public class Gst {
         if (!gst.gst_init_check(argv.argcRef, argv.argvRef, errRef)) {
             throw new GError(errRef.getValue());
         }
-
+        mainContext = new GMainContext();
         return argv.toStringArray();
     }
     public static void deinit() {
         gst.gst_deinit();
     }
-    private static GMainContext mainContext = new GMainContext();
+    private static GMainContext mainContext;
     static {
         // Nasty hacks to pre-load required libraries
         if (false) {

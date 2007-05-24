@@ -32,38 +32,45 @@ public class Timeout {
         };
     }
     public synchronized void start() {
-        if (source != null) {
-            glib.g_source_destroy(source);
-        }
+        stop();
+        Pointer ptr;
         /*
          * If the timeout is an even number of seconds, use the more efficient
          * g_timeout_add_seconds, if it is available.
          */
         if ((milliseconds % 1000) == 0) {
             try {
-                source = glib.g_timeout_source_new_seconds(milliseconds / 1000);
+                ptr = glib.g_timeout_source_new_seconds(milliseconds / 1000);
             } catch (UnsatisfiedLinkError e) {
-                source = glib.g_timeout_source_new(milliseconds);
+                ptr = glib.g_timeout_source_new(milliseconds);
             }
         } else {
-            source = glib.g_timeout_source_new(milliseconds);
+            ptr = glib.g_timeout_source_new(milliseconds);
         }
-        glib.g_source_set_callback(source, callback, source, null);
-        glib.g_source_attach(source, Gst.getMainContext().handle());
-        
-        glib.g_source_unref(source);
+        glib.g_source_set_callback(ptr, callback, ptr, null);
+        glib.g_source_attach(ptr, Gst.getMainContext().handle());
+        source = ptr;
+        final Pointer ptr1 = ptr;
+        Gst.invokeLater(new Runnable() {
+            public void run() {
+                glib.g_source_unref(ptr1);
+            }
+        });
     }
     public synchronized void stop() {
         if (source != null) {
-            glib.g_source_destroy(source);
+            final Pointer ptr = source;
             source = null;
+            Gst.invokeLater(new Runnable() {
+                public void run() {
+                    glib.g_source_destroy(ptr);
+                }
+            });
         }
     }
     protected void finalize() throws Throwable {
         try {
-            if (source != null) {
-                glib.g_source_destroy(source);
-            }
+            stop();
         } finally {
             super.finalize();
         }
