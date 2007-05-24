@@ -60,6 +60,7 @@ public interface GstAPI extends Library {
             int cur_type, long cur, int stop_type, long stop);
     boolean gst_element_seek_simple(Pointer elem, int format, int flags, long pos);
     boolean gst_element_link(Pointer elem1, Pointer elem2);
+    boolean gst_element_link_many(Pointer... elements);
     void gst_element_unlink(Pointer elem1, Pointer elem2);
     Pointer gst_element_get_pad(Pointer elem, String name);
     boolean gst_element_add_pad(Pointer elem, Pointer pad);
@@ -96,6 +97,7 @@ public interface GstAPI extends Library {
     Pointer gst_bin_new(String name);
     NativeLong gst_bin_get_type();
     boolean gst_bin_add(Pointer bin, Pointer element);
+    void gst_bin_add_many(Pointer bin, Pointer... elements);
     boolean gst_bin_remove(Pointer bin, Pointer element);
     Pointer gst_bin_get_by_name(Pointer bin, String name);
     Pointer gst_bin_get_by_name_recurse_up(Pointer bin, String name);

@@ -114,7 +114,13 @@ abstract class NativeObject {
         }
         return obj;
     }
-    
+    static Pointer[] getObjectHandlesV(NativeObject... objects) {
+        Pointer[] handles = new Pointer[objects.length + 1];
+        for (int i = 0; i < objects.length; ++i) {
+            handles[i] = objects[i].handle();
+        }
+        return handles;
+    }
     @Override
     public boolean equals(Object o) {
         return o instanceof NativeObject && ((NativeObject) o).handle().equals(handle());

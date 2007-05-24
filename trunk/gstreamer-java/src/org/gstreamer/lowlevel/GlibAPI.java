@@ -56,5 +56,5 @@ public interface GlibAPI extends Library {
     void g_source_remove(int id);
     void g_free(Pointer ptr);
     
-    void g_object_set_property(Pointer obj, String property, Pointer data);
+    
 }
