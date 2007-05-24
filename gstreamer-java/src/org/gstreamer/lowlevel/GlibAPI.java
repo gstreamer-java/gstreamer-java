@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -24,14 +24,36 @@ public interface GlibAPI extends Library {
     void g_main_loop_quit(Pointer loop);
     void g_main_loop_ref(Pointer ptr);
     void g_main_loop_unref(Pointer ptr);
+    
+    /*
+     * GMainContext functions
+     */
+    
+    Pointer g_main_context_new();
+    boolean g_main_context_pending(Pointer ctx);
+    boolean g_main_context_acquire(Pointer ctx);
+    void g_main_context_release(Pointer ctx);
+    boolean g_main_context_is_owner(Pointer ctx);
+    boolean g_main_context_wait(Pointer ctx);
+    
+    
     interface GSourceFunc extends Callback {
         boolean callback(Pointer data);
     }
     NativeLong g_idle_add(GSourceFunc function, Pointer data);
+    interface GDestroyNotify extends Callback {
+        void callback(Pointer data);
+    }
     
-    
-    
+    Pointer g_timeout_source_new(int interval);
+    Pointer g_timeout_source_new_seconds(int interval);
+    int g_timeout_add(int interval, GSourceFunc function, Pointer data);
+    int g_timeout_add_full(int priority, int interval, GSourceFunc function,
+            Pointer data, GDestroyNotify notify);
+    int g_timeout_add_seconds(int interval, GSourceFunc function, Pointer data);
     void g_error_free(Pointer error);
+    
+    void g_source_remove(int id);
     void g_free(Pointer ptr);
     
     void g_object_set_property(Pointer obj, String property, Pointer data);

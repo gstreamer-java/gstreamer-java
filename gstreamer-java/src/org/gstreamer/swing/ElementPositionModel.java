@@ -12,13 +12,13 @@
 
 package org.gstreamer.swing;
 
-import java.util.TimerTask;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.Element;
 import org.gstreamer.Gst;
 import org.gstreamer.Time;
+import org.gstreamer.Timeout;
 
 /**
  *
@@ -27,13 +27,9 @@ import org.gstreamer.Time;
 public class ElementPositionModel extends DefaultBoundedRangeModel {
     
     /** Creates a new instance of MediaPositionModel */
-    protected ElementPositionModel(Element element) {
+    protected ElementPositionModel(final Element element) {
         this.element = element;
-    }
-    private void startPoll() {
-        timer = new java.util.Timer(true);
-        timer.schedule(new TimerTask() {
-            
+        timer = new Timeout(1000, new Runnable() {
             public void run() {
                 final Time position = element.getPosition();
                 final Time duration = element.getDuration();
@@ -43,11 +39,13 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
                     }
                 });
             }
-        }, 1000, 1000);
+        });
+    }
+    private void startPoll() {
+        timer.start();
     }
     private void stopPoll() {
-        timer.cancel();
-        timer = null;
+        timer.stop();
     }
     public void addChangeListener(ChangeListener l) {
         if (listenerList.getListenerCount() == 0) {
@@ -109,6 +107,6 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     private int seeking = 0;
     private Element element;
     private boolean updating = false;
-    private java.util.Timer timer;
+    private Timeout timer;
 }
 
