@@ -78,9 +78,7 @@ public class Bin extends Element {
      * @param elements The array of {@link Element} to add to this Bin
      */
     public void addMany(Element... elements) {
-        for (Element e : elements) {
-            gst.gst_bin_add(handle(), e.handle());
-        }
+        gst.gst_bin_add_many(handle(),getObjectHandlesV(elements));
     }
     
     /**

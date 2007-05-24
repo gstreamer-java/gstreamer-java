@@ -226,16 +226,7 @@ public class Element extends GstObject {
     }
     
     public static boolean linkMany(Element... elems) {
-        Element prev = null;
-        for (Element e : elems) {
-            if (prev != null) {
-                if (!prev.link(e)) {
-                    return false;
-                }
-            }
-            prev = e;
-        }
-        return true;
+        return gst.gst_element_link_many(getObjectHandlesV(elems));
     }
     public static Element objectFor(Pointer ptr, boolean needRef) {
         return (Element) GstObject.objectFor(ptr, Element.class, needRef);

@@ -24,9 +24,7 @@ import com.sun.jna.Pointer;
 public interface GObjectAPI extends Library {
     GObjectAPI gobj = (GObjectAPI) Native.loadLibrary("gobject-2.0", GObjectAPI.class);
     void g_object_set_property(Pointer obj, String property, Pointer data);
-    void g_object_set(Pointer obj, String propertyName, Object data, Object end);
-    void g_object_set(Pointer obj, String propertyName, Object arg1, Object arg2, Object end);
-    void g_object_set(Pointer obj, String propertyName, Object arg1, Object arg2, Object arg3, Object end);
+    void g_object_set(Pointer obj, String propertyName, Object... data);
     interface GClosureNotify extends Callback {
         void callback(Pointer data, Pointer closure);
     }
