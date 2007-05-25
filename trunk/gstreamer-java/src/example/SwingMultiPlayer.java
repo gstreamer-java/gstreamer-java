@@ -14,6 +14,8 @@ package example;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -49,7 +51,7 @@ public class SwingMultiPlayer {
                 JFrame window = new JFrame("Swing Video Player");
                 JDesktopPane panel = new JDesktopPane();
                 window.add(panel);
-                for (int i = 0; i < files.length; ++i) {
+                for (int i = files.length - 1; i >= 0; --i) {
                     File file = files[i];
                     JInternalFrame frame = new JInternalFrame(file.getName());
                     frame.setResizable(true);
@@ -65,12 +67,13 @@ public class SwingMultiPlayer {
                     frame.pack();
                     panel.add(frame);
                     frame.setVisible(true);
-                    Gst.invokeLater(new Runnable() {
-                        public void run() {
+                    javax.swing.Timer timer = new javax.swing.Timer(5000 * i, new ActionListener() {
+                        public void actionPerformed(ActionEvent evt) {
                             player.play();
                         }
                     });
-                    
+                    timer.setRepeats(false);
+                    timer.start();
                 }
                 window.setPreferredSize(new Dimension(1024, 768));
                 window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
