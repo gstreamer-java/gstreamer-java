@@ -16,6 +16,7 @@ import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.Element;
+import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.Time;
 import org.gstreamer.Timeout;
@@ -27,11 +28,15 @@ import org.gstreamer.Timeout;
 public class ElementPositionModel extends DefaultBoundedRangeModel {
     
     /** Creates a new instance of MediaPositionModel */
-    protected ElementPositionModel(final Element element) {
+    public ElementPositionModel(final Element element) {
+        this(element, Format.TIME);
+    }
+    public ElementPositionModel(final Element element, final Format format) {
         this.element = element;
+        this.format = format;
         timer = new Timeout(1000, new Runnable() {
             public void run() {
-                final Time position = element.getPosition();
+                final long position = element.getPosition(format);
                 final Time duration = element.getDuration();
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
@@ -59,14 +64,14 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             stopPoll();
         }
     }
-    private void updatePosition(Time duration, Time position) {
+    private void updatePosition(Time duration, long position) {
         // Don't update the slider when it is being dragged
         if (getValueIsAdjusting()) {
             return;
         }
         final int min = 0;
         final int max = (int)(duration.nanoseconds() / Time.NANOSECONDS);
-        final int pos = (int)(position.nanoseconds() / Time.NANOSECONDS);
+        final int pos = (int)(position / (format == Format.TIME ? Time.NANOSECONDS : 1));
         //System.out.printf("Setting range properties to %02d, %02d, %02d%n", min, max, pos);
         if (getMaximum() != max || getMinimum() != min) {
             setMaximum(max);
@@ -83,7 +88,8 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         super.fireStateChanged();
         // Only seek when the slider is being dragged (live seeking), and when not automatically updating the slider
         if (!updating && getValueIsAdjusting()) {
-            final Time pos = new Time((long) getValue() * Time.NANOSECONDS);
+            final long pos = (long) getValue() * (format == Format.TIME ? Time.NANOSECONDS : 1);
+            
             // We stop the poll during seeking, to stop the slider jumping back 
             // to the old time whilst the pipeline catches up
             if (seeking++ == 0) {
@@ -91,7 +97,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             }
             Gst.invokeLater(new Runnable() {
                 public void run() {
-                    element.setPosition(pos);
+                    element.setPosition(pos, format);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             // Restart the poll if this is the last seek pending
@@ -104,6 +110,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             });
         }
     }
+    private Format format;
     private int seeking = 0;
     private Element element;
     private boolean updating = false;

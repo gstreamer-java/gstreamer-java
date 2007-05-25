@@ -85,24 +85,34 @@ public class Element extends GstObject {
         return gst.gst_element_remove_pad(handle(), pad.handle());
     }
     public boolean isPlaying() {
+        return getState() == State.PLAYING;
+    }
+    public State getState() {
+        return getState(-1);
+    }
+    public State getState(long timeout) {
         IntByReference state = new IntByReference();
         IntByReference pending = new IntByReference();
         
-        gst.gst_element_get_state(handle(), state, pending, -1);
-        return state.getValue() == State.PLAYING.intValue();
+        gst.gst_element_get_state(handle(), state, pending, timeout);
+        return State.valueOf(state.getValue());
     }
     public void setPosition(Time t) {
-//        gst.gst_element_seek_simple(handle(), Format.TIME.intValue(), SeekFlags.NONE.intValue(),
-//                t.getNanoSeconds());
-        gst.gst_element_seek(handle(), 1.0, Format.TIME.intValue(),
-                SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
-                SeekType.SET.intValue(),t.nanoseconds(), SeekType.NONE.intValue(), 0);
+        setPosition(t.nanoseconds(), Format.TIME);
     }
-    public Time getPosition() {
-        IntByReference fmt = new IntByReference(Format.TIME.intValue());
+    public void setPosition(long pos, Format format) {
+        gst.gst_element_seek(handle(), 1.0, format.intValue(),
+                SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
+                SeekType.SET.intValue(),pos, SeekType.NONE.intValue(), 0);
+    }
+    public long getPosition(Format format) {
+        IntByReference fmt = new IntByReference(format.intValue());
         LongByReference pos = new LongByReference();
         gst.gst_element_query_position(handle(), fmt, pos);
-        return new Time(pos.getValue());
+        return pos.getValue();
+    }
+    public Time getPosition() {
+        return new Time(getPosition(Format.TIME));
     }
     public Time getDuration() {
         IntByReference fmt = new IntByReference(Format.TIME.intValue());
