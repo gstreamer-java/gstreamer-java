@@ -42,6 +42,9 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         controls.add(new JButton(playAction));
         controls.add(new JButton(pauseAction));
         controls.add(new JButton(stopAction));
+        playAction.setEnabled(true);
+        pauseAction.setEnabled(false);
+        stopAction.setEnabled(false);
         Object oldValue = UIManager.get("Slider.paintValue");
         UIManager.put("Slider.paintValue", Boolean.FALSE);
         JSlider slider = new JSlider(new ElementPositionModel(playbin));
