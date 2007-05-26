@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
+import org.gstreamer.lowlevel.GSource;
 import org.gstreamer.lowlevel.GlibAPI;
 
 /**
@@ -23,9 +24,6 @@ public class Timeout {
         this.milliseconds = milliseconds;
         callback = new GlibAPI.GSourceFunc() {
             public boolean callback(Pointer source) {
-                if (glib.g_source_is_destroyed(source)) {
-                    return false;
-                }
                 run.run();
                 return true;
             }
@@ -47,26 +45,18 @@ public class Timeout {
         } else {
             ptr = glib.g_timeout_source_new(milliseconds);
         }
-        glib.g_source_set_callback(ptr, callback, ptr, null);
-        glib.g_source_attach(ptr, Gst.getMainContext().handle());
-        source = ptr;
+        source = new GSource(ptr, callback, null);
+        source.attach(Gst.getMainContext());
     }
     
     public synchronized void stop() {
         if (source != null) {
-            glib.g_source_destroy(source);
-            glib.g_source_unref(source);
+            source.destroy();
             source = null;
         }
     }
-    protected void finalize() throws Throwable {
-        try {
-            stop();
-        } finally {
-            super.finalize();
-        }
-    }
-    private Pointer source;
+    
+    private GSource source;
     private GlibAPI.GSourceFunc callback;
     private int milliseconds;
 }

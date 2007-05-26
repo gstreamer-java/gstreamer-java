@@ -17,7 +17,6 @@ import com.sun.jna.Pointer;
 
 /**
  *
- * @author wayne
  */
 public class GMainContext {
     private static GlibAPI glib = GlibAPI.glib;
@@ -28,13 +27,13 @@ public class GMainContext {
     private GMainContext(Pointer handle) {
         this.handle = handle;
     }
-    public GMainContext getDefaultContext() {
+    public int attach(GSource source) {
+        return glib.g_source_attach(source.handle(), handle());
+    }
+    public static GMainContext getDefaultContext() {
         return new GMainContext(glib.g_main_context_default());
     }
-    void disposeNativeHandle(Pointer ptr) {
-        glib.g_main_loop_unref(ptr);
-    }
-
+    
     public Pointer handle() { return handle; }
     Pointer handle;
 }
