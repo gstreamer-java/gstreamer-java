@@ -14,7 +14,6 @@ package example;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
@@ -22,11 +21,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.File;
 import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -89,6 +85,7 @@ public class PiPDemo {
                     final GstVideoPlayer player = new GstVideoPlayer(uri);
                     player.setPreferredSize(new Dimension(200, 150));
                     player.setAlpha(0.4f);
+                    player.setOpaque(false);
                     player.setControlsVisible(false);
                     pip.add(player);
                     // Stagger the start times, so gstreamer doesn't choke
