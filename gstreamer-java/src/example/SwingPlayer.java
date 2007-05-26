@@ -37,7 +37,7 @@ public class SwingPlayer {
             System.err.println("Usage: SwingPlayer <filename>");
             System.exit(1);
         }
-        final File file = new File(args[0]);
+        final String file = args[0];
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {

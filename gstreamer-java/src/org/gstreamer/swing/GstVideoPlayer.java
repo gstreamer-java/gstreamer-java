@@ -16,6 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -54,6 +55,20 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     }
     public GstVideoPlayer(File file) {
         this(file.toURI());
+    }
+    public GstVideoPlayer(String uri) {
+        this(parseURI(uri));
+    }
+    private static URI parseURI(String uri) {
+        try {
+            return new URI(uri);
+        } catch (URISyntaxException e) {
+            File f = new File(uri);
+            if (!f.exists()) {
+                throw new IllegalArgumentException("Invalid URI/file " + uri);
+            }
+            return f.toURI();
+        }
     }
     public void setKeepAspect(boolean keepAspect) {
         videoComponent.setKeepAspect(keepAspect);
