@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -11,6 +11,7 @@
  */
 
 package org.gstreamer.swing;
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -41,6 +42,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
     private static boolean quartzEnabled;
     private Bin bin;
     private boolean keepAspect = true;
+    private float alpha = 1.0f;
     
     static {
         try {
@@ -61,8 +63,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
         fakesink.addHandoffListener(new VideoHandoffListener());
         bin = new Bin("GstVideoComponent");
         setDoubleBuffered(false);
-        setOpaque(true);
-        setBackground(Color.BLACK);
+        setBackground(new Color(0, 0, 0, 0));
+        
         //
         // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
         //
@@ -98,10 +100,14 @@ public class GstVideoComponent extends javax.swing.JComponent {
         this.keepAspect = keepAspect;
     }
     
+    @Override
     protected void paintComponent(Graphics g) {
-
+        
         int width = getWidth(), height = getHeight();
         Graphics2D g2d = (Graphics2D) g.create();
+        if (alpha < 1.0f) {
+            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+        }
         g2d.setColor(Color.BLACK);
         
         if (currentImage != null) {
@@ -119,9 +125,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 //
                 // Create the black bars at the top/bottom
                 //
-                int fillHeight = y + 1; // 1 pixel overlap for rounding
-                g2d.fillRect(0, 0, width, fillHeight);
-                g2d.fillRect(0, height - fillHeight, width, fillHeight);
+                if (alpha == 1.0f) {
+                    int fillHeight = y + 1; // 1 pixel overlap for rounding
+                    g2d.fillRect(0, 0, width, fillHeight);
+                    g2d.fillRect(0, height - fillHeight, width, fillHeight);
+                }
                 // Now draw the image itself
                 render(g2d, 0, y, width, scaledHeight);
             } else {
@@ -130,9 +138,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 //
                 // Create black bars at left/right
                 //
-                int fillWidth = x + 1; // 1 pixel overlap for rounding
-                g2d.fillRect(0, 0, fillWidth, height);
-                g2d.fillRect(width - fillWidth, 0, fillWidth,  height);
+                if (alpha == 1.0f) {
+                    int fillWidth = x + 1; // 1 pixel overlap for rounding
+                    g2d.fillRect(0, 0, fillWidth, height);
+                    g2d.fillRect(width - fillWidth, 0, fillWidth,  height);
+                }
                 // Now draw the image itself
                 render(g2d, x, 0, scaledWidth, height);
             }
@@ -142,7 +152,13 @@ public class GstVideoComponent extends javax.swing.JComponent {
         g2d.dispose();
         
     }
-    
+    public void setAlpha(float alpha) {
+        this.alpha = alpha;
+        repaint();
+    }
+    public float getAlpha() {
+        return alpha;
+    }
     private void render(Graphics g, int x, int y, int w, int h) {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
@@ -179,7 +195,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
             g.dispose();
         } while (volatileImage.contentsLost());
     }
-        
+    
     private volatile VolatileImage volatileImage = null;
     BufferedImage currentImage = null;
     private void switchBuffer(BufferedImage bImage) {
