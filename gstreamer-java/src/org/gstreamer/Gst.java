@@ -34,7 +34,7 @@ import static org.gstreamer.lowlevel.GlibAPI.glib;
 /**
  *
  */
-public class Gst {
+public final class Gst {
     static Logger logger = Logger.getLogger(Gst.class.getName());
     /** Creates a new instance of Gst */
     private Gst() {
@@ -102,29 +102,33 @@ public class Gst {
         return init("unknown", new String[] {});
     }
     
-    public static final String[] init(String progname, String[] args) {
+    public static final String[] init(String progname, String[] args) throws GError {
         NativeArgs argv = new NativeArgs(progname, args);
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
-        gst.gst_init(argv.argcRef, argv.argvRef);
-        logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
-        mainContext = new GMainContext();
-        return argv.toStringArray();
-    }
-    public static final String[] initCheck(String progname, String[] args) throws GError {
-        Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
-        NativeArgs argv = new NativeArgs(progname, args);
         PointerByReference errRef = new PointerByReference();
         
         if (!gst.gst_init_check(argv.argcRef, argv.argvRef, errRef)) {
             throw new GError(errRef.getValue());
         }
-        mainContext = new GMainContext();
+        
+        logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
+        if (useDefaultContext) {
+            mainContext = GMainContext.getDefaultContext();
+        } else {
+            mainContext = new GMainContext();
+        }
         return argv.toStringArray();
     }
+    
     public static void deinit() {
         gst.gst_deinit();
     }
+    
+    public static void setUseDefaultContext(boolean useDefault) {
+        useDefaultContext = useDefault;
+    }
     private static GMainContext mainContext;
+    private static boolean useDefaultContext = false;
     static {
         // Nasty hacks to pre-load required libraries
         if (false) {
