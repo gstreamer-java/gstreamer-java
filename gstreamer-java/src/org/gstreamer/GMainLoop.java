@@ -15,7 +15,6 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import javax.swing.UIManager;
 import org.gstreamer.lowlevel.GlibAPI;
 
 /**
@@ -28,19 +27,9 @@ public class GMainLoop extends NativeObject implements Runnable {
     public GMainLoop() {
         this(glib.g_main_loop_new(Gst.getMainContext().handle(), false), false, true);
     }
-    /*
-     * Due to a bug in the GTK bridge, you cannot use the Glib main loop with 
-     * the GTK look and feel, so throw an exception if someone tries.
-     */
-    private void checkLAF() {
-        if (false && UIManager.getLookAndFeel().getClass() == com.sun.java.swing.plaf.gtk.GTKLookAndFeel.class) {
-            throw new RuntimeException("Cannot use GTK look and feel with GMainLoop\n" +
-                    "\nSee http://code.google.com/p/gstreamer-java/issues/detail?id=6\n");
-        }
-    }
+    
     GMainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
-        checkLAF();
     }
     public void quit() {
         Gst.invokeLater(new Runnable() {
@@ -50,7 +39,6 @@ public class GMainLoop extends NativeObject implements Runnable {
         });
     }
     public void run() {
-        checkLAF();
         glib.g_main_loop_run(handle());
     }
     
@@ -59,7 +47,6 @@ public class GMainLoop extends NativeObject implements Runnable {
     }
     
     public void startInBackground() {
-        checkLAF();
         bgThread = new java.lang.Thread(this);
         bgThread.setDaemon(true);
         bgThread.setName("gmainloop");
