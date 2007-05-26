@@ -22,4 +22,10 @@ public class Clock extends GstObject {
     public Clock(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
+    static Clock objectFor(Pointer ptr) {
+        return objectFor(ptr, true);
+    }
+    static Clock objectFor(Pointer ptr, boolean needRef) {
+        return (Clock) GstObject.objectFor(ptr, Clock.class, needRef);
+    }
 }

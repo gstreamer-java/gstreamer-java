@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -56,7 +56,7 @@ public interface GstAPI extends Library {
     int gst_element_get_state(Pointer elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Pointer elem, IntByReference fmt, LongByReference pos);
     boolean gst_element_query_duration(Pointer elem, IntByReference fmt, LongByReference pos);
-    boolean gst_element_seek(Pointer elem, double rate, int format, int flags, 
+    boolean gst_element_seek(Pointer elem, double rate, int format, int flags,
             int cur_type, long cur, int stop_type, long stop);
     boolean gst_element_seek_simple(Pointer elem, int format, int flags, long pos);
     boolean gst_element_link(Pointer elem1, Pointer elem2);
@@ -79,11 +79,27 @@ public interface GstAPI extends Library {
     Pointer gst_ghost_pad_new(String name, Pointer target);
     Pointer gst_ghost_pad_new_no_target(String name, int direction);
     
-    
+    /*
+     * GstPipeline
+     */
     Pointer gst_pipeline_new(String name);
     NativeLong gst_pipeline_get_type();
-    Pointer gst_pipeline_get_bus(Pointer ptr);
+    Pointer gst_pipeline_get_bus(Pointer pipeline);
+    void gst_pipeline_set_auto_flush_bus(Pointer pipeline, boolean flush);
+    boolean gst_pipeline_get_auto_flush_bus(Pointer pipeline);
+    void gst_pipeline_set_new_stream_time(Pointer pipeline, long time);
+    long gst_pipeline_get_last_stream_time(Pointer pipeline);
+    void gst_pipeline_use_clock(Pointer pipeline, Pointer clock);
+    boolean gst_pipeline_set_clock(Pointer pipeline, Pointer clock);
+    Pointer gst_pipeline_get_clock(Pointer pipeline);
+    void gst_pipeline_auto_clock(Pointer pipeline);
+    void gst_pipeline_set_delay(Pointer  pipeline, long delay);
+    long gst_pipeline_get_delay(Pointer  pipeline);
     
+    
+    /*
+     * GstObject
+     */
     void gst_object_ref(Pointer ptr);
     void gst_object_unref(Pointer ptr);
     void gst_object_sink(Pointer ptr);
