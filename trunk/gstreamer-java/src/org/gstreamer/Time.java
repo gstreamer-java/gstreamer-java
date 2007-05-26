@@ -19,22 +19,55 @@ public class Time {
     
     /**
      * Creates a new instance of Time
+     * 
+     * @param nanoseconds The length of time this object represents, in nanoseconds.
      */
-    public Time(long nano) {
-        nanoseconds = nano;
-        seconds = nano / 1000000000;
-        
+    public Time(long nanoseconds) {
+        this.nanoseconds = nanoseconds;
     }
+    
+    /**
+     * Get the hours component of the total time.
+     * 
+     * @return The hours component of the total time.
+     */
     public long getHours() {
-        return (seconds / 3600) % 24;
+        return (longValue() / NANOSECONDS / 3600) % 24;
     }
+    
+    /**
+     * Get the minutes component of the total time.
+     * 
+     * @return The minutes component of the total time.
+     */
     public long getMinutes() {
-        return (seconds / 60) % 60;
+        return (longValue() / NANOSECONDS / 60) % 60;
     }
+    
+    /**
+     * Get the seconds component of the total time.
+     * 
+     * @return The seconds component of the total time.
+     */
     public long getSeconds() {
-        return seconds % 60;
+        return (longValue() / NANOSECONDS) % 60;
     }
-    public long nanoseconds() {
+    
+    /**
+     * Get the nanosecond component of the total time.
+     * 
+     * @return The nanoseconds component of the total time.
+     */
+    public long getNanoSeconds() {
+        return nanoseconds % NANOSECONDS;
+    }
+    
+    /**
+     * Get the native GstTime represented by this object.
+     * 
+     * @return The length of time this object represents, in nanoseconds.
+     */
+    public long longValue() {
         return nanoseconds;
     }
 
@@ -42,6 +75,5 @@ public class Time {
         return String.format("%02d:%02d:%02d", getHours(), getMinutes(), getSeconds());
     }
     public static final long NANOSECONDS = 1000000000L;
-    private long seconds;
     private long nanoseconds;
 }
