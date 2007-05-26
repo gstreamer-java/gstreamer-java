@@ -21,24 +21,66 @@ import java.net.URI;
 public class PlayBin extends Pipeline {
     
     /**
-     * Creates a new instance of PlayBin
+     * Creates a new PlayBin.
+     * 
+     * @param name The name used to identify this pipeline.
      */
     public PlayBin(String name) {
         super(ElementFactory.makeRawElement("playbin", name));
     }
+    
+    /**
+     * Creates a new PlayBin.
+     * 
+     * @param name The name used to identify this pipeline.
+     * @param uri The URI of the media file to load.
+     */
     public PlayBin(String name, URI uri) {
         this(name);
         setURI(uri);
     }
-    PlayBin(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
+    
+    /**
+     * Creates a new PlayBin proxy for a native gstreamer playbin
+     * 
+     * This constructor assumes ownership of the underlying native GstPipeline
+     * and increments the reference count.
+     * 
+     * @param playbin The native Playbin object to wrap.
+     */
+    PlayBin(Pointer playbin, boolean needRef) {
+        super(playbin, needRef);
     }
-    PlayBin(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    
+    /**
+     * Creates a new PlayBin proxy.
+     * 
+     * @param playbin The native GstPlaybin object to wrap.
+     * 
+     * @param needRef true if the reference count needs to be incremented.
+     * 
+     * @param ownsHandle Whether this proxy should take ownership of the 
+     *          native handle or not.  If true, then the underlying pipeline will be
+     *          unreffed when the java object is garbage collected.
+     */
+    PlayBin(Pointer playbin, boolean needRef, boolean ownsHandle) {
+        super(playbin, needRef, ownsHandle);
     }
-    public void setInputFile(File f) {
-        setURI(f.toURI());
+    
+    /**
+     * Set the media file to play.
+     * 
+     * @param file The {@link java.io.File} to play.
+     */
+    public void setInputFile(File file) {
+        setURI(file.toURI());
     }
+    
+    /**
+     * Set the media URI to play.
+     * 
+     * @param uri The {@link java.net.URI} to play.
+     */
     public void setURI(URI uri) {
         String uriString = uri.toString();
         
@@ -48,15 +90,34 @@ public class PlayBin extends Pipeline {
         }
         set("uri", uriString);
     }
-    public void setAudioSink(Element e) {
-        setElement("audio-sink", e);
+    
+    /**
+     * Set the audio output Element.
+     * 
+     * @param element The element to use for audio output.
+     */
+    public void setAudioSink(Element element) {
+        setElement("audio-sink", element);
     }
-    public void setVideoSink(Element e) {
-        setElement("video-sink", e);
+    
+    /**
+     * Set the video output Element.
+     * 
+     * @param element The element to use for video output.
+     */
+    public void setVideoSink(Element element) {
+        setElement("video-sink", element);
     }
-    public void setVisualization(Element e) {
-        setElement("vis-plugin", e);
+    
+    /**
+     * Set the visualization output Element.
+     * 
+     * @param element The element to use for visualization.
+     */
+    public void setVisualization(Element element) {
+        setElement("vis-plugin", element);
     }
+    
     private void setElement(String key, Element e) {
         set(key, e);
     }
