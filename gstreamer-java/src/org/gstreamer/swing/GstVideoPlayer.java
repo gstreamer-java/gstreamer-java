@@ -75,11 +75,8 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         }
     }
     public void setAlpha(float alpha) {
-        if (alpha < 1.0f) {
-            setOpaque(false);
-        } else {
-            setOpaque(true);
-        }
+        setOpaque(alpha >= 1.0f);
+        videoComponent.setOpaque(alpha >= 1.0f);
         float[] c = getBackground().getColorComponents(new float[3]);
         setBackground(new Color(c[0], c[1], c[2], alpha));
         videoComponent.setAlpha(alpha);
