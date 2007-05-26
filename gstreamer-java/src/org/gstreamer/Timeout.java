@@ -35,7 +35,7 @@ public class Timeout {
         stop();
         Pointer ptr;
         /*
-         * If the timeout is an even number of seconds, use the more efficient
+         * If the timeout is a multiple of seconds, use the more efficient
          * g_timeout_add_seconds, if it is available.
          */
         if ((milliseconds % 1000) == 0) {
@@ -50,22 +50,13 @@ public class Timeout {
         glib.g_source_set_callback(ptr, callback, ptr, null);
         glib.g_source_attach(ptr, Gst.getMainContext().handle());
         source = ptr;
-        final Pointer ptr1 = ptr;
-        Gst.invokeLater(new Runnable() {
-            public void run() {
-                glib.g_source_unref(ptr1);
-            }
-        });
     }
+    
     public synchronized void stop() {
         if (source != null) {
-            final Pointer ptr = source;
+            glib.g_source_destroy(source);
+            glib.g_source_unref(source);
             source = null;
-            Gst.invokeLater(new Runnable() {
-                public void run() {
-                    glib.g_source_destroy(ptr);
-                }
-            });
         }
     }
     protected void finalize() throws Throwable {
