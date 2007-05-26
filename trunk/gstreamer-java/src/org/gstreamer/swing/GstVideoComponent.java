@@ -62,7 +62,6 @@ public class GstVideoComponent extends javax.swing.JComponent {
         fakesink.set("sync", true);
         fakesink.addHandoffListener(new VideoHandoffListener());
         bin = new Bin("GstVideoComponent");
-        setDoubleBuffered(false);
         setOpaque(true);
         setBackground(Color.BLACK);
         
@@ -109,7 +108,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
         if (alpha < 1.0f) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
         }
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(getBackground());
         
         if (currentImage != null) {
             int imgWidth = currentImage.getWidth(null), imgHeight = currentImage.getHeight(null);

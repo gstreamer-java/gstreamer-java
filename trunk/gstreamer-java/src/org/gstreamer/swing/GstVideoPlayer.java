@@ -73,6 +73,9 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             return f.toURI();
         }
     }
+    public GstVideoComponent getVideoComponent() {
+        return videoComponent;
+    }
     public void setAlpha(float alpha) {
         float[] c = getBackground().getColorComponents(new float[3]);
         setBackground(new Color(c[0], c[1], c[2], alpha));
