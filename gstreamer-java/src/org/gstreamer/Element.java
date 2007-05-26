@@ -98,7 +98,7 @@ public class Element extends GstObject {
         return State.valueOf(state.getValue());
     }
     public void setPosition(Time t) {
-        setPosition(t.nanoseconds(), Format.TIME);
+        setPosition(t.longValue(), Format.TIME);
     }
     public void setPosition(long pos, Format format) {
         gst.gst_element_seek(handle(), 1.0, format.intValue(),

@@ -70,7 +70,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             return;
         }
         final int min = 0;
-        final int max = (int)(duration.nanoseconds() / Time.NANOSECONDS);
+        final int max = (int)(duration.longValue() / Time.NANOSECONDS);
         final int pos = (int)(position / (format == Format.TIME ? Time.NANOSECONDS : 1));
         //System.out.printf("Setting range properties to %02d, %02d, %02d%n", min, max, pos);
         if (getMaximum() != max || getMinimum() != min) {
