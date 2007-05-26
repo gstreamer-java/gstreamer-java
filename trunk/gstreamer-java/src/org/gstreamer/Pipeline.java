@@ -21,7 +21,7 @@ public class Pipeline extends Bin {
     private static GstAPI gst = GstAPI.gst;
 
     /**
-     * Creates a new instance of Pipeline with the given name
+     * Creates a new instance of Pipeline with the given name.
      * 
      * @param name The name used to identify this pipeline.
      */
