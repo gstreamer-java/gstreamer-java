@@ -96,8 +96,7 @@ public class ElementFactoryTest {
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
     }
-    //@Test
-    // Does not work yet
+    @Test
     public void testCreatePlaybin() {
         ElementFactory factory = ElementFactory.find("playbin");
         assertNotNull("Could not locate pipeline factory", factory);
