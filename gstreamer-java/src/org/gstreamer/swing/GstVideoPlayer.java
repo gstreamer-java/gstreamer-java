@@ -13,14 +13,17 @@
 package org.gstreamer.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.AbstractAction;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.UIManager;
 import org.gstreamer.PlayBin;
@@ -37,7 +40,8 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         playbin.setVideoSink(videoComponent.getElement());
         setLayout(new BorderLayout());
         add(videoComponent, BorderLayout.CENTER);
-        controls = Box.createHorizontalBox();
+        controls = new JPanel();
+        controls.setLayout(new BoxLayout(controls, BoxLayout.X_AXIS));
         add(controls, BorderLayout.SOUTH);
         
         controls.add(new JButton(playAction));
@@ -69,6 +73,19 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             }
             return f.toURI();
         }
+    }
+    public void setAlpha(float alpha) {
+        if (alpha < 1.0f) {
+            setOpaque(false);
+        } else {
+            setOpaque(true);
+        }
+        float[] c = getBackground().getColorComponents(new float[3]);
+        setBackground(new Color(c[0], c[1], c[2], alpha));
+        videoComponent.setAlpha(alpha);
+    }
+    public float getAlpha() {
+        return videoComponent.getAlpha();
     }
     public void setKeepAspect(boolean keepAspect) {
         videoComponent.setKeepAspect(keepAspect);
