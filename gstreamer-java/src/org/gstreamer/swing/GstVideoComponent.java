@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -63,7 +64,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
         fakesink.addHandoffListener(new VideoHandoffListener());
         bin = new Bin("GstVideoComponent");
         setDoubleBuffered(false);
-        setBackground(new Color(0, 0, 0, 0));
+        setOpaque(true);
+        setBackground(Color.BLACK);
         
         //
         // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
@@ -125,9 +127,9 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 //
                 // Create the black bars at the top/bottom
                 //
-                if (alpha == 1.0f) {
-                    int fillHeight = y + 1; // 1 pixel overlap for rounding
-                    g2d.fillRect(0, 0, width, fillHeight);
+                if (isOpaque()) {
+                    int fillHeight = height - scaledHeight;
+                    g2d.fillRect(0, 0, width, y);
                     g2d.fillRect(0, height - fillHeight, width, fillHeight);
                 }
                 // Now draw the image itself
@@ -138,15 +140,15 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 //
                 // Create black bars at left/right
                 //
-                if (alpha == 1.0f) {
-                    int fillWidth = x + 1; // 1 pixel overlap for rounding
-                    g2d.fillRect(0, 0, fillWidth, height);
+                if (isOpaque()) {
+                    int fillWidth = width - scaledWidth;
+                    g2d.fillRect(0, 0, x, height);
                     g2d.fillRect(width - fillWidth, 0, fillWidth,  height);
                 }
                 // Now draw the image itself
                 render(g2d, x, 0, scaledWidth, height);
             }
-        } else {
+        } else if (alpha >= 1.0f) {
             g2d.fillRect(0, 0, width, height);
         }
         g2d.dispose();
@@ -208,6 +210,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
             SwingUtilities.invokeLater(update);
         }
     }
+    int oldWidth = 0, oldHeight = 0;
     Runnable update = new Runnable() {
         public void run() {
             BufferedImage nextBuffer = nextRef.getAndSet(null);
@@ -219,7 +222,25 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 if (useVolatile) {
                     renderOffscreenVolatileImage();
                 }
-                paintImmediately(0, 0, getWidth(), getHeight());
+                final int imgWidth = currentImage.getWidth(), imgHeight = currentImage.getHeight();
+                if (imgWidth != oldWidth || imgHeight != oldHeight || !keepAspect) {
+                    paintImmediately(0, 0, getWidth(), getHeight());
+                } else {
+                    // Scale the area and just request that be painted
+                    double aspect = (double) imgWidth / (double) imgHeight;
+                    int width = getWidth(), height = getHeight();
+                    int scaledHeight = (int)((double) width / aspect);
+                    if (scaledHeight < height) {
+                        // Component is higher than the aspect says it is - fill the top/bottom
+                        // with black bars, and scale the height of the video wrt the width
+                        paintImmediately(0, (height - scaledHeight) / 2, width, scaledHeight);
+                    } else {
+                        int scaledWidth = (int)((double) height * aspect);
+                        paintImmediately((width - scaledWidth) / 2, 0, scaledWidth, height);
+                    }
+                }
+                oldWidth = imgWidth;
+                oldHeight = imgHeight;
             }
             
         }
