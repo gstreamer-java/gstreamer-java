@@ -12,7 +12,6 @@
 
 package example;
 
-import com.sun.jna.Function;
 import org.gstreamer.Gst;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;

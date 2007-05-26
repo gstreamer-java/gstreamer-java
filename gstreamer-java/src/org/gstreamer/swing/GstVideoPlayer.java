@@ -19,7 +19,6 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.AbstractAction;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -75,8 +74,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         }
     }
     public void setAlpha(float alpha) {
-        setOpaque(alpha >= 1.0f);
-        videoComponent.setOpaque(alpha >= 1.0f);
         float[] c = getBackground().getColorComponents(new float[3]);
         setBackground(new Color(c[0], c[1], c[2], alpha));
         videoComponent.setAlpha(alpha);
@@ -84,6 +81,15 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     public float getAlpha() {
         return videoComponent.getAlpha();
     }
+    
+    @Override
+    public void setOpaque(boolean isOpaque) {
+        super.setOpaque(isOpaque);
+        if (videoComponent != null) {
+            videoComponent.setOpaque(isOpaque);
+        }
+    }
+    
     public void setKeepAspect(boolean keepAspect) {
         videoComponent.setKeepAspect(keepAspect);
     }
