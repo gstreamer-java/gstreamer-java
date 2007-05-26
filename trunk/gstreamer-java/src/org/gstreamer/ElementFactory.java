@@ -12,6 +12,8 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,7 +26,8 @@ public class ElementFactory extends GstObject {
     static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
     private static GstAPI gst = GstAPI.gst;
-
+    private String factoryName = "";
+    
     /**
      * Creates a new instance of ElementFactory
      */
@@ -45,7 +48,7 @@ public class ElementFactory extends GstObject {
         if (elem == null || !elem.isValid()) {
             throw new IllegalArgumentException("Cannot create GstElement");
         }
-        return Element.objectFor(elem);
+        return elementFor(elem, factoryName);
     }
     /**
      * Returns the name of the person who wrote the factory.
@@ -87,10 +90,10 @@ public class ElementFactory extends GstObject {
     }
     
     /**
-     * Retrieve a handle to a factory that can produce @{link Element}s
+     * Retrieve a handle to a factory that can produce {@link Element}s
      * 
-     * @param name The type of @{link Element} to produce.
-     * @return An ElementFactory that will produce @{link Element}s of the 
+     * @param name The type of {@link Element} to produce.
+     * @return An ElementFactory that will produce {@link Element}s of the 
      * desired type.
      */
     public static ElementFactory find(String name) {
@@ -99,7 +102,9 @@ public class ElementFactory extends GstObject {
         if (f == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: " + name);
         }
-        return ElementFactory.objectFor(f, true);
+        ElementFactory factory = ElementFactory.objectFor(f, true);
+        factory.factoryName = name;
+        return factory;
     }
     /**
      * Creates a new Element from the specified factory.
@@ -110,7 +115,7 @@ public class ElementFactory extends GstObject {
      */
     public static Element make(String factoryName, String name) {
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
-        return Element.objectFor(makeRawElement(factoryName, name));
+        return elementFor(makeRawElement(factoryName, name), name);
     }
     static ElementFactory objectFor(Pointer ptr, boolean needRef) {
         logger.entering("ElementFactory", "objectFor", new Object[] { ptr, needRef });
@@ -125,5 +130,15 @@ public class ElementFactory extends GstObject {
                     + factoryName);
         }
         return elem;
+    }
+    private static Map<String, Class<? extends Element>> typeMap;
+    static {
+        typeMap = new HashMap<String, Class<? extends Element>>();
+        typeMap.put("playbin", PlayBin.class);
+    }
+    private static Element elementFor(Pointer ptr, String factoryName) {
+        Class<? extends Element> cls = typeMap.get(factoryName);
+        cls = (cls == null) ? Element.class : cls;
+        return (Element) GstObject.objectFor(ptr, cls);
     }
 }
