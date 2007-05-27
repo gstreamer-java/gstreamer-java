@@ -10,22 +10,15 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+package org.gstreamer.lowlevel;
+
 /**
  *
  */
-public class GhostPad extends Pad {
+public abstract class NativeValue {
 
-    /**
-     * Creates a new instance of GhostPad
-     */
-    public GhostPad(String name, Pad target) {
-        super(gst.gst_ghost_pad_new(name, target), true, true);
+    protected NativeValue() {
     }
-    public GhostPad(String name, PadDirection direction) {
-        super(gst.gst_ghost_pad_new_no_target(name, direction.ordinal()), true, true);
-    }
-    
-    
+    abstract protected Object nativeValue();
 }

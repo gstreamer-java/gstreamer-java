@@ -80,7 +80,7 @@ public final class Gst {
             if (empty) {
                 Pointer source = glib.g_idle_source_new();
                 glib.g_source_set_callback(source, bgCallback, source, null);
-                glib.g_source_attach(source, mainContext.handle());
+                glib.g_source_attach(source, mainContext);
             }
         }
     }

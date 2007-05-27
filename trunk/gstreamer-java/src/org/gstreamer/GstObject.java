@@ -14,9 +14,9 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gstreamer.lowlevel.GObjectAPI;
-import org.gstreamer.lowlevel.GlibAPI;
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  *
@@ -25,9 +25,6 @@ public class GstObject extends GObject {
     static Logger logger = Logger.getLogger(GstObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
-    private static GstAPI gst = GstAPI.gst;
-    private static GObjectAPI gobj = GObjectAPI.gobj;
-    private static GlibAPI glib = GlibAPI.glib;
     
     /** Creates a new instance of GstObject */
     protected GstObject(Pointer ptr) {
@@ -60,11 +57,11 @@ public class GstObject extends GObject {
     
     public void setName(String name) {
         logger.entering("GstObject", "setName", name);
-        gst.gst_object_set_name(handle(), name);
+        gst.gst_object_set_name(this, name);
     }
     public String getName() {
         logger.entering("GstObject", "getName");
-        Pointer ptr = gst.gst_object_get_name(handle());
+        Pointer ptr = gst.gst_object_get_name(this);
         String s = ptr.getString(0, false);
         glib.g_free(ptr);
         return s;

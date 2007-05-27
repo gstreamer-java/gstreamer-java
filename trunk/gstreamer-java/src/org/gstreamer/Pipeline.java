@@ -12,13 +12,12 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  *
  */
 public class Pipeline extends Bin {
-    private static GstAPI gst = GstAPI.gst;
 
     /**
      * Creates a new instance of Pipeline with the given name.
@@ -74,7 +73,7 @@ public class Pipeline extends Bin {
      * @param flush true if automatic flushing is desired, else false.
      */
     public void setAutoFlushBus(boolean flush) {
-        gst.gst_pipeline_set_auto_flush_bus(handle(), flush);
+        gst.gst_pipeline_set_auto_flush_bus(this, flush);
     }
     
     /**
@@ -83,7 +82,7 @@ public class Pipeline extends Bin {
      * @return true if the pipeline automatically flushes messages.
      */     
     public boolean getAutoFlushBus() {
-        return gst.gst_pipeline_get_auto_flush_bus(handle());
+        return gst.gst_pipeline_get_auto_flush_bus(this);
     }
     
     /**
@@ -97,7 +96,7 @@ public class Pipeline extends Bin {
      *
      */
     public boolean setClock(Clock clock) {
-        return gst.gst_pipeline_set_clock(handle(), clock.handle());
+        return gst.gst_pipeline_set_clock(this, clock);
     }
     
     /**
@@ -106,7 +105,7 @@ public class Pipeline extends Bin {
      * @return The {@link Clock} currently in use.
      */
     public Clock getClock() {
-        return Clock.objectFor(gst.gst_pipeline_get_clock(handle()), false);
+        return Clock.objectFor(gst.gst_pipeline_get_clock(this), false);
     }
     
     /**
@@ -120,10 +119,10 @@ public class Pipeline extends Bin {
      *      
      */
     public void useClock(Clock clock) {
-        gst.gst_pipeline_use_clock(handle(), clock.handle());
+        gst.gst_pipeline_use_clock(this, clock);
     }
     @Override
     public Bus getBus() {
-        return Bus.objectFor(gst.gst_pipeline_get_bus(handle()), false);
+        return Bus.objectFor(gst.gst_pipeline_get_bus(this), false);
     }
 }

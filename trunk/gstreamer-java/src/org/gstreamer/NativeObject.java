@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 /**
  *
  */
-abstract class NativeObject {
+abstract class NativeObject extends org.gstreamer.lowlevel.NativeValue {
     static Logger logger = Logger.getLogger(NativeObject.class.getName());
     static Level LIFECYCLE = Level.FINE;
     /** Creates a new instance of NativeObject */
@@ -70,7 +70,9 @@ abstract class NativeObject {
             super.finalize();
         }
     }
-    
+    protected Object nativeValue() {
+        return handle;
+    }
     Pointer handle() {
         return handle;
     }

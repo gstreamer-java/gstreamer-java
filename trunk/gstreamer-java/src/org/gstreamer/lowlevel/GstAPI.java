@@ -11,7 +11,11 @@
  */
 
 package org.gstreamer.lowlevel;
-import com.sun.jna.*;
+
+import com.sun.jna.Callback;
+import com.sun.jna.Library;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
@@ -19,12 +23,25 @@ import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.HashMap;
 import java.util.Map;
+import org.gstreamer.Bin;
+import org.gstreamer.Bus;
+import org.gstreamer.Caps;
+import org.gstreamer.Clock;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.GstObject;
+import org.gstreamer.Pad;
+import org.gstreamer.Pipeline;
+import org.gstreamer.State;
+import org.gstreamer.Structure;
+import org.gstreamer.TagList;
+import org.gstreamer.Time;
 
 /**
  *
  */
 public interface GstAPI extends Library {
-    GstAPI gst = (GstAPI) Native.loadLibrary("gstreamer-0.10", GstAPI.class);
+    GstAPI gst = (GstAPI) GNative.loadLibrary("gstreamer-0.10", GstAPI.class);
     String gst_version_string();
     void gst_version(LongByReference major, LongByReference minor, LongByReference micro, LongByReference nano);
     void gst_init(IntByReference argc, PointerByReference argv);
@@ -39,49 +56,49 @@ public interface GstAPI extends Library {
     Pointer gst_element_factory_find(String factoryName);
     Pointer gst_element_factory_make(String factoryName, String elementName);
     
-    Pointer gst_element_factory_create(Pointer factory, String elementName);
-    NativeLong gst_element_factory_get_element_type(Pointer factory);
-    String gst_element_factory_get_longname(Pointer factory);
-    String gst_element_factory_get_klass(Pointer factory);
-    String gst_element_factory_get_description(Pointer factory);
-    String gst_element_factory_get_author(Pointer factory);
-    int gst_element_factory_get_num_pad_templates(Pointer factory);
-    int gst_element_factory_get_uri_type(Pointer factory);
+    Pointer gst_element_factory_create(ElementFactory factory, String elementName);
+    NativeLong gst_element_factory_get_element_type(ElementFactory factory);
+    String gst_element_factory_get_longname(ElementFactory factory);
+    String gst_element_factory_get_klass(ElementFactory factory);
+    String gst_element_factory_get_description(ElementFactory factory);
+    String gst_element_factory_get_author(ElementFactory factory);
+    int gst_element_factory_get_num_pad_templates(ElementFactory factory);
+    int gst_element_factory_get_uri_type(ElementFactory factory);
     
     /*
      * GstElement methods
      */
     NativeLong gst_element_get_type();
-    int gst_element_set_state(Pointer elem, int state);
-    int gst_element_get_state(Pointer elem, IntByReference state, IntByReference pending, long timeout);
-    boolean gst_element_query_position(Pointer elem, IntByReference fmt, LongByReference pos);
-    boolean gst_element_query_duration(Pointer elem, IntByReference fmt, LongByReference pos);
-    boolean gst_element_seek(Pointer elem, double rate, int format, int flags,
+    int gst_element_set_state(Element elem, State state);
+    int gst_element_get_state(Element elem, IntByReference state, IntByReference pending, long timeout);
+    boolean gst_element_query_position(Element elem, IntByReference fmt, LongByReference pos);
+    boolean gst_element_query_duration(Element elem, IntByReference fmt, LongByReference pos);
+    boolean gst_element_seek(Element elem, double rate, int format, int flags,
             int cur_type, long cur, int stop_type, long stop);
-    boolean gst_element_seek_simple(Pointer elem, int format, int flags, long pos);
-    boolean gst_element_link(Pointer elem1, Pointer elem2);
-    boolean gst_element_link_many(Pointer... elements);
-    void gst_element_unlink_many(Pointer... elements);
-    void gst_element_unlink(Pointer elem1, Pointer elem2);
-    Pointer gst_element_get_pad(Pointer elem, String name);
-    boolean gst_element_add_pad(Pointer elem, Pointer pad);
-    boolean gst_element_remove_pad(Pointer elem, Pointer pad);
-    boolean gst_element_link_pads(Pointer src, String srcpadname, Pointer dest, String destpadname);
-    void gst_element_unlink_pads(Pointer src, String srcpadname, Pointer dest, String destpadname);
-    boolean gst_element_link_pads_filtered(Pointer src, String srcpadname, Pointer dest, String destpadname,
-            Pointer filter);
+    boolean gst_element_seek_simple(Element elem, int format, int flags, long pos);
+    boolean gst_element_link(Element elem1, Element elem2);
+    boolean gst_element_link_many(Element... elements);
+    void gst_element_unlink_many(Element... elements);
+    void gst_element_unlink(Element elem1, Element elem2);
+    Pointer gst_element_get_pad(Element elem, String name);
+    boolean gst_element_add_pad(Element elem, Pad pad);
+    boolean gst_element_remove_pad(Element elem, Pad pad);
+    boolean gst_element_link_pads(Element src, String srcpadname, Element dest, String destpadname);
+    void gst_element_unlink_pads(Element src, String srcpadname, Element dest, String destpadname);
+    boolean gst_element_link_pads_filtered(Element src, String srcpadname, Element dest, String destpadname,
+            Caps filter);
     
-    Pointer gst_element_iterate_pads(Pointer element);
-    Pointer gst_element_iterate_src_pads(Pointer element);
-    Pointer gst_element_iterate_sink_pads(Pointer element);
+    Pointer gst_element_iterate_pads(Element element);
+    Pointer gst_element_iterate_src_pads(Element element);
+    Pointer gst_element_iterate_sink_pads(Element element);
     /* factory management */
-    Pointer gst_element_get_factory(Pointer element);
-    Pointer gst_element_get_bus(Pointer element);
+    Pointer gst_element_get_factory(Element element);
+    Pointer gst_element_get_bus(Element element);
     
     /*
      * GstGhostPad functions
      */
-    Pointer gst_ghost_pad_new(String name, Pointer target);
+    Pointer gst_ghost_pad_new(String name, Pad target);
     Pointer gst_ghost_pad_new_no_target(String name, int direction);
     
     /*
@@ -89,17 +106,17 @@ public interface GstAPI extends Library {
      */
     Pointer gst_pipeline_new(String name);
     NativeLong gst_pipeline_get_type();
-    Pointer gst_pipeline_get_bus(Pointer pipeline);
-    void gst_pipeline_set_auto_flush_bus(Pointer pipeline, boolean flush);
-    boolean gst_pipeline_get_auto_flush_bus(Pointer pipeline);
-    void gst_pipeline_set_new_stream_time(Pointer pipeline, long time);
-    long gst_pipeline_get_last_stream_time(Pointer pipeline);
-    void gst_pipeline_use_clock(Pointer pipeline, Pointer clock);
-    boolean gst_pipeline_set_clock(Pointer pipeline, Pointer clock);
-    Pointer gst_pipeline_get_clock(Pointer pipeline);
-    void gst_pipeline_auto_clock(Pointer pipeline);
-    void gst_pipeline_set_delay(Pointer  pipeline, long delay);
-    long gst_pipeline_get_delay(Pointer  pipeline);
+    Pointer gst_pipeline_get_bus(Pipeline pipeline);
+    void gst_pipeline_set_auto_flush_bus(Pipeline pipeline, boolean flush);
+    boolean gst_pipeline_get_auto_flush_bus(Pipeline pipeline);
+    void gst_pipeline_set_new_stream_time(Pipeline pipeline, Time time);
+    long gst_pipeline_get_last_stream_time(Pipeline pipeline);
+    void gst_pipeline_use_clock(Pipeline pipeline, Clock clock);
+    boolean gst_pipeline_set_clock(Pipeline pipeline, Clock clock);
+    Pointer gst_pipeline_get_clock(Pipeline pipeline);
+    void gst_pipeline_auto_clock(Pipeline pipeline);
+    void gst_pipeline_set_delay(Pipeline pipeline, Time delay);
+    long gst_pipeline_get_delay(Pipeline pipeline);
     
     
     /*
@@ -109,24 +126,25 @@ public interface GstAPI extends Library {
     void gst_object_unref(Pointer ptr);
     void gst_object_sink(Pointer ptr);
     
-    void gst_object_set_name(Pointer ptr, String name);
-    Pointer gst_object_get_name(Pointer ptr); // returns a string - needs to be freed
+    void gst_object_set_name(GstObject ptr, String name);
+    Pointer gst_object_get_name(GstObject ptr); // returns a string - needs to be freed
     
     /*
      * GstBin functions
      */
     Pointer gst_bin_new(String name);
     NativeLong gst_bin_get_type();
-    boolean gst_bin_add(Pointer bin, Pointer element);
-    void gst_bin_add_many(Pointer bin, Pointer... elements);
-    boolean gst_bin_remove(Pointer bin, Pointer element);
-    Pointer gst_bin_get_by_name(Pointer bin, String name);
-    Pointer gst_bin_get_by_name_recurse_up(Pointer bin, String name);
-    Pointer gst_bin_iterate_elements(Pointer bin);
-    Pointer gst_bin_iterate_sorted(Pointer bin);
-    Pointer gst_bin_iterate_recurse(Pointer bin);
-    Pointer gst_bin_iterate_sinks(Pointer bin);
-    Pointer gst_bin_iterate_sources(Pointer bin);
+
+    boolean gst_bin_add(Bin bin, Element element);
+    void gst_bin_add_many(Bin bin, Element... elements);
+    boolean gst_bin_remove(Bin bin, Element element);
+    Pointer gst_bin_get_by_name(Bin bin, String name);
+    Pointer gst_bin_get_by_name_recurse_up(Bin bin, String name);
+    Pointer gst_bin_iterate_elements(Bin bin);
+    Pointer gst_bin_iterate_sorted(Bin bin);
+    Pointer gst_bin_iterate_recurse(Bin bin);
+    Pointer gst_bin_iterate_sinks(Bin bin);
+    Pointer gst_bin_iterate_sources(Bin bin);
     
     /*
      * GstMiniObject functions
@@ -145,11 +163,11 @@ public interface GstAPI extends Library {
      * GstBus functions
      * */
     NativeLong gst_bus_get_type();
-    void gst_bus_set_flushing(Pointer ptr, int flushing);
+    void gst_bus_set_flushing(Bus ptr, int flushing);
     interface BusCallback extends Callback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
     }
-    NativeLong gst_bus_add_watch(Pointer bus, BusCallback function, Pointer data);
+    NativeLong gst_bus_add_watch(Bus bus, BusCallback function, Pointer data);
     
     
     /*
@@ -179,22 +197,21 @@ public interface GstAPI extends Library {
     Pointer gst_caps_new_any();
     Pointer gst_caps_ref(Pointer caps);
     Pointer gst_caps_unref(Pointer caps);
-    Pointer gst_caps_copy(Pointer caps);
+    Pointer gst_caps_copy(Caps caps);
     Pointer gst_caps_from_string(String string);
     
     /* manipulation */
-    void gst_caps_append(Pointer caps1, Pointer caps2);
-    void gst_caps_merge(Pointer caps1, Pointer caps2);
-    void gst_caps_append_structure(Pointer caps, Pointer structure);
-    void gst_caps_remove_structure(Pointer caps, int idx);
-    void gst_caps_merge_structure(Pointer caps, Pointer structure);
-    int gst_caps_get_size(Pointer caps);
-    Pointer gst_caps_get_structure(Pointer caps, int index);
-    Pointer gst_caps_copy_nth(Pointer caps, int nth);
-    void gst_caps_truncate(Pointer caps);
-    void gst_caps_set_simple(Pointer caps, String field, Object val, Pointer end);
-    void gst_caps_set_simple(Pointer caps, String field, Object val1, Object val2, Pointer end);
-    Pointer gst_caps_union(Pointer caps, Pointer other);
+    void gst_caps_append(Caps caps1, Caps caps2);
+    void gst_caps_merge(Caps caps1, Caps caps2);
+    void gst_caps_append_structure(Caps caps, Structure structure);
+    void gst_caps_remove_structure(Caps caps, int idx);
+    void gst_caps_merge_structure(Caps caps, Structure structure);
+    int gst_caps_get_size(Caps caps);
+    Pointer gst_caps_get_structure(Caps caps, int index);
+    Pointer gst_caps_copy_nth(Caps caps, int nth);
+    void gst_caps_truncate(Caps caps);
+    void gst_caps_set_simple(Caps caps, String field, Object... values);
+    Pointer gst_caps_union(Caps caps, Caps other);
     /*
      * GstStructure functions
      */
@@ -249,45 +266,36 @@ public interface GstAPI extends Library {
      * GstClock functions
      */
     NativeLong gst_clock_get_type();
-    long gst_clock_set_resolution(Pointer clock, long resolution);
-    long gst_clock_get_resolution(Pointer clock);
-    long gst_clock_get_time(Pointer clock);
-    void gst_clock_set_calibration(Pointer clock, long internal, long external, long rate_num, long rate_denom);
-    void gst_clock_get_calibration(Pointer clock, LongByReference internal, LongByReference external,
+    long gst_clock_set_resolution(Clock clock, long resolution);
+    long gst_clock_get_resolution(Clock clock);
+    long gst_clock_get_time(Clock clock);
+    void gst_clock_set_calibration(Clock clock, long internal, long external, long rate_num, long rate_denom);
+    void gst_clock_get_calibration(Clock clock, LongByReference internal, LongByReference external,
             LongByReference rate_num, LongByReference rate_denom);
     /* master/slave clocks */
-    boolean gst_clock_set_master(Pointer clock, Pointer master);
-    Pointer gst_clock_get_master(Pointer clock);
-    boolean gst_clock_add_observation(Pointer clock, long slave, long Master, DoubleByReference r_squared);
+    boolean gst_clock_set_master(Clock clock, Clock master);
+    Pointer gst_clock_get_master(Clock clock);
+    boolean gst_clock_add_observation(Clock clock, long slave, long Master, DoubleByReference r_squared);
     
     /* getting and adjusting internal time */
-    long gst_clock_get_internal_time(Pointer clock);
-    long gst_clock_adjust_unlocked(Pointer clock, long internal);
+    long gst_clock_get_internal_time(Clock clock);
+    long gst_clock_adjust_unlocked(Clock clock, long internal);
     
     /*
      * GstPad functions
      */
     NativeLong gst_pad_get_type();
-    boolean gst_pad_peer_accept_caps(Pointer pad, Pointer caps);
-    boolean gst_pad_set_caps(Pointer pad, Pointer caps);
-    Pointer gst_pad_get_caps(Pointer pad);
-    Pointer gst_pad_get_name(Pointer pad); // Returns a string that needs to be freed
-    int gst_pad_link(Pointer src, Pointer sink);
-    boolean gst_pad_unlink(Pointer src, Pointer sink);
-    boolean gst_pad_is_linked(Pointer pad);
-    boolean gst_pad_can_link(Pointer srcpad, Pointer sinkpad);
-    int gst_pad_get_direction(Pointer pad);
-    Pointer gst_pad_get_parent_element(Pointer pad);
+    boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
+    boolean gst_pad_set_caps(Pad pad, Caps caps);
+    Pointer gst_pad_get_caps(Pad pad);
+    Pointer gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
+    int gst_pad_link(Pad src, Pad sink);
+    boolean gst_pad_unlink(Pad src, Pad sink);
+    boolean gst_pad_is_linked(Pad pad);
+    boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
+    int gst_pad_get_direction(Pad pad);
+    Pointer gst_pad_get_parent_element(Pad pad);
     NativeLong gst_buffer_get_type();
     
     
-}
-class GstAPIMapper {
-    private GstAPIMapper() {}
-    static Map<String, String> getFunctionMap() {
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("gst_caps_set_1", "gst_caps_set");
-        m.put("gst_caps_set_2", "gst_caps_set");
-        return m;
-    }
 }

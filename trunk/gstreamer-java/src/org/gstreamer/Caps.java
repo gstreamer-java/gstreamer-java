@@ -42,30 +42,30 @@ public class Caps extends NativeObject {
         super(ptr, needRef, ownsHandle);
     }
     public int size() {
-        return gst.gst_caps_get_size(handle());
+        return gst.gst_caps_get_size(this);
     }
     public Caps copy() {
-        return new Caps(gst.gst_caps_copy(handle()));
+        return new Caps(gst.gst_caps_copy(this));
     }
     public Caps union(Caps other) {
-        return new Caps(gst.gst_caps_union(handle(), other.handle()));
+        return new Caps(gst.gst_caps_union(this, other));
     }
     public void merge(Caps other) {
-        gst.gst_caps_merge(handle(), other.handle());
+        gst.gst_caps_merge(this, other);
     }
     public void merge(Structure struct) {
-        gst.gst_caps_merge_structure(handle(), struct.handle());
+        gst.gst_caps_merge_structure(this, struct);
         struct.disown();
     }
     public void append(Structure struct) {
-        gst.gst_caps_append_structure(handle(), struct.handle());
+        gst.gst_caps_append_structure(this, struct);
         struct.disown();
     }
     public void setInteger(String field, Integer value) {
-        gst.gst_caps_set_simple(handle(), field, value, null);
+        gst.gst_caps_set_simple(this, field, value, null);
     }
     public Structure getStructure(int index) {
-        return Structure.objectFor(gst.gst_caps_get_structure(handle(), index), false, false);
+        return Structure.objectFor(gst.gst_caps_get_structure(this, index), false, false);
     }
 
     public static Caps objectFor(Pointer ptr, boolean needRef) {
