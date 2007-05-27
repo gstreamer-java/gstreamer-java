@@ -64,11 +64,15 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     }
     private static URI parseURI(String uri) {
         try {
-            return new URI(uri);
+            URI u = new URI(uri);
+            if (u.getScheme() == null) {
+                throw new URISyntaxException(uri, "Invalid URI scheme");
+            }
+            return u;
         } catch (URISyntaxException e) {
             File f = new File(uri);
             if (!f.exists()) {
-                throw new IllegalArgumentException("Invalid URI/file " + uri);
+                throw new IllegalArgumentException("Invalid URI/file " + uri, e);
             }
             return f.toURI();
         }
