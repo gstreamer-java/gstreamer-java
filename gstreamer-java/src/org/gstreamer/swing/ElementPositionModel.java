@@ -104,7 +104,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
                     }
                 }
             };
-            javax.swing.Timer timer = new javax.swing.Timer(20, new ActionListener() {
+            javax.swing.Timer timer = new javax.swing.Timer(10, new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     // We stop the poll during seeking, to stop the slider jumping back
                     // to the old time whilst the pipeline catches up
