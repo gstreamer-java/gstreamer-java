@@ -27,6 +27,7 @@ import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.MessageType;
 import org.gstreamer.event.StateEvent;
 import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.MessageStruct;
 
@@ -37,7 +38,7 @@ import org.gstreamer.lowlevel.MessageStruct;
 public class Bus extends GstObject {
     static final Logger logger = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
-    private static GstAPI gst = GstAPI.gst;
+
     /**
      * Creates a new instance of Bus
      */
@@ -48,7 +49,7 @@ public class Bus extends GstObject {
         super(ptr, needRef, ownsHandle);
     }
     public void addBusListener(BusListener l) {
-        NativeLong id = gst.gst_bus_add_watch(handle(), new BusListenerProxy(l), null);
+        NativeLong id = gst.gst_bus_add_watch(this, new BusListenerProxy(l), null);
         listeners.put(l, id);
     }
     public void removeBusListener(BusListener l) {
@@ -60,7 +61,7 @@ public class Bus extends GstObject {
     }
     
     public void setFlushing(boolean flushing) {
-        gst.gst_bus_set_flushing(busHandle(), flushing ? 1 : 0);
+        gst.gst_bus_set_flushing(this, flushing ? 1 : 0);
     }
     public static Bus objectFor(Pointer ptr, boolean needRef) {
         return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
@@ -73,7 +74,6 @@ public class Bus extends GstObject {
 class BusListenerProxy implements GstAPI.BusCallback {
     static final Logger log = Bus.logger;
     static final Level MSG_DEBUG = Bus.LOG_DEBUG;
-    private static GstAPI gst = GstAPI.gst;
     private static GlibAPI glib = GlibAPI.glib;
 
     public BusListenerProxy(BusListener l) {

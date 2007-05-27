@@ -15,17 +15,16 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
-import org.gstreamer.lowlevel.GlibAPI;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
 
 /**
  *
  */
 public class GMainLoop extends NativeObject implements Runnable {
-    private static GlibAPI glib = GlibAPI.glib;
     
     /** Creates a new instance of GMainLoop */
     public GMainLoop() {
-        this(glib.g_main_loop_new(Gst.getMainContext().handle(), false), false, true);
+        this(glib.g_main_loop_new(Gst.getMainContext(), false), false, true);
     }
     
     GMainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
@@ -34,16 +33,16 @@ public class GMainLoop extends NativeObject implements Runnable {
     public void quit() {
         Gst.invokeLater(new Runnable() {
             public void run() {
-                glib.g_main_loop_quit(handle());
+                glib.g_main_loop_quit(GMainLoop.this);
             }
         });
     }
     public void run() {
-        glib.g_main_loop_run(handle());
+        glib.g_main_loop_run(this);
     }
     
     public boolean isRunning() {
-        return glib.g_main_loop_is_running(handle());
+        return glib.g_main_loop_is_running(this);
     }
     
     public void startInBackground() {

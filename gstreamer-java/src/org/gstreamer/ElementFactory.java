@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  *
@@ -25,7 +25,6 @@ import org.gstreamer.lowlevel.GstAPI;
 public class ElementFactory extends GstObject {
     static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
-    private static GstAPI gst = GstAPI.gst;
     private String factoryName = "";
     
     /**
@@ -43,7 +42,7 @@ public class ElementFactory extends GstObject {
      */
     public Element create(String name) {
         logger.entering("ElementFactory", "create", name);
-        Pointer elem = gst.gst_element_factory_create(handle(), name);
+        Pointer elem = gst.gst_element_factory_create(this, name);
         logger.log(DEBUG, "gst_element_factory_create returned: " + elem);
         if (elem == null || !elem.isValid()) {
             throw new IllegalArgumentException("Cannot create GstElement");
@@ -57,7 +56,7 @@ public class ElementFactory extends GstObject {
      */
     public String getAuthor() {
         logger.entering("ElementFactory", "getAuthor");
-        return gst.gst_element_factory_get_author(handle());
+        return gst.gst_element_factory_get_author(this);
     }
     /**
      * Returns a description of the factory.
@@ -66,7 +65,7 @@ public class ElementFactory extends GstObject {
      */
     public String getDescription() {
         logger.entering("ElementFactory", "getDescription");
-        return gst.gst_element_factory_get_description(handle());
+        return gst.gst_element_factory_get_description(this);
     }
     /**
      * Returns the long, English name for the factory.
@@ -75,7 +74,7 @@ public class ElementFactory extends GstObject {
      */
     public String getLongName() {
         logger.entering("ElementFactory", "getLongName");
-        return gst.gst_element_factory_get_longname(handle());
+        return gst.gst_element_factory_get_longname(this);
     }
     
     /**
@@ -86,7 +85,7 @@ public class ElementFactory extends GstObject {
      */
     public String getKlass() {
         logger.entering("ElementFactory", "getKlass");
-        return gst.gst_element_factory_get_klass(handle());
+        return gst.gst_element_factory_get_klass(this);
     }
     
     /**

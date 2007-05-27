@@ -24,6 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GBoolean;
 import org.gstreamer.lowlevel.GObjectAPI;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import org.gstreamer.lowlevel.GstTypes;
 
 /**
@@ -33,14 +34,13 @@ public abstract class GObject extends NativeObject {
     static Logger logger = Logger.getLogger(GObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
-    private static GObjectAPI gobj = GObjectAPI.gobj;
     
     public GObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, false, ownsHandle); // increase the refcount here
         logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
         if (ownsHandle) {
             strongReferences.add(this);
-            gobj.g_object_add_toggle_ref(handle(), toggle, null);
+            gobj.g_object_add_toggle_ref(ptr, toggle, null);
             if (!needRef) {
                 unref();
             }
@@ -49,35 +49,35 @@ public abstract class GObject extends NativeObject {
     
     public void set(String property, String data) {
         logger.entering("GObject", "set", new Object[] { property, data });
-        gobj.g_object_set(handle(), property, data, null);
+        gobj.g_object_set(this, property, data, null);
     }
     public void set(String property, GObject data) {
         logger.entering("GObject", "set", new Object[] { property, data });
-        gobj.g_object_set(handle(), property, data.handle(), null);
+        gobj.g_object_set(this, property, data);
     }
     public void set(String property, Object data) {
         logger.entering("GObject", "set", new Object[] { property, data });
         if (data instanceof Boolean) {
             data = GBoolean.valueOf((Boolean) data);
         }
-        gobj.g_object_set(handle(), property, data, null);
+        gobj.g_object_set(this, property, data, null);
     }
     public void setProperty(String property, GObject data) {
         logger.entering("GObject", "setProperty", new Object[] { property, data });
-        gobj.g_object_set_property(handle(), property, data.handle());
+        gobj.g_object_set_property(this, property, data);
     }
     abstract void ref();
     abstract void unref();
 
     void disposeNativeHandle(Pointer ptr) {
-        logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  handle() + ")");
-        gobj.g_object_remove_toggle_ref(handle(), toggle, null);
+        logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
+        gobj.g_object_remove_toggle_ref(ptr, toggle, null);
     }
     
     
     protected NativeLong g_signal_connect(String signal, Callback callback) {
         logger.entering("GObject", "g_signal_connect", new Object[] { signal, callback });
-        return gobj.g_signal_connect_data(handle(), signal, callback, null, null, 0);
+        return gobj.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
     private class SignalCallback {
         protected SignalCallback(String signal, Callback cb) {
@@ -86,7 +86,7 @@ public abstract class GObject extends NativeObject {
         }
         synchronized protected void disconnect() {
             if (id != null) {
-                gobj.g_signal_handler_disconnect(handle(), id);
+                gobj.g_signal_handler_disconnect(GObject.this, id);
                 id = null;
             }
         }

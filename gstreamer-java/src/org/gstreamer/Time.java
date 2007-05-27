@@ -15,7 +15,7 @@ package org.gstreamer;
 /**
  *
  */
-public class Time {
+public class Time extends org.gstreamer.lowlevel.NativeValue {
     
     /**
      * Creates a new instance of Time
@@ -70,7 +70,9 @@ public class Time {
     public long longValue() {
         return nanoseconds;
     }
-
+    protected Object nativeValue() {
+        return new Long(nanoseconds);
+    }
     public String toString() {
         return String.format("%02d:%02d:%02d", getHours(), getMinutes(), getSeconds());
     }

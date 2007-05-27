@@ -13,7 +13,7 @@
 package org.gstreamer;
 import com.sun.jna.Callback;
 import org.gstreamer.event.BinEvent;
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,7 +25,6 @@ import org.gstreamer.event.BinListener;
  *
  */
 public class Bin extends Element {
-    private static GstAPI gst = GstAPI.gst;
     
     /**
      * Creates a new instance of GstBin
@@ -69,7 +68,8 @@ public class Bin extends Element {
      * @return true if the element was successfully removed
      */
     public boolean add(Element element) {
-        return gst.gst_bin_add(handle(), element.handle());
+//        return gst.gst_bin_add(handle(), element.handle());
+        return gst.gst_bin_add(this, element);
     }
     
     /**
@@ -78,7 +78,7 @@ public class Bin extends Element {
      * @param elements The array of {@link Element} to add to this Bin
      */
     public void addMany(Element... elements) {
-        gst.gst_bin_add_many(handle(),getObjectHandlesV(elements));
+        gst.gst_bin_add_many(this, elements);
     }
     
     /**
@@ -88,7 +88,7 @@ public class Bin extends Element {
      * @return true if the element was successfully removed
      */
     public boolean remove(Element e) {
-        return gst.gst_bin_remove(handle(), e.handle());
+        return gst.gst_bin_remove(this, e);
     }
     
     /**
@@ -98,32 +98,32 @@ public class Bin extends Element {
      */
     public void removeMany(Element... elements) {
         for (Element e : elements) {
-            gst.gst_bin_remove(handle(), e.handle());
+            gst.gst_bin_remove(this, e);
         }
     }
     private List<Element> elementList(Pointer iter) {
         return new GstIterator<Element>(iter, Element.class).asList();
     }
     public List<Element> getElements() {
-        return elementList(gst.gst_bin_iterate_elements(handle()));
+        return elementList(gst.gst_bin_iterate_elements(this));
     }
     public List<Element> getElementsSorted() {
-        return elementList(gst.gst_bin_iterate_sorted(handle()));
+        return elementList(gst.gst_bin_iterate_sorted(this));
     }
     public List<Element> getElementsRecursive() {
-        return elementList(gst.gst_bin_iterate_recurse(handle()));
+        return elementList(gst.gst_bin_iterate_recurse(this));
     }
     public List<Element> getSinks() {
-        return elementList(gst.gst_bin_iterate_sinks(handle()));
+        return elementList(gst.gst_bin_iterate_sinks(this));
     }
     public List<Element> getSources() {
-        return elementList(gst.gst_bin_iterate_sources(handle()));
+        return elementList(gst.gst_bin_iterate_sources(this));
     }
     public Element getElementByName(String name) {
-        return Element.objectFor(gst.gst_bin_get_by_name(handle(), name), false);
+        return Element.objectFor(gst.gst_bin_get_by_name(this, name), false);
     }
     public Element getElementByNameRecurseUp(String name) {
-        return Element.objectFor(gst.gst_bin_get_by_name_recurse_up(handle(), name), false);
+        return Element.objectFor(gst.gst_bin_get_by_name_recurse_up(this, name), false);
     }
     public static interface ELEMENTADDED {
         public void elementAdded(Bin bin, Element elem);

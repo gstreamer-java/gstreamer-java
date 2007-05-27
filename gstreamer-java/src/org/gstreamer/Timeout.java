@@ -14,12 +14,12 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import org.gstreamer.lowlevel.GSource;
 import org.gstreamer.lowlevel.GlibAPI;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
 
 /**
  *
  */
 public class Timeout {
-    private static GlibAPI glib = GlibAPI.glib;
     public Timeout(int milliseconds, final Runnable run) {
         this.milliseconds = milliseconds;
         callback = new GlibAPI.GSourceFunc() {

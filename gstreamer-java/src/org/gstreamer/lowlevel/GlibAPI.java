@@ -13,16 +13,17 @@
 package org.gstreamer.lowlevel;
 import com.sun.jna.*;
 import com.sun.jna.ptr.PointerByReference;
+import org.gstreamer.GMainLoop;
 
 /**
  *
  */
 public interface GlibAPI extends Library {
-    GlibAPI glib = (GlibAPI) Native.loadLibrary("glib-2.0", GlibAPI.class);
-    Pointer g_main_loop_new(Pointer context, boolean running);
-    void g_main_loop_run(Pointer loop);
-    boolean g_main_loop_is_running(Pointer loop);
-    void g_main_loop_quit(Pointer loop);
+    GlibAPI glib = (GlibAPI) GNative.loadLibrary("glib-2.0", GlibAPI.class);
+    Pointer g_main_loop_new(GMainContext context, boolean running);
+    void g_main_loop_run(GMainLoop loop);
+    boolean g_main_loop_is_running(GMainLoop loop);
+    void g_main_loop_quit(GMainLoop loop);
     void g_main_loop_ref(Pointer ptr);
     void g_main_loop_unref(Pointer ptr);
     
@@ -32,16 +33,16 @@ public interface GlibAPI extends Library {
     
     Pointer g_main_context_new();
     Pointer g_main_context_default();
-    boolean g_main_context_pending(Pointer ctx);
-    boolean g_main_context_acquire(Pointer ctx);
-    void g_main_context_release(Pointer ctx);
-    boolean g_main_context_is_owner(Pointer ctx);
-    boolean g_main_context_wait(Pointer ctx);
+    boolean g_main_context_pending(GMainContext ctx);
+    boolean g_main_context_acquire(GMainContext ctx);
+    void g_main_context_release(GMainContext ctx);
+    boolean g_main_context_is_owner(GMainContext ctx);
+    boolean g_main_context_wait(GMainContext ctx);
     
     Pointer g_idle_source_new();
     Pointer g_timeout_source_new(int interval);
     Pointer g_timeout_source_new_seconds(int interval);
-    int g_source_attach(Pointer source, Pointer context);
+    int g_source_attach(Pointer source, GMainContext context);
     void g_source_destroy(Pointer source);
     Pointer g_source_ref(Pointer source);
     void g_source_unref(Pointer source);

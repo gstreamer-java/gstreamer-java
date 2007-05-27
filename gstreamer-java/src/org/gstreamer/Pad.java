@@ -14,15 +14,13 @@ package org.gstreamer;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GstAPI;
-import org.gstreamer.lowlevel.GlibAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
 
 /**
  *
  */
 public class Pad extends GstObject {
-    private static GstAPI gst = GstAPI.gst;
-    private static GlibAPI glib = GlibAPI.glib;
 
     /**
      * Creates a new instance of Pad
@@ -41,29 +39,29 @@ public class Pad extends GstObject {
     }
     
     public Caps getCaps() {
-        return Caps.objectFor(gst.gst_pad_get_caps(handle()), false);
+        return Caps.objectFor(gst.gst_pad_get_caps(this), false);
     }
     public boolean setCaps(Caps caps) {
-        return gst.gst_pad_set_caps(handle(), caps.handle());
+        return gst.gst_pad_set_caps(this, caps);
     }
     public boolean peerAcceptCaps(Caps caps) {
-        return gst.gst_pad_peer_accept_caps(handle(), caps.handle());
+        return gst.gst_pad_peer_accept_caps(this, caps);
     }
     
     public PadLinkReturn link(Pad sink) {
-        return PadLinkReturn.valueOf(gst.gst_pad_link(handle(), sink.handle()));
+        return PadLinkReturn.valueOf(gst.gst_pad_link(this, sink));
     }
     public boolean unlink(Pad sink) {
-        return gst.gst_pad_unlink(handle(), sink.handle());
+        return gst.gst_pad_unlink(this, sink);
     }
     public boolean isLinked() {
-        return gst.gst_pad_is_linked(handle());
+        return gst.gst_pad_is_linked(this);
     }
     public PadDirection getDirection() {
-        return PadDirection.valueOf(gst.gst_pad_get_direction(handle()));
+        return PadDirection.valueOf(gst.gst_pad_get_direction(this));
     }
     public Element getParentElement() {
-        return Element.objectFor(gst.gst_pad_get_parent_element(handle()), false);
+        return Element.objectFor(gst.gst_pad_get_parent_element(this), false);
     }
     public static interface HAVEDATA {
         public boolean haveData(Pad pad, Buffer buffer);

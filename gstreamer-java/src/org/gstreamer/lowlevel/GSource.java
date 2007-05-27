@@ -19,7 +19,7 @@ import org.gstreamer.lowlevel.GlibAPI;
 /**
  *
  */
-public class GSource {
+public class GSource extends NativeValue {
     private static GlibAPI glib = GlibAPI.glib;
     
     public GSource(final Pointer ptr, final GlibAPI.GSourceFunc callback, final Pointer data) {
@@ -37,7 +37,7 @@ public class GSource {
     }
    
     public int attach(GMainContext context) {
-        return glib.g_source_attach(handle(), context.handle());
+        return glib.g_source_attach(handle(), context);
     }
     public void destroy() {
         final Pointer ptr = handle.getAndSet(null);
@@ -59,4 +59,8 @@ public class GSource {
     }
     private GlibAPI.GSourceFunc callback;
     private AtomicReference<Pointer> handle;
+
+    protected Object nativeValue() {
+        return handle;
+    }
 }

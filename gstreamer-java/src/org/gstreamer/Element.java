@@ -24,8 +24,8 @@ import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
 import org.gstreamer.event.HandoffListener;
-import org.gstreamer.lowlevel.GObjectAPI;
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 
 /**
@@ -33,9 +33,7 @@ import org.gstreamer.lowlevel.GstAPI;
  */
 public class Element extends GstObject {
     static Logger logger = Logger.getLogger(Element.class.getName());
-    private static GstAPI gst = GstAPI.gst;
-    private static GObjectAPI gobj = GObjectAPI.gobj;
-
+    
     /** Creates a new instance of GstElement */
     protected Element(Pointer ptr) {
         super(ptr);
@@ -48,7 +46,7 @@ public class Element extends GstObject {
     }
     
     public boolean link(Element e) {
-        return gst.gst_element_link(handle(), e.handle());
+        return gst.gst_element_link(this, e);
     }
     public void link(Element... elems) {
         Element prev = this;
@@ -58,7 +56,7 @@ public class Element extends GstObject {
         }
     }
     public void unlink(Element e) {
-        gst.gst_element_unlink(handle(), e.handle());
+        gst.gst_element_unlink(this, e);
     }
     public void play() {
         setState(State.PLAYING);
@@ -70,19 +68,19 @@ public class Element extends GstObject {
         setState(State.NULL);
     }
     public void setState(State state) {
-        gst.gst_element_set_state(handle(), state.intValue());
+        gst.gst_element_set_state(this, state);
     }
     public void setCaps(Caps caps) {
-        gobj.g_object_set(handle(), "caps", caps.handle(), null);
+        gobj.g_object_set(this, "caps", caps);
     }
     public Pad getPad(String padname) {
-        return Pad.objectFor(gst.gst_element_get_pad(handle(), padname), false);
+        return Pad.objectFor(gst.gst_element_get_pad(this, padname), false);
     }
     public boolean addPad(Pad pad) {
-        return gst.gst_element_add_pad(handle(), pad.handle());
+        return gst.gst_element_add_pad(this, pad);
     }
     public boolean removePad(Pad pad) {
-        return gst.gst_element_remove_pad(handle(), pad.handle());
+        return gst.gst_element_remove_pad(this, pad);
     }
     public boolean isPlaying() {
         return getState() == State.PLAYING;
@@ -94,21 +92,21 @@ public class Element extends GstObject {
         IntByReference state = new IntByReference();
         IntByReference pending = new IntByReference();
         
-        gst.gst_element_get_state(handle(), state, pending, timeout);
+        gst.gst_element_get_state(this, state, pending, timeout);
         return State.valueOf(state.getValue());
     }
     public void setPosition(Time t) {
         setPosition(t.longValue(), Format.TIME);
     }
     public void setPosition(long pos, Format format) {
-        gst.gst_element_seek(handle(), 1.0, format.intValue(),
+        gst.gst_element_seek(this, 1.0, format.intValue(),
                 SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
                 SeekType.SET.intValue(),pos, SeekType.NONE.intValue(), 0);
     }
     public long getPosition(Format format) {
         IntByReference fmt = new IntByReference(format.intValue());
         LongByReference pos = new LongByReference();
-        gst.gst_element_query_position(handle(), fmt, pos);
+        gst.gst_element_query_position(this, fmt, pos);
         return pos.getValue();
     }
     public Time getPosition() {
@@ -117,14 +115,14 @@ public class Element extends GstObject {
     public Time getDuration() {
         IntByReference fmt = new IntByReference(Format.TIME.intValue());
         LongByReference duration= new LongByReference();
-        gst.gst_element_query_duration(handle(), fmt, duration);
+        gst.gst_element_query_duration(this, fmt, duration);
         return new Time(duration.getValue());
     }
     public ElementFactory getFactory() {
-        return ElementFactory.objectFor(gst.gst_element_get_factory(handle()), false);
+        return ElementFactory.objectFor(gst.gst_element_get_factory(this), false);
     }
     public Bus getBus() {
-        return Bus.objectFor(gst.gst_element_get_bus(handle()), false);
+        return Bus.objectFor(gst.gst_element_get_bus(this), false);
     }
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
@@ -243,7 +241,7 @@ public class Element extends GstObject {
      * @return true if all elements successfully linked.
      */
     public static boolean linkMany(Element... elements) {
-        return gst.gst_element_link_many(getObjectHandlesV(elements));
+        return gst.gst_element_link_many(elements);
     }
     
     /**
@@ -253,7 +251,7 @@ public class Element extends GstObject {
      * 
      */
     public static void unlinkMany(Element... elements) {
-        gst.gst_element_unlink_many(getObjectHandlesV(elements));
+        gst.gst_element_unlink_many(elements);
     }
     
     /**
@@ -267,7 +265,7 @@ public class Element extends GstObject {
      * @return true if the pads were successfully linked.
      */
     public static boolean linkPads(Element src, String srcPadName, Element dest, String destPadName) {
-        return gst.gst_element_link_pads(src.handle(), srcPadName, dest.handle(), destPadName);
+        return gst.gst_element_link_pads(src, srcPadName, dest, destPadName);
     }
     
     /**
@@ -283,7 +281,7 @@ public class Element extends GstObject {
      */
     public static boolean linkPadsFiltered(Element src, String srcPadName, 
             Element dest, String destPadName, Caps caps) {
-        return gst.gst_element_link_pads_filtered(src.handle(), srcPadName, dest.handle(), destPadName, caps.handle());
+        return gst.gst_element_link_pads_filtered(src, srcPadName, dest, destPadName, caps);
     }
     
     /**
@@ -296,7 +294,7 @@ public class Element extends GstObject {
      * 
      */
     public static void unlinkPads(Element src, String srcPadName, Element dest, String destPadName) {
-        gst.gst_element_unlink_pads(src.handle(), srcPadName, dest.handle(), destPadName);
+        gst.gst_element_unlink_pads(src, srcPadName, dest, destPadName);
     }
     
     static Element objectFor(Pointer ptr, boolean needRef) {

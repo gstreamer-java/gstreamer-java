@@ -18,7 +18,7 @@ import com.sun.jna.Pointer;
 /**
  *
  */
-public class GMainContext {
+public class GMainContext extends NativeValue {
     private static GlibAPI glib = GlibAPI.glib;
     
     public GMainContext() {
@@ -28,7 +28,7 @@ public class GMainContext {
         this.handle = handle;
     }
     public int attach(GSource source) {
-        return glib.g_source_attach(source.handle(), handle());
+        return glib.g_source_attach(source.handle(), this);
     }
     public static GMainContext getDefaultContext() {
         return new GMainContext(glib.g_main_context_default());
@@ -36,4 +36,8 @@ public class GMainContext {
     
     public Pointer handle() { return handle; }
     Pointer handle;
+
+    protected Object nativeValue() {
+        return handle;
+    }
 }
