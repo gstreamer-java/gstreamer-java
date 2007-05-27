@@ -66,7 +66,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     }
     private void updatePosition(Time duration, long position) {
         // Don't update the slider when it is being dragged
-        if (getValueIsAdjusting()) {
+        if (seeking != 0 || getValueIsAdjusting()) {
             return;
         }
         final int min = 0;
@@ -90,13 +90,12 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         if (!updating && getValueIsAdjusting()) {
             final long pos = (long) getValue() * (format == Format.TIME ? Time.NANOSECONDS : 1);
             
-            // We stop the poll during seeking, to stop the slider jumping back 
+            // We stop the poll during seeking, to stop the slider jumping back
             // to the old time whilst the pipeline catches up
-            if (seeking++ == 0) {
-                stopPoll();
-            }
+            ++seeking;
             Gst.invokeLater(new Runnable() {
                 public void run() {
+                    stopPoll();
                     element.setPosition(pos, format);
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
