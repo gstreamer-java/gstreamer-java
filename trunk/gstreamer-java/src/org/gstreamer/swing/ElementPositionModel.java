@@ -12,6 +12,9 @@
 
 package org.gstreamer.swing;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
@@ -66,7 +69,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     }
     private void updatePosition(Time duration, long position) {
         // Don't update the slider when it is being dragged
-        if (seeking != 0 || getValueIsAdjusting()) {
+        if (seeking.get() != 0 || getValueIsAdjusting()) {
             return;
         }
         final int min = 0;
@@ -90,27 +93,33 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         if (!updating && getValueIsAdjusting()) {
             final long pos = (long) getValue() * (format == Format.TIME ? Time.NANOSECONDS : 1);
             
-            // We stop the poll during seeking, to stop the slider jumping back
-            // to the old time whilst the pipeline catches up
-            ++seeking;
-            Gst.invokeLater(new Runnable() {
+            seeking.incrementAndGet();
+            
+            final Runnable updater = new Runnable() {
                 public void run() {
+                    // Only do the seek if this is the last seek pending
+                    if (seeking.get() == 0) {
+                        element.setPosition(pos, format);
+                        startPoll();
+                    }
+                }
+            };
+            javax.swing.Timer timer = new javax.swing.Timer(20, new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    // We stop the poll during seeking, to stop the slider jumping back
+                    // to the old time whilst the pipeline catches up
                     stopPoll();
-                    element.setPosition(pos, format);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            // Restart the poll if this is the last seek pending
-                            if (--seeking == 0) {
-                                startPoll();
-                            }
-                        }
-                    });
+                    if (seeking.decrementAndGet() == 0) {
+                        Gst.invokeLater(updater);
+                    }
                 }
             });
+            timer.setRepeats(false);
+            timer.start();
         }
     }
     private Format format;
-    private int seeking = 0;
+    private AtomicInteger seeking = new AtomicInteger(0);
     private Element element;
     private boolean updating = false;
     private Timeout timer;
