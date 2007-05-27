@@ -285,7 +285,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
             }
             final BufferedImage bImage = getBufferedImage(width, height);
             int[] pixels = ((DataBufferInt) bImage.getRaster().getDataBuffer()).getData();
-            buffer.read(0, pixels, 0, width * height);
+            buffer.getByteBuffer().asIntBuffer().get(pixels, 0, width * height);
             
             // Tell swing to use the new buffer
             switchBuffer(bImage);
