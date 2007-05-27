@@ -61,10 +61,15 @@ public interface GstAPI extends Library {
     boolean gst_element_seek_simple(Pointer elem, int format, int flags, long pos);
     boolean gst_element_link(Pointer elem1, Pointer elem2);
     boolean gst_element_link_many(Pointer... elements);
+    void gst_element_unlink_many(Pointer... elements);
     void gst_element_unlink(Pointer elem1, Pointer elem2);
     Pointer gst_element_get_pad(Pointer elem, String name);
     boolean gst_element_add_pad(Pointer elem, Pointer pad);
     boolean gst_element_remove_pad(Pointer elem, Pointer pad);
+    boolean gst_element_link_pads(Pointer src, String srcpadname, Pointer dest, String destpadname);
+    void gst_element_unlink_pads(Pointer src, String srcpadname, Pointer dest, String destpadname);
+    boolean gst_element_link_pads_filtered(Pointer src, String srcpadname, Pointer dest, String destpadname,
+            Pointer filter);
     
     Pointer gst_element_iterate_pads(Pointer element);
     Pointer gst_element_iterate_src_pads(Pointer element);

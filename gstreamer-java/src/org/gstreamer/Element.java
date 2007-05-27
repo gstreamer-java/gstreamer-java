@@ -235,10 +235,71 @@ public class Element extends GstObject {
         private NOMOREPADS nomorepads;
     }
     
-    public static boolean linkMany(Element... elems) {
-        return gst.gst_element_link_many(getObjectHandlesV(elems));
+    /**
+     * Link together a list of elements.
+     * 
+     * @param elements The list of elements to link together
+     * 
+     * @return true if all elements successfully linked.
+     */
+    public static boolean linkMany(Element... elements) {
+        return gst.gst_element_link_many(getObjectHandlesV(elements));
     }
-    public static Element objectFor(Pointer ptr, boolean needRef) {
+    
+    /**
+     * Unlink a list of elements.
+     * 
+     * @param elements The list of elements to link together
+     * 
+     */
+    public static void unlinkMany(Element... elements) {
+        gst.gst_element_unlink_many(getObjectHandlesV(elements));
+    }
+    
+    /**
+     * Link together source and destination pads of two elements.
+     * 
+     * @param src The {@link Element} containing the source {@link Pad}.
+     * @param srcPadName The name of the source {@link Pad}.  Can be null for any pad.
+     * @param dest The {@link Element} containing the destination {@link Pad}.
+     * @param destPadName The name of the destination {@link Pad}.  Can be null for any pad.
+     * 
+     * @return true if the pads were successfully linked.
+     */
+    public static boolean linkPads(Element src, String srcPadName, Element dest, String destPadName) {
+        return gst.gst_element_link_pads(src.handle(), srcPadName, dest.handle(), destPadName);
+    }
+    
+    /**
+     * Link together source and destination pads of two elements.
+     * 
+     * @param src The {@link Element} containing the source {@link Pad}.
+     * @param srcPadName The name of the source {@link Pad}.  Can be null for any pad.
+     * @param dest The {@link Element} containing the destination {@link Pad}.
+     * @param destPadName The name of the destination {@link Pad}.  Can be null for any pad.
+     * @param caps The {@link Caps} to use to filter the link.
+     * 
+     * @return true if the pads were successfully linked.
+     */
+    public static boolean linkPadsFiltered(Element src, String srcPadName, 
+            Element dest, String destPadName, Caps caps) {
+        return gst.gst_element_link_pads_filtered(src.handle(), srcPadName, dest.handle(), destPadName, caps.handle());
+    }
+    
+    /**
+     * Unlink source and destination pads of two elements.
+     * 
+     * @param src The {@link Element} containing the source {@link Pad}.
+     * @param srcPadName The name of the source {@link Pad}.
+     * @param dest The {@link Element} containing the destination {@link Pad}.
+     * @param destPadName The name of the destination {@link Pad}.
+     * 
+     */
+    public static void unlinkPads(Element src, String srcPadName, Element dest, String destPadName) {
+        gst.gst_element_unlink_pads(src.handle(), srcPadName, dest.handle(), destPadName);
+    }
+    
+    static Element objectFor(Pointer ptr, boolean needRef) {
         return (Element) GstObject.objectFor(ptr, Element.class, needRef);
     }
     static Element objectFor(Pointer ptr) {

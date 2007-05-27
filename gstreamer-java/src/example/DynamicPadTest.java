@@ -42,10 +42,7 @@ public class DynamicPadTest {
         
         /* put together a pipeline */
         pipeline.addMany(source, demux);
-        Pad src = source.getPad("src");
-        Pad sink = demux.getPad("sink");
-        src.link(sink);
-        //gst_element_link_pads (source, "src", demux, "sink");
+        Element.linkPads(source, "src", demux, "sink");
         
         /* listen for newly created pads */
         demux.addElementListener(new ElementListener() {
