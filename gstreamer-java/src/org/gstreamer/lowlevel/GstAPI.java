@@ -21,20 +21,19 @@ import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
-import java.util.HashMap;
-import java.util.Map;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.Structure;
-import org.gstreamer.TagList;
 import org.gstreamer.Time;
 
 /**
@@ -73,9 +72,9 @@ public interface GstAPI extends Library {
     int gst_element_get_state(Element elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Element elem, IntByReference fmt, LongByReference pos);
     boolean gst_element_query_duration(Element elem, IntByReference fmt, LongByReference pos);
-    boolean gst_element_seek(Element elem, double rate, int format, int flags,
-            int cur_type, long cur, int stop_type, long stop);
-    boolean gst_element_seek_simple(Element elem, int format, int flags, long pos);
+    boolean gst_element_seek(Element elem, double rate, Format format, int flags,
+            SeekType cur_type, long cur, SeekType stop_type, long stop);
+    boolean gst_element_seek_simple(Element elem, Format format, int flags, long pos);
     boolean gst_element_link(Element elem1, Element elem2);
     boolean gst_element_link_many(Element... elements);
     void gst_element_unlink_many(Element... elements);

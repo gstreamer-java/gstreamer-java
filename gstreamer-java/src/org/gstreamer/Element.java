@@ -99,9 +99,9 @@ public class Element extends GstObject {
         setPosition(t.longValue(), Format.TIME);
     }
     public void setPosition(long pos, Format format) {
-        gst.gst_element_seek(this, 1.0, format.intValue(),
+        gst.gst_element_seek(this, 1.0, format,
                 SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
-                SeekType.SET.intValue(),pos, SeekType.NONE.intValue(), 0);
+                SeekType.SET, pos, SeekType.NONE, 0);
     }
     public long getPosition(Format format) {
         IntByReference fmt = new IntByReference(format.intValue());
