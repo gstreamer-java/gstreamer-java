@@ -38,18 +38,18 @@ public class Structure extends NativeObject {
         this(gst.gst_structure_from_string(data, new PointerByReference()), true, false);
     }
     public Structure copy() {
-        return new Structure(gst.gst_structure_copy(handle()));
+        return new Structure(gst.gst_structure_copy(this));
     }
     public int getInteger(String field) {
         IntByReference intRef = new IntByReference();
-        gst.gst_structure_get_int(handle(), field, intRef);
+        gst.gst_structure_get_int(this, field, intRef);
         return intRef.getValue();
     }
     public boolean setInteger(String field, Integer value) {
-        return gst.gst_structure_fixate_field_nearest_int(handle(), field, value);
+        return gst.gst_structure_fixate_field_nearest_int(this, field, value);
     }
     public boolean fixateFieldNearestInteger(String field, Integer target) {
-        return gst.gst_structure_fixate_field_nearest_int(handle(), field, target);
+        return gst.gst_structure_fixate_field_nearest_int(this, field, target);
     }
     public static Structure objectFor(Pointer ptr, boolean needRef, boolean ownsHandle) {
         return (Structure) NativeObject.objectFor(ptr, Structure.class, needRef, ownsHandle);
