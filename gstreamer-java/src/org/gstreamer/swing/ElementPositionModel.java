@@ -14,13 +14,14 @@ package org.gstreamer.swing;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.Element;
 import org.gstreamer.Format;
-import org.gstreamer.Gst;
 import org.gstreamer.Time;
 import org.gstreamer.Timeout;
 
@@ -90,7 +91,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     protected void fireStateChanged() {
         super.fireStateChanged();
         // Only seek when the slider is being dragged (live seeking), and when not automatically updating the slider
-        if (!updating && getValueIsAdjusting()) {
+        if (!updating/* && getValueIsAdjusting()*/) {
             final long pos = (long) getValue() * (format == Format.TIME ? Time.NANOSECONDS : 1);
             
             seeking.incrementAndGet();
@@ -104,13 +105,13 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
                     }
                 }
             };
-            javax.swing.Timer timer = new javax.swing.Timer(10, new ActionListener() {
+            javax.swing.Timer timer = new javax.swing.Timer(20, new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     // We stop the poll during seeking, to stop the slider jumping back
                     // to the old time whilst the pipeline catches up
                     stopPoll();
                     if (seeking.decrementAndGet() == 0) {
-                        Gst.invokeLater(updater);
+                        bgExec.execute(updater);
                     }
                 }
             });
@@ -123,5 +124,6 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     private Element element;
     private boolean updating = false;
     private Timeout timer;
+    private static final ExecutorService bgExec = Executors.newSingleThreadExecutor();
 }
 
