@@ -21,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;

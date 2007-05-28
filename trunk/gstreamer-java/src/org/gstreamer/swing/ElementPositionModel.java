@@ -77,21 +77,18 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         final int max = (int)(duration.longValue() / Time.NANOSECONDS);
         final int pos = (int)(position / (format == Format.TIME ? Time.NANOSECONDS : 1));
         //System.out.printf("Setting range properties to %02d, %02d, %02d%n", min, max, pos);
-        if (getMaximum() != max || getMinimum() != min) {
-            setMaximum(max);
-            setMinimum(min);
-            setExtent(1);
-        }
-        
-        updating = true;
-        setValue(pos);
+        updating = true;        
+        super.setRangeProperties(pos, 1, min, max, false);
         updating = false;
     }
     
-    protected void fireStateChanged() {
-        super.fireStateChanged();
-        // Only seek when the slider is being dragged (live seeking), and when not automatically updating the slider
-        if (!updating/* && getValueIsAdjusting()*/) {
+    public void setValue(int newValue) {
+        super.setValue(newValue);
+        //
+        // Only seek when the slider is being dragged, and not when updating the 
+        // position from the poll
+        //
+        if (!updating) {
             final long pos = (long) getValue() * (format == Format.TIME ? Time.NANOSECONDS : 1);
             
             seeking.incrementAndGet();
