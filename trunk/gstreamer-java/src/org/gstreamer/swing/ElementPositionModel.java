@@ -77,7 +77,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
         final int max = (int)(duration.longValue() / Time.NANOSECONDS);
         final int pos = (int)(position / (format == Format.TIME ? Time.NANOSECONDS : 1));
         //System.out.printf("Setting range properties to %02d, %02d, %02d%n", min, max, pos);
-        updating = true;        
+        updating = true;
         super.setRangeProperties(pos, 1, min, max, false);
         updating = false;
     }
@@ -85,7 +85,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     public void setValue(int newValue) {
         super.setValue(newValue);
         //
-        // Only seek when the slider is being dragged, and not when updating the 
+        // Only seek when the slider is being dragged, and not when updating the
         // position from the poll
         //
         if (!updating) {
@@ -95,8 +95,12 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             
             final Runnable updater = new Runnable() {
                 public void run() {
+                    // We stop the poll during seeking, to stop the slider jumping back
+                    // to the old time whilst the pipeline catches up
+                    stopPoll();
+                    
                     // Only do the seek if this is the last seek pending
-                    if (seeking.get() == 0) {
+                    if (seeking.decrementAndGet() == 0) {
                         element.setPosition(pos, format);
                         startPoll();
                     }
@@ -104,12 +108,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
             };
             javax.swing.Timer timer = new javax.swing.Timer(20, new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
-                    // We stop the poll during seeking, to stop the slider jumping back
-                    // to the old time whilst the pipeline catches up
-                    stopPoll();
-                    if (seeking.decrementAndGet() == 0) {
-                        bgExec.execute(updater);
-                    }
+                    bgExec.execute(updater);
                 }
             });
             timer.setRepeats(false);

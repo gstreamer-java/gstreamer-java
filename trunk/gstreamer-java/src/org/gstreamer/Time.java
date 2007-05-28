@@ -16,7 +16,8 @@ package org.gstreamer;
  *
  */
 public class Time extends org.gstreamer.lowlevel.NativeValue {
-    
+    public final static Time NONE = new Time(-1);
+
     /**
      * Creates a new instance of Time
      * 
