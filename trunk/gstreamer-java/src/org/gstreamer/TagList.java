@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -29,7 +29,7 @@ import static org.gstreamer.lowlevel.GlibAPI.glib;
 /**
  *
  */
-public class TagList extends NativeObject {
+public class TagList extends Structure {
     
     /**
      * Creates a new instance of TagList
@@ -41,7 +41,7 @@ public class TagList extends NativeObject {
         super(ptr, needRef, ownsHandle);
     }
     TagList(Pointer ptr) {
-        this(ptr, true, true);
+        this(ptr, false, true);
     }
     public String getString(Tag tag) {
         return getString(tag.getId(), 0);
@@ -64,14 +64,14 @@ public class TagList extends NativeObject {
     }
     public Number getNumber(String tag, int index) {
         switch (tagTypeMap.get(tag)) {
-            case INT:
-                return getInt(tag, index);
-            case UINT:
-                return getUInt(tag, index);
-            case INT64:
-                return getInt64(tag, index);
-            default:
-                throw new IllegalArgumentException("Tag [" + tag + "] is not a number");
+        case INT:
+            return getInt(tag, index);
+        case UINT:
+            return getUInt(tag, index);
+        case INT64:
+            return getInt64(tag, index);
+        default:
+            throw new IllegalArgumentException("Tag [" + tag + "] is not a number");
         }
     }
     public Integer getInt(String tag, int index) {
@@ -95,7 +95,7 @@ public class TagList extends NativeObject {
         return value.getValue();
     }
     private boolean isTagType(String tag, GType type) {
-        return tagTypeMap.get(tag) == type;
+        return getTypeMap().get(tag) == type;
     }
     private void ensureType(String tag, GType type) {
         if (!isTagType(tag, type)) {
@@ -113,23 +113,24 @@ public class TagList extends NativeObject {
     }
     public Map<String, Object> getTags() {
         final Map<String, Object> m = new HashMap<String, Object>();
+        Map<String, GType> typeMap = getTypeMap();
         for (String tag : getTagNames()) {
-            switch (tagTypeMap.get(tag)) {
-                case STRING:
-                    m.put(tag, getString(tag));
-                    break;
-                case INT:
-                    m.put(tag, getInt(tag, 0));
-                    break;
-                case UINT:
-                    m.put(tag, getUInt(tag, 0));
-                    break;
-                case INT64:
-                    m.put(tag, getInt64(tag, 0));
-                    break;
-                default:
-                    System.out.println("Unknown type for tag " + tag);
-                    break;
+            switch (typeMap.get(tag)) {
+            case STRING:
+                m.put(tag, getString(tag));
+                break;
+            case INT:
+                m.put(tag, getInt(tag, 0));
+                break;
+            case UINT:
+                m.put(tag, getUInt(tag, 0));
+                break;
+            case INT64:
+                m.put(tag, getInt64(tag, 0));
+                break;
+            default:
+                System.out.println("Unknown type for tag " + tag);
+                break;
             }
         }
         return m;
@@ -137,19 +138,23 @@ public class TagList extends NativeObject {
     public TagList merge(TagList list2, TagMergeMode mode) {
         return new TagList(gst.gst_tag_list_merge(this, list2, mode));
     }
+    public Map<String, GType> getTypeMap() {
+        synchronized (tagTypeMap) {
+            //--------------------------------------------------------------------------
+            // Pre-cache all the tag types (i.e. are they string, int, etc)
+            //
+            if (tagTypeMap.isEmpty()) {
+                for (Tag tag : Tag.values()) {
+                    tagTypeMap.put(tag.getId(), GType.valueOf(gst.gst_tag_get_type(tag.getId())));
+                }
+            }
+        }
+        return tagTypeMap;
+    }
     void ref() {}
     void unref() {}
     void disposeNativeHandle(Pointer ptr) {
         gst.gst_tag_list_free(ptr);
     }
-    
-    //--------------------------------------------------------------------------
-    // Pre-cache all the tag types (i.e. are they string, int, etc)
-    //
     static final Map<String, GType> tagTypeMap = new HashMap<String, GType>();
-    static {
-        for (Tag tag : Tag.values()) {
-            tagTypeMap.put(tag.getId(), GType.valueOf(gst.gst_tag_get_type(tag.getId())));
-        }
-    }
 }

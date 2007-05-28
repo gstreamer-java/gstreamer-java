@@ -67,7 +67,6 @@ public class Bus extends GstObject {
         return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
     }
     
-    protected Pointer busHandle() { return handle(); }
     private Map<BusListener, NativeLong> listeners 
             = Collections.synchronizedMap(new WeakHashMap<BusListener, NativeLong>());
 }
