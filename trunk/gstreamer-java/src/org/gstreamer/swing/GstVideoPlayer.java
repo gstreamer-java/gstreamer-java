@@ -54,7 +54,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         controls.add(new JButton(rewAction));
         controls.add(new JButton(togglePlayAction));
         controls.add(new JButton(fwdAction));
-        controls.add(new JButton(stopAction));
         playAction.setEnabled(true);
         pauseAction.setEnabled(false);
         stopAction.setEnabled(false);
