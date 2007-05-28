@@ -25,6 +25,7 @@ public interface GObjectAPI extends Library {
     GObjectAPI gobj = (GObjectAPI) GNative.loadLibrary("gobject-2.0", GObjectAPI.class);
     void g_object_set_property(GObject obj, String property, Object data);
     void g_object_set(GObject obj, String propertyName, Object... data);
+    void g_object_get(GObject obj, String propertyName, Object... data);
     interface GClosureNotify extends Callback {
         void callback(Pointer data, Pointer closure);
     }
