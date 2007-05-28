@@ -12,12 +12,14 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.DoubleByReference;
 import java.io.File;
 import java.net.URI;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 
 /**
  *
- */
+ */;
 public class PlayBin extends Pipeline {
     
     /**
@@ -118,6 +120,16 @@ public class PlayBin extends Pipeline {
         setElement("vis-plugin", element);
     }
     
+    public void setVolume(int percent) {
+        double volume = Math.max(Math.min((double) percent, 100d), 0d) / 100.0d;
+        gobj.g_object_set(this, "volume", volume);
+    }
+    
+    public int getVolume() {
+        DoubleByReference ref = new DoubleByReference();
+        gobj.g_object_get(this, "volume", ref);
+        return (int) ((ref.getValue() * 100.0) + 0.5);
+    }
     private void setElement(String key, Element e) {
         set(key, e);
     }
