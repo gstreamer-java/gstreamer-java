@@ -21,13 +21,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.AbstractAction;
+import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.gstreamer.PlayBin;
 import org.gstreamer.State;
 
@@ -59,7 +63,21 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         UIManager.put("Slider.paintValue", Boolean.FALSE);
         controls.add(new JSlider(positionModel = new ElementPositionModel(playbin)));
         UIManager.put("Slider.paintValue", oldValue);
+        controls.add(positionLabel = new JLabel("00:00:00"));
         controls.setVisible(false);
+        
+        //
+        // Add a listener to update the media position label
+        //
+        positionModel.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                BoundedRangeModel m = (BoundedRangeModel)e.getSource();
+                int value = m.getValue();
+                String text = String.format("%02d:%02d:%02d", value / 3600, (value / 60) % 60, value % 60);
+                positionLabel.setText(text);
+            }
+            
+        });
     }
     public GstVideoPlayer(File file) {
         this(file.toURI());
@@ -206,6 +224,7 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     ElementPositionModel positionModel;
     private PlayBin playbin;
     private JComponent controls;
+    private JLabel positionLabel;
     private GstVideoComponent videoComponent;
     
 }
