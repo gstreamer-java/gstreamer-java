@@ -40,7 +40,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.gstreamer.ElementFactory;
 import org.gstreamer.PlayBin;
 import org.gstreamer.State;
 
@@ -52,7 +51,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     public GstVideoPlayer(URI uri) {
         playbin = new PlayBin(uri.toString());
         playbin.setURI(uri);
-        //        playbin.setAudioSink(ElementFactory.make("gconfaudiosink", "audio"));
         videoComponent = new GstVideoComponent();
         playbin.setVideoSink(videoComponent.getElement());
         setLayout(new BorderLayout());
