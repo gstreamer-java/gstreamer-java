@@ -101,7 +101,7 @@ public class Element extends GstObject {
     public void setPosition(long pos, Format format) {
         gst.gst_element_seek(this, 1.0, format,
                 SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
-                SeekType.SET, pos, SeekType.NONE, 0);
+                SeekType.SET, pos, SeekType.NONE, -1);
     }
     public long getPosition(Format format) {
         IntByReference fmt = new IntByReference(format.intValue());
