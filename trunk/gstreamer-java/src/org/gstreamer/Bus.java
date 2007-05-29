@@ -55,6 +55,7 @@ public class Bus extends GstObject {
     public void removeBusListener(BusListener l) {
         NativeLong val = listeners.get(l);
         if (val != null) {
+            
             //removeNativeListener(_handle, val);
             listeners.remove(l);
         }
@@ -86,7 +87,7 @@ class BusListenerProxy implements GstAPI.BusCallback {
             if (l == null) {
                 return false;
             }
-            Element src = Element.objectFor(msg.src);
+            Element src = Element.objectFor(msg.src, true);
             PointerByReference clock = new PointerByReference();
             LongByReference seg = new LongByReference();
             IntByReference fmt = new IntByReference(Format.TIME.intValue());

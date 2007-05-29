@@ -39,7 +39,6 @@ public abstract class GObject extends NativeObject {
         super(ptr, false, ownsHandle); // increase the refcount here
         logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
         if (ownsHandle) {
-            strongReferences.add(this);
             gobj.g_object_add_toggle_ref(ptr, toggle, null);
             if (!needRef) {
                 unref();
@@ -68,7 +67,7 @@ public abstract class GObject extends NativeObject {
     }
     abstract void ref();
     abstract void unref();
-
+    
     void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
         gobj.g_object_remove_toggle_ref(ptr, toggle, null);
@@ -148,7 +147,7 @@ public abstract class GObject extends NativeObject {
         }
         return (GObject) NativeObject.objectFor(ptr, cls, needRef);
     }
-
+    
     /*
      * Hooks to/from native disposal
      */

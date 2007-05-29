@@ -113,8 +113,7 @@ public class ElementFactoryTest {
         }
         return ref.get() == null;
     }
-    //@Test
-    // The factories themselves never get disposed ?
+    @Test
     public void testGarbageCollection() throws Throwable {
         ElementFactory factory = ElementFactory.find("playbin");
         assertNotNull("Could not locate fakesrc factory", factory);

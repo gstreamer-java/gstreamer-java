@@ -14,6 +14,7 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gstreamer.lowlevel.GstTypes;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -80,9 +81,34 @@ public class GstObject extends GObject {
     public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass) {
         return GstObject.objectFor(ptr, defaultClass, true);
     }
-    @SuppressWarnings("unchecked")
+   
     public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass, boolean needRef) {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
         return (GstObject) GObject.objectFor(ptr, defaultClass, needRef);
+    }
+    
+    //
+    // Returned objects have their refcount incremented by gstreamer.  If we
+    // have an existing object for the pointer, unref() it to remove the extra ref.
+    //
+    public static GstObject returnedObject(Pointer ptr, Class<? extends GstObject> defaultClass) {
+        logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass });
+        // Ignore null pointers
+        if (ptr == null || !ptr.isValid()) {
+            return null;
+        }
+        // Try to retrieve an existing instance for the pointer
+        NativeObject obj = NativeObject.instanceFor(ptr);
+        if (obj != null) {
+            obj.unref(); // Lose the extra ref added by gstreamer
+            return (GstObject) obj;
+        }
+        // Try to figure out what type of object it is by checking its GType
+        @SuppressWarnings("unchecked")
+        Class<? extends GObject> cls = GstTypes.classFor(ptr);
+        if (cls == null) {
+            cls = defaultClass;
+        }
+        return (GstObject) NativeObject.objectFor(ptr, cls, false);
     }
 }

@@ -105,7 +105,7 @@ public class Pipeline extends Bin {
      * @return The {@link Clock} currently in use.
      */
     public Clock getClock() {
-        return Clock.objectFor(gst.gst_pipeline_get_clock(this), false);
+        return gst.gst_pipeline_get_clock(this);
     }
     
     /**
@@ -123,6 +123,6 @@ public class Pipeline extends Bin {
     }
     @Override
     public Bus getBus() {
-        return Bus.objectFor(gst.gst_pipeline_get_bus(this), false);
+        return gst.gst_pipeline_get_bus(this);
     }
 }

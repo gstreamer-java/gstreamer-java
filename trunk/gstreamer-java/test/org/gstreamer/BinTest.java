@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.After;
@@ -29,23 +30,30 @@ public class BinTest {
     
     public BinTest() {
     }
-
+    
     @BeforeClass
     public static void setUpClass() throws Exception {
         Gst.init("test", new String[] {});
     }
-
+    
     @AfterClass
     public static void tearDownClass() throws Exception {
         Gst.deinit();
     }
-
+    
     @Before
     public void setUp() throws Exception {
     }
-
+    
     @After
     public void tearDown() throws Exception {
+    }
+    public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
+        System.gc();
+        for (int i = 0; ref.get() != null && i < 20; ++i) {
+            Thread.sleep(10);
+        }
+        return ref.get() == null;
     }
     @Test
     public void testGetElements() {
@@ -59,7 +67,7 @@ public class BinTest {
         assertTrue("Element list does not contain e2", elements.contains(e2));
     }
     @Test
-    public void testGetSinks() {
+    public void testGetSinks() throws Exception {
         Bin bin = new Bin("test");
         Element e1 = ElementFactory.make("fakesrc", "source");
         Element e2 = ElementFactory.make("fakesink", "sink");
@@ -70,7 +78,7 @@ public class BinTest {
     }
     
     @Test
-    public void testGetSources() {
+    public void testGetSources() throws Exception {
         Bin bin = new Bin("test");
         Element e1 = ElementFactory.make("fakesrc", "source");
         Element e2 = ElementFactory.make("fakesink", "sink");
@@ -80,7 +88,7 @@ public class BinTest {
         assertTrue("Element list does not contain source", elements.contains(e1));
     }
     @Test
-    public void testGetElementByName() {
+    public void testGetElementByName() throws Exception {
         Bin bin = new Bin("test");
         Element e1 = ElementFactory.make("fakesrc", "source");
         Element e2 = ElementFactory.make("fakesink", "sink");
@@ -90,18 +98,40 @@ public class BinTest {
         assertEquals("sink not returned", e2, bin.getElementByName("sink"));
     }
     @Test
-    public void testElementAddedCallback() {
+    public void testGarbageCollection() throws Exception {
+        Bin bin = new Bin("test");
+        Element e1 = ElementFactory.make("fakesrc", "source");
+        Element e2 = ElementFactory.make("fakesink", "sink");
+        bin.addMany(e1, e2);
+        
+        assertEquals("source not returned", e1, bin.getElementByName("source"));
+        assertEquals("sink not returned", e2, bin.getElementByName("sink"));
+        bin.removeMany(e1, e2);
+        WeakReference<Element> binRef = new WeakReference<Element>(bin);
+        bin = null;
+        assertTrue("First Element not garbage collected", waitGC(binRef));
+        WeakReference<Element> e1Ref = new WeakReference<Element>(e1);
+        WeakReference<Element> e2Ref = new WeakReference<Element>(e2);
+        e1 = null;
+        e2 = null;
+        
+        assertTrue("First Element not garbage collected", waitGC(e1Ref));
+        assertTrue("Second Element not garbage collected", waitGC(e2Ref));
+        
+    } 
+    @Test
+    public void testElementAddedCallback() throws Exception {
         Bin bin = new Bin("test");
         final Element e1 = ElementFactory.make("fakesrc", "source");
         final Element e2 = ElementFactory.make("fakesink", "sink");
         final AtomicInteger added = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENTADDED() {
-           public void elementAdded(Bin bin, Element elem) {
-               if (elem == e1 || elem == e2) {
-                   added.incrementAndGet();
-               }
-           }
+            public void elementAdded(Bin bin, Element elem) {
+                if (elem == e1 || elem == e2) {
+                    added.incrementAndGet();
+                }
+            }
         });
         bin.addMany(e1, e2);
         
@@ -115,11 +145,11 @@ public class BinTest {
         final AtomicInteger removed = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENTADDED() {
-           public void elementAdded(Bin bin, Element elem) {
-               if (elem == e1 || elem == e2) {
-                   removed.incrementAndGet();
-               }
-           }
+            public void elementAdded(Bin bin, Element elem) {
+                if (elem == e1 || elem == e2) {
+                    removed.incrementAndGet();
+                }
+            }
         });
         bin.addMany(e1, e2);
         
