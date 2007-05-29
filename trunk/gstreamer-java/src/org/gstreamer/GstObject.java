@@ -68,13 +68,13 @@ public class GstObject extends GObject {
     }
     
     void ref() {
-        gst.gst_object_ref(handle());
+        gst.gst_object_ref(this);
     }
     void unref() {
-        gst.gst_object_unref(handle());
+        gst.gst_object_unref(this);
     }
     void sink() {
-        gst.gst_object_sink(handle());
+        gst.gst_object_sink(this);
     }
     
     public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass) {

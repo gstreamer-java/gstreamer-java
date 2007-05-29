@@ -71,10 +71,10 @@ public class GMainLoop extends NativeObject implements Runnable {
     // protected methods
     //
     void ref() {
-        glib.g_main_loop_ref(handle());
+        glib.g_main_loop_ref(this);
     }
     void unref() {
-        glib.g_main_loop_unref(handle());
+        glib.g_main_loop_unref(this);
     }
     
     void disposeNativeHandle(Pointer ptr) {

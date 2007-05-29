@@ -29,6 +29,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.GstObject;
+import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.SeekType;
@@ -123,9 +124,9 @@ public interface GstAPI extends Library {
     /*
      * GstObject
      */
-    void gst_object_ref(Pointer ptr);
-    void gst_object_unref(Pointer ptr);
-    void gst_object_sink(Pointer ptr);
+    void gst_object_ref(GstObject ptr);
+    void gst_object_unref(GstObject ptr);
+    void gst_object_sink(GstObject ptr);
     
     void gst_object_set_name(GstObject ptr, String name);
     Pointer gst_object_get_name(GstObject ptr); // returns a string - needs to be freed
@@ -135,7 +136,7 @@ public interface GstAPI extends Library {
      */
     Pointer gst_bin_new(String name);
     NativeLong gst_bin_get_type();
-
+    
     boolean gst_bin_add(Bin bin, Element element);
     void gst_bin_add_many(Bin bin, Element... elements);
     boolean gst_bin_remove(Bin bin, Element element);
@@ -150,7 +151,8 @@ public interface GstAPI extends Library {
     /*
      * GstMiniObject functions
      */
-    void gst_mini_object_ref(Pointer ptr);
+    void gst_mini_object_ref(MiniObject ptr);
+    void gst_mini_object_unref(MiniObject ptr);
     void gst_mini_object_unref(Pointer ptr);
     
     /*
@@ -196,7 +198,8 @@ public interface GstAPI extends Library {
     NativeLong gst_caps_get_type();
     Pointer gst_caps_new_empty();
     Pointer gst_caps_new_any();
-    Pointer gst_caps_ref(Pointer caps);
+    Pointer gst_caps_ref(Caps caps);
+    Pointer gst_caps_unref(Caps caps);
     Pointer gst_caps_unref(Pointer caps);
     Pointer gst_caps_copy(Caps caps);
     Pointer gst_caps_from_string(String string);
