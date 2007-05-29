@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -12,23 +12,22 @@
 
 package org.gstreamer;
 
-import com.sun.jna.NativeLong;
+import com.sun.jna.Callback;
+import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
 import com.sun.jna.ptr.*;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.event.BusListener;
 import org.gstreamer.event.ErrorEvent;
-import org.gstreamer.event.MessageType;
 import org.gstreamer.event.StateEvent;
-import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
-import org.gstreamer.lowlevel.GlibAPI;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
 import org.gstreamer.lowlevel.MessageStruct;
 
 
@@ -36,9 +35,9 @@ import org.gstreamer.lowlevel.MessageStruct;
  *
  */
 public class Bus extends GstObject {
-    static final Logger logger = Logger.getLogger(Bus.class.getName());
+    static final Logger log = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
-
+    
     /**
      * Creates a new instance of Bus
      */
@@ -47,17 +46,17 @@ public class Bus extends GstObject {
     }
     public Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
+        gst.gst_bus_set_sync_handler(this,
+                NativeLibrary.getInstance("gstreamer-0.10").getFunction("gst_bus_sync_signal_handler"),
+                null);
     }
     public void addBusListener(BusListener l) {
-        NativeLong id = gst.gst_bus_add_watch(this, new BusListenerProxy(l), null);
-        listeners.put(l, id);
+        listeners.put(l, new BusListenerProxy(this, l));
     }
     public void removeBusListener(BusListener l) {
-        NativeLong val = listeners.get(l);
-        if (val != null) {
-            
-            //removeNativeListener(_handle, val);
-            listeners.remove(l);
+        BusListenerProxy proxy = listeners.remove(l);
+        if (proxy != null) {
+            proxy.disconnect();
         }
     }
     
@@ -67,116 +66,147 @@ public class Bus extends GstObject {
     public static Bus objectFor(Pointer ptr, boolean needRef) {
         return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
     }
-    
-    private Map<BusListener, NativeLong> listeners 
-            = Collections.synchronizedMap(new WeakHashMap<BusListener, NativeLong>());
+    public static interface EOS {
+        public void eosMessage(GstObject source);
+    }
+    public static interface ERROR {
+        public void errorMessage(GstObject source, int code, String message);
+    }
+    public static interface WARNING {
+        public void warningMessage(GstObject source, int code, String message);
+    }
+    public static interface INFO {
+        public void infoMessage(GstObject source, int code, String message);
+    }
+    public static interface TAG {
+        public void tagMessage(GstObject source, TagList tagList);
+    }
+    public static interface STATECHANGED {
+        public void stateMessage(GstObject source, State old, State current, State pending);
+    }
+    public void connect(final EOS listener) {
+        connect("sync-message::eos", EOS.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                listener.eosMessage(messageSource(msgPtr));
+            }
+        });
+    }
+    public void disconnect(EOS listener) {
+        super.disconnect(EOS.class, listener);
+    }
+    public void connect(final ERROR listener) {
+        connect("sync-message::error", ERROR.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                PointerByReference err = new PointerByReference();
+                gst.gst_message_parse_error(msgPtr, err, null);
+                glib.g_error_free(err.getValue());
+                GErrorStruct error = new GErrorStruct(err.getValue());
+                listener.errorMessage(messageSource(msgPtr), error.code, error.message);
+            }
+        });
+    }
+    public void disconnect(ERROR listener) {
+        super.disconnect(ERROR.class, listener);
+    }
+    public void connect(final WARNING listener) {
+        connect("sync-message::warning", WARNING.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                PointerByReference err = new PointerByReference();
+                gst.gst_message_parse_warning(msgPtr, err, null);
+                glib.g_error_free(err.getValue());
+                GErrorStruct error = new GErrorStruct(err.getValue());
+                listener.warningMessage(messageSource(msgPtr), error.code, error.message);
+            }
+        });
+    }
+    public void disconnect(WARNING listener) {
+        super.disconnect(WARNING.class, listener);
+    }
+    public void connect(final INFO listener) {
+        connect("sync-message::info", INFO.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                PointerByReference err = new PointerByReference();
+                gst.gst_message_parse_info(msgPtr, err, null);
+                glib.g_error_free(err.getValue());
+                GErrorStruct error = new GErrorStruct(err.getValue());
+                listener.infoMessage(messageSource(msgPtr), error.code, error.message);
+            }
+        });
+    }
+    public void disconnect(INFO listener) {
+        super.disconnect(INFO.class, listener);
+    }
+    public void connect(final STATECHANGED listener) {
+        connect("sync-message::state-changed", STATECHANGED.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                IntByReference o = new IntByReference();
+                IntByReference n = new IntByReference();
+                IntByReference p = new IntByReference();
+                gst.gst_message_parse_state_changed(msgPtr, o, n, p);
+                listener.stateMessage(messageSource(msgPtr), State.valueOf(o.getValue()),
+                        State.valueOf(n.getValue()), State.valueOf(p.getValue()));
+            }
+        });
+    }
+    public void disconnect(STATECHANGED listener) {
+        super.disconnect(STATECHANGED.class, listener);
+    }
+    public void connect(final TAG listener) {
+        connect("sync-message::tag", TAG.class, listener,new Callback() {
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                PointerByReference list = new PointerByReference();
+                gst.gst_message_parse_tag(msgPtr, list);
+                listener.tagMessage(messageSource(msgPtr), new TagList(list.getValue(), true, false));
+            }
+        });
+    }
+    public void disconnect(TAG listener) {
+        super.disconnect(TAG.class, listener);
+    }
+    private final static GstObject messageSource(Pointer msgPtr) {
+        return Element.objectFor(new MessageStruct(msgPtr).src, true);
+    }
+    private Map<BusListener, BusListenerProxy> listeners
+            = Collections.synchronizedMap(new HashMap<BusListener, BusListenerProxy>());
 }
-class BusListenerProxy implements GstAPI.BusCallback {
-    static final Logger log = Bus.logger;
-    static final Level MSG_DEBUG = Bus.LOG_DEBUG;
-    private static GlibAPI glib = GlibAPI.glib;
-
-    public BusListenerProxy(BusListener l) {
-        this.listenerRef = new WeakReference<BusListener>(l);
+class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARNING, Bus.INFO, Bus.TAG {
+    public BusListenerProxy(Bus bus, final BusListener listener) {
+        this.bus = bus;
+        this.listener = listener;
+        bus.connect((Bus.EOS) this);
+        bus.connect((Bus.STATECHANGED) this);
+        bus.connect((Bus.ERROR) this);
+        bus.connect((Bus.WARNING) this);
+        bus.connect((Bus.INFO) this);
+        bus.connect((Bus.TAG) this);
     }
-    public boolean callback(Pointer bus, Pointer msgPointer, Pointer data) {
-        try {
-            MessageStruct msg = new MessageStruct(msgPointer);
-            log.finer("BusMessage type=" + msg.type);
-            BusListener l = listenerRef.get();
-            if (l == null) {
-                return false;
-            }
-            Element src = Element.objectFor(msg.src, true);
-            PointerByReference clock = new PointerByReference();
-            LongByReference seg = new LongByReference();
-            IntByReference fmt = new IntByReference(Format.TIME.intValue());
-            IntByReference ready = new IntByReference();
-            switch (MessageType.valueOf(msg.type)) {
-            case GST_MESSAGE_SEGMENT_START:
-                gst.gst_message_parse_segment_start(msgPointer, fmt, seg);
-                log.log(MSG_DEBUG, "SEGMENT_START " + seg.getValue());
-                break;
-            case GST_MESSAGE_SEGMENT_DONE:
-                log.log(MSG_DEBUG, "SEGMENT_DONE");
-                break;
-            case GST_MESSAGE_CLOCK_PROVIDE:
-                log.log(MSG_DEBUG, "CLOCK PROVIDE");
-                gst.gst_message_parse_clock_provide(msgPointer, clock, ready);
-                if (clock.getValue() != null) {
-                    //log.debug("time = " + gst_clock_get_time(clock[0]));
-                }
-                break;
-            case GST_MESSAGE_CLOCK_LOST:
-                log.log(MSG_DEBUG, "CLOCK LOST");
-                break;
-            case GST_MESSAGE_NEW_CLOCK:
-                log.log(MSG_DEBUG, "NEW CLOCK");
-                gst.gst_message_parse_new_clock(msgPointer, clock);
-                //   log.log(MSG_DEBUG, "time = " + GstAPI.gst_clock_get_time(clock[0]));
-                break;
-            case GST_MESSAGE_TAG:
-                log.log(MSG_DEBUG, "TAG");
-                tagMessage(l, msgPointer, src);
-                break;
-            case GST_MESSAGE_EOS:
-                l.eosEvent();
-                break;
-            case GST_MESSAGE_STATE_CHANGED:
-                stateMessage(l, msgPointer, src);
-                break;
-            case GST_MESSAGE_ERROR:
-                errorMessage(l, msgPointer, src);
-                break;
-            case GST_MESSAGE_WARNING:
-                warningMessage(l, msgPointer, src);
-                break;
-            case GST_MESSAGE_BUFFERING:
-                break;
-            default:
-                System.out.printf("Unknown GstMessage: 0x%x\n",
-                        msg.type);
-            }
-        } catch (Exception e) {
-            log.log(MSG_DEBUG, e.toString());
-            // Don't propagate any exceptions up
-        }
-        return true;
+    public void eosMessage(GstObject source) {
+        listener.eosEvent();
     }
-    
-    private void tagMessage(BusListener l, Pointer msgPointer, GstObject src) {
-        PointerByReference list = new PointerByReference();
-        gst.gst_message_parse_tag(msgPointer, list);
-        l.tagEvent(new TagList(list.getValue(), true, false));
+    public void stateMessage(GstObject source, State old, State current, State pending) {
+        listener.stateEvent(new StateEvent(source, old, current, pending));
     }
-    private void stateMessage(BusListener l, Pointer msgPointer, GstObject src) {
-        IntByReference o = new IntByReference();
-        IntByReference n = new IntByReference();
-        IntByReference p = new IntByReference();
-        gst.gst_message_parse_state_changed(msgPointer, o, n, p);
-        l.stateEvent(new StateEvent(src, o.getValue(), n.getValue(), p.getValue()));
+    public void errorMessage(GstObject source, int code, String message) {
+        listener.errorEvent(new ErrorEvent(source, code, message));
     }
-    
-    private void errorMessage(BusListener l, Pointer msgPointer, GstObject src) {
+    public void warningMessage(GstObject source, int code, String message) {
+        listener.warningEvent(new ErrorEvent(source, code, message));
+    }
+    public void infoMessage(GstObject source, int code, String message) {
+        listener.infoEvent(new ErrorEvent(source, code, message));
+    }
+    public void tagMessage(GstObject source, TagList tagList)  {
+        listener.tagEvent(tagList);
+    }
+    public void disconnect() {
+        bus.disconnect((Bus.EOS) this);
+        bus.disconnect((Bus.STATECHANGED) this);
+        bus.disconnect((Bus.ERROR) this);
+        bus.disconnect((Bus.WARNING) this);
+        bus.disconnect((Bus.INFO) this);
+        bus.disconnect((Bus.TAG) this);
         
-        PointerByReference err = new PointerByReference();
-        PointerByReference debug = new PointerByReference();
-        gst.gst_message_parse_error(msgPointer, err, debug);
-        GError error = new GError(err.getValue());
-        l.errorEvent(new ErrorEvent(src, error.code, error.message));
-        glib.g_free(debug.getValue());
-        glib.g_error_free(err.getValue());
     }
-    private void warningMessage(BusListener l, Pointer msgPointer, GstObject src) {
-        PointerByReference err = new PointerByReference();
-        PointerByReference debug = new PointerByReference();
-        gst.gst_message_parse_warning(msgPointer, err, debug);
-        GError error = new GError(err.getValue());
-        l.warningEvent(new ErrorEvent(src, error.code, error.message));
-        glib.g_free(debug.getValue());
-        glib.g_error_free(err.getValue());
-    }
-    private WeakReference<BusListener> listenerRef;
-    
-    
+    private Bus bus;
+    private BusListener listener;
 }
