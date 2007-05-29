@@ -114,7 +114,7 @@ public class ElementFactory extends GstObject {
      */
     public static Element make(String factoryName, String name) {
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
-        return elementFor(makeRawElement(factoryName, name), name);
+        return elementFor(makeRawElement(factoryName, name), factoryName);
     }
     static ElementFactory objectFor(Pointer ptr, boolean needRef) {
         logger.entering("ElementFactory", "objectFor", new Object[] { ptr, needRef });

@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import java.lang.ref.WeakReference;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -63,8 +64,7 @@ public class ElementFactoryTest {
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
     }
-    //@Test
-    // Doesn't work yet
+    @Test
     public void testMakePlaybin() {
         Element e = ElementFactory.make("playbin", "bin");
         assertNotNull("Failed to create playbin", e);
@@ -105,5 +105,39 @@ public class ElementFactoryTest {
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
         assertTrue("Element not a subclass of PlayBin", e instanceof PlayBin);
+    }
+    public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
+        System.gc();
+        for (int i = 0; ref.get() != null && i < 10; ++i) {
+            Thread.sleep(10);
+        }
+        return ref.get() == null;
+    }
+    //@Test
+    // The factories themselves never get disposed ?
+    public void testGarbageCollection() throws Throwable {
+        ElementFactory factory = ElementFactory.find("playbin");
+        assertNotNull("Could not locate fakesrc factory", factory);
+        WeakReference<ElementFactory> ref = new WeakReference<ElementFactory>(factory);
+        factory = null;
+        assertTrue("Factory not garbage collected", waitGC(ref));
+    }
+    
+    @Test
+    public void testMakeGarbageCollection() throws Throwable {
+        Element e = ElementFactory.make("fakesrc", "test");
+        WeakReference<Element> ref = new WeakReference<Element>(e);
+        e = null;
+        assertTrue("Element not garbage collected", waitGC(ref));
+        
+    }
+    @Test
+    public void testCreateGarbageCollection() throws Throwable {
+        ElementFactory factory = ElementFactory.find("fakesrc");
+        assertNotNull("Could not locate fakesrc factory", factory);
+        Element e = factory.create("bin");
+        WeakReference<Element> ref = new WeakReference<Element>(e);
+        e = null;
+        assertTrue("Element not garbage collected", waitGC(ref));
     }
 }
