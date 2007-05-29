@@ -14,8 +14,6 @@ package org.gstreamer.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -23,7 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -32,11 +29,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JToggleButton;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -69,28 +61,13 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         Object paintValue = UIManager.put("Slider.paintValue", Boolean.FALSE);
         controls.add(new JSlider(positionModel = new ElementPositionModel(playbin)));
         
-        /*
-         * Construct the popup for the volume slider
-         */
-        volumePanel = new JPanel();
-        volumePanel.setLayout(new BoxLayout(volumePanel, BoxLayout.Y_AXIS));
-        
-        volumeSlider = new JSlider();
-        volumeSlider.addChangeListener(volumeChanged);
-        volumeSlider.setOrientation(SwingConstants.VERTICAL);
-        volumeSlider.setValue(playbin.getVolume());
-        volumeSlider.setMaximum(100);
-        volumePanel.add(new JLabel(highVolumeIcon));
-        volumeSlider.setAlignmentX(0.25f);
-        volumePanel.add(volumeSlider);
-        volumePanel.add(new JLabel(lowVolumeIcon));
-        volumePanel.validate();
-        
+        UIManager.put("Slider.paintValue", paintValue);
         
         controls.add(positionLabel = new JLabel("00:00:00"));
-        controls.add(volumeButton = new JToggleButton(volumeAction));
+        controls.add(new PopupVolumeButton(playbin));
+        
         controls.setVisible(false);
-        UIManager.put("Slider.paintValue", paintValue);
+        
         //
         // Add a listener to update the media position label
         //
@@ -101,7 +78,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
                 String text = String.format("%02d:%02d:%02d", value / 3600, (value / 60) % 60, value % 60);
                 positionLabel.setText(text);
             }
-            
         });
     }
     public GstVideoPlayer(File file) {
@@ -207,44 +183,7 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             positionModel.setValue(positionModel.getValue() - 60);
         }
     };
-    private ImageIcon lowVolumeIcon = loadIcon("status/audio-volume-low");
-    private ImageIcon medVolumeIcon = loadIcon("status/audio-volume-medium");
-    private ImageIcon highVolumeIcon = loadIcon("status/audio-volume-high");
-    private ChangeListener volumeChanged = new ChangeListener() {
-        public void stateChanged(ChangeEvent e) {
-            JSlider s = (JSlider) e.getSource();
-            playbin.setVolume(s.getValue());
-            if (s.getValue() < 33) {
-                volumeAction.putValue(Action.SMALL_ICON, lowVolumeIcon);
-            } else if (s.getValue() < 66) {
-                volumeAction.putValue(Action.SMALL_ICON, medVolumeIcon);
-            } else {
-                volumeAction.putValue(Action.SMALL_ICON, highVolumeIcon);
-            }
-        }
-    };
-    Popup volumePopup;
-    private AbstractAction volumeAction = new AbstractAction("", loadIcon("status/audio-volume-medium")) {
-        public void actionPerformed(ActionEvent e) {
-            JToggleButton b = (JToggleButton) e.getSource();
-            if (!b.isSelected() && volumePopup != null) {
-                volumePopup.hide();
-                volumePopup = null;
-            } else {
-                Dimension panelSize = volumePanel.getPreferredSize();
-                // Right-align it with the volume button, so it pops up just above it
-                Point location = new Point(0 - panelSize.width + volumeButton.getPreferredSize().width,
-                        0 - panelSize.height);
-                SwingUtilities.convertPointToScreen(location, volumeButton);
-                volumeSlider.setValue(playbin.getVolume());
-                volumePopup = PopupFactory.getSharedInstance().getPopup(volumeButton,
-                        volumePanel, location.x, location.y);
-                Object paintValue = UIManager.put("Slider.paintValue", Boolean.FALSE);
-                volumePopup.show();
-                UIManager.put("Slider.paintValue", paintValue);
-            }
-        }
-    };
+    
     private class TogglePlayAction extends AbstractAction {
         public TogglePlayAction() {
             super("", pauseIcon);
@@ -288,9 +227,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     private PlayBin playbin;
     private JComponent controls;
     private JLabel positionLabel;
-    private JToggleButton volumeButton;
-    private JPanel volumePanel;
-    private JSlider volumeSlider;
     private GstVideoComponent videoComponent;
     
 }
