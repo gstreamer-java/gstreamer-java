@@ -24,11 +24,11 @@ public class StateEvent extends java.util.EventObject {
     /**
      * Creates a new instance of State
      */
-    public StateEvent(GstObject src, int o, int n, int p) {
+    public StateEvent(GstObject src, State o, State n, State p) {
         super(src);
-        oldState = State.valueOf(o);
-        newState = State.valueOf(n);
-        pendingState = State.valueOf(p);
+        oldState = o;
+        newState = n;
+        pendingState = p;
     }
     public final State oldState, newState, pendingState;
 }

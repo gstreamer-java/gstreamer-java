@@ -17,6 +17,7 @@ import java.util.Map;
 import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Bus;
+import org.gstreamer.GstObject;
 import org.gstreamer.PlayBin;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
@@ -46,36 +47,26 @@ public class Player {
         PlayBin player = new PlayBin("Example Player");
         player.setInputFile(new File(args[0]));
         Bus bus = player.getBus();
-        BusListener l = new BusListener() {
-            public void eosEvent() {
-                System.out.println("Got EOS event");
-            }
-            public void errorEvent(ErrorEvent e) {
-                System.out.println("Got ERROR event");
-            }
-            public void infoEvent(ErrorEvent e) {
-                System.out.println("Got INFO event");
-            }
-            public void stateEvent(StateEvent e) {
-                //System.out.println("Got STATE event");
-            }
-            public void warningEvent(ErrorEvent e) {
-                System.out.println("Got WARNING event");
-            }
-            public void tagEvent(TagList l) {
+        bus.connect(new Bus.TAG() {
+            public void tagMessage(GstObject source, TagList tagList) {
                 System.out.println("Got TAG event");
                 if (tags == null) {
-                    tags = l;
+                    tags = tagList;
                 } else {
-                    tags = tags.merge(l, TagMergeMode.APPEND);
+                    tags = tags.merge(tagList, TagMergeMode.APPEND);
                 }
                 Map<String, Object> m = tags.getTags();
                 for (String tag : m.keySet()) {
                     System.out.println("Tag " + tag + " = " + m.get(tag));
                 }
             }
-        };
-        bus.addBusListener(l);
+        });
+        bus.connect(new Bus.ERROR() {
+            public void errorMessage(GstObject source, int code, String message) {
+                System.out.println("Error: code=" + code + " message=" + message);
+            }
+        });
+        
         player.play();
         
         loop.run();

@@ -175,7 +175,8 @@ public interface GstAPI extends Library {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
     }
     NativeLong gst_bus_add_watch(Bus bus, BusCallback function, Pointer data);
-    
+    void gst_bus_set_sync_handler(Bus bus, Pointer function, Pointer data);
+    void gst_bus_set_sync_handler(Bus bus, Callback function, Pointer data);
     
     /*
      * GstMessage functions
@@ -189,6 +190,7 @@ public interface GstAPI extends Library {
     void gst_message_parse_new_clock(Pointer msg, PointerByReference clock);
     void gst_message_parse_error(Pointer msg, PointerByReference err, PointerByReference debug);
     void gst_message_parse_warning(Pointer msg, PointerByReference err, PointerByReference debug);
+    void gst_message_parse_info(Pointer msg, PointerByReference err, PointerByReference debug);
     
     /*
      * gstparse functions
