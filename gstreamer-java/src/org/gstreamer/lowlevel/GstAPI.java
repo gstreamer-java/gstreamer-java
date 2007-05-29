@@ -31,9 +31,12 @@ import org.gstreamer.Format;
 import org.gstreamer.GstObject;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
+import org.gstreamer.PadDirection;
+import org.gstreamer.PadLinkReturn;
 import org.gstreamer.Pipeline;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
+import org.gstreamer.StateChangeReturn;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
@@ -71,8 +74,8 @@ public interface GstAPI extends Library {
      * GstElement methods
      */
     NativeLong gst_element_get_type();
-    int gst_element_set_state(Element elem, State state);
-    int gst_element_get_state(Element elem, IntByReference state, IntByReference pending, long timeout);
+    StateChangeReturn gst_element_set_state(Element elem, State state);
+    StateChangeReturn gst_element_get_state(Element elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Element elem, IntByReference fmt, LongByReference pos);
     boolean gst_element_query_duration(Element elem, IntByReference fmt, LongByReference pos);
     boolean gst_element_seek(Element elem, double rate, Format format, int flags,
@@ -82,7 +85,7 @@ public interface GstAPI extends Library {
     boolean gst_element_link_many(Element... elements);
     void gst_element_unlink_many(Element... elements);
     void gst_element_unlink(Element elem1, Element elem2);
-    Pointer gst_element_get_pad(Element elem, String name);
+    Pad gst_element_get_pad(Element elem, String name);
     boolean gst_element_add_pad(Element elem, Pad pad);
     boolean gst_element_remove_pad(Element elem, Pad pad);
     boolean gst_element_link_pads(Element src, String srcpadname, Element dest, String destpadname);
@@ -94,8 +97,8 @@ public interface GstAPI extends Library {
     Pointer gst_element_iterate_src_pads(Element element);
     Pointer gst_element_iterate_sink_pads(Element element);
     /* factory management */
-    Pointer gst_element_get_factory(Element element);
-    Pointer gst_element_get_bus(Element element);
+    ElementFactory gst_element_get_factory(Element element);
+    Bus gst_element_get_bus(Element element);
     
     /*
      * GstGhostPad functions
@@ -108,14 +111,14 @@ public interface GstAPI extends Library {
      */
     Pointer gst_pipeline_new(String name);
     NativeLong gst_pipeline_get_type();
-    Pointer gst_pipeline_get_bus(Pipeline pipeline);
+    Bus gst_pipeline_get_bus(Pipeline pipeline);
     void gst_pipeline_set_auto_flush_bus(Pipeline pipeline, boolean flush);
     boolean gst_pipeline_get_auto_flush_bus(Pipeline pipeline);
     void gst_pipeline_set_new_stream_time(Pipeline pipeline, Time time);
     long gst_pipeline_get_last_stream_time(Pipeline pipeline);
     void gst_pipeline_use_clock(Pipeline pipeline, Clock clock);
     boolean gst_pipeline_set_clock(Pipeline pipeline, Clock clock);
-    Pointer gst_pipeline_get_clock(Pipeline pipeline);
+    Clock gst_pipeline_get_clock(Pipeline pipeline);
     void gst_pipeline_auto_clock(Pipeline pipeline);
     void gst_pipeline_set_delay(Pipeline pipeline, Time delay);
     long gst_pipeline_get_delay(Pipeline pipeline);
@@ -128,8 +131,8 @@ public interface GstAPI extends Library {
     void gst_object_unref(GstObject ptr);
     void gst_object_sink(GstObject ptr);
     
-    void gst_object_set_name(GstObject ptr, String name);
-    Pointer gst_object_get_name(GstObject ptr); // returns a string - needs to be freed
+    void gst_object_set_name(GstObject obj, String name);
+    Pointer gst_object_get_name(GstObject obj); // returns a string - needs to be freed
     
     /*
      * GstBin functions
@@ -140,8 +143,9 @@ public interface GstAPI extends Library {
     boolean gst_bin_add(Bin bin, Element element);
     void gst_bin_add_many(Bin bin, Element... elements);
     boolean gst_bin_remove(Bin bin, Element element);
-    Pointer gst_bin_get_by_name(Bin bin, String name);
-    Pointer gst_bin_get_by_name_recurse_up(Bin bin, String name);
+    void gst_bin_remove_many(Bin bin, Element... elements);
+    Element gst_bin_get_by_name(Bin bin, String name);
+    Element gst_bin_get_by_name_recurse_up(Bin bin, String name);
     Pointer gst_bin_iterate_elements(Bin bin);
     Pointer gst_bin_iterate_sorted(Bin bin);
     Pointer gst_bin_iterate_recurse(Bin bin);
@@ -278,7 +282,7 @@ public interface GstAPI extends Library {
             LongByReference rate_num, LongByReference rate_denom);
     /* master/slave clocks */
     boolean gst_clock_set_master(Clock clock, Clock master);
-    Pointer gst_clock_get_master(Clock clock);
+    Clock gst_clock_get_master(Clock clock);
     boolean gst_clock_add_observation(Clock clock, long slave, long Master, DoubleByReference r_squared);
     
     /* getting and adjusting internal time */
@@ -291,14 +295,14 @@ public interface GstAPI extends Library {
     NativeLong gst_pad_get_type();
     boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
     boolean gst_pad_set_caps(Pad pad, Caps caps);
-    Pointer gst_pad_get_caps(Pad pad);
+    Caps gst_pad_get_caps(Pad pad);
     Pointer gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
-    int gst_pad_link(Pad src, Pad sink);
+    PadLinkReturn gst_pad_link(Pad src, Pad sink);
     boolean gst_pad_unlink(Pad src, Pad sink);
     boolean gst_pad_is_linked(Pad pad);
     boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
-    int gst_pad_get_direction(Pad pad);
-    Pointer gst_pad_get_parent_element(Pad pad);
+    PadDirection gst_pad_get_direction(Pad pad);
+    Element gst_pad_get_parent_element(Pad pad);
     NativeLong gst_buffer_get_type();
     
     

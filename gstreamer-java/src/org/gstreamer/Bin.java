@@ -97,9 +97,7 @@ public class Bin extends Element {
      * @param elements The list {@link Element} to remove
      */
     public void removeMany(Element... elements) {
-        for (Element e : elements) {
-            gst.gst_bin_remove(this, e);
-        }
+        gst.gst_bin_remove_many(this, elements);
     }
     private List<Element> elementList(Pointer iter) {
         return new GstIterator<Element>(iter, Element.class).asList();
@@ -120,10 +118,10 @@ public class Bin extends Element {
         return elementList(gst.gst_bin_iterate_sources(this));
     }
     public Element getElementByName(String name) {
-        return Element.objectFor(gst.gst_bin_get_by_name(this, name), false);
+        return gst.gst_bin_get_by_name(this, name);
     }
     public Element getElementByNameRecurseUp(String name) {
-        return Element.objectFor(gst.gst_bin_get_by_name_recurse_up(this, name), false);
+        return gst.gst_bin_get_by_name_recurse_up(this, name);
     }
     public static interface ELEMENTADDED {
         public void elementAdded(Bin bin, Element elem);

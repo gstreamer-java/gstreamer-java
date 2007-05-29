@@ -67,14 +67,14 @@ public class Element extends GstObject {
     public void stop() {
         setState(State.NULL);
     }
-    public void setState(State state) {
-        gst.gst_element_set_state(this, state);
+    public StateChangeReturn setState(State state) {
+        return gst.gst_element_set_state(this, state);
     }
     public void setCaps(Caps caps) {
         gobj.g_object_set(this, "caps", caps);
     }
     public Pad getPad(String padname) {
-        return Pad.objectFor(gst.gst_element_get_pad(this, padname), false);
+        return gst.gst_element_get_pad(this, padname);
     }
     public boolean addPad(Pad pad) {
         return gst.gst_element_add_pad(this, pad);
@@ -119,10 +119,10 @@ public class Element extends GstObject {
         return new Time(duration.getValue());
     }
     public ElementFactory getFactory() {
-        return ElementFactory.objectFor(gst.gst_element_get_factory(this), false);
+        return gst.gst_element_get_factory(this);
     }
     public Bus getBus() {
-        return Bus.objectFor(gst.gst_element_get_bus(this), false);
+        return gst.gst_element_get_bus(this);
     }
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
@@ -299,9 +299,6 @@ public class Element extends GstObject {
     
     static Element objectFor(Pointer ptr, boolean needRef) {
         return (Element) GstObject.objectFor(ptr, Element.class, needRef);
-    }
-    static Element objectFor(Pointer ptr) {
-        return (Element) GstObject.objectFor(ptr, Element.class);
     }
     
     private Map<HandoffListener, HANDOFF> handoffMap =

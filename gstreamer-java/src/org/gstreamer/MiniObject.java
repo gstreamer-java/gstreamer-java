@@ -13,14 +13,14 @@
 package org.gstreamer;
 
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GstAPI;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 import org.gstreamer.lowlevel.GstTypes;
 
 /**
  *
  */
 public class MiniObject extends NativeObject {
-    private static GstAPI gst = GstAPI.gst;
+
     /**
      * Creates a new instance of MiniObject
      */

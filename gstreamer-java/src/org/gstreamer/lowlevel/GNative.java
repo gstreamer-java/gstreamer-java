@@ -19,6 +19,7 @@ import com.sun.jna.Structure;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import org.gstreamer.GstObject;
 
 /**
  *
@@ -29,7 +30,7 @@ public class GNative {
     }
     
     public static Library loadLibrary(String name, Class<? extends Library> interfaceClass) {
-        return (Library) Proxy.newProxyInstance(interfaceClass.getClassLoader(), 
+        return (Library) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
                 new Class[] { interfaceClass }, new Handler(NativeLibrary.getInstance(name)));
     }
     static class Handler implements InvocationHandler {
@@ -37,7 +38,7 @@ public class GNative {
         public Handler(NativeLibrary library) {
             this.library = library;
         }
-        
+        @SuppressWarnings("unchecked")
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             Function f = library.getFunction(method.getName());
             if (args != null) {
@@ -75,7 +76,15 @@ public class GNative {
                     }
                 }
             }
-            return f.invoke(method.getReturnType(), args);
+            Class returnType = method.getReturnType();
+            if (Enum.class.isAssignableFrom(returnType)) {
+                Method valueOf = returnType.getDeclaredMethod("valueOf", new Class[] { int.class });
+                return valueOf.invoke(returnType, f.invokeInt(args));
+            } else if (GstObject.class.isAssignableFrom(returnType)) {
+                return GstObject.returnedObject(f.invokePointer(args), returnType);
+            } else {
+                return f.invoke(returnType, args);
+            }
         }
     }
 }
