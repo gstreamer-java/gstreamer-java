@@ -73,10 +73,10 @@ public class Caps extends NativeObject {
     }
     
     void ref() {
-        gst.gst_caps_ref(handle());
+        gst.gst_caps_ref(this);
     }
     void unref() {
-        gst.gst_caps_unref(handle());
+        gst.gst_caps_unref(this);
     }
     void disposeNativeHandle(Pointer ptr) {
         gst.gst_caps_unref(ptr);

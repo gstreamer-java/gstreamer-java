@@ -24,7 +24,8 @@ public interface GlibAPI extends Library {
     void g_main_loop_run(GMainLoop loop);
     boolean g_main_loop_is_running(GMainLoop loop);
     void g_main_loop_quit(GMainLoop loop);
-    void g_main_loop_ref(Pointer ptr);
+    void g_main_loop_ref(GMainLoop ptr);
+    void g_main_loop_unref(GMainLoop ptr);
     void g_main_loop_unref(Pointer ptr);
     
     /*
