@@ -14,7 +14,7 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
-import org.gstreamer.lowlevel.BufferStruct;
+import org.gstreamer.lowlevel.GstAPI.BufferStruct;
 
 /**
  *

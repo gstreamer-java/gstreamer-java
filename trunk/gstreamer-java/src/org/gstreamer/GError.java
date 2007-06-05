@@ -12,7 +12,7 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.GErrorStruct;
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 
 /**
  *

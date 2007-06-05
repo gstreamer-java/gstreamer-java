@@ -25,10 +25,10 @@ import java.util.logging.Logger;
 import org.gstreamer.event.BusListener;
 import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.StateEvent;
-import org.gstreamer.lowlevel.GErrorStruct;
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
-import org.gstreamer.lowlevel.MessageStruct;
+import org.gstreamer.lowlevel.GstAPI.MessageStruct;
 
 
 /**
