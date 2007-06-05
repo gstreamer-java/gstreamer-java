@@ -307,5 +307,67 @@ public interface GstAPI extends Library {
     Element gst_pad_get_parent_element(Pad pad);
     NativeLong gst_buffer_get_type();
     
+    public final class BufferStruct extends com.sun.jna.Structure {
+        public MiniObjectStruct mini_object;
+        public Pointer data;
+        public int size;
+        public long timestamp;
+        public long duration;
+        public Pointer caps;
+        public long offset;
+        public long offset_end;
+        public Pointer malloc_data;
+        public BufferStruct(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+        public void write() {};
+    }
+    public class MiniObjectStruct extends com.sun.jna.Structure {
+        public GTypeInstance instance;
+        public int refcount;
+        public int flags;
+        public Pointer _gst_reserved;
+        
+        /** Creates a new instance of GstMiniObjectStructure */
+        public MiniObjectStruct() {}
+        public MiniObjectStruct(Pointer ptr) {
+            useMemory(ptr, 0);
+            read();
+        }
+        public void write() { }
+    }
+    public final class MessageStruct extends com.sun.jna.Structure {
+        public MiniObjectStruct mini_object;
+        public Pointer lock;
+        public Pointer cond;
+        public int type;
+        public long timestamp;
+        public Pointer src;
+        public Pointer structure;
+        
+        /**
+         * Creates a new instance of MessageStruct
+         */
+        public MessageStruct() {
+        }
+        public MessageStruct(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+        public void write() { }
+    }
+    
+    public class GErrorStruct extends com.sun.jna.Structure {
+        public int domain; /* GQuark */
+        public int code;
+        public String message;
+        
+        /** Creates a new instance of GError */
+        public GErrorStruct(Pointer ptr) {
+            useMemory(ptr, 0);
+            read();
+        }
+    }
     
 }
