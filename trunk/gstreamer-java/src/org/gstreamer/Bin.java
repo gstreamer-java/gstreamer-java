@@ -68,7 +68,6 @@ public class Bin extends Element {
      * @return true if the element was successfully removed
      */
     public boolean add(Element element) {
-//        return gst.gst_bin_add(handle(), element.handle());
         return gst.gst_bin_add(this, element);
     }
     
