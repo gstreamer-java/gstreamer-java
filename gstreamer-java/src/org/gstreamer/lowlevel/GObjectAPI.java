@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -14,15 +14,19 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.HashMap;
 import org.gstreamer.GObject;
 
 /**
  *
  */
 public interface GObjectAPI extends Library {
-    GObjectAPI gobj = (GObjectAPI) GNative.loadLibrary("gobject-2.0", GObjectAPI.class);
+    GObjectAPI gobj = (GObjectAPI) Native.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
+        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+    }});
     void g_object_set_property(GObject obj, String property, Object data);
     void g_object_set(GObject obj, String propertyName, Object... data);
     void g_object_get(GObject obj, String propertyName, Object... data);

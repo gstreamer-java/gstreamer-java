@@ -14,6 +14,7 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
+import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.ByteByReference;
@@ -21,6 +22,7 @@ import com.sun.jna.ptr.DoubleByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.HashMap;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
@@ -41,12 +43,15 @@ import org.gstreamer.Structure;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
+import org.gstreamer.annotations.FreeReturnValue;
 
 /**
  *
  */
 public interface GstAPI extends Library {
-    GstAPI gst = (GstAPI) GNative.loadLibrary("gstreamer-0.10", GstAPI.class);
+    GstAPI gst = (GstAPI) Native.loadLibrary("gstreamer-0.10", GstAPI.class, new HashMap<String, Object>() {{
+        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+    }});
     String gst_version_string();
     void gst_version(LongByReference major, LongByReference minor, LongByReference micro, LongByReference nano);
     void gst_init(IntByReference argc, PointerByReference argv);
@@ -132,7 +137,8 @@ public interface GstAPI extends Library {
     void gst_object_sink(GstObject ptr);
     
     void gst_object_set_name(GstObject obj, String name);
-    Pointer gst_object_get_name(GstObject obj); // returns a string - needs to be freed
+    @FreeReturnValue
+    String gst_object_get_name(GstObject obj); // returns a string - needs to be freed
     
     /*
      * GstBin functions
@@ -298,7 +304,8 @@ public interface GstAPI extends Library {
     boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
     boolean gst_pad_set_caps(Pad pad, Caps caps);
     Caps gst_pad_get_caps(Pad pad);
-    Pointer gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
+    @FreeReturnValue
+    String gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
     PadLinkReturn gst_pad_link(Pad src, Pad sink);
     boolean gst_pad_unlink(Pad src, Pad sink);
     boolean gst_pad_is_linked(Pad pad);

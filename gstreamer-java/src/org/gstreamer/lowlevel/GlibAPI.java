@@ -13,13 +13,16 @@
 package org.gstreamer.lowlevel;
 import com.sun.jna.*;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.HashMap;
 import org.gstreamer.GMainLoop;
 
 /**
  *
  */
 public interface GlibAPI extends Library {
-    GlibAPI glib = (GlibAPI) GNative.loadLibrary("glib-2.0", GlibAPI.class);
+    GlibAPI glib = (GlibAPI) Native.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
+        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+    }});
     Pointer g_main_loop_new(GMainContext context, boolean running);
     void g_main_loop_run(GMainLoop loop);
     boolean g_main_loop_is_running(GMainLoop loop);

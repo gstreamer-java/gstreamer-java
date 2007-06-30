@@ -62,10 +62,7 @@ public class GstObject extends GObject {
     }
     public String getName() {
         logger.entering("GstObject", "getName");
-        Pointer ptr = gst.gst_object_get_name(this);
-        String s = ptr.getString(0, false);
-        glib.g_free(ptr);
-        return s;
+        return gst.gst_object_get_name(this);
     }
     
     void ref() {
