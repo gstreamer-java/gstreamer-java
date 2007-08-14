@@ -101,7 +101,7 @@ public class ElementFactory extends GstObject {
         if (f == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: " + name);
         }
-        ElementFactory factory = (ElementFactory) GstObject.objectFor(f, ElementFactory.class);
+        ElementFactory factory = GstObject.objectFor(f, ElementFactory.class);
         factory.factoryName = name;
         return factory;
     }
@@ -137,6 +137,6 @@ public class ElementFactory extends GstObject {
     private static Element elementFor(Pointer ptr, String factoryName) {
         Class<? extends Element> cls = typeMap.get(factoryName);
         cls = (cls == null) ? Element.class : cls;
-        return (Element) GstObject.objectFor(ptr, cls);
+        return GstObject.objectFor(ptr, cls);
     }
 }

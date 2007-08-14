@@ -298,7 +298,7 @@ public class Element extends GstObject {
     }
     
     static Element objectFor(Pointer ptr, boolean needRef) {
-        return (Element) GstObject.objectFor(ptr, Element.class, needRef);
+        return GstObject.objectFor(ptr, Element.class, needRef);
     }
     
     private Map<HandoffListener, HANDOFF> handoffMap =

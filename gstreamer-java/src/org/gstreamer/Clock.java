@@ -26,6 +26,6 @@ public class Clock extends GstObject {
         return objectFor(ptr, true);
     }
     static Clock objectFor(Pointer ptr, boolean needRef) {
-        return (Clock) GstObject.objectFor(ptr, Clock.class, needRef);
+        return GstObject.objectFor(ptr, Clock.class, needRef);
     }
 }

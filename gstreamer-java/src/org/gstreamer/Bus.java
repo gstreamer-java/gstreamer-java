@@ -64,7 +64,7 @@ public class Bus extends GstObject {
         gst.gst_bus_set_flushing(this, flushing ? 1 : 0);
     }
     public static Bus objectFor(Pointer ptr, boolean needRef) {
-        return (Bus) GstObject.objectFor(ptr, Bus.class, needRef);
+        return GstObject.objectFor(ptr, Bus.class, needRef);
     }
     public static interface EOS {
         public void eosMessage(GstObject source);

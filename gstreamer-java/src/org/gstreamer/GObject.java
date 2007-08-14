@@ -128,24 +128,23 @@ public abstract class GObject extends NativeObject {
     public static GObject objectFor(Pointer ptr, Class<? extends GObject> defaultClass) {
         return GObject.objectFor(ptr, defaultClass, true);
     }
+    
     @SuppressWarnings("unchecked")
-    public static GObject objectFor(Pointer ptr, Class<? extends GObject> defaultClass, boolean needRef) {
+    public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {
         logger.entering("GObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
             return null;
         }
         // Try to retrieve an existing instance for the pointer
+        // This is done here instead of just leaving it up to NativeObject.objectFor()
+        // so the object type does not need to be read from native memory if there 
+        // is already a proxy instnace
         NativeObject obj = NativeObject.instanceFor(ptr);
-        if (obj != null) {
-            return (GObject) obj;
-        }
-        // Try to figure out what type of object it is by checking its GType
-        Class<? extends GObject> cls = GstTypes.classFor(ptr);
-        if (cls == null) {
-            cls = defaultClass;
-        }
-        return (GObject) NativeObject.objectFor(ptr, cls, needRef);
+        if (obj != null && defaultClass.isInstance(obj)) {
+            return (T) obj;
+        }        
+        return NativeObject.objectFor(ptr, NativeObject.classFor(ptr, defaultClass), needRef);
     }
     
     /*

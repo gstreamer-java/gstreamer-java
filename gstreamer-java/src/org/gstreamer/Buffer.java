@@ -59,7 +59,7 @@ public class Buffer extends MiniObject {
         return struct.data.getByteBuffer(0, struct.size);
     }
     public static Buffer objectFor(Pointer ptr, boolean needRef) {
-        return (Buffer) MiniObject.objectFor(ptr, Buffer.class, needRef);
+        return MiniObject.objectFor(ptr, Buffer.class, needRef);
     }
     private BufferStruct struct;
 }

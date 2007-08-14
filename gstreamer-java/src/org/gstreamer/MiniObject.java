@@ -40,18 +40,21 @@ public class MiniObject extends NativeObject {
     void disposeNativeHandle(Pointer ptr) {
         gst.gst_mini_object_unref(ptr);
     }
+    
     @SuppressWarnings("unchecked")
-    public static MiniObject objectFor(Pointer ptr, Class<? extends NativeObject> defaultClass, boolean needRef) {
+    public static <T extends MiniObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {        
+        // Ignore null pointers
+        if (ptr == null || !ptr.isValid()) {
+            return null;
+        }
         // Try to retrieve an existing instance for the pointer
+        // This is done here instead of just leaving it up to NativeObject.objectFor()
+        // so the object type does not need to be read from native memory if there 
+        // is already a proxy instnace
         NativeObject obj = NativeObject.instanceFor(ptr);
-        if (obj != null) {
-            return (MiniObject) obj;
-        }
-        // Try to figure out what type of object it is by checking its GType
-        Class<? extends NativeObject> cls = GstTypes.classFor(ptr);
-        if (cls == null) {
-            cls = defaultClass;
-        }
-        return (MiniObject) NativeObject.objectFor(ptr, cls, needRef);
+        if (obj != null && defaultClass.isInstance(obj)) {
+            return (T) obj;
+        }        
+        return NativeObject.objectFor(ptr, NativeObject.classFor(ptr, defaultClass), needRef);
     }
 }

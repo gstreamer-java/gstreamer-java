@@ -69,7 +69,7 @@ public class Caps extends NativeObject {
     }
 
     public static Caps objectFor(Pointer ptr, boolean needRef) {
-        return (Caps) NativeObject.objectFor(ptr, Caps.class, needRef);
+        return NativeObject.objectFor(ptr, Caps.class, needRef);
     }
     
     void ref() {
