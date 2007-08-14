@@ -35,7 +35,7 @@ public class Pad extends GstObject {
     }
     
     public static Pad objectFor(Pointer ptr, boolean needRef) {
-        return (Pad) GstObject.objectFor(ptr, Pad.class, needRef);
+        return GstObject.objectFor(ptr, Pad.class, needRef);
     }
     
     public Caps getCaps() {

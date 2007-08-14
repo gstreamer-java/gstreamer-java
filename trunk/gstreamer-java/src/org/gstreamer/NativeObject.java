@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gstreamer.lowlevel.GstTypes;
 
 /**
  *
@@ -87,12 +88,13 @@ abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
         return ref != null ? ref.get() : null;
     }
-    public static NativeObject objectFor(Pointer ptr, Class<? extends NativeObject> cls, boolean needRef) {
+    public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, boolean needRef) {
         return objectFor(ptr, cls, needRef, true);
     }
-
-    public static NativeObject objectFor(Pointer ptr, Class<? extends NativeObject> cls, boolean needRef, boolean ownsHandle) {
+    @SuppressWarnings("unchecked")
+    public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, boolean needRef, boolean ownsHandle) {
         logger.entering("NativeObject", "instanceFor", new Object[] { ptr, ownsHandle, needRef });
+        
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
             return null;
@@ -100,8 +102,8 @@ abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj == null || !(cls.isInstance(obj))) {
             try {
-                Constructor constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
-                obj = (NativeObject) constructor.newInstance(ptr, needRef, ownsHandle);
+                Constructor<T> constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
+                return constructor.newInstance(ptr, needRef, ownsHandle);
             } catch (SecurityException ex) {
                 throw new RuntimeException(ex);
             } catch (IllegalAccessException ex) {
@@ -113,16 +115,16 @@ abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
             } catch (InvocationTargetException ex) {
                 throw new RuntimeException(ex);
             }
-        }
-        return obj;
+        }        
+        return (T) obj;
     }
-    static Pointer[] getObjectHandlesV(NativeObject... objects) {
-        Pointer[] handles = new Pointer[objects.length + 1];
-        for (int i = 0; i < objects.length; ++i) {
-            handles[i] = objects[i].handle();
-        }
-        return handles;
+    
+    @SuppressWarnings("unchecked")
+    protected static <T extends NativeObject> Class<T> classFor(Pointer ptr, Class<T> defaultClass) {
+        Class<?> cls = GstTypes.classFor(ptr);
+        return (cls != null) ? (Class<T>) cls : defaultClass;        
     }
+    
     @Override
     public boolean equals(Object o) {
         return o instanceof NativeObject && ((NativeObject) o).handle().equals(handle());

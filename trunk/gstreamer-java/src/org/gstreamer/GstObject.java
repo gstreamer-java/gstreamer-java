@@ -75,20 +75,21 @@ public class GstObject extends GObject {
         gst.gst_object_sink(this);
     }
     
-    public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass) {
+    public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
         return GstObject.objectFor(ptr, defaultClass, true);
     }
    
-    public static GstObject objectFor(Pointer ptr, Class<? extends GstObject> defaultClass, boolean needRef) {
+    public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
-        return (GstObject) GObject.objectFor(ptr, defaultClass, needRef);
+        return GObject.objectFor(ptr, defaultClass, needRef);
     }
     
     //
     // Returned objects have their refcount incremented by gstreamer.  If we
     // have an existing object for the pointer, unref() it to remove the extra ref.
     //
-    public static GstObject returnedObject(Pointer ptr, Class<? extends GstObject> defaultClass) {
+    @SuppressWarnings("unchecked")
+    public static <T extends GstObject> T returnedObject(Pointer ptr, Class<T> defaultClass) {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass });
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
@@ -98,14 +99,8 @@ public class GstObject extends GObject {
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj != null) {
             obj.unref(); // Lose the extra ref added by gstreamer
-            return (GstObject) obj;
-        }
-        // Try to figure out what type of object it is by checking its GType
-        @SuppressWarnings("unchecked")
-        Class<? extends GObject> cls = GstTypes.classFor(ptr);
-        if (cls == null) {
-            cls = defaultClass;
-        }
-        return (GstObject) NativeObject.objectFor(ptr, cls, false);
+            return (T) obj;
+        }        
+        return NativeObject.objectFor(ptr, NativeObject.classFor(ptr, defaultClass), false);
     }
 }
