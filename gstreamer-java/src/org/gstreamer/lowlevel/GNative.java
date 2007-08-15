@@ -14,6 +14,7 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 import com.sun.jna.Platform;
 import java.util.Map;
 
@@ -46,5 +47,27 @@ public class GNative {
             }
         }
         throw new UnsatisfiedLinkError("Could not load library " + name);
+    }
+    private static NativeLibrary getWin32NativeLibrary(String name) {
+        //
+        // gstreamer on win32 names the dll files one of foo.dll, libfoo.dll and libfoo-0.dll
+        //
+        String[] nameFormats = { 
+            "%s", "lib%s", "lib%s-0",                   
+        };
+        for (int i = 0; i < nameFormats.length; ++i) {
+            try {
+                return NativeLibrary.getInstance(String.format(nameFormats[i], name));
+            } catch (UnsatisfiedLinkError ex) {                
+                continue;
+            }
+        }
+        throw new UnsatisfiedLinkError("Could not load library " + name);
+    }
+    public static NativeLibrary getNativeLibrary(String name) {
+        if (Platform.isWindows()) {
+            return getWin32NativeLibrary(name);
+        }
+        return NativeLibrary.getInstance(name);
     }
 }

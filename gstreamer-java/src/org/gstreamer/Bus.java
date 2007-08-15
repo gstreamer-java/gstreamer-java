@@ -13,7 +13,6 @@
 package org.gstreamer;
 
 import com.sun.jna.Callback;
-import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +24,7 @@ import java.util.logging.Logger;
 import org.gstreamer.event.BusListener;
 import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.StateEvent;
+import org.gstreamer.lowlevel.GNative;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
@@ -47,7 +47,7 @@ public class Bus extends GstObject {
     public Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
         gst.gst_bus_set_sync_handler(this,
-                NativeLibrary.getInstance("gstreamer-0.10").getFunction("gst_bus_sync_signal_handler"),
+                GNative.getNativeLibrary("gstreamer-0.10").getFunction("gst_bus_sync_signal_handler"),
                 null);
     }
     public void addBusListener(BusListener l) {
