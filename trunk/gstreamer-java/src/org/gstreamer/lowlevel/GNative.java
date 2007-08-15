@@ -26,26 +26,25 @@ public class GNative {
     }
 
     public static Library loadLibrary(String name, Class<? extends Library> interfaceClass, Map options) {
-        if (!Platform.isWindows()) {
-            return Native.loadLibrary(name, interfaceClass, options);
+        if (Platform.isWindows()) {
+            return loadWin32Library(name, interfaceClass, options);
         }
-        
+        return Native.loadLibrary(name, interfaceClass, options);
+    }
+    private static Library loadWin32Library(String name, Class<? extends Library> interfaceClass, Map options) {        
         //
         // gstreamer on win32 names the dll files one of foo.dll, libfoo.dll and libfoo-0.dll
         //
-        String[] nameFormats = { "%s", "lib%s", "lib%s-0" };
+        String[] nameFormats = { 
+            "%s", "lib%s", "lib%s-0",                   
+        };
         for (int i = 0; i < nameFormats.length; ++i) {
             try {
                 return Native.loadLibrary(String.format(nameFormats[i], name), interfaceClass, options);
-            } catch (Throwable ex) {                
-                if (i == (nameFormats.length - 1)) {
-                    if (ex instanceof RuntimeException) {
-                        throw (RuntimeException)ex;
-                    }
-                    throw new RuntimeException(ex);
-                }
+            } catch (UnsatisfiedLinkError ex) {                
+                continue;
             }
         }
-        throw new RuntimeException("Could not load library " + name);
+        throw new UnsatisfiedLinkError("Could not load library " + name);
     }
 }
