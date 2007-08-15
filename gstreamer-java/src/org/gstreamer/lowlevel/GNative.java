@@ -12,79 +12,40 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Function;
 import com.sun.jna.Library;
-import com.sun.jna.NativeLibrary;
-import com.sun.jna.Structure;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import org.gstreamer.GstObject;
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
+import java.util.Map;
 
 /**
  *
  */
 public class GNative {
-    
+
     public GNative() {
     }
-    
-    public static Library loadLibrary(String name, Class<? extends Library> interfaceClass) {
-        return (Library) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-                new Class[] { interfaceClass }, new Handler(NativeLibrary.getInstance(name)));
-    }
-    static class Handler implements InvocationHandler {
-        NativeLibrary library;
-        public Handler(NativeLibrary library) {
-            this.library = library;
+
+    public static Library loadLibrary(String name, Class<? extends Library> interfaceClass, Map options) {
+        if (!Platform.isWindows()) {
+            return Native.loadLibrary(name, interfaceClass, options);
         }
-        @SuppressWarnings("unchecked")
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            Function f = library.getFunction(method.getName());
-            if (args != null) {
-                //
-                // Turn a java varargs argument into a NULL terminated C varargs array
-                //
-                if (args[args.length - 1] != null) {
-                    Object arg = args[args.length - 1];
-                    Class cls = arg.getClass();
-                    if (cls.isArray() && !cls.getComponentType().isPrimitive()
-                            && !Structure.class.isAssignableFrom(cls.getComponentType())) {
-                        Object[] varargs = (Object[]) arg;
-                        Object[] newArgs = new Object[args.length + varargs.length];
-                        System.arraycopy(args, 0, newArgs, 0, args.length - 1);
-                        System.arraycopy(varargs, 0, newArgs, args.length - 1, varargs.length);
-                        newArgs[newArgs.length - 1] = null;
-                        args = newArgs;
+        
+        //
+        // gstreamer on win32 names the dll files one of foo.dll, libfoo.dll and libfoo-0.dll
+        //
+        String[] nameFormats = { "%s", "lib%s", "lib%s-0" };
+        for (int i = 0; i < nameFormats.length; ++i) {
+            try {
+                return Native.loadLibrary(String.format(nameFormats[i], name), interfaceClass, options);
+            } catch (Throwable ex) {                
+                if (i == (nameFormats.length - 1)) {
+                    if (ex instanceof RuntimeException) {
+                        throw (RuntimeException)ex;
                     }
-                }
-                // Convert any local types into standard JNA types
-                for (int i = 0; i < args.length; ++i) {
-                    
-                    if (args[i] instanceof NativeValue) {
-                        args[i] = ((NativeValue)args[i]).nativeValue();
-                    } else if (args[i] instanceof Enum) {
-                        Enum e = (Enum) args[i];
-                        try {
-                            Method intValue = e.getClass().getMethod("intValue", new Class[] {});
-                            args[i] = intValue.invoke(e, new Object[] {});
-                        } catch (NoSuchMethodException ex) {
-                            args[i] = new Integer(e.ordinal());
-                        }
-                    } else if (args[i] instanceof Boolean) {
-                        args[i] = new Integer(Boolean.TRUE.equals(args[i]) ? 1 : 0);
-                    }
+                    throw new RuntimeException(ex);
                 }
             }
-            Class returnType = method.getReturnType();
-            if (Enum.class.isAssignableFrom(returnType)) {
-                Method valueOf = returnType.getDeclaredMethod("valueOf", new Class[] { int.class });
-                return valueOf.invoke(returnType, f.invokeInt(args));
-            } else if (GstObject.class.isAssignableFrom(returnType)) {
-                return GstObject.returnedObject(f.invokePointer(args), returnType);
-            } else {
-                return f.invoke(returnType, args);
-            }
         }
+        throw new RuntimeException("Could not load library " + name);
     }
 }

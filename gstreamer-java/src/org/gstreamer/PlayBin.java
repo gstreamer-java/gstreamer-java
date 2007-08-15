@@ -88,7 +88,11 @@ public class PlayBin extends Pipeline {
         
         // Need to fixup file:/ to be file:/// for gstreamer
         if ("file".equals(uri.getScheme())) {
-            uriString = "file://" + uri.getPath();
+            if (com.sun.jna.Platform.isWindows()) {
+                uriString = "file:/" + uri.getPath();
+            } else {
+                uriString = "file://" + uri.getPath();
+            }
         }
         set("uri", uriString);
     }

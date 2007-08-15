@@ -20,6 +20,7 @@ import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import org.gstreamer.GstObject;
 import org.gstreamer.annotations.FreeReturnValue;
 
@@ -28,45 +29,61 @@ import org.gstreamer.annotations.FreeReturnValue;
  * @author wayne
  */
 public class GTypeMapper implements com.sun.jna.TypeMapper {
-    
+
     public GTypeMapper() {
     }
     private static ToNativeConverter nativeValueArgumentConverter = new ToNativeConverter() {
+
+        @Override
         public Object toNative(Object arg) {
-            return ((NativeValue)arg).nativeValue();
+            return ((NativeValue) arg).nativeValue();
         }
     };
     private static FromNativeConverter gstObjectResultConverter = new FromNativeConverter() {
-        @SuppressWarnings("unchecked")
+
+        @SuppressWarnings(value = "unchecked")
+        @Override
         public Object fromNative(Object result, FromNativeContext context) {
-            return GstObject.returnedObject((Pointer)result, context.getTargetType());
+            return GstObject.returnedObject((Pointer) result, context.getTargetType());
         }
-        
+
+        @Override
         public Class nativeType() {
             return Pointer.class;
         }
     };
     private static TypeConverter enumConverter = new TypeConverter() {
-        @SuppressWarnings("unchecked")
+
+        @SuppressWarnings(value = "unchecked")
+        @Override
         public Object fromNative(Object value, FromNativeContext context) {
             Class<? extends Enum> returnType = context.getTargetType();
             try {
-                Method valueOf = returnType.getDeclaredMethod("valueOf", new Class[] { int.class });
+                Method valueOf = returnType.getDeclaredMethod("valueOf", new Class[]{int.class});
+                if ((valueOf.getModifiers() & Modifier.STATIC) == 0) {
+                    throw new IllegalArgumentException(returnType.getName() + ".valueOf(int) MUST be static");
+                }
                 return valueOf.invoke(returnType, value);
-            } catch (Exception e) {
-                return new Integer(0);
+            } catch (NoSuchMethodException ex) {
+            throw new IllegalArgumentException("Enum requires a 'valueOf(Integer)' method", ex);
+            } catch (RuntimeException ex) {
+                throw ex;
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to convert int to Enum", ex);
             }
         }
-        
+
+        @Override
         public Class nativeType() {
             return Integer.class;
         }
-        
+
+        @Override
         public Object toNative(Object arg) {
             Enum e = (Enum) arg;
             try {
-                Method intValue = e.getClass().getMethod("intValue", new Class[] {});
-                return intValue.invoke(e, new Object[] {});
+                Method intValue = e.getClass().getMethod("intValue", new Class[]{});
+                return intValue.invoke(e, new Object[]{});
             } catch (NoSuchMethodException ex) {
                 return new Integer(e.ordinal());
             } catch (IllegalAccessException ex) {
@@ -76,9 +93,10 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             }
         }
     };
-    
+
     private FromNativeConverter stringResultConverter = new FromNativeConverter() {
-        
+
+        @Override
         public Object fromNative(Object result, FromNativeContext context) {
             FunctionResultContext functionContext = (FunctionResultContext) context;
             Method method = functionContext.getFunction().getMethod();
@@ -89,19 +107,24 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             }
             return s;
         }
-        
+
+        @Override
         public Class nativeType() {
             return Pointer.class;
         }
     };
-    
+
     private ToNativeConverter booleanArgumentConverter = new ToNativeConverter() {
-        static final int TRUE = 1, FALSE = 0;
-        
+        static final int TRUE = 1;
+        static final int FALSE = 0;
+
+        @Override
         public Object toNative(Object arg) {
             return Boolean.TRUE.equals(arg) ? TRUE : FALSE;
         }
     };
+
+    @Override
     public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;
@@ -112,17 +135,16 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         }
         return null;
     }
+
+    @Override
     public ToNativeConverter getToNativeConverter(Class type) {
         if (NativeValue.class.isAssignableFrom(type)) {
             return nativeValueArgumentConverter;
         } else if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;
-            
         } else if (Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type)) {
             return booleanArgumentConverter;
-            
         }
         return null;
     }
-    
 }
