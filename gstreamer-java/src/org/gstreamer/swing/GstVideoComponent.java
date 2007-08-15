@@ -37,9 +37,10 @@ public class GstVideoComponent extends javax.swing.JComponent {
     Element fakesink, videofilter;
     Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
     Object quality = RenderingHints.VALUE_RENDER_SPEED;
-    private static boolean openglEnabled;
-    private static boolean useVolatile;
-    private static boolean quartzEnabled;
+    private static boolean openglEnabled = false;
+    private static boolean useVolatile = false;
+    private static boolean quartzEnabled = false;
+    private static boolean ddscaleEnabled = false;
     private Bin bin;
     private boolean keepAspect = true;
     private float alpha = 1.0f;
@@ -53,7 +54,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
             String quartzProperty = System.getProperty("apple.awt.graphics.UseQuartz");
             quartzEnabled = Boolean.parseBoolean(quartzProperty);
         } finally { }
-        
+        try {
+            String ddscaleProperty = System.getProperty("sun.java2d.ddscale");
+            String d3dProperty = System.getProperty("sun.java2d.d3d");
+            ddscaleEnabled = Boolean.parseBoolean(ddscaleProperty) && Boolean.parseBoolean(d3dProperty);
+        } finally { }
     }
     /** Creates a new instance of GstVideoComponent */
     public GstVideoComponent() {
@@ -84,6 +89,12 @@ public class GstVideoComponent extends javax.swing.JComponent {
             //interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
             //quality = RenderingHints.VALUE_RENDER_QUALITY;
             useVolatile = true; // a bit faster on MacOSX ?
+        }
+        if (ddscaleEnabled) {
+            // Bilinear interpolation can be accelerated by the OpenGL pipeline
+            interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+            //quality = RenderingHints.VALUE_RENDER_QUALITY;
+            useVolatile = false;
         }
         //
         // Link the ghost pads on the bin to the sink pad on the convertor
