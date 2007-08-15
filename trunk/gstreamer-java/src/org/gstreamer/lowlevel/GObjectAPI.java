@@ -24,7 +24,7 @@ import org.gstreamer.GObject;
  *
  */
 public interface GObjectAPI extends Library {
-    GObjectAPI gobj = (GObjectAPI) Native.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
+    GObjectAPI gobj = (GObjectAPI) GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     void g_object_set_property(GObject obj, String property, Object data);

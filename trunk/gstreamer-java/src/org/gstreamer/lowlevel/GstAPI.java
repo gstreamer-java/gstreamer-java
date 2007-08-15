@@ -49,7 +49,7 @@ import org.gstreamer.annotations.FreeReturnValue;
  *
  */
 public interface GstAPI extends Library {
-    GstAPI gst = (GstAPI) Native.loadLibrary("gstreamer-0.10", GstAPI.class, new HashMap<String, Object>() {{
+    GstAPI gst = (GstAPI) GNative.loadLibrary("gstreamer-0.10", GstAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     String gst_version_string();
