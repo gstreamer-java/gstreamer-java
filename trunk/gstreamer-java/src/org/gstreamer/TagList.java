@@ -16,6 +16,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class TagList extends Structure {
         return ret;
     }
     public Number getNumber(String tag, int index) {
-        switch (tagTypeMap.get(tag)) {
+        switch (getTagType(tag)) {
         case INT:
             return getInt(tag, index);
         case UINT:
@@ -95,7 +96,7 @@ public class TagList extends Structure {
         return value.getValue();
     }
     private boolean isTagType(String tag, GType type) {
-        return getTypeMap().get(tag) == type;
+        return getTagType(tag) == type;
     }
     private void ensureType(String tag, GType type) {
         if (!isTagType(tag, type)) {
@@ -113,9 +114,8 @@ public class TagList extends Structure {
     }
     public Map<String, Object> getTags() {
         final Map<String, Object> m = new HashMap<String, Object>();
-        Map<String, GType> typeMap = getTypeMap();
-        for (String tag : getTagNames()) {
-            switch (typeMap.get(tag)) {
+        for (String tag : getTagNames()) {            
+            switch (getTagType(tag)) {
             case STRING:
                 m.put(tag, getString(tag));
                 break;
@@ -138,23 +138,20 @@ public class TagList extends Structure {
     public TagList merge(TagList list2, TagMergeMode mode) {
         return new TagList(gst.gst_tag_list_merge(this, list2, mode));
     }
-    public Map<String, GType> getTypeMap() {
-        synchronized (tagTypeMap) {
-            //--------------------------------------------------------------------------
-            // Pre-cache all the tag types (i.e. are they string, int, etc)
-            //
-            if (tagTypeMap.isEmpty()) {
-                for (Tag tag : Tag.values()) {
-                    tagTypeMap.put(tag.getId(), GType.valueOf(gst.gst_tag_get_type(tag.getId())));
-                }
-            }
+    public static GType getTagType(String tag) {        
+
+        GType type = tagTypeMap.get(tag);
+        if (type != null) {
+            return type;
         }
-        return tagTypeMap;
+        tagTypeMap.put(tag, type = GType.valueOf(gst.gst_tag_get_type(tag)));
+        return type;
     }
+    
     void ref() {}
     void unref() {}
     void disposeNativeHandle(Pointer ptr) {
         gst.gst_tag_list_free(ptr);
     }
-    static final Map<String, GType> tagTypeMap = new HashMap<String, GType>();
+    static final Map<String, GType> tagTypeMap = Collections.synchronizedMap(new HashMap<String, GType>());
 }
