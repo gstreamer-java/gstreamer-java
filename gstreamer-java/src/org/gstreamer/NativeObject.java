@@ -25,7 +25,7 @@ import org.gstreamer.lowlevel.GstTypes;
 /**
  *
  */
-abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
+public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     static Logger logger = Logger.getLogger(NativeObject.class.getName());
     static Level LIFECYCLE = Level.FINE;
     /** Creates a new instance of NativeObject */

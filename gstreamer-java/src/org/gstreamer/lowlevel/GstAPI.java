@@ -183,7 +183,8 @@ public interface GstAPI extends Library {
     NativeLong gst_bus_add_watch(Bus bus, BusCallback function, Pointer data);
     void gst_bus_set_sync_handler(Bus bus, Pointer function, Pointer data);
     void gst_bus_set_sync_handler(Bus bus, Callback function, Pointer data);
-    
+    void gst_bus_enable_sync_message_emission(Bus bus);
+
     /*
      * GstMessage functions
      */
@@ -236,6 +237,11 @@ public interface GstAPI extends Library {
     boolean gst_structure_fixate_field_nearest_int(Structure structure, String field, int target);
     Pointer gst_structure_from_string(String data, PointerByReference end);
     Pointer gst_structure_copy(Structure src);
+    
+    String gst_structure_get_name(Structure structure);
+    void gst_structure_set_name(Structure structure, String name);
+    boolean gst_structure_has_name(Structure structure, String name); 
+
     /*
      * GstTagList functions
      */
@@ -297,6 +303,9 @@ public interface GstAPI extends Library {
     long gst_clock_get_internal_time(Clock clock);
     long gst_clock_adjust_unlocked(Clock clock, long internal);
     
+    boolean gst_element_implements_interface(Element element, NativeLong iface_type);    
+    Pointer gst_implements_interface_cast(GstObject obj, NativeLong gtype);    
+    boolean gst_implements_interface_check(GstObject from, NativeLong type);
     /*
      * GstPad functions
      */
