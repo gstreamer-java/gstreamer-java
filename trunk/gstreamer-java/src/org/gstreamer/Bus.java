@@ -22,9 +22,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.event.BusListener;
+import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.StateEvent;
-import org.gstreamer.lowlevel.GNative;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
@@ -37,7 +37,7 @@ import org.gstreamer.lowlevel.GstAPI.MessageStruct;
 public class Bus extends GstObject {
     static final Logger log = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
-    
+        
     /**
      * Creates a new instance of Bus
      */
@@ -46,9 +46,8 @@ public class Bus extends GstObject {
     }
     public Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
-        gst.gst_bus_set_sync_handler(this,
-                GNative.getNativeLibrary("gstreamer-0.10").getFunction("gst_bus_sync_signal_handler"),
-                null);
+        gst.gst_bus_enable_sync_message_emission(this);
+        gst.gst_bus_set_sync_handler(this, syncCallback, null);
     }
     public void addBusListener(BusListener l) {
         listeners.put(l, new BusListenerProxy(this, l));
@@ -85,7 +84,7 @@ public class Bus extends GstObject {
         public void stateMessage(GstObject source, State old, State current, State pending);
     }
     public void connect(final EOS listener) {
-        connect("sync-message::eos", EOS.class, listener,new Callback() {
+        connect("sync-message::eos", EOS.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 listener.eosMessage(messageSource(msgPtr));
             }
@@ -95,7 +94,7 @@ public class Bus extends GstObject {
         super.disconnect(EOS.class, listener);
     }
     public void connect(final ERROR listener) {
-        connect("sync-message::error", ERROR.class, listener,new Callback() {
+        connect("sync-message::error", ERROR.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_error(msgPtr, err, null);
@@ -109,7 +108,7 @@ public class Bus extends GstObject {
         super.disconnect(ERROR.class, listener);
     }
     public void connect(final WARNING listener) {
-        connect("sync-message::warning", WARNING.class, listener,new Callback() {
+        connect("sync-message::warning", WARNING.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_warning(msgPtr, err, null);
@@ -123,7 +122,7 @@ public class Bus extends GstObject {
         super.disconnect(WARNING.class, listener);
     }
     public void connect(final INFO listener) {
-        connect("sync-message::info", INFO.class, listener,new Callback() {
+        connect("sync-message::info", INFO.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_info(msgPtr, err, null);
@@ -137,7 +136,7 @@ public class Bus extends GstObject {
         super.disconnect(INFO.class, listener);
     }
     public void connect(final STATECHANGED listener) {
-        connect("sync-message::state-changed", STATECHANGED.class, listener,new Callback() {
+        connect("sync-message::state-changed", STATECHANGED.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference o = new IntByReference();
                 IntByReference n = new IntByReference();
@@ -152,7 +151,7 @@ public class Bus extends GstObject {
         super.disconnect(STATECHANGED.class, listener);
     }
     public void connect(final TAG listener) {
-        connect("sync-message::tag", TAG.class, listener,new Callback() {
+        connect("sync-message::tag", TAG.class, listener, new Callback() {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference list = new PointerByReference();
                 gst.gst_message_parse_tag(msgPtr, list);
@@ -163,9 +162,44 @@ public class Bus extends GstObject {
     public void disconnect(TAG listener) {
         super.disconnect(TAG.class, listener);
     }
+    public void setSyncHandler(BusSyncHandler handler) {
+        syncHandler = handler;
+    }
+
+    private BusSyncHandler syncHandler = new BusSyncHandler() {
+        @Override
+        public BusSyncReply syncMessage(Message msg) {
+            return BusSyncReply.PASS;
+        }
+    };
+    private static Callback syncCallback = new Callback() {
+        public int callback(Pointer busPtr, Pointer msgPtr, Pointer data) {
+            Bus bus = (Bus) NativeObject.instanceFor(busPtr);
+            //
+            // If the Bus proxy has been disposed, just ignore
+            //
+            if (bus == null) {
+                return BusSyncReply.PASS.intValue();
+            }
+            // Manually manage the refcount here
+            Message msg = new Message(msgPtr, false, false);            
+            BusSyncReply reply = bus.syncHandler.syncMessage(msg);
+            
+            //
+            // If the message is to be dropped, unref it, otherwise it needs to 
+            // keep its ref to be passed on
+            //
+            if (reply == BusSyncReply.DROP) {
+                gst.gst_mini_object_unref(msg);
+            }
+            return reply.intValue();
+        }
+    };
+    
     private final static GstObject messageSource(Pointer msgPtr) {
         return Element.objectFor(new MessageStruct(msgPtr).src, true);
     }
+    
     private Map<BusListener, BusListenerProxy> listeners
             = Collections.synchronizedMap(new HashMap<BusListener, BusListenerProxy>());
 }
@@ -208,5 +242,5 @@ class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARN
         
     }
     private Bus bus;
-    private BusListener listener;
+    private BusListener listener;    
 }
