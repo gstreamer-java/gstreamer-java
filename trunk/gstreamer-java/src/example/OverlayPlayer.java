@@ -69,7 +69,6 @@ public class OverlayPlayer {
                 bus = player.getBus();
                 
                 bus.connect(new Bus.ERROR() {
-                    @Override
                     public void errorMessage(GstObject source, int code, String message) {
                         System.out.println("Error: code=" + code + " message=" + message);
                     }

@@ -34,7 +34,6 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     }
     private static ToNativeConverter nativeValueArgumentConverter = new ToNativeConverter() {
 
-        @Override
         public Object toNative(Object arg) {
             return ((NativeValue) arg).nativeValue();
         }
@@ -42,12 +41,10 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     private static FromNativeConverter gstObjectResultConverter = new FromNativeConverter() {
 
         @SuppressWarnings(value = "unchecked")
-        @Override
         public Object fromNative(Object result, FromNativeContext context) {
             return GstObject.returnedObject((Pointer) result, context.getTargetType());
         }
-
-        @Override
+        
         public Class nativeType() {
             return Pointer.class;
         }
@@ -55,7 +52,6 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     private static TypeConverter enumConverter = new TypeConverter() {
 
         @SuppressWarnings(value = "unchecked")
-        @Override
         public Object fromNative(Object value, FromNativeContext context) {
             Class<? extends Enum> returnType = context.getTargetType();
             try {
@@ -73,12 +69,10 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             }
         }
 
-        @Override
         public Class nativeType() {
             return Integer.class;
         }
 
-        @Override
         public Object toNative(Object arg) {
             Enum e = (Enum) arg;
             try {
@@ -94,56 +88,73 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         }
     };
 
-    private FromNativeConverter stringResultConverter = new FromNativeConverter() {
+    private TypeConverter stringConverter = new TypeConverter() {
 
-        @Override
         public Object fromNative(Object result, FromNativeContext context) {
-            FunctionResultContext functionContext = (FunctionResultContext) context;
-            Method method = functionContext.getFunction().getMethod();
-            Pointer ptr = (Pointer) result;
-            String s = ptr.getString(0, false);
-            if (method.isAnnotationPresent(FreeReturnValue.class)) {
-                GlibAPI.glib.g_free(ptr);
+            if (context instanceof FunctionResultContext) {
+                FunctionResultContext functionContext = (FunctionResultContext) context;
+                Method method = functionContext.getFunction().getMethod();
+                Pointer ptr = (Pointer) result;
+                String s = ptr.getString(0);
+                if (method.isAnnotationPresent(FreeReturnValue.class)) {
+                    GlibAPI.glib.g_free(ptr);
+                }
+                return s;
+            } else if (result != null) {
+                return ((Pointer) result).getString(0);
             }
-            return s;
+            return null;
         }
 
-        @Override
         public Class nativeType() {
             return Pointer.class;
         }
-    };
 
-    private ToNativeConverter booleanArgumentConverter = new ToNativeConverter() {
-        static final int TRUE = 1;
-        static final int FALSE = 0;
-
-        @Override
         public Object toNative(Object arg) {
-            return Boolean.TRUE.equals(arg) ? TRUE : FALSE;
+            // Let the default String -> native conversion handle it
+            return arg;            
         }
     };
 
-    @Override
+    private TypeConverter booleanConverter = new TypeConverter() {
+        static final int TRUE = 1;
+        static final int FALSE = 0;
+
+        public Object toNative(Object arg) {
+            return Boolean.TRUE.equals(arg) ? TRUE : FALSE;
+        }
+
+        public Object fromNative(Object arg0, FromNativeContext arg1) {
+            return Boolean.valueOf(((Integer)arg0).intValue() != 0);
+        }
+
+        public Class nativeType() {
+            return Integer.class;
+        }
+    };
+
     public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;
         } else if (GstObject.class.isAssignableFrom(type)) {
             return gstObjectResultConverter;
-        } else if (String.class.isAssignableFrom(type)) {
-            return stringResultConverter;
+        } else if (Boolean.class == type || boolean.class == type) {
+            return booleanConverter;
+        } else if (String.class == type) {
+            return stringConverter;
         }
         return null;
     }
 
-    @Override
     public ToNativeConverter getToNativeConverter(Class type) {
         if (NativeValue.class.isAssignableFrom(type)) {
             return nativeValueArgumentConverter;
         } else if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;
-        } else if (Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type)) {
-            return booleanArgumentConverter;
+        } else if (Boolean.class == type || boolean.class == type) {
+            return booleanConverter;
+        } else if (String.class == type) {
+            return stringConverter;
         }
         return null;
     }

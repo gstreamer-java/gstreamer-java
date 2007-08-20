@@ -167,7 +167,6 @@ public class Bus extends GstObject {
     }
 
     private BusSyncHandler syncHandler = new BusSyncHandler() {
-        @Override
         public BusSyncReply syncMessage(Message msg) {
             return BusSyncReply.PASS;
         }
