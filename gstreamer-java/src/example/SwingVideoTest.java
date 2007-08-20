@@ -34,7 +34,7 @@ public class SwingVideoTest {
     public SwingVideoTest() {
     }
     public static void main(String[] args) {
-        int width = 1280, height = 720;
+        int width = 720, height = 576;
         //System.setProperty("sun.java2d.opengl", "true");
         
         args = Gst.init("SwingVideoTest", args);
@@ -64,7 +64,7 @@ public class SwingVideoTest {
         
         System.out.println("Creating caps");
         Caps fltcaps = new Caps("video/x-raw-yuv, width=" + width + ", height=" + height +
-                ", bpp=16, depth=16, framerate=25/1");
+                ", bpp=32, depth=32, framerate=50/1");
         System.out.println("Setting caps");
         flt.setCaps(fltcaps);
         System.out.println("Creating GstVideoComponent");
