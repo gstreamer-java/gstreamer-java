@@ -52,6 +52,7 @@ public class BinTest {
         System.gc();
         for (int i = 0; ref.get() != null && i < 20; ++i) {
             Thread.sleep(10);
+            System.gc();
         }
         return ref.get() == null;
     }
@@ -97,28 +98,7 @@ public class BinTest {
         assertEquals("source not returned", e1, bin.getElementByName("source"));
         assertEquals("sink not returned", e2, bin.getElementByName("sink"));
     }
-    @Test
-    public void testGarbageCollection() throws Exception {
-        Bin bin = new Bin("test");
-        Element e1 = ElementFactory.make("fakesrc", "source");
-        Element e2 = ElementFactory.make("fakesink", "sink");
-        bin.addMany(e1, e2);
-        
-        assertEquals("source not returned", e1, bin.getElementByName("source"));
-        assertEquals("sink not returned", e2, bin.getElementByName("sink"));
-        bin.removeMany(e1, e2);
-        WeakReference<Element> binRef = new WeakReference<Element>(bin);
-        bin = null;
-        assertTrue("First Element not garbage collected", waitGC(binRef));
-        WeakReference<Element> e1Ref = new WeakReference<Element>(e1);
-        WeakReference<Element> e2Ref = new WeakReference<Element>(e2);
-        e1 = null;
-        e2 = null;
-        
-        assertTrue("First Element not garbage collected", waitGC(e1Ref));
-        assertTrue("Second Element not garbage collected", waitGC(e2Ref));
-        
-    } 
+    
     @Test
     public void testElementAddedCallback() throws Exception {
         Bin bin = new Bin("test");
