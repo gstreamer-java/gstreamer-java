@@ -51,11 +51,11 @@ public class Structure extends NativeObject {
     public boolean fixateFieldNearestInteger(String field, Integer target) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, target);
     } 
-    String getName() {
+    public String getName() {
         return gst.gst_structure_get_name(this);
     }
     
-    void setName(String name) {
+    public void setName(String name) {
         gst.gst_structure_set_name(this, name);
     }
     
