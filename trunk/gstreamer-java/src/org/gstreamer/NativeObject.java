@@ -53,11 +53,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         logger.log(LIFECYCLE, "Disposing object " + this + " = " + handle());
         instanceMap.remove(handle(), nativeRef);
         if (!disposed.getAndSet(true) && ownsHandle.get()) {
-            Gst.invokeLater(new Runnable() {
-                public void run() {
-                    disposeNativeHandle(handle());
-                }
-            });
+            disposeNativeHandle(handle);
         }
     }
     abstract void ref();
@@ -91,45 +87,53 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, boolean needRef) {
         return objectFor(ptr, cls, needRef, true);
     }
-    @SuppressWarnings("unchecked")
     public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, boolean needRef, boolean ownsHandle) {
-        logger.entering("NativeObject", "instanceFor", new Object[] { ptr, ownsHandle, needRef });
+        return objectFor(ptr, cls, needRef ? 1 : 0, ownsHandle);
+    }
+        
+    public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, int refAdjust, boolean ownsHandle) {
+        logger.entering("NativeObject", "instanceFor", new Object[] { ptr, refAdjust, ownsHandle });
         
         // Ignore null pointers
         if (ptr == null || !ptr.isValid()) {
             return null;
         }
         NativeObject obj = NativeObject.instanceFor(ptr);
-        if (obj == null || !(cls.isInstance(obj))) {
-            //
-            // If it is a GObject or MiniObject, read the g_class field to find 
-            // the most exact class match
-            //
-            if (GObject.class.isAssignableFrom(cls) || MiniObject.class.isAssignableFrom(cls)) {
-                cls = classFor(ptr, cls);
+        if (obj != null && cls.isInstance(obj)) {
+            if (refAdjust < 1) {
+                obj.unref(); // Lose the extra ref added by gstreamer
             }
-            try {
-                Constructor<T> constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
-                return constructor.newInstance(ptr, needRef, ownsHandle);
-            } catch (SecurityException ex) {
-                throw new RuntimeException(ex);
-            } catch (IllegalAccessException ex) {
-                throw new RuntimeException(ex);
-            } catch (InstantiationException ex) {
-                throw new RuntimeException(ex);
-            } catch (NoSuchMethodException ex) {
-                throw new RuntimeException(ex);
-            } catch (InvocationTargetException ex) {
-                throw new RuntimeException(ex);
-            }
-        }        
-        return (T) obj;
+            return cls.cast(obj);
+        }
+        
+        //
+        // If it is a GObject or MiniObject, read the g_class field to find
+        // the most exact class match
+        //
+        if (GObject.class.isAssignableFrom(cls) || MiniObject.class.isAssignableFrom(cls)) {
+            cls = classFor(ptr, cls);
+        }
+        try {
+            Constructor<T> constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
+            return constructor.newInstance(ptr, refAdjust > 0, ownsHandle);
+        } catch (SecurityException ex) {
+            throw new RuntimeException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new RuntimeException(ex);
+        } catch (InstantiationException ex) {
+            throw new RuntimeException(ex);
+        } catch (NoSuchMethodException ex) {
+            throw new RuntimeException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
+
     }
     
     @SuppressWarnings("unchecked")
     protected static <T extends NativeObject> Class<T> classFor(Pointer ptr, Class<T> defaultClass) {
-        Class<?> cls = GstTypes.classFor(ptr);
-        return (cls != null) ? (Class<T>) cls : defaultClass;        
+        Class<? extends NativeObject> cls = GstTypes.classFor(ptr);
+        return (cls != null) ? (Class<T>) cls : defaultClass; 
     }
     
     @Override

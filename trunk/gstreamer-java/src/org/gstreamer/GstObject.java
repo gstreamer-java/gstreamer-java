@@ -14,7 +14,6 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gstreamer.lowlevel.GstTypes;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
 import static org.gstreamer.lowlevel.GstAPI.gst;

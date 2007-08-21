@@ -31,6 +31,18 @@ public class Buffer extends MiniObject {
         super(ptr, needRef, ownsHandle);
         struct = new BufferStruct(ptr);
     }
+    void ref() {
+        super.ref();
+        if (struct != null) {
+            struct.read(); // sync up the refcnt
+        }
+    }
+    void unref() {
+        super.unref();
+        if (struct != null) {
+            struct.read(); // sync up the refcnt
+        }
+    }
     public int getSize() {
         return struct.size;
     }
@@ -56,10 +68,25 @@ public class Buffer extends MiniObject {
         struct.data.read(bufferOffset, data, offset, length);
     }    
     public ByteBuffer getByteBuffer() {
-        return struct.data.getByteBuffer(0, struct.size);
+        if (struct.data != null) {
+            return struct.data.getByteBuffer(0, struct.size);
+        }
+        return null;
+    }
+    public long getOffset() {
+        return struct.offset;
+    }
+    public void setOffset(long offset) {
+        struct.offset = offset;
+    }
+    public long getLastOffset() {
+        return struct.offset_end;
+    }
+    public void setLastOffset(long offset) {
+        struct.offset_end = offset;
     }
     public static Buffer objectFor(Pointer ptr, boolean needRef) {
         return MiniObject.objectFor(ptr, Buffer.class, needRef);
     }
-    private BufferStruct struct;
+    public final BufferStruct struct;
 }

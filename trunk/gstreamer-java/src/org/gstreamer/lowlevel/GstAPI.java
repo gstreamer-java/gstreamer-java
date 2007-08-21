@@ -14,7 +14,6 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.ByteByReference;
@@ -24,6 +23,7 @@ import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.HashMap;
 import org.gstreamer.Bin;
+import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Clock;
@@ -337,7 +337,7 @@ public interface GstAPI extends Library {
             useMemory(ptr);
             read();
         }
-        public void write() {};
+        //public void write() {};
     }
     public class MiniObjectStruct extends com.sun.jna.Structure {
         public GTypeInstance instance;
@@ -385,5 +385,7 @@ public interface GstAPI extends Library {
             read();
         }
     }
-    
+    public interface HandoffCallback extends Callback {
+        public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data);                
+    }
 }
