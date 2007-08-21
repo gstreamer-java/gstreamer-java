@@ -101,6 +101,13 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj == null || !(cls.isInstance(obj))) {
+            //
+            // If it is a GObject or MiniObject, read the g_class field to find 
+            // the most exact class match
+            //
+            if (GObject.class.isAssignableFrom(cls) || MiniObject.class.isAssignableFrom(cls)) {
+                cls = classFor(ptr, cls);
+            }
             try {
                 Constructor<T> constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
                 return constructor.newInstance(ptr, needRef, ownsHandle);

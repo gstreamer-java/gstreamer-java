@@ -43,18 +43,6 @@ public class MiniObject extends NativeObject {
     
     @SuppressWarnings("unchecked")
     public static <T extends MiniObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {        
-        // Ignore null pointers
-        if (ptr == null || !ptr.isValid()) {
-            return null;
-        }
-        // Try to retrieve an existing instance for the pointer
-        // This is done here instead of just leaving it up to NativeObject.objectFor()
-        // so the object type does not need to be read from native memory if there 
-        // is already a proxy instnace
-        NativeObject obj = NativeObject.instanceFor(ptr);
-        if (obj != null && defaultClass.isInstance(obj)) {
-            return (T) obj;
-        }        
-        return NativeObject.objectFor(ptr, NativeObject.classFor(ptr, defaultClass), needRef);
+        return NativeObject.objectFor(ptr, defaultClass, needRef);        
     }
 }
