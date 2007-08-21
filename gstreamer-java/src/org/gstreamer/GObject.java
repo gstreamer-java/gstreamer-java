@@ -24,8 +24,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GBoolean;
 import org.gstreamer.lowlevel.GObjectAPI;
+import org.gstreamer.lowlevel.IntPtr;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-import org.gstreamer.lowlevel.GstTypes;
 
 /**
  *
@@ -39,11 +39,12 @@ public abstract class GObject extends NativeObject {
         super(ptr, false, ownsHandle); // increase the refcount here
         logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
         if (ownsHandle) {
-            gobj.g_object_add_toggle_ref(ptr, toggle, null);
-            if (!needRef) {
+            gobj.g_object_add_toggle_ref(ptr, toggle, toggleID);
+            if (!needRef) {                
                 unref();
             }
         }
+        gobj.g_object_weak_ref(this, weakNotify, toggleID);
     }
     
     public void set(String property, String data) {
@@ -70,7 +71,8 @@ public abstract class GObject extends NativeObject {
     
     void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
-        gobj.g_object_remove_toggle_ref(ptr, toggle, null);
+        //gobj.g_object_weak_unref(this, weakNotify, toggleID);
+        gobj.g_object_remove_toggle_ref(ptr, toggle, toggleID);
     }
     
     
@@ -98,6 +100,7 @@ public abstract class GObject extends NativeObject {
     }
     private Map<Class, Map<Object, SignalCallback>> listeners =
             new HashMap<Class, Map<Object, SignalCallback>>();
+    private IntPtr toggleID = new IntPtr(System.identityHashCode(this));
     
     void connect(String signal, Class listenerClass, Object listener, Callback cb) {
         Map<Object, SignalCallback> m;
@@ -161,6 +164,11 @@ public abstract class GObject extends NativeObject {
             }
         }
     };
-    
+    private static final GObjectAPI.GWeakNotify weakNotify = new GObjectAPI.GWeakNotify() {
+        public void callback(IntPtr data, Pointer ptr) {
+            //System.out.println("GObject " + ptr + " id=" + data + " destroyed");
+        }        
+    };
+            
     private static Set<Object> strongReferences = Collections.synchronizedSet(new HashSet<Object>());
 }

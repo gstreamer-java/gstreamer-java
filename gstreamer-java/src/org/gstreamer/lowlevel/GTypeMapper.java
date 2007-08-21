@@ -12,6 +12,7 @@
 
 package org.gstreamer.lowlevel;
 
+import com.sun.jna.CallbackInvocationContext;
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
@@ -22,6 +23,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.gstreamer.GstObject;
+import org.gstreamer.MiniObject;
+import org.gstreamer.NativeObject;
 import org.gstreamer.annotations.FreeReturnValue;
 
 /**
@@ -38,11 +41,22 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return ((NativeValue) arg).nativeValue();
         }
     };
-    private static FromNativeConverter gstObjectResultConverter = new FromNativeConverter() {
+    
+    private static FromNativeConverter nativeObjectResultConverter = new FromNativeConverter() {
 
         @SuppressWarnings(value = "unchecked")
         public Object fromNative(Object result, FromNativeContext context) {
-            return GstObject.returnedObject((Pointer) result, context.getTargetType());
+            if (context instanceof FunctionResultContext) {
+                //
+                // By default, gstreamer increments the refcount on objects 
+                // returned from functions, so drop a ref here
+                //
+                return NativeObject.objectFor((Pointer) result, context.getTargetType(), -1, true);
+            }
+            if (context instanceof CallbackInvocationContext) {
+                return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
+            }
+            throw new IllegalStateException("Cannot convert to NativeObject from " + context);
         }
         
         public Class nativeType() {
@@ -132,16 +146,33 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Integer.class;
         }
     };
+    
+    private TypeConverter intptrConverter = new TypeConverter() {
+        
+        public Object toNative(Object arg) {
+            return ((IntPtr)arg).value;            
+        }
 
+        public Object fromNative(Object arg0, FromNativeContext arg1) {
+            return new IntPtr(((Number) arg0).intValue());            
+        }
+
+        public Class nativeType() {
+            return Pointer.SIZE == 8 ? Long.class : Integer.class;
+        }
+    };
+  
     public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
-            return enumConverter;
-        } else if (GstObject.class.isAssignableFrom(type)) {
-            return gstObjectResultConverter;
+            return enumConverter;              
+        } else if (NativeObject.class.isAssignableFrom(type)) {
+            return nativeObjectResultConverter;
         } else if (Boolean.class == type || boolean.class == type) {
             return booleanConverter;
         } else if (String.class == type) {
             return stringConverter;
+        } else if (IntPtr.class == type) {
+            return intptrConverter;
         }
         return null;
     }
@@ -154,7 +185,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         } else if (Boolean.class == type || boolean.class == type) {
             return booleanConverter;
         } else if (String.class == type) {
-            return stringConverter;
+            return stringConverter;        
+        } else if (IntPtr.class == type) {
+            return intptrConverter;
         }
         return null;
     }

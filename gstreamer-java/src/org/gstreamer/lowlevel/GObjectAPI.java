@@ -14,7 +14,6 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
-import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import java.util.HashMap;
@@ -42,6 +41,12 @@ public interface GObjectAPI extends Library {
     }
     void g_object_add_toggle_ref(Pointer object, GToggleNotify notify, Pointer data);
     void g_object_remove_toggle_ref(Pointer object, GToggleNotify notify, Pointer data);
-    
-    
+    void g_object_add_toggle_ref(Pointer object, GToggleNotify notify, IntPtr data);
+    void g_object_remove_toggle_ref(Pointer object, GToggleNotify notify, IntPtr data);
+    interface GWeakNotify extends Callback {
+        void callback(IntPtr data, Pointer obj);
+    }
+    void g_object_weak_ref(GObject object, GWeakNotify notify, IntPtr data);
+    void g_object_weak_unref(GObject object, GWeakNotify notify, IntPtr data);
+ 
 }

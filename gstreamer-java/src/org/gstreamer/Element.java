@@ -24,6 +24,7 @@ import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
 import org.gstreamer.event.HandoffListener;
+import org.gstreamer.lowlevel.GstAPI;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -146,10 +147,13 @@ public class Element extends GstObject {
     public static interface HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
+    public static interface NEWDECODEDPAD {
+        public void newDecodedPad(Element element, Pad pad, boolean last);
+    }
     public void connect(final PADADDED listener) {
         connect("pad-added", PADADDED.class, listener,new Callback() {
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padAdded(Element.this,Pad.objectFor(pad, true));
+                listener.padAdded(Element.this, Pad.objectFor(pad, true));
             }
         });
     }
@@ -160,7 +164,7 @@ public class Element extends GstObject {
     public void connect(final PADREMOVED listener) {
         connect("pad-removed", PADREMOVED.class, listener,new Callback() {
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padRemoved(Element.this,Pad.objectFor(pad, true));
+                listener.padRemoved(Element.this, Pad.objectFor(pad, true));
             }
         });
     }
@@ -178,14 +182,22 @@ public class Element extends GstObject {
     public void disconnect(NOMOREPADS listener) {
         disconnect(NOMOREPADS.class, listener);
     }
-    public void connect(final HANDOFF listener) {
-        connect("handoff", HANDOFF.class, listener,new Callback() {
-            public void callback(Pointer srcPtr, Pointer bufPtr, Pointer padPtr, Pointer user_data) {
-                Element src = Element.objectFor(srcPtr, true);
-                Buffer buffer = new Buffer(bufPtr, true);
-                Pad pad = Pad.objectFor(padPtr, true);
-                listener.handoff(src, buffer, pad);
+    public void connect(final NEWDECODEDPAD listener) {
+        connect("new-decoded-pad", NEWDECODEDPAD.class, listener, new Callback() {
+            public void callback(Pointer elem, Pointer pad, boolean last) {
+                listener.newDecodedPad(Element.this, Pad.objectFor(pad, true), last);
             }
+        });
+    }
+    public void disconnect(NEWDECODEDPAD listener) {
+        disconnect(NEWDECODEDPAD.class, listener);
+    }
+    public void connect(final HANDOFF listener) {
+        connect("handoff", HANDOFF.class, listener, new GstAPI.HandoffCallback() {
+            public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data) {
+                buffer.struct.read();
+                listener.handoff(src, buffer, pad);
+            }            
         });
     }
     public void disconnect(HANDOFF listener) {

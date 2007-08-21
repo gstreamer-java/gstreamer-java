@@ -25,6 +25,7 @@ import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Message;
+import org.gstreamer.NativeObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -46,9 +47,9 @@ public class GstTypes {
         // Now return g_class->gtype
         return g_class.getNativeLong(0);
     }
-    public static final Class classFor(Pointer ptr) {
+    public static final Class<? extends NativeObject> classFor(Pointer ptr) {
         Pointer g_class = ptr.getPointer(0);
-        Class cls;
+        Class<? extends NativeObject> cls;
         cls = gTypeInstanceMap.get(g_class);
         if (cls != null) {
             return cls;
@@ -62,12 +63,12 @@ public class GstTypes {
         }
         return cls;
     }
-    private static final void registerGType(NativeLong type, Class cls) {
+    private static final void registerGType(NativeLong type, Class<? extends NativeObject> cls) {
         logger.fine("Registering gtype " + type + " = " + cls);
         typeMap.put(type, cls);
     }
-    private static Map<NativeLong, Class> typeMap = new HashMap<NativeLong, Class>();
-    private static Map<Pointer, Class> gTypeInstanceMap = Collections.synchronizedMap(new HashMap<Pointer, Class>());
+    private static Map<NativeLong, Class<? extends NativeObject>> typeMap = new HashMap<NativeLong, Class<? extends NativeObject>>();
+    private static Map<Pointer, Class<? extends NativeObject>> gTypeInstanceMap = Collections.synchronizedMap(new HashMap<Pointer, Class<? extends NativeObject>>());
     static {
         // GstObject types
         registerGType(gst.gst_element_get_type(), Element.class);
