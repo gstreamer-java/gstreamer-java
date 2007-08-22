@@ -1,8 +1,13 @@
 /*
- * GarbageCollectionTest.java
- * JUnit 4.x based test
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- * Created on 21 August 2007, 17:50
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
 
 package org.gstreamer;
@@ -64,8 +69,8 @@ public class GarbageCollectionTest {
         };
         GObjectAPI.gobj.g_object_weak_ref(e, notify, new IntPtr(System.identityHashCode(this)));
         WeakReference<Element> ref = new WeakReference<Element>(e);
-        e = null;
         destroyed[0] = false;
+        e = null;        
         assertTrue("Element not garbage collected", waitGC(ref));        
         assertTrue("GObject not destroyed", destroyed[0]);
     }
