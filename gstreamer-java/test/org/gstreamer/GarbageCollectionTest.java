@@ -89,5 +89,22 @@ public class GarbageCollectionTest {
         assertTrue("First Element not garbage collected", waitGC(e1Ref));
         assertTrue("Second Element not garbage collected", waitGC(e2Ref));
         
+    }
+    @Test
+    public void testBinRetrieval() throws Exception {
+        Bin bin = new Bin("test");
+        Element e1 = ElementFactory.make("fakesrc", "source");
+        Element e2 = ElementFactory.make("fakesink", "sink");
+        bin.addMany(e1, e2);
+        int id1 = System.identityHashCode(e1);
+        int id2 = System.identityHashCode(e2);
+        
+        e1 = null;
+        e2 = null;
+        System.gc();
+        Thread.sleep(10);
+        // Should return the same object that was put into the bin
+        assertEquals("source ID does not match", id1, System.identityHashCode(bin.getElementByName("source")));
+        assertEquals("sink ID does not match", id2, System.identityHashCode(bin.getElementByName("sink")));       
     } 
 }
