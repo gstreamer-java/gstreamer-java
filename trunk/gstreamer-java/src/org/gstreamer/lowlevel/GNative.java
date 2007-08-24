@@ -26,13 +26,13 @@ public class GNative {
     public GNative() {
     }
 
-    public static Library loadLibrary(String name, Class<? extends Library> interfaceClass, Map options) {
+    public static Library loadLibrary(String name, Class<? extends Library> interfaceClass, Map<String, ?> options) {
         if (Platform.isWindows()) {
             return loadWin32Library(name, interfaceClass, options);
         }
         return Native.loadLibrary(name, interfaceClass, options);
     }
-    private static Library loadWin32Library(String name, Class<? extends Library> interfaceClass, Map options) {        
+    private static Library loadWin32Library(String name, Class<? extends Library> interfaceClass, Map<String, ?> options) {        
         //
         // gstreamer on win32 names the dll files one of foo.dll, libfoo.dll and libfoo-0.dll
         //

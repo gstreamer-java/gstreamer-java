@@ -85,7 +85,8 @@ public class Bus extends GstObject {
     }
     public void connect(final EOS listener) {
         connect("sync-message::eos", EOS.class, listener, new Callback() {
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            @SuppressWarnings("unused")
+			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 listener.eosMessage(messageSource(msgPtr));
             }
         });
@@ -95,7 +96,8 @@ public class Bus extends GstObject {
     }
     public void connect(final ERROR listener) {
         connect("sync-message::error", ERROR.class, listener, new Callback() {
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            @SuppressWarnings("unused")
+			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_error(msgPtr, err, null);
                 glib.g_error_free(err.getValue());
@@ -109,7 +111,8 @@ public class Bus extends GstObject {
     }
     public void connect(final WARNING listener) {
         connect("sync-message::warning", WARNING.class, listener, new Callback() {
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            @SuppressWarnings("unused")
+			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_warning(msgPtr, err, null);
                 glib.g_error_free(err.getValue());
@@ -123,7 +126,8 @@ public class Bus extends GstObject {
     }
     public void connect(final INFO listener) {
         connect("sync-message::info", INFO.class, listener, new Callback() {
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            @SuppressWarnings("unused")
+			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
                 gst.gst_message_parse_info(msgPtr, err, null);
                 glib.g_error_free(err.getValue());
