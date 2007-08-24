@@ -32,7 +32,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
     }
 
     public Iterator<T> iterator() {
-        return new IteratorImpl<T>();
+        return new IteratorImpl();
     }
     
     void disposeNativeHandle(Pointer ptr) {
@@ -48,8 +48,8 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
     }
     void ref() {}
     void unref() { }
-    class IteratorImpl<T> implements java.util.Iterator<T> {
-        T next;
+    class IteratorImpl implements java.util.Iterator<T> {
+        T next;        
         IteratorImpl() {
             next = getNext();
         }
@@ -57,7 +57,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         private T getNext() {
             PointerByReference nextRef = new PointerByReference();
             if (gst.gst_iterator_next(handle(), nextRef) == 1) {                
-                return (T) NativeObject.objectFor(nextRef.getValue(), objectType, false);                
+                return NativeObject.objectFor(nextRef.getValue(), objectType, false);                
             }
             return null;
         }

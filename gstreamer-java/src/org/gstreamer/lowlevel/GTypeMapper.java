@@ -22,8 +22,6 @@ import com.sun.jna.TypeConverter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import org.gstreamer.GstObject;
-import org.gstreamer.MiniObject;
 import org.gstreamer.NativeObject;
 import org.gstreamer.annotations.FreeReturnValue;
 
@@ -59,7 +57,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             throw new IllegalStateException("Cannot convert to NativeObject from " + context);
         }
         
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Pointer.class;
         }
     };
@@ -83,7 +81,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             }
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Integer.class;
         }
 
@@ -120,7 +118,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return null;
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Pointer.class;
         }
 
@@ -142,7 +140,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Boolean.valueOf(((Integer)arg0).intValue() != 0);
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Integer.class;
         }
     };
@@ -157,12 +155,13 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return new IntPtr(((Number) arg0).intValue());            
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Pointer.SIZE == 8 ? Long.class : Integer.class;
         }
     };
   
-    public FromNativeConverter getFromNativeConverter(Class type) {
+    @SuppressWarnings("unchecked")
+	public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;              
         } else if (NativeObject.class.isAssignableFrom(type)) {
@@ -177,7 +176,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         return null;
     }
 
-    public ToNativeConverter getToNativeConverter(Class type) {
+    @SuppressWarnings("unchecked")
+	public ToNativeConverter getToNativeConverter(Class type) {
         if (NativeValue.class.isAssignableFrom(type)) {
             return nativeValueArgumentConverter;
         } else if (Enum.class.isAssignableFrom(type)) {
