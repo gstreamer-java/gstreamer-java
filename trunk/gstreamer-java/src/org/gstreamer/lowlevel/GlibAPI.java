@@ -20,7 +20,7 @@ import org.gstreamer.GMainLoop;
  *
  */
 public interface GlibAPI extends Library {
-    GlibAPI glib = (GlibAPI) GNative.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
+    static GlibAPI glib = (GlibAPI) GNative.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     Pointer g_main_loop_new(GMainContext context, boolean running);
