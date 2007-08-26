@@ -19,7 +19,6 @@ import com.sun.jna.ptr.LongByReference;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-import static org.gstreamer.State.*;
 import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
@@ -152,6 +151,7 @@ public class Element extends GstObject {
     }
     public void connect(final PADADDED listener) {
         connect("pad-added", PADADDED.class, listener,new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
                 listener.padAdded(Element.this, Pad.objectFor(pad, true));
             }
@@ -163,6 +163,7 @@ public class Element extends GstObject {
     
     public void connect(final PADREMOVED listener) {
         connect("pad-removed", PADREMOVED.class, listener,new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
                 listener.padRemoved(Element.this, Pad.objectFor(pad, true));
             }
@@ -174,6 +175,7 @@ public class Element extends GstObject {
     
     public void connect(final NOMOREPADS listener) {
         connect("no-more-pads", NOMOREPADS.class, listener, new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer user_data) {
                 listener.noMorePads(Element.this);
             }
@@ -184,6 +186,7 @@ public class Element extends GstObject {
     }
     public void connect(final NEWDECODEDPAD listener) {
         connect("new-decoded-pad", NEWDECODEDPAD.class, listener, new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, boolean last) {
                 listener.newDecodedPad(Element.this, Pad.objectFor(pad, true), last);
             }

@@ -132,6 +132,7 @@ public class Bin extends Element {
     
     public void connect(final ELEMENTADDED listener) {
         connect("element-added", ELEMENTADDED.class, listener,new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer bin, Pointer elem, Pointer user_data) {
                 listener.elementAdded(Bin.this,Element.objectFor(elem, true));
             }
@@ -139,6 +140,7 @@ public class Bin extends Element {
     }
     public void connect(final ELEMENTREMOVED listener) {
         connect("element-removed", ELEMENTREMOVED.class, listener,new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer bin, Pointer elem, Pointer user_data) {
                 listener.elementRemoved(Bin.this,Element.objectFor(elem, true));
             }

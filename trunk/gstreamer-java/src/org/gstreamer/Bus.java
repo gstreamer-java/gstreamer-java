@@ -141,6 +141,7 @@ public class Bus extends GstObject {
     }
     public void connect(final STATECHANGED listener) {
         connect("sync-message::state-changed", STATECHANGED.class, listener, new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference o = new IntByReference();
                 IntByReference n = new IntByReference();
@@ -156,6 +157,7 @@ public class Bus extends GstObject {
     }
     public void connect(final TAG listener) {
         connect("sync-message::tag", TAG.class, listener, new Callback() {
+            @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference list = new PointerByReference();
                 gst.gst_message_parse_tag(msgPtr, list);
@@ -176,6 +178,7 @@ public class Bus extends GstObject {
         }
     };
     private static Callback syncCallback = new Callback() {
+        @SuppressWarnings("unused")
         public int callback(Pointer busPtr, Pointer msgPtr, Pointer data) {
             Bus bus = (Bus) NativeObject.instanceFor(busPtr);
             //

@@ -11,7 +11,6 @@
  */
 
 package org.gstreamer;
-import static org.gstreamer.MiniObjectFlags.*;
 
 /**
  *
