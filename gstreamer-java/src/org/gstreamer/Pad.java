@@ -15,7 +15,6 @@ package org.gstreamer;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import static org.gstreamer.lowlevel.GstAPI.gst;
-import static org.gstreamer.lowlevel.GlibAPI.glib;
 
 /**
  *

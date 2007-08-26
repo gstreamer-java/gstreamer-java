@@ -14,7 +14,6 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import static org.gstreamer.lowlevel.GstAPI.gst;
-import org.gstreamer.lowlevel.GstTypes;
 
 /**
  *

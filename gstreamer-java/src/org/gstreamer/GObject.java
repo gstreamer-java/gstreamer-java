@@ -98,11 +98,11 @@ public abstract class GObject extends NativeObject {
         Callback cb;
         NativeLong id;
     }
-    private Map<Class, Map<Object, SignalCallback>> listeners =
-            new HashMap<Class, Map<Object, SignalCallback>>();
+    private Map<Class<?>, Map<Object, SignalCallback>> listeners =
+            new HashMap<Class<?>, Map<Object, SignalCallback>>();
     private IntPtr toggleID = new IntPtr(System.identityHashCode(this));
     
-    void connect(String signal, Class listenerClass, Object listener, Callback cb) {
+    void connect(String signal, Class<?> listenerClass, Object listener, Callback cb) {
         Map<Object, SignalCallback> m;
         synchronized (listeners) {
             m = listeners.get(listenerClass);
@@ -114,7 +114,7 @@ public abstract class GObject extends NativeObject {
         m.put(listener, new SignalCallback(signal, cb));
     }
     
-    void disconnect(Class listenerClass, Object listener) {
+    void disconnect(Class<?> listenerClass, Object listener) {
         synchronized (listeners) {
             Map<Object, SignalCallback> m = listeners.get(listenerClass);
             if (m != null) {
