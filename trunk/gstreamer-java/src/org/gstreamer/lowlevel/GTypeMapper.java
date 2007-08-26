@@ -85,6 +85,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Integer.class;
         }
 
+        @SuppressWarnings("unchecked")
         public Object toNative(Object arg) {
             Enum e = (Enum) arg;
             try {
