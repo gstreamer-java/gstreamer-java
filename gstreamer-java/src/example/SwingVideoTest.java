@@ -37,16 +37,12 @@ public class SwingVideoTest {
         int width = 720, height = 576;
         //System.setProperty("sun.java2d.opengl", "true");
         
-        args = Gst.init("SwingVideoTest", args);
-        System.out.println("Creating videotestsrc");
-        Element bar = ElementFactory.make("videotestsrc", "source");
+        args = Gst.init("SwingVideoTest", args);        
         System.out.println("Creating MainLoop");
         GMainLoop loop = new GMainLoop();
-        Element fakesrc, flt, conv, videosink;
+        Element fakesrc, flt, videosink;
         
         /* setup pipeline */
-        System.out.println("Creating fakesrc");
-        Element foo = ElementFactory.make("fakesrc", "foo");
         System.out.println("Creating pipeline");
         Pipeline pipeline = new Pipeline("pipeline");
         System.out.println("Pipeline created");

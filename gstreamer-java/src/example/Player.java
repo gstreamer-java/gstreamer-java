@@ -21,9 +21,6 @@ import org.gstreamer.GstObject;
 import org.gstreamer.PlayBin;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
-import org.gstreamer.event.BusListener;
-import org.gstreamer.event.ErrorEvent;
-import org.gstreamer.event.StateEvent;
 
 /**
  *
