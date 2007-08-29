@@ -15,7 +15,6 @@ package example;
 import org.gstreamer.Gst;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.GMainLoop;
 
 /**
  *
@@ -28,13 +27,13 @@ public class ElementTest {
     public static void main(String[] args) {
         // Load some gstreamer dependencies
         args = Gst.init("foo", args);
-        GMainLoop loop = new GMainLoop();
         System.out.println("Creating fakesrc element");
         Element fakesrc = ElementFactory.make("fakesrc", "fakesrc");
         System.out.println("fakesrc element created");
+        System.out.println("Element name = " + fakesrc.getName());
         System.out.println("Creating fakesink element");
         Element fakesink = ElementFactory.make("fakesink", "fakesink");
         System.out.println("fakesink element created");
-        System.out.println("Element name = " + fakesrc.getName());
+        System.out.println("Element name = " + fakesink.getName());
     }
 }

@@ -16,7 +16,6 @@ import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.event.ElementEvent;

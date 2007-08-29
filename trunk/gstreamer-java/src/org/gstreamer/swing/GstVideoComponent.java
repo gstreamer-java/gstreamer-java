@@ -49,16 +49,16 @@ public class GstVideoComponent extends javax.swing.JComponent {
         try {
             String openglProperty = System.getProperty("sun.java2d.opengl");
             openglEnabled = openglProperty != null && Boolean.parseBoolean(openglProperty);
-        } finally { }
+        } catch (Exception ex) { }
         try {
             String quartzProperty = System.getProperty("apple.awt.graphics.UseQuartz");
             quartzEnabled = Boolean.parseBoolean(quartzProperty);
-        } finally { }
+        } catch (Exception ex) { }
         try {
             String ddscaleProperty = System.getProperty("sun.java2d.ddscale");
             String d3dProperty = System.getProperty("sun.java2d.d3d");
             ddscaleEnabled = Boolean.parseBoolean(ddscaleProperty) && Boolean.parseBoolean(d3dProperty);
-        } finally { }
+        } catch (Exception ex) { }
     }
     /** Creates a new instance of GstVideoComponent */
     public GstVideoComponent() {
@@ -87,8 +87,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
         }
         if (quartzEnabled) {
             //interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-            //quality = RenderingHints.VALUE_RENDER_QUALITY;
-            useVolatile = true; // a bit faster on MacOSX ?
+            //quality = RenderingHints.VALUE_RENDER_QUALITY;            
         }
         if (ddscaleEnabled) {
             // Bilinear interpolation can be accelerated by the OpenGL pipeline
