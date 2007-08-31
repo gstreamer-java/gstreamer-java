@@ -56,10 +56,7 @@ public abstract class GObject extends NativeObject {
         gobj.g_object_set(this, property, data);
     }
     public void set(String property, Object data) {
-        logger.entering("GObject", "set", new Object[] { property, data });
-        if (data instanceof Boolean) {
-            data = GBoolean.valueOf((Boolean) data);
-        }
+        logger.entering("GObject", "set", new Object[] { property, data });        
         gobj.g_object_set(this, property, data, null);
     }
     public void setProperty(String property, GObject data) {
