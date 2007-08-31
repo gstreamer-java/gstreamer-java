@@ -10,11 +10,13 @@ Getting gstreamer running on Windows is not as easy as Linux (where it is instal
 
 Download the Windows Binaries from [http://gstreamer.freedesktop.org/pkg/windows/releases gstreamer for windows].
 
-You have to install the lastest version from each package. Use the XXXXXXsetup.zip
-files, because these ones have the dependencies needed glib, ffmpeg, etc).
+You have to install the lastest version from each package. 
+Use the XXXXXXsetup.zip files, because these ones have the 
+dependencies needed (glib, ffmpeg, etc).
 
 You should then restart Windows to have the GST_PLUGIN_PATH and PATH global variables updated to include the gstreamer directories.
 
 Test that the gstreamer binaries work with the windows command interpreter (change the file to play, and you can remove the debug if everything works):
 
-gst-launch-0.10 --gst-debug-level=2 playbin uri=file://C:/mymedia/mediatest.avi
+{{{gst-launch-0.10 --gst-debug-level=2 playbin uri=file://C:/mymedia/mediatest.avi}}}
+
