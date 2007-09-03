@@ -16,6 +16,7 @@ import com.sun.jna.CallbackInvocationContext;
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
+import com.sun.jna.MethodResultContext;
 import com.sun.jna.Pointer;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
@@ -38,6 +39,10 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         public Object toNative(Object arg) {
             return ((NativeValue) arg).nativeValue();
         }
+
+        public Class nativeType() {
+            return Void.class; // not really correct, but not used in this instance
+        }        
     };
     
     private static FromNativeConverter nativeObjectResultConverter = new FromNativeConverter() {
@@ -104,9 +109,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     private TypeConverter stringConverter = new TypeConverter() {
 
         public Object fromNative(Object result, FromNativeContext context) {
-            if (context instanceof FunctionResultContext) {
-                FunctionResultContext functionContext = (FunctionResultContext) context;
-                Method method = functionContext.getFunction().getMethod();
+            if (context instanceof MethodResultContext) {
+                MethodResultContext functionContext = (MethodResultContext) context;
+                Method method = functionContext.getMethod();
                 Pointer ptr = (Pointer) result;
                 String s = ptr.getString(0);
                 if (method.isAnnotationPresent(FreeReturnValue.class)) {

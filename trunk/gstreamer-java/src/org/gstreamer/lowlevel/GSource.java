@@ -14,12 +14,11 @@ package org.gstreamer.lowlevel;
 
 import com.sun.jna.Pointer;
 import java.util.concurrent.atomic.AtomicReference;
-import org.gstreamer.lowlevel.GlibAPI;
 
 /**
  *
  */
-public class GSource extends NativeValue {
+public class GSource extends Handle {
     private static GlibAPI glib = GlibAPI.glib;
     
     public GSource(final Pointer ptr, final GlibAPI.GSourceFunc callback, final Pointer data) {
