@@ -324,7 +324,7 @@ public interface GstAPI extends Library {
     NativeLong gst_buffer_get_type();
     
     public final class BufferStruct extends com.sun.jna.Structure {
-        public MiniObjectStruct mini_object;
+        volatile public MiniObjectStruct mini_object;
         public Pointer data;
         public int size;
         public long timestamp;
@@ -337,13 +337,12 @@ public interface GstAPI extends Library {
             useMemory(ptr);
             read();
         }
-        //public void write() {};
     }
     public class MiniObjectStruct extends com.sun.jna.Structure {
-        public GTypeInstance instance;
-        public int refcount;
-        public int flags;
-        public Pointer _gst_reserved;
+        volatile public GTypeInstance instance;
+        volatile public int refcount;
+        volatile public int flags;
+        volatile public Pointer _gst_reserved;
         
         /** Creates a new instance of GstMiniObjectStructure */
         public MiniObjectStruct() {}
@@ -354,9 +353,9 @@ public interface GstAPI extends Library {
         public void write() { }
     }
     public final class MessageStruct extends com.sun.jna.Structure {
-        public MiniObjectStruct mini_object;
-        public Pointer lock;
-        public Pointer cond;
+        volatile public MiniObjectStruct mini_object;
+        volatile public Pointer lock;
+        volatile public Pointer cond;
         public int type;
         public long timestamp;
         public Pointer src;

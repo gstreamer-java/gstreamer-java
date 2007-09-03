@@ -17,7 +17,7 @@ import com.sun.jna.Pointer;
 /**
  *
  */
-public class GMainContext extends NativeValue {
+public class GMainContext extends Handle {
     private static GlibAPI glib = GlibAPI.glib;
     
     public GMainContext() {
