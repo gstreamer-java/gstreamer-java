@@ -18,6 +18,7 @@ import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
 import com.sun.jna.MethodResultContext;
 import com.sun.jna.Pointer;
+import com.sun.jna.ToNativeContext;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +37,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     }
     private static ToNativeConverter nativeValueArgumentConverter = new ToNativeConverter() {
 
-        public Object toNative(Object arg) {
+        public Object toNative(Object arg, ToNativeContext context) {
             return ((NativeValue) arg).nativeValue();
         }
 
@@ -91,7 +92,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         }
 
         @SuppressWarnings("unchecked")
-        public Object toNative(Object arg) {
+        public Object toNative(Object arg, ToNativeContext context) {
             Enum e = (Enum) arg;
             try {
                 Method intValue = e.getClass().getMethod("intValue", new Class[]{});
@@ -128,18 +129,15 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Pointer.class;
         }
 
-        public Object toNative(Object arg) {
+        public Object toNative(Object arg, ToNativeContext context) {
             // Let the default String -> native conversion handle it
             return arg;            
         }
     };
 
     private TypeConverter booleanConverter = new TypeConverter() {
-        static final int TRUE = 1;
-        static final int FALSE = 0;
-
-        public Object toNative(Object arg) {
-            return Boolean.TRUE.equals(arg) ? TRUE : FALSE;
+        public Object toNative(Object arg, ToNativeContext context) {
+            return Integer.valueOf(Boolean.TRUE.equals(arg) ? 1 : 0);
         }
 
         public Object fromNative(Object arg0, FromNativeContext arg1) {
@@ -153,7 +151,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     
     private TypeConverter intptrConverter = new TypeConverter() {
         
-        public Object toNative(Object arg) {
+        public Object toNative(Object arg, ToNativeContext context) {
             return ((IntPtr)arg).value;            
         }
 
