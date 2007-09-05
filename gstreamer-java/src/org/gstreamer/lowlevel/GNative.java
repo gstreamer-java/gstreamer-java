@@ -30,7 +30,7 @@ public class GNative {
         if (Platform.isWindows()) {
             return loadWin32Library(name, interfaceClass, options);
         }
-        return Native.loadLibrary(name, interfaceClass, options);
+        return (Library)Native.loadLibrary(name, interfaceClass, options);
     }
     private static Library loadWin32Library(String name, Class<? extends Library> interfaceClass, Map<String, ?> options) {        
         //
@@ -41,7 +41,7 @@ public class GNative {
         };
         for (int i = 0; i < nameFormats.length; ++i) {
             try {
-                return Native.loadLibrary(String.format(nameFormats[i], name), interfaceClass, options);
+                return (Library)Native.loadLibrary(String.format(nameFormats[i], name), interfaceClass, options);
             } catch (UnsatisfiedLinkError ex) {                
                 continue;
             }
