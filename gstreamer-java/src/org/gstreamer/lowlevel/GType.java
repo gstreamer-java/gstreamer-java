@@ -23,7 +23,7 @@ public class GType extends NativeLong {
     static {
         cache = new GType[21];
         for (int i = 0; i < cache.length; ++i) {
-            cache[i] = new GType(i);
+            cache[i] = new GType(i << 2);
         }        
     };
     public static final GType INVALID = init(0);
@@ -49,7 +49,7 @@ public class GType extends NativeLong {
     public static final GType OBJECT = init(20);
 
     private static GType init(int v) {
-        return new GType(v << 2);
+        return valueOf(v << 2);
     }
     GType(long t) {
         super(t);
@@ -58,8 +58,8 @@ public class GType extends NativeLong {
         super(0);
     }
     public static GType valueOf(long value) {
-        if (value >= 0 && value < cache.length) {
-            return cache[(int)value];
+        if (value >= 0 && (value >> 2) < cache.length) {
+            return cache[(int)value >> 2];
         }
         return new GType(value);
     }
