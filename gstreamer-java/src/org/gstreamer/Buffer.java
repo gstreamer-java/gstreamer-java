@@ -14,6 +14,7 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
+import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstAPI.BufferStruct;
 
 /**
@@ -24,6 +25,9 @@ public class Buffer extends MiniObject {
     /**
      * Creates a new instance of Buffer
      */
+    public Buffer(int size) {
+        this(GstAPI.gst.gst_buffer_new_and_alloc(size), false, true);
+    }
     Buffer(Pointer ptr, boolean needRef) {
         this(ptr, needRef, true);
     }

@@ -64,14 +64,14 @@ public class TagList extends Structure {
         return ret;
     }
     public Number getNumber(String tag, int index) {
-        switch (getTagType(tag)) {
-        case INT:
+        GType type = getTagType(tag);
+        if (GType.INT.equals(type)) {        
             return getInt(tag, index);
-        case UINT:
+        } else if (GType.UINT.equals(type)) {        
             return getUInt(tag, index);
-        case INT64:
+        } else if (GType.INT64.equals(type)) {        
             return getInt64(tag, index);
-        default:
+        } else {
             throw new IllegalArgumentException("Tag [" + tag + "] is not a number");
         }
     }
@@ -96,7 +96,7 @@ public class TagList extends Structure {
         return value.getValue();
     }
     private boolean isTagType(String tag, GType type) {
-        return getTagType(tag) == type;
+        return getTagType(tag).equals(type);
     }
     private void ensureType(String tag, GType type) {
         if (!isTagType(tag, type)) {
@@ -114,23 +114,18 @@ public class TagList extends Structure {
     }
     public Map<String, Object> getTags() {
         final Map<String, Object> m = new HashMap<String, Object>();
-        for (String tag : getTagNames()) {            
-            switch (getTagType(tag)) {
-            case STRING:
+        for (String tag : getTagNames()) {  
+            GType type = getTagType(tag);
+            if (GType.STRING.equals(type)) {            
                 m.put(tag, getString(tag));
-                break;
-            case INT:
+            } else if (GType.INT.equals(type)) {
                 m.put(tag, getInt(tag, 0));
-                break;
-            case UINT:
+            } else if (GType.UINT.equals(type)) {
                 m.put(tag, getUInt(tag, 0));
-                break;
-            case INT64:
+            } else if (GType.INT64.equals(type)) {            
                 m.put(tag, getInt64(tag, 0));
-                break;
-            default:
-                System.out.println("Unknown type for tag " + tag);
-                break;
+            } else {            
+                System.out.println("Unknown type for tag " + tag);                
             }
         }
         return m;
@@ -144,7 +139,7 @@ public class TagList extends Structure {
         if (type != null) {
             return type;
         }
-        tagTypeMap.put(tag, type = GType.valueOf(gst.gst_tag_get_type(tag)));
+        tagTypeMap.put(tag, type = gst.gst_tag_get_type(tag));
         return type;
     }
     

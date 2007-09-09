@@ -124,6 +124,10 @@ public class Element extends GstObject {
     public Bus getBus() {
         return gst.gst_element_get_bus(this);
     }
+    public boolean sendEvent(Event ev) {
+        ev.ref(); // send_event takes ownership, so need a ref here to keep using it
+        return gst.gst_element_send_event(this, ev);
+    }
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
     }

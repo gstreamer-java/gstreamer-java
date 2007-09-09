@@ -12,51 +12,59 @@
 
 package org.gstreamer.lowlevel;
 
+import com.sun.jna.FromNativeContext;
 import com.sun.jna.NativeLong;
 
 /**
  *
  */
-public enum GType {
-    INVALID                  (0),
-    NONE                     (1),
-    INTERFACE                (2),
-    CHAR                     (3),
-    UCHAR                    (4),
-    BOOLEAN                  (5),
-    INT                      (6),
-    UINT                     (7),
-    LONG                     (8),
-    ULONG                    (9),
-    INT64                    (10),
-    UINT64                   (11),
-    ENUM                     (12),
-    FLAGS                    (13),
-    FLOAT                    (14),
-    DOUBLE                   (15),
-    STRING                   (16),
-    POINTER                  (17),
-    BOXED                    (18),
-    PARAM                    (19),
-    OBJECT                   (20);
+public class GType extends NativeLong {
+    private static final GType[] cache;
+    static {
+        cache = new GType[21];
+        for (int i = 0; i < cache.length; ++i) {
+            cache[i] = new GType(i);
+        }        
+    };
+    public static final GType INVALID = init(0);
+    public static final GType NONE = init(1);
+    public static final GType INTERFACE = init(2);
+    public static final GType CHAR = init(3);
+    public static final GType UCHAR = init(4);
+    public static final GType BOOLEAN = init(5);
+    public static final GType INT = init(6);
+    public static final GType UINT = init(7);
+    public static final GType LONG = init(8);
+    public static final GType ULONG = init(9);
+    public static final GType INT64 = init(10);
+    public static final GType UINT64 = init(11);
+    public static final GType ENUM = init(12);
+    public static final GType FLAGS = init(13);
+    public static final GType FLOAT = init(14);
+    public static final GType DOUBLE = init(15);
+    public static final GType STRING = init(16);
+    public static final GType POINTER = init(17);
+    public static final GType BOXED = init(18);
+    public static final GType PARAM = init(19);
+    public static final GType OBJECT = init(20);
 
-    
-    GType(int t) {
-        type = t << 2;
+    private static GType init(int v) {
+        return new GType(v << 2);
     }
-    public long longValue() {
-        return type;
+    GType(long t) {
+        super(t);
     }
-    public static final GType valueOf(NativeLong type) {
-        return valueOf(type.longValue());
+    public GType() {
+        super(0);
     }
-    public static final GType valueOf(long type) {
-        for (GType t : values()) {
-            if (t.type == type) {
-                return t;
-            }
+    public static GType valueOf(long value) {
+        if (value >= 0 && value < cache.length) {
+            return cache[(int)value];
         }
-        return INVALID;
+        return new GType(value);
     }
-    long type;
+    @Override
+    public Object fromNative(Object nativeValue, FromNativeContext context) {
+        return valueOf(((Number) nativeValue).longValue());
+    }    
 }

@@ -154,7 +154,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     //
     // No longer want to garbage collect this object
     //
-    protected void disown() {
+    public void disown() {
         logger.log(LIFECYCLE, "Disowning " + handle());
         ownsHandle.set(false);
     }

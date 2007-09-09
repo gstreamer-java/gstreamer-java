@@ -29,13 +29,16 @@ import org.gstreamer.Caps;
 import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Event;
 import org.gstreamer.Format;
 import org.gstreamer.GstObject;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.PadTemplate;
 import org.gstreamer.Pipeline;
+import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
@@ -62,12 +65,12 @@ public interface GstAPI extends Library {
     /*
      * GstElementFactory methods
      */
-    NativeLong gst_element_factory_get_type();
+    GType gst_element_factory_get_type();
     Pointer gst_element_factory_find(String factoryName);
     Pointer gst_element_factory_make(String factoryName, String elementName);
     
     Pointer gst_element_factory_create(ElementFactory factory, String elementName);
-    NativeLong gst_element_factory_get_element_type(ElementFactory factory);
+    GType gst_element_factory_get_element_type(ElementFactory factory);
     String gst_element_factory_get_longname(ElementFactory factory);
     String gst_element_factory_get_klass(ElementFactory factory);
     String gst_element_factory_get_description(ElementFactory factory);
@@ -78,7 +81,7 @@ public interface GstAPI extends Library {
     /*
      * GstElement methods
      */
-    NativeLong gst_element_get_type();
+    GType gst_element_get_type();
     StateChangeReturn gst_element_set_state(Element elem, State state);
     StateChangeReturn gst_element_get_state(Element elem, IntByReference state, IntByReference pending, long timeout);
     boolean gst_element_query_position(Element elem, IntByReference fmt, LongByReference pos);
@@ -104,7 +107,26 @@ public interface GstAPI extends Library {
     /* factory management */
     ElementFactory gst_element_get_factory(Element element);
     Bus gst_element_get_bus(Element element);
+    boolean gst_element_send_event(Element element, Event event);
+
+
+    /* element class pad templates */
+    void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);
+    PadTemplate gst_element_class_get_pad_template(Pointer /*GstElementClass*/ element_class, String name);
     
+    /* templates and factories */
+    GType gst_pad_template_get_type();
+    GType gst_static_pad_template_get_type();
+
+    Pointer gst_pad_template_new(String name_template, PadDirection direction, 
+            /* GstPadPresence */ int presence, Caps caps);
+
+    /* flush events */
+    Event gst_event_new_flush_start();
+    Event gst_event_new_flush_stop();
+    /* EOS event */
+    Event gst_event_new_eos();
+
     /*
      * GstGhostPad functions
      */
@@ -115,7 +137,7 @@ public interface GstAPI extends Library {
      * GstPipeline
      */
     Pointer gst_pipeline_new(String name);
-    NativeLong gst_pipeline_get_type();
+    GType gst_pipeline_get_type();
     Bus gst_pipeline_get_bus(Pipeline pipeline);
     void gst_pipeline_set_auto_flush_bus(Pipeline pipeline, boolean flush);
     boolean gst_pipeline_get_auto_flush_bus(Pipeline pipeline);
@@ -132,6 +154,7 @@ public interface GstAPI extends Library {
     /*
      * GstObject
      */
+    GType gst_object_get_type();
     void gst_object_ref(GstObject ptr);
     void gst_object_unref(GstObject ptr);
     void gst_object_sink(GstObject ptr);
@@ -144,7 +167,7 @@ public interface GstAPI extends Library {
      * GstBin functions
      */
     Pointer gst_bin_new(String name);
-    NativeLong gst_bin_get_type();
+    GType gst_bin_get_type();
     
     boolean gst_bin_add(Bin bin, Element element);
     void gst_bin_add_many(Bin bin, Element... elements);
@@ -175,7 +198,7 @@ public interface GstAPI extends Library {
     /*
      * GstBus functions
      * */
-    NativeLong gst_bus_get_type();
+    GType gst_bus_get_type();
     void gst_bus_set_flushing(Bus ptr, int flushing);
     interface BusCallback extends Callback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
@@ -188,7 +211,7 @@ public interface GstAPI extends Library {
     /*
      * GstMessage functions
      */
-    NativeLong gst_message_get_type();
+    GType gst_message_get_type();
     int gst_message_type(Pointer msg);
     void gst_message_parse_segment_start(Pointer msg, IntByReference format, LongByReference segment);
     void gst_message_parse_state_changed(Pointer msg, IntByReference o, IntByReference n, IntByReference p);
@@ -208,7 +231,7 @@ public interface GstAPI extends Library {
     /*
      * GstCaps functions
      */
-    NativeLong gst_caps_get_type();
+    GType gst_caps_get_type();
     Pointer gst_caps_new_empty();
     Pointer gst_caps_new_any();
     Pointer gst_caps_ref(Caps caps);
@@ -278,7 +301,7 @@ public interface GstAPI extends Library {
     boolean gst_tag_list_get_string_index(TagList list, String tag, int index, PointerByReference value);
     
     boolean gst_tag_exists(String tag);
-    NativeLong gst_tag_get_type(String tag);
+    GType gst_tag_get_type(String tag);
     String gst_tag_get_nick(String tag);
     String gst_tag_get_description(String tag);
     int gst_tag_get_flag(String tag);
@@ -287,7 +310,7 @@ public interface GstAPI extends Library {
     /*
      * GstClock functions
      */
-    NativeLong gst_clock_get_type();
+    GType gst_clock_get_type();
     long gst_clock_set_resolution(Clock clock, long resolution);
     long gst_clock_get_resolution(Clock clock);
     long gst_clock_get_time(Clock clock);
@@ -309,7 +332,7 @@ public interface GstAPI extends Library {
     /*
      * GstPad functions
      */
-    NativeLong gst_pad_get_type();
+    GType gst_pad_get_type();
     boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
     boolean gst_pad_set_caps(Pad pad, Caps caps);
     Caps gst_pad_get_caps(Pad pad);
@@ -321,8 +344,158 @@ public interface GstAPI extends Library {
     boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
     PadDirection gst_pad_get_direction(Pad pad);
     Element gst_pad_get_parent_element(Pad pad);
-    NativeLong gst_buffer_get_type();
+    GType gst_buffer_get_type();    
+    Pointer gst_buffer_new_and_alloc(int size);
     
+    static final int GST_PADDING = 4;
+    static final int GST_PADDING_LARGE = 20;
+    
+    public final static class GstObjectStruct extends com.sun.jna.Structure {        
+        public GObjectAPI.GObjectStruct object;
+        public volatile int refcount;
+        public volatile Pointer lock;
+        public volatile String name;
+        public volatile String name_prefix;
+        public volatile Pointer parent;
+        public volatile int flags;
+        public volatile Pointer _gst_reserved;
+    }
+    public final static class GstObjectClass extends com.sun.jna.Structure {
+        public GObjectAPI.GObjectClass parent_class;
+        public volatile Pointer path_string_separator;
+        public volatile Pointer signal_object;
+        public volatile Pointer lock;
+        // These are really Callbacks, but we don't need them yet
+        public volatile Pointer parent_set;
+        public volatile Pointer parent_unset;
+        public volatile Pointer object_saved;
+        public volatile Pointer deep_notify;
+        public volatile Pointer save_thyself;
+        public volatile Pointer restore_thyself;
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GST_PADDING];
+    }
+    final static class GstElementDetails extends com.sun.jna.Structure {
+         /*< public > */
+        public volatile String longname;
+        public volatile String klass;
+        public volatile String description;
+        public volatile String author;
+        /*< private > */
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GST_PADDING];        
+    }
+    public final static class GstElementStruct extends com.sun.jna.Structure {
+        public GstObjectStruct object;
+        public volatile Pointer state_lock;
+        public volatile Pointer state_cond;
+        public volatile int state_cookie;
+        public volatile State current_state;
+        public volatile State next_state; 
+        public volatile State pending_state;         
+        public volatile StateChangeReturn last_return;
+        public volatile Pointer bus;
+        public volatile Pointer clock;
+        public volatile long base_time;
+        public volatile short numpads;
+        public volatile Pointer pads;
+        public volatile short numsrcpads;
+        public volatile Pointer srcpads;
+        public volatile short numsinkpads;
+        public volatile Pointer sinkpads;
+        public volatile int pads_cookie;
+        // Use an array of byte as arrays of Pointer don't work
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GST_PADDING];
+    }
+    public final static class GstElementClass extends com.sun.jna.Structure {
+        //
+        // Callbacks for this class
+        //
+        public static interface RequestNewPad extends Callback {
+            public Pad callback(Element element, /* PadTemplate */ Pointer templ, String name);
+        }
+        public static interface ReleasePad extends Callback {
+            public void callback(Element element, Pad pad);
+        }
+        public static interface GetState extends Callback {
+            public StateChangeReturn callback(Element element, Pointer p_state, 
+                    Pointer p_pending, long timeout);
+        }
+        public static interface SetState extends Callback {
+            public StateChangeReturn callback(Element element, State state);
+        }
+        public static interface ChangeState extends Callback {
+            public StateChangeReturn callback(Element element, int transition);
+        }
+        //
+        // Actual data members
+        //
+        public GstObjectClass parent_class;
+        public volatile GstElementDetails details;
+        public volatile ElementFactory elementfactory;
+        public volatile Pointer padtemplates;
+        public volatile int numpadtemplates;
+        public volatile int pad_templ_cookie;
+        /*< private >*/
+        /* signal callbacks */
+        public volatile Pointer pad_added;
+        public volatile Pointer pad_removed;
+        public volatile Pointer no_more_pads;
+        /* request/release pads */
+        public RequestNewPad request_new_pad;
+        public ReleasePad release_pad;
+        /* state changes */
+        public GetState get_state;
+        public SetState set_state;
+        public ChangeState change_state;
+        /* bus */
+        public volatile Pointer set_bus;
+        /* set/get clocks */
+        public volatile Pointer provide_clock;
+        public volatile Pointer set_clock;
+        
+        /* index */
+        public volatile Pointer get_index;
+        public volatile Pointer set_index;
+        public volatile Pointer send_event;
+        /* query functions */
+        public volatile Pointer get_query_types;
+        public volatile Pointer query;
+      
+        /*< private >*/  
+        // Use an array of byte if arrays of Pointer don't work
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GST_PADDING];
+    }
+    public static final class GstSegmentStruct extends com.sun.jna.Structure {
+        /*< public >*/
+        public double rate;
+        public double abs_rate;
+        public Format format;
+        public SeekFlags   flags;
+        public long start;
+        public long stop;
+        public long time;
+        public long accum;
+
+        public long last_stop;
+        public long duration;
+
+        /* API added 0.10.6 */
+        public long applied_rate;
+
+        /*< private >*/
+        /*gpointer _gst_reserved[GST_PADDING-2];*/
+        byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
+    };
+
+    public final static class Segment {}
+    public final static class Query {}
+    
+    public final class GstStaticPadTemplate extends com.sun.jna.Structure {    
+        public Pointer name_template;
+        public PadDirection  direction;
+        public /* PadPresence */ int presence;
+        public Caps caps;
+};
+
     public final class BufferStruct extends com.sun.jna.Structure {
         volatile public MiniObjectStruct mini_object;
         public Pointer data;
@@ -339,24 +512,23 @@ public interface GstAPI extends Library {
         }
     }
     public class MiniObjectStruct extends com.sun.jna.Structure {
-        volatile public GTypeInstance instance;
-        volatile public int refcount;
-        volatile public int flags;
-        volatile public Pointer _gst_reserved;
+        public volatile GTypeInstance instance;
+        public volatile int refcount;
+        public volatile int flags;
+        public volatile Pointer _gst_reserved;
         
         /** Creates a new instance of GstMiniObjectStructure */
         public MiniObjectStruct() {}
         public MiniObjectStruct(Pointer ptr) {
-            useMemory(ptr, 0);
+            useMemory(ptr);
             read();
         }
-        public void write() { }
     }
     public final class MessageStruct extends com.sun.jna.Structure {
-        volatile public MiniObjectStruct mini_object;
-        volatile public Pointer lock;
-        volatile public Pointer cond;
-        public int type;
+        public volatile MiniObjectStruct mini_object;
+        public volatile Pointer lock;
+        public volatile Pointer cond;
+        public volatile int type;
         public long timestamp;
         public Pointer src;
         public Pointer structure;
@@ -374,13 +546,14 @@ public interface GstAPI extends Library {
     }
     
     public class GErrorStruct extends com.sun.jna.Structure {
-        public int domain; /* GQuark */
-        public int code;
-        public String message;
+        public volatile int domain; /* GQuark */
+        public volatile int code;
+        public volatile String message;
         
         /** Creates a new instance of GError */
+        public GErrorStruct() { clear(); }
         public GErrorStruct(Pointer ptr) {
-            useMemory(ptr, 0);
+            useMemory(ptr);
             read();
         }
     }
