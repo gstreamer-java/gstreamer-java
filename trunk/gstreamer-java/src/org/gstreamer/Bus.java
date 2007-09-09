@@ -114,10 +114,10 @@ public class Bus extends GstObject {
             @SuppressWarnings("unused")
 			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
-                gst.gst_message_parse_warning(msgPtr, err, null);
-                glib.g_error_free(err.getValue());
+                gst.gst_message_parse_warning(msgPtr, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
                 listener.warningMessage(messageSource(msgPtr), error.code, error.message);
+                glib.g_error_free(err.getValue());
             }
         });
     }
@@ -129,10 +129,10 @@ public class Bus extends GstObject {
             @SuppressWarnings("unused")
 			public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
-                gst.gst_message_parse_info(msgPtr, err, null);
-                glib.g_error_free(err.getValue());
+                gst.gst_message_parse_info(msgPtr, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
                 listener.infoMessage(messageSource(msgPtr), error.code, error.message);
+                glib.g_error_free(err.getValue());
             }
         });
     }

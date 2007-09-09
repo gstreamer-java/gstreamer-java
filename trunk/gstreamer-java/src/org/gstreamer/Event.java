@@ -10,31 +10,25 @@
  * Lesser General Public License for more details.
  */
 
+
 package org.gstreamer;
 
-/**
- *
- */
-public enum SeekFlags {
-    NONE(0),
-    FLUSH(1 << 0),
-    ACCURATE(1 << 1),
-    KEY_UNIT(1 << 2),
-    SEGMENT(1 << 3);
+import com.sun.jna.Pointer;
+import org.gstreamer.lowlevel.GstAPI;
+
+public class Event extends MiniObject {
     
-    private SeekFlags(int value) {
-        this.value = value;
+    /**
+     * Creates a new instance of Buffer
+     */    
+    Event(Pointer ptr, boolean needRef) {
+        this(ptr, needRef, true);
     }
-    public int intValue() {
-        return value;
+    Event(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
+        //struct = new BufferStruct(ptr);
     }
-    public static SeekFlags valueOf(int value) {
-        for (SeekFlags f : values()) {
-            if (f.value == value) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException("Invalid SeekFlags value: " + value);
+    public static Event eosEvent() {
+        return GstAPI.gst.gst_event_new_eos();
     }
-    private int value;
 }

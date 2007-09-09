@@ -12,29 +12,20 @@
 
 package org.gstreamer;
 
-/**
- *
- */
-public enum SeekFlags {
-    NONE(0),
-    FLUSH(1 << 0),
-    ACCURATE(1 << 1),
-    KEY_UNIT(1 << 2),
-    SEGMENT(1 << 3);
-    
-    private SeekFlags(int value) {
-        this.value = value;
+public enum ActivateMode {
+    NONE,
+    PUSH,
+    PULL;
+
+    public final int intValue() {
+        return ordinal();
     }
-    public int intValue() {
-        return value;
-    }
-    public static SeekFlags valueOf(int value) {
-        for (SeekFlags f : values()) {
-            if (f.value == value) {
-                return f;
+    public final static ActivateMode valueOf(int type) {
+        for (ActivateMode m : values()) {
+            if (m.intValue() == type) {
+                return m;
             }
         }
-        throw new IllegalArgumentException("Invalid SeekFlags value: " + value);
+        return NONE;
     }
-    private int value;
 }

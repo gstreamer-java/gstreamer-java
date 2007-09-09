@@ -18,6 +18,7 @@ import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
 import com.sun.jna.MethodResultContext;
 import com.sun.jna.Pointer;
+import com.sun.jna.StructureReadContext;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
@@ -38,7 +39,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     private static ToNativeConverter nativeValueArgumentConverter = new ToNativeConverter() {
 
         public Object toNative(Object arg, ToNativeContext context) {
-            return ((NativeValue) arg).nativeValue();
+            return arg != null ? ((NativeValue) arg).nativeValue() : null;
         }
 
         public Class nativeType() {
@@ -50,6 +51,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
 
         @SuppressWarnings(value = "unchecked")
         public Object fromNative(Object result, FromNativeContext context) {
+            if (result == null) {
+                return null;
+            }
             if (context instanceof FunctionResultContext) {
                 //
                 // By default, gstreamer increments the refcount on objects 
@@ -58,6 +62,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), -1, true);
             }
             if (context instanceof CallbackInvocationContext) {
+                return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
+            }
+            if (context instanceof StructureReadContext) {
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
             }
             throw new IllegalStateException("Cannot convert to NativeObject from " + context);
@@ -93,6 +100,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
 
         @SuppressWarnings("unchecked")
         public Object toNative(Object arg, ToNativeContext context) {
+            if (arg == null) {
+                return null;
+            }
             Enum e = (Enum) arg;
             try {
                 Method intValue = e.getClass().getMethod("intValue", new Class[]{});
@@ -110,6 +120,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
     private TypeConverter stringConverter = new TypeConverter() {
 
         public Object fromNative(Object result, FromNativeContext context) {
+            if (result == null) {
+                return null;
+            }
             if (context instanceof MethodResultContext) {
                 MethodResultContext functionContext = (MethodResultContext) context;
                 Method method = functionContext.getMethod();
@@ -119,10 +132,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                     GlibAPI.glib.g_free(ptr);
                 }
                 return s;
-            } else if (result != null) {
+            } else {
                 return ((Pointer) result).getString(0);
-            }
-            return null;
+            }           
         }
 
         public Class<?> nativeType() {

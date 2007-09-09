@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -12,29 +12,25 @@
 
 package org.gstreamer;
 
-/**
- *
- */
-public enum SeekFlags {
-    NONE(0),
-    FLUSH(1 << 0),
-    ACCURATE(1 << 1),
-    KEY_UNIT(1 << 2),
-    SEGMENT(1 << 3);
+import com.sun.jna.Pointer;
+
+public class BaseSrc extends Element {
+    /**
+     *
+     * @param ptr C Pointer to the underlying GstBaseSrc
+     * @param needRef
+     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
+     * 
+     */
+    protected BaseSrc(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
+    }
     
-    private SeekFlags(int value) {
-        this.value = value;
+    /**
+     *
+     * @param ptr
+     */
+    protected BaseSrc(Pointer ptr) {
+        super(ptr);
     }
-    public int intValue() {
-        return value;
-    }
-    public static SeekFlags valueOf(int value) {
-        for (SeekFlags f : values()) {
-            if (f.value == value) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException("Invalid SeekFlags value: " + value);
-    }
-    private int value;
 }

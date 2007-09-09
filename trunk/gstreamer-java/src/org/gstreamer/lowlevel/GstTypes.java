@@ -41,11 +41,11 @@ public class GstTypes {
     public static final boolean isGType(Pointer p, long type) {
         return getGType(p).longValue() == type;
     }
-    public static final NativeLong getGType(Pointer ptr) {
+    public static final GType getGType(Pointer ptr) {        
         // Retrieve ptr->g_class
         Pointer g_class = ptr.getPointer(0);
         // Now return g_class->gtype
-        return g_class.getNativeLong(0);
+        return GType.valueOf(g_class.getNativeLong(0).longValue());
     }
     public static final Class<? extends NativeObject> classFor(Pointer ptr) {
         Pointer g_class = ptr.getPointer(0);
@@ -54,7 +54,7 @@ public class GstTypes {
         if (cls != null) {
             return cls;
         }
-        NativeLong type = g_class.getNativeLong(0);
+        GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
         logger.finer("Type of " + ptr + " = " + type);
         cls = typeMap.get(type);
         if (cls != null) {
@@ -63,11 +63,11 @@ public class GstTypes {
         }
         return cls;
     }
-    private static final void registerGType(NativeLong type, Class<? extends NativeObject> cls) {
+    private static final void registerGType(GType type, Class<? extends NativeObject> cls) {
         logger.fine("Registering gtype " + type + " = " + cls);
         typeMap.put(type, cls);
     }
-    private static Map<NativeLong, Class<? extends NativeObject>> typeMap = new HashMap<NativeLong, Class<? extends NativeObject>>();
+    private static Map<GType, Class<? extends NativeObject>> typeMap = new HashMap<GType, Class<? extends NativeObject>>();
     private static Map<Pointer, Class<? extends NativeObject>> gTypeInstanceMap = Collections.synchronizedMap(new HashMap<Pointer, Class<? extends NativeObject>>());
     static {
         // GstObject types

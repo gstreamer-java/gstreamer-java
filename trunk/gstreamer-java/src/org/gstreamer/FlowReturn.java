@@ -1,4 +1,4 @@
-/* 
+/*
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
@@ -12,29 +12,33 @@
 
 package org.gstreamer;
 
-/**
- *
- */
-public enum SeekFlags {
-    NONE(0),
-    FLUSH(1 << 0),
-    ACCURATE(1 << 1),
-    KEY_UNIT(1 << 2),
-    SEGMENT(1 << 3);
-    
-    private SeekFlags(int value) {
+
+public enum FlowReturn {
+    /* core predefined */ 
+    RESEND(1),
+    OK(0),
+    /* expected failures */
+    NOT_LINKED(-1),
+    WRONG_STATE(-2),
+    /* error cases */
+    UNEXPECTED(-3),
+    NOT_NEGOTIATED(-4),
+    ERROR(-5),
+    NOT_SUPPORTED(-6);
+
+    FlowReturn(int value) {
         this.value = value;
     }
     public int intValue() {
         return value;
     }
-    public static SeekFlags valueOf(int value) {
-        for (SeekFlags f : values()) {
-            if (f.value == value) {
-                return f;
+    public static FlowReturn valueOf(int value) {
+        for (FlowReturn r : values()) {
+            if (r.value == value) {
+                return r;
             }
         }
-        throw new IllegalArgumentException("Invalid SeekFlags value: " + value);
+        throw new IllegalArgumentException("Invalid FlowReturn value: " + value);
     }
     private int value;
 }
