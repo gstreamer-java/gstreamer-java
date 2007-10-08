@@ -46,7 +46,7 @@ public class GstObject extends GObject {
      */
     protected GstObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
-        if (ownsHandle) {
+        if (ownsHandle && needRef) {
             // Lose the floating ref so when this object is destroyed
             // and it is the last ref, the C object gets freed
             sink();

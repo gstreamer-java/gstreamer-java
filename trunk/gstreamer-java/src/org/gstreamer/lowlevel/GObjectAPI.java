@@ -103,10 +103,15 @@ public interface GObjectAPI extends Library {
         }
         public GValueData data[] = new GValueData[2];
     }
-    static class GObjectStruct extends Structure {
+    static class GObjectStruct extends com.sun.jna.Structure {
         public volatile GTypeInstance g_type_instance;
         public volatile int ref_count;
         public volatile Pointer qdata;
+        public GObjectStruct() {}
+        public GObjectStruct(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
     }
     static public class GObjectConstructParam {
         public volatile Pointer spec;

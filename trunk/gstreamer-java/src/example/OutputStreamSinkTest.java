@@ -44,7 +44,7 @@ public class OutputStreamSinkTest {
         PipedOutputStream osp = new PipedOutputStream();
         PipedInputStream isp = null;
         try {
-            isp = new PipedInputStream(osp, 128);
+            isp = new PipedInputStream(osp);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }

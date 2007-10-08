@@ -47,6 +47,7 @@ public class Bus extends GstObject {
     public Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
         gst.gst_bus_enable_sync_message_emission(this);
+        gst.gst_bus_set_sync_handler(this, Pointer.NULL, null);
         gst.gst_bus_set_sync_handler(this, syncCallback, null);
     }
     public void addBusListener(BusListener l) {

@@ -100,7 +100,7 @@ public class GobjectSubclassTest {
         assertEquals("Cannot locate type by name", type, gobj.g_type_from_name(name));
         
         //Pointer instance = gobj.g_type_create_instance(type);
-        gobj.g_object_new(type, null);
+        gobj.g_object_new(type, new Object[0]);
         
     }
 }
