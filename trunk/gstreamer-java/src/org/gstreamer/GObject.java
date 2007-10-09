@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gstreamer.lowlevel.GBoolean;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.IntPtr;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
@@ -37,7 +36,8 @@ public abstract class GObject extends NativeObject {
     
     public GObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, false, ownsHandle); // increase the refcount here
-        logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });
+        logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });        
+        strongReferences.add(this);
         if (ownsHandle) {
             gobj.g_object_add_toggle_ref(ptr, toggle, toggleID);
             if (!needRef) {                

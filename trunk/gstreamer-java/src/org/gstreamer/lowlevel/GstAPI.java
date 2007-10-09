@@ -66,7 +66,7 @@ public interface GstAPI extends Library {
      * GstElementFactory methods
      */
     GType gst_element_factory_get_type();
-    Pointer gst_element_factory_find(String factoryName);
+    ElementFactory gst_element_factory_find(String factoryName);
     Pointer gst_element_factory_make(String factoryName, String elementName);
     
     Pointer gst_element_factory_create(ElementFactory factory, String elementName);

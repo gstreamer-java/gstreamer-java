@@ -47,8 +47,9 @@ public class PadTest {
     }
     public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
         System.gc();
-        for (int i = 0; ref.get() != null && i < 20; ++i) {
+        for (int i = 0; ref.get() != null && i < 100; ++i) {
             Thread.sleep(10);
+            System.gc();
         }
         return ref.get() == null;
     }
@@ -57,7 +58,7 @@ public class PadTest {
     @Test
     public void getPad() throws Exception {
         Element src = ElementFactory.make("fakesrc", "src");
-        Element sink = ElementFactory.make("fakesink", "src");
+        Element sink = ElementFactory.make("fakesink", "sink");
         Pad srcPad = src.getPad("src");
         Pad sinkPad = sink.getPad("sink");
         assertNotNull("Could not get src pad", srcPad);
