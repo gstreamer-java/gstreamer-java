@@ -25,7 +25,6 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 public class ElementFactory extends GstObject {
     static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
-    private String factoryName = "";
     
     /**
      * Creates a new instance of ElementFactory
@@ -47,7 +46,7 @@ public class ElementFactory extends GstObject {
         if (elem == null || !elem.isValid()) {
             throw new IllegalArgumentException("Cannot create GstElement");
         }
-        return elementFor(elem, factoryName);
+        return elementFor(elem, getName());
     }
     /**
      * Returns the name of the person who wrote the factory.
@@ -97,12 +96,10 @@ public class ElementFactory extends GstObject {
      */
     public static ElementFactory find(String name) {
         logger.entering("ElementFactory", "find", name);
-        Pointer f = gst.gst_element_factory_find(name);
-        if (f == null) {
+        ElementFactory factory = gst.gst_element_factory_find(name);
+        if (factory == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: " + name);
-        }
-        ElementFactory factory = GstObject.objectFor(f, ElementFactory.class);
-        factory.factoryName = name;
+        }        
         return factory;
     }
     
@@ -113,7 +110,7 @@ public class ElementFactory extends GstObject {
      * @param name The name to assign to the created Element
      * @return A new GstElemElement
      */
-    public static Element make(String factoryName, String name) {
+    public static Element make(String factoryName, String name) {        
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
         return elementFor(makeRawElement(factoryName, name), factoryName);
     }
