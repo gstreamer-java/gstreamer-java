@@ -33,7 +33,7 @@ public class BinTest {
     
     @BeforeClass
     public static void setUpClass() throws Exception {
-        Gst.init("test", new String[] {});
+        Gst.init("BinTest", new String[] {});
     }
     
     @AfterClass
