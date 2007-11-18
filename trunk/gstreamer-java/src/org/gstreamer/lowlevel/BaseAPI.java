@@ -65,8 +65,8 @@ public interface BaseAPI extends Library {
         public volatile GstSegmentStruct segment;
         public volatile boolean	 need_newsegment;
 
-        public volatile /* long */ long offset;	/* current offset in the resource, unused */
-        public volatile /* long */ long size;        /* total size of the resource, unused */
+        public volatile /* guint64 */ long offset;	/* current offset in the resource, unused */
+        public volatile /* guint64 */ long size;        /* total size of the resource, unused */
 
         public volatile int num_buffers;
         public volatile int num_buffers_left;
@@ -104,7 +104,7 @@ public interface BaseAPI extends Library {
                 LongByReference start, LongByReference end);
     }
     public static interface GetSize extends Callback {
-        public Caps callback(BaseSrc element, LongByReference size);
+        boolean callback(BaseSrc element, LongByReference size);
     }
     public static interface EventNotify extends Callback {
         boolean callback(Element src, Event event);
