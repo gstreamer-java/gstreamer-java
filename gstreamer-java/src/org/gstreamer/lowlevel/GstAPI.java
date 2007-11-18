@@ -479,11 +479,10 @@ public interface GstAPI extends Library {
         public long duration;
 
         /* API added 0.10.6 */
-        public long applied_rate;
+        public double applied_rate;
 
         /*< private >*/
-        /*gpointer _gst_reserved[GST_PADDING-2];*/
-        byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
+        public volatile byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
     };
 
     public final static class Segment {}
