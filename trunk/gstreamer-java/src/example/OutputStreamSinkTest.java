@@ -12,8 +12,7 @@
 
 package example;
 
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
+import java.nio.channels.Pipe;
 import java.util.Map;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
@@ -24,12 +23,12 @@ import org.gstreamer.GMainLoop;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
-import org.gstreamer.io.InputStreamSrc;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
-import org.gstreamer.io.OutputStreamSink;
+import org.gstreamer.io.ReadableByteChannelSrc;
+import org.gstreamer.io.WriteableByteChannelSink;
 
 public class OutputStreamSinkTest {
     static final String name = "InputStreamSrcTest";    
@@ -41,10 +40,9 @@ public class OutputStreamSinkTest {
             System.err.println("Usage: " + name + " <filename>");
             System.exit(1);
         }
-        PipedOutputStream osp = new PipedOutputStream();
-        PipedInputStream isp = null;
+        Pipe pipeChannel;
         try {
-            isp = new PipedInputStream(osp);
+            pipeChannel = Pipe.open();
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
@@ -55,7 +53,7 @@ public class OutputStreamSinkTest {
         Pipeline inputPipe = new Pipeline("input pipeline");
         Element filesrc = ElementFactory.make("filesrc", "File source");
         filesrc.set("location", args[0]);
-        Element outputstream = new OutputStreamSink(osp, "output stream");
+        Element outputstream = new WriteableByteChannelSink(pipeChannel.sink(), "output stream");
         inputPipe.addMany(filesrc, outputstream);
         Element.linkMany(filesrc, outputstream);
         inputPipe.play();
@@ -63,9 +61,9 @@ public class OutputStreamSinkTest {
         // Now construct the output pipeline to process the data
         //
         
-        InputStreamSrc src = null;
+        Element src = null;
         try {            
-            src = new InputStreamSrc(isp, "input file");
+            src = new ReadableByteChannelSrc(pipeChannel.source(), "input file");
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);
@@ -89,6 +87,7 @@ public class OutputStreamSinkTest {
 
         decodeBin.connect(new Element.NEWDECODEDPAD() {
             public void newDecodedPad(Element elem, Pad pad, boolean last) {
+                System.out.println("newDecodedPad");
                   /* only link once */
                 Pad audioPad = audioBin.getPad("sink");
                 if (pad.isLinked()) {
