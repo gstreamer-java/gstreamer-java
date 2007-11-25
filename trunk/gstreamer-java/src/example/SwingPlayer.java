@@ -14,11 +14,14 @@ package example;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.swing.GstVideoPlayer;
+import org.gstreamer.swing.event.MediaEvent;
+import org.gstreamer.swing.event.MediaListener;
 
 /**
  *
@@ -36,6 +39,7 @@ public class SwingPlayer {
             System.err.println("Usage: SwingPlayer <filename>");
             System.exit(1);
         }
+        final String[] playList = args;
         final String file = args[0];
         
         SwingUtilities.invokeLater(new Runnable() {
@@ -43,9 +47,20 @@ public class SwingPlayer {
                 
                 JFrame frame = new JFrame("Swing Test");
                 
-                GstVideoPlayer player = new GstVideoPlayer(file);
+                final GstVideoPlayer player = new GstVideoPlayer(file);
                 player.setPreferredSize(new Dimension(640, 480));
                 player.setControlsVisible(true);
+                player.addMediaListener(new MediaListener() {
+                    int next = 0;
+                    public void endOfMedia(MediaEvent evt) {
+                        System.out.println("Finished playing");
+                        if (++next >= playList.length) {
+                            next = 0;
+                        }
+                        System.out.println("Playing next file: " + playList[next]);
+                        player.setInputFile(new File(playList[next]));
+                    }
+                });
                 frame.add(player, BorderLayout.CENTER);
                 player.play();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

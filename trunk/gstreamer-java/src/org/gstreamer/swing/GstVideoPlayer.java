@@ -20,6 +20,9 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.AbstractAction;
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -29,11 +32,16 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.PlayBin;
 import org.gstreamer.State;
+import org.gstreamer.event.BusAdapter;
+import org.gstreamer.event.BusListener;
+import org.gstreamer.swing.event.MediaEvent;
+import org.gstreamer.swing.event.MediaListener;
 
 /**
  *
@@ -128,6 +136,47 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         controls.setVisible(visible);
         revalidate();
     }
+    
+    public void setURI(URI uri) {
+        State old = playbin.getState();
+        playbin.setState(State.READY);
+        playbin.setURI(uri);
+        playbin.setState(old);
+    }
+    public void setInputFile(File file) {
+        setURI(file.toURI());
+    }
+    private class SwingBusListener extends BusAdapter {
+        private MediaListener listener;
+        SwingBusListener(MediaListener listener) {
+            this.listener = listener;
+        }
+        
+        @Override
+        public void eosEvent() {
+            SwingUtilities.invokeLater(new Runnable() {
+
+                public void run() {
+                    listener.endOfMedia(new MediaEvent(GstVideoPlayer.this));
+                }
+            });
+        }
+
+    }
+    private ArrayList<MediaListener> mediaListeners = new ArrayList<MediaListener>();
+    private Map<MediaListener, BusListener> mediaBusListeners = new HashMap<MediaListener, BusListener>();
+    public void addMediaListener(MediaListener listener) {
+        mediaListeners.add(listener);
+        BusListener busListener = new SwingBusListener(listener);
+        mediaBusListeners.put(listener, busListener);
+        playbin.getBus().addBusListener(busListener);
+        
+    }
+    public void removeMediaListener(MediaListener listener) {
+        mediaListeners.remove(listener);
+        mediaBusListeners.remove(listener);
+    }
+    
     public void pause() {
         if (playbin.isPlaying()) {
             playbin.pause();
