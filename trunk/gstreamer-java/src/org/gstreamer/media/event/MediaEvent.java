@@ -10,16 +10,19 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer.swing.event;
+package org.gstreamer.media.event;
 
-import org.gstreamer.swing.GstVideoPlayer;
+import org.gstreamer.media.MediaPlayer;
 
 /**
- *
- * @author wayne
+ * Based on code from FMJ by Ken Larson
  */
 public class MediaEvent extends java.util.EventObject {
-    public MediaEvent(GstVideoPlayer source) {
+    public MediaEvent(MediaPlayer source) {
         super(source);
+    }
+    @Override
+    public String toString() {
+        return getClass().getName() + "[source=" + getSource() + "]";
     }
 }

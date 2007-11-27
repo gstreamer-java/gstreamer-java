@@ -30,7 +30,7 @@ import static org.gstreamer.lowlevel.GObjectAPI.gobj;
  *
  */
 public abstract class GObject extends NativeObject {
-    static Logger logger = Logger.getLogger(GObject.class.getName());
+    private static Logger logger = Logger.getLogger(GObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
     
@@ -99,7 +99,7 @@ public abstract class GObject extends NativeObject {
             new HashMap<Class<?>, Map<Object, SignalCallback>>();
     private IntPtr objectID = new IntPtr(System.identityHashCode(this));
     
-    void connect(String signal, Class<?> listenerClass, Object listener, Callback cb) {
+    <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
         Map<Object, SignalCallback> m;
         synchronized (listeners) {
             m = listeners.get(listenerClass);
@@ -111,7 +111,7 @@ public abstract class GObject extends NativeObject {
         m.put(listener, new SignalCallback(signal, cb));
     }
     
-    void disconnect(Class<?> listenerClass, Object listener) {
+    <T> void disconnect(Class<T> listenerClass, T listener) {
         synchronized (listeners) {
             Map<Object, SignalCallback> m = listeners.get(listenerClass);
             if (m != null) {

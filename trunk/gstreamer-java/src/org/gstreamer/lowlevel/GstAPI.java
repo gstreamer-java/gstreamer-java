@@ -213,7 +213,6 @@ public interface GstAPI extends Library {
      */
     GType gst_message_get_type();
     int gst_message_type(Pointer msg);
-    void gst_message_parse_segment_start(Pointer msg, IntByReference format, LongByReference segment);
     void gst_message_parse_state_changed(Pointer msg, IntByReference o, IntByReference n, IntByReference p);
     void gst_message_parse_tag(Pointer msg, PointerByReference tagList);
     void gst_message_parse_clock_provide(Pointer msg, PointerByReference clock, IntByReference reader);
@@ -221,6 +220,10 @@ public interface GstAPI extends Library {
     void gst_message_parse_error(Pointer msg, PointerByReference err, PointerByReference debug);
     void gst_message_parse_warning(Pointer msg, PointerByReference err, PointerByReference debug);
     void gst_message_parse_info(Pointer msg, PointerByReference err, PointerByReference debug);
+    void gst_message_parse_buffering(Pointer msg, IntByReference percent);
+    void gst_message_parse_segment_start(Pointer message, IntByReference format, LongByReference position); 
+    void gst_message_parse_segment_done(Pointer message, IntByReference format, LongByReference position);
+    void gst_message_parse_duration(Pointer message, IntByReference format, LongByReference position);
     
     /*
      * gstparse functions

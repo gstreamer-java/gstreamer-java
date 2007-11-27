@@ -95,6 +95,14 @@ public class Element extends GstObject {
         gst.gst_element_get_state(this, state, pending, timeout);
         return State.valueOf(state.getValue());
     }
+    public void getState(long timeout, State[] states) {
+        IntByReference state = new IntByReference();
+        IntByReference pending = new IntByReference();
+        
+        gst.gst_element_get_state(this, state, pending, timeout);
+        states[0] = State.valueOf(state.getValue());
+        states[1] = State.valueOf(pending.getValue());
+    }
     public void setPosition(Time t) {
         setPosition(t.longValue(), Format.TIME);
     }

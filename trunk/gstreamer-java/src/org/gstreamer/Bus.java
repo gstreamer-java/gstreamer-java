@@ -84,6 +84,18 @@ public class Bus extends GstObject {
     public static interface STATECHANGED {
         public void stateMessage(GstObject source, State old, State current, State pending);
     }
+    public static interface BUFFERING {
+        public void bufferingMessage(GstObject source, int percent);
+    }
+    public static interface DURATION {
+        public void durationMessage(GstObject source, Format format, long duration);
+    }
+    public static interface SEGMENT_START {
+        public void segmentStart(GstObject source, Format format, long position);
+    }
+    public static interface SEGMENT_DONE {
+        public void segmentDone(GstObject source, Format format, long position);
+    }
     public void connect(final EOS listener) {
         connect("sync-message::eos", EOS.class, listener, new Callback() {
             @SuppressWarnings("unused")
@@ -169,6 +181,65 @@ public class Bus extends GstObject {
     public void disconnect(TAG listener) {
         super.disconnect(TAG.class, listener);
     }
+    public void connect(final BUFFERING listener) {
+        connect("sync-message::buffering", BUFFERING.class, listener, new Callback() {
+            @SuppressWarnings("unused")
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                IntByReference percent = new IntByReference(0);
+                gst.gst_message_parse_buffering(msgPtr, percent);
+                listener.bufferingMessage(messageSource(msgPtr), percent.getValue());
+            }
+        });
+    }
+    public void disconnect(BUFFERING listener) {
+        super.disconnect(BUFFERING.class, listener);
+    }
+    public void connect(final DURATION listener) {
+        connect("sync-message::duration", DURATION.class, listener, new Callback() {
+            @SuppressWarnings("unused")
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                System.out.println("duration update");
+                IntByReference format = new IntByReference(0);
+                LongByReference duration = new LongByReference(0);
+                gst.gst_message_parse_duration(msgPtr, format, duration);
+                listener.durationMessage(messageSource(msgPtr), 
+                        Format.valueOf(format.getValue()), duration.getValue());
+            }
+        });
+    }
+    public void disconnect(DURATION listener) {
+        super.disconnect(DURATION.class, listener);
+    }
+    public void connect(final SEGMENT_START listener) {
+        connect("sync-message::segment-start", SEGMENT_START.class, listener, new Callback() {
+            @SuppressWarnings("unused")
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                IntByReference format = new IntByReference(0);
+                LongByReference position = new LongByReference(0);
+                gst.gst_message_parse_segment_start(msgPtr, format, position);
+                listener.segmentStart(messageSource(msgPtr), 
+                        Format.valueOf(format.getValue()), position.getValue());
+            }
+        });
+    }
+    public void disconnect(SEGMENT_START listener) {
+        super.disconnect(SEGMENT_START.class, listener);
+    }
+    public void connect(final SEGMENT_DONE listener) {
+        connect("sync-message::segment-done", SEGMENT_DONE.class, listener, new Callback() {
+            @SuppressWarnings("unused")
+            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+                IntByReference format = new IntByReference(0);
+                LongByReference position = new LongByReference(0);
+                gst.gst_message_parse_segment_done(msgPtr, format, position);
+                listener.segmentDone(messageSource(msgPtr), 
+                        Format.valueOf(format.getValue()), position.getValue());
+            }
+        });
+    }
+    public void disconnect(SEGMENT_DONE listener) {
+        super.disconnect(SEGMENT_DONE.class, listener);
+    }
     public void setSyncHandler(BusSyncHandler handler) {
         syncHandler = handler;
     }
@@ -210,7 +281,8 @@ public class Bus extends GstObject {
     private Map<BusListener, BusListenerProxy> listeners
             = Collections.synchronizedMap(new HashMap<BusListener, BusListenerProxy>());
 }
-class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARNING, Bus.INFO, Bus.TAG {
+class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARNING, 
+        Bus.INFO, Bus.TAG, Bus.BUFFERING, Bus.DURATION, Bus.SEGMENT_START, Bus.SEGMENT_DONE {
     public BusListenerProxy(Bus bus, final BusListener listener) {
         this.bus = bus;
         this.listener = listener;
@@ -220,6 +292,10 @@ class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARN
         bus.connect((Bus.WARNING) this);
         bus.connect((Bus.INFO) this);
         bus.connect((Bus.TAG) this);
+        bus.connect((Bus.BUFFERING) this);
+        bus.connect((Bus.DURATION) this);
+        bus.connect((Bus.SEGMENT_START) this);
+        bus.connect((Bus.SEGMENT_DONE) this);
     }
     public void eosMessage(GstObject source) {
         listener.eosEvent();
@@ -239,6 +315,18 @@ class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARN
     public void tagMessage(GstObject source, TagList tagList)  {
         listener.tagEvent(tagList);
     }
+    public void bufferingMessage(GstObject source, int percent) {
+        listener.bufferingEvent(percent);
+    }
+    public void durationMessage(GstObject source, Format format, long duration) {
+        listener.durationEvent(format, duration);
+    }
+    public void segmentStart(GstObject source, Format format, long position) {
+        listener.segmentStart(format, position);
+    }
+    public void segmentDone(GstObject source, Format format, long position) {
+        listener.segmentDone(format, position);
+    }
     public void disconnect() {
         bus.disconnect((Bus.EOS) this);
         bus.disconnect((Bus.STATECHANGED) this);
@@ -246,8 +334,11 @@ class BusListenerProxy implements Bus.EOS, Bus.STATECHANGED, Bus.ERROR, Bus.WARN
         bus.disconnect((Bus.WARNING) this);
         bus.disconnect((Bus.INFO) this);
         bus.disconnect((Bus.TAG) this);
-        
+        bus.disconnect((Bus.BUFFERING) this);
+        bus.disconnect((Bus.SEGMENT_START) this);
+        bus.disconnect((Bus.SEGMENT_DONE) this);
     }
     private Bus bus;
-    private BusListener listener;    
+    private BusListener listener;
+
 }

@@ -20,9 +20,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.Executor;
 import javax.swing.AbstractAction;
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
@@ -38,10 +36,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.PlayBin;
 import org.gstreamer.State;
-import org.gstreamer.event.BusAdapter;
-import org.gstreamer.event.BusListener;
-import org.gstreamer.swing.event.MediaEvent;
-import org.gstreamer.swing.event.MediaListener;
+import org.gstreamer.media.AbstractMediaPlayer;
+import org.gstreamer.media.MediaPlayer;
+import org.gstreamer.media.event.EndOfMediaEvent;
+import org.gstreamer.media.event.MediaAdapter;
+import org.gstreamer.media.event.MediaListener;
+import org.gstreamer.media.event.StartEvent;
+import org.gstreamer.media.event.StopEvent;
 
 /**
  *
@@ -49,10 +50,11 @@ import org.gstreamer.swing.event.MediaListener;
 public class GstVideoPlayer extends javax.swing.JPanel {
     
     public GstVideoPlayer(URI uri) {
-        playbin = new PlayBin(uri.toString());
-        playbin.setURI(uri);
+        mediaPlayer = new SwingMediaPlayer();
+        playbin = mediaPlayer.getPlayBin();
+        mediaPlayer.setURI(uri);
         videoComponent = new GstVideoComponent();
-        playbin.setVideoSink(videoComponent.getElement());
+        mediaPlayer.setVideoSink(videoComponent.getElement());
         setLayout(new BorderLayout());
         add(videoComponent, BorderLayout.CENTER);
         controls = new JPanel();
@@ -87,6 +89,7 @@ public class GstVideoPlayer extends javax.swing.JPanel {
                 positionLabel.setText(text);
             }
         });
+        mediaPlayer.addMediaListener(mediaListener);
     }
     public GstVideoPlayer(File file) {
         this(file.toURI());
@@ -138,68 +141,54 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     }
     
     public void setURI(URI uri) {
-        State old = playbin.getState();
-        playbin.setState(State.READY);
-        playbin.setURI(uri);
-        playbin.setState(old);
+        mediaPlayer.setURI(uri);
     }
     public void setInputFile(File file) {
-        setURI(file.toURI());
+        mediaPlayer.setURI(file.toURI());
     }
-    private class SwingBusListener extends BusAdapter {
-        private MediaListener listener;
-        SwingBusListener(MediaListener listener) {
-            this.listener = listener;
-        }
-        
-        @Override
-        public void eosEvent() {
-            SwingUtilities.invokeLater(new Runnable() {
-
-                public void run() {
-                    listener.endOfMedia(new MediaEvent(GstVideoPlayer.this));
-                }
-            });
-        }
-
-    }
-    private ArrayList<MediaListener> mediaListeners = new ArrayList<MediaListener>();
-    private Map<MediaListener, BusListener> mediaBusListeners = new HashMap<MediaListener, BusListener>();
+    /**
+     * Use getMediaPlayer().addMediaListener() instead
+     */
+    @Deprecated
     public void addMediaListener(MediaListener listener) {
-        mediaListeners.add(listener);
-        BusListener busListener = new SwingBusListener(listener);
-        mediaBusListeners.put(listener, busListener);
-        playbin.getBus().addBusListener(busListener);
-        
+        mediaPlayer.addMediaListener(listener);        
     }
+    /**
+     * Use getMediaPlayer().addMediaListener() instead
+     */
+    @Deprecated
     public void removeMediaListener(MediaListener listener) {
-        mediaListeners.remove(listener);
-        mediaBusListeners.remove(listener);
+        mediaPlayer.removeMediaListener(listener);
     }
     
+    /**
+     * Obtain the MediaPlayer instance used by this VideoPlayer
+     * @return The MediaPlayer used
+     */
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+    /**
+     * Use getMediaPlayer().pause() instead.
+     */
+    @Deprecated
     public void pause() {
-        if (playbin.isPlaying()) {
-            playbin.pause();
-        }
-        pauseAction.setEnabled(false);
-        playAction.setEnabled(true);
-        togglePlayAction.setState(State.PAUSED);
+        mediaPlayer.pause();
     }
+    /**
+     * Use getMediaPlayer().play() instead.
+     */
+    @Deprecated
     public void play() {
-        if (!playbin.isPlaying()) {
-            playbin.play();
-        }
-        playAction.setEnabled(false);
-        pauseAction.setEnabled(true);
-        stopAction.setEnabled(true);
-        togglePlayAction.setState(State.PLAYING);
+        mediaPlayer.play();
     }
+    
+    /**
+     * Use getMediaPlayer().stop() instead.
+     */
+    @Deprecated
     public void stop() {
-        playbin.stop();
-        playAction.setEnabled(true);
-        pauseAction.setEnabled(false);
-        stopAction.setEnabled(false);
-        togglePlayAction.setState(State.NULL);
+        mediaPlayer.stop();
     }
     ImageIcon playIcon = loadIcon("actions/media-playback-start");
     ImageIcon pauseIcon = loadIcon("actions/media-playback-pause");
@@ -209,17 +198,17 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     
     private AbstractAction playAction = new AbstractAction("", playIcon) {
         public void actionPerformed(ActionEvent e) {
-            play();
+            mediaPlayer.play();
         }
     };
     private AbstractAction pauseAction = new AbstractAction("", pauseIcon) {
         public void actionPerformed(ActionEvent e) {
-            pause();
+            mediaPlayer.pause();
         }
     };
     private AbstractAction stopAction = new AbstractAction("", stopIcon) {
         public void actionPerformed(ActionEvent e) {
-            stop();
+            mediaPlayer.stop();
         }
     };
     private AbstractAction fwdAction = new AbstractAction("", fwdIcon) {
@@ -250,7 +239,7 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             }
         }
         public void actionPerformed(ActionEvent e) {
-            if (playbin.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 pause();
                 setState(State.PAUSED);
             } else {
@@ -259,6 +248,37 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             }
         }
     }
+    private MediaListener mediaListener = new MediaAdapter() {
+
+        @Override
+        public void endOfMedia(EndOfMediaEvent evt) {
+            this.stop(evt);
+        }
+
+        @Override
+        public void pause(StopEvent evt) {
+            pauseAction.setEnabled(false);
+            playAction.setEnabled(true);
+            togglePlayAction.setState(State.PAUSED);
+        }
+
+        @Override
+        public void start(StartEvent evt) {
+            playAction.setEnabled(false);
+            pauseAction.setEnabled(true);
+            stopAction.setEnabled(true);
+            togglePlayAction.setState(State.PLAYING);
+        }
+
+        @Override
+        public void stop(StopEvent evt) {
+            playAction.setEnabled(true);
+            pauseAction.setEnabled(false);
+            stopAction.setEnabled(false);
+            togglePlayAction.setState(State.NULL);
+        }
+        
+    };
     private TogglePlayAction togglePlayAction = new TogglePlayAction();
     private static ImageIcon loadIcon(String name) {
         return loadIcon(16, name);
@@ -272,10 +292,25 @@ public class GstVideoPlayer extends javax.swing.JPanel {
             throw new RuntimeException("Cannot locate icon for " + name);
         }
     }
+    private Executor swingExecutor = new Executor() {
+
+        public void execute(final Runnable runnable) {
+            //
+            // Need to queue the invocation, to disconnect the event from 
+            // modifications to the pipeline - which could deadlock
+            //
+            SwingUtilities.invokeLater(runnable);
+        }
+    };
+    private class SwingMediaPlayer extends AbstractMediaPlayer {
+        public SwingMediaPlayer() {
+            super(swingExecutor);
+        }
+    }
     ElementPositionModel positionModel;
     private PlayBin playbin;
+    private SwingMediaPlayer mediaPlayer;
     private JComponent controls;
     private JLabel positionLabel;
-    private GstVideoComponent videoComponent;
-    
+    private GstVideoComponent videoComponent;    
 }
