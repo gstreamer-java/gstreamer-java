@@ -10,12 +10,18 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer.swing.event;
+package org.gstreamer.media;
 
-/**
- *
- * @author wayne
- */
-public interface MediaListener {
-    void endOfMedia(MediaEvent evt);
+import java.net.URI;
+import org.gstreamer.Pipeline;
+import org.gstreamer.media.event.MediaListener;
+
+public interface MediaPlayer {
+    Pipeline getPipeline();
+    void setURI(URI uri);
+    void play();
+    void pause();
+    void stop();
+    void addMediaListener(MediaListener listener);
+    void removeMediaListener(MediaListener listener);
 }

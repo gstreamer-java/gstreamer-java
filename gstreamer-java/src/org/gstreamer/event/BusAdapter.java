@@ -12,6 +12,7 @@
 
 package org.gstreamer.event;
 
+import org.gstreamer.Format;
 import org.gstreamer.TagList;
 
 /**
@@ -30,4 +31,8 @@ public class BusAdapter implements BusListener {
     public void stateEvent(StateEvent e) {}
     public void eosEvent() {}
     public void tagEvent(TagList l) { }
+    public void bufferingEvent(int percent) {}
+    public void durationEvent(Format format, long percent) {}
+    public void segmentStart(Format format, long position) {}
+    public void segmentDone(Format format, long position) {}
 }

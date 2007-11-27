@@ -17,6 +17,7 @@ package org.gstreamer;
  */
 public class Time extends org.gstreamer.lowlevel.NativeValue {
     public final static Time NONE = new Time(-1);
+    public final static Time ZERO = new Time(0);
 
     /**
      * Creates a new instance of Time
@@ -74,9 +75,26 @@ public class Time extends org.gstreamer.lowlevel.NativeValue {
     protected Object nativeValue() {
         return new Long(nanoseconds);
     }
+    @Override
     public String toString() {
         return String.format("%02d:%02d:%02d", getHours(), getMinutes(), getSeconds());
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof Time)) {
+            return false;
+        }
+        return ((Time) obj).nanoseconds == nanoseconds;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (int) (this.nanoseconds ^ (this.nanoseconds >>> 32));
+        return hash;
+    }
+    
     public static final long NANOSECONDS = 1000000000L;
     private long nanoseconds;
 }

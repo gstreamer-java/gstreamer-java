@@ -77,7 +77,7 @@ public class Pad extends GstObject {
     public void connect(final HAVEDATA listener) {
         connect("have-data", HAVEDATA.class, listener, new Callback() {
             @SuppressWarnings("unused")
-			public boolean callback(Pointer pad, Pointer buffer) {
+            public boolean callback(Pointer pad, Pointer buffer) {
                 return listener.haveData(objectFor(pad, true), new Buffer(buffer, true));
             }
         });
@@ -85,7 +85,7 @@ public class Pad extends GstObject {
     public void connect(final LINKED listener) {
         connect("linked", LINKED.class, listener, new Callback() {
             @SuppressWarnings("unused")
-			public void callback(Pointer pad, Pointer peer) {
+            public void callback(Pointer pad, Pointer peer) {
                 listener.linked(objectFor(pad,true),objectFor(peer, true));
             }
         });
@@ -95,9 +95,9 @@ public class Pad extends GstObject {
     }
     
     public void connect(final UNLINKED listener) {
-        connect("unlinked", LINKED.class, listener, new Callback() {
+        connect("unlinked", UNLINKED.class, listener, new Callback() {
             @SuppressWarnings("unused")
-			public void callback(Pointer pad, Pointer peer) {
+            public void callback(Pointer pad, Pointer peer) {
                 listener.unlinked(objectFor(pad,true),objectFor(peer, true));
             }
         });
@@ -110,7 +110,7 @@ public class Pad extends GstObject {
     public void connect(final REQUESTLINK listener) {
         connect("request-link", REQUESTLINK.class, listener,new Callback() {
             @SuppressWarnings("unused")
-			public void callback(Pointer pad, Pointer peer) {
+            public void callback(Pointer pad, Pointer peer) {
                 listener.requestLink(objectFor(pad, true));
             }
         });
