@@ -20,7 +20,6 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -35,7 +34,7 @@ import org.gstreamer.event.*;
 public class GstVideoComponent extends javax.swing.JComponent {
     
     AtomicReference<BufferedImage> nextRef = new AtomicReference<BufferedImage>(null);
-    Element videosink, videofilter;
+    Element fakesink, videofilter;
     Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
     Object quality = RenderingHints.VALUE_RENDER_SPEED;
     private static boolean openglEnabled = false;
@@ -63,8 +62,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
     }
     /** Creates a new instance of GstVideoComponent */
     public GstVideoComponent() {
-        videosink = new VideoSink("GstVideoComponentSink");
-        bin = new Bin("GstVideoComponentBin");
+        fakesink = ElementFactory.make("fakesink", "GstVideoComponent");
+        fakesink.set("signal-handoffs", true);
+        fakesink.set("sync", true);
+        fakesink.addHandoffListener(new VideoHandoffListener());
+        bin = new Bin("GstVideoComponent");
         setOpaque(true);
         setBackground(Color.BLACK);
         
@@ -74,8 +76,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
         Element conv = ElementFactory.make("ffmpegcolorspace", "conv");
         videofilter = ElementFactory.make("capsfilter", "videoflt");
         videofilter.setCaps(new Caps("video/x-raw-rgb, bpp=32, depth=24"));
-        bin.addMany(conv, videofilter, videosink);
-        conv.link(videofilter, videosink);
+        bin.addMany(conv, videofilter, fakesink);
+        conv.link(videofilter, fakesink);
         
         if (openglEnabled) {
             // Bilinear interpolation can be accelerated by the OpenGL pipeline
@@ -279,21 +281,17 @@ public class GstVideoComponent extends javax.swing.JComponent {
     void freeBufferedImage(BufferedImage buf) {
         buffers.add(buf);
     }
-    private class VideoSink extends CustomSink {
-        public VideoSink(String name) {
-            super(VideoSink.class, name);
-        }
-
-        @Override
-        protected FlowReturn sinkRender(Buffer buffer) throws IOException {
+    class VideoHandoffListener implements HandoffListener {
+        public void handoff(HandoffEvent ev) {
+            
+            Buffer buffer = ev.getBuffer();
             Caps caps = buffer.getCaps();
             Structure struct = caps.getStructure(0);
             
             int width = struct.getInteger("width");
             int height = struct.getInteger("height");
-            // Just ignore invalid images
             if (width < 1 || height < 1) {
-                return FlowReturn.OK;
+                return;
             }
             final BufferedImage bImage = getBufferedImage(width, height);
             int[] pixels = ((DataBufferInt) bImage.getRaster().getDataBuffer()).getData();
@@ -302,12 +300,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
             // Tell swing to use the new buffer
             switchBuffer(bImage);
             
-            //
-            // Dispose of the gstreamer buffer immediately, so we do not need to wait
-            // for garbage collection - potentially eliminates extra Buffer allocations
-            //
+            // Dispose of the gstreamer buffer immediately
             buffer.dispose();
-            return FlowReturn.OK;
         }
         
     }
