@@ -95,7 +95,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         logger.entering("NativeObject", "instanceFor", new Object[] { ptr, refAdjust, ownsHandle });
         
         // Ignore null pointers
-        if (ptr == null || !ptr.isValid()) {
+        if (ptr == null) {
             return null;
         }
         NativeObject obj = NativeObject.instanceFor(ptr);

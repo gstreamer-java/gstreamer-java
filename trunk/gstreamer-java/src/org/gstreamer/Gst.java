@@ -179,7 +179,7 @@ class NativeArgs {
         Pointer argv = argvRef.getValue();
         for (int i = 1; i < argcRef.getValue(); i++) {
             Pointer arg = argv.getPointer(i * Pointer.SIZE);
-            if (arg.isValid()) {
+            if (arg != null) {
                 args.add(arg.getString(0, false));
             }
         }

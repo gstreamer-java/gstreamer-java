@@ -28,7 +28,7 @@ public class Parse {
     public static Element launch(String pipeline) throws GError {
         PointerByReference err = new PointerByReference();
         Pointer p = gst.gst_parse_launch(pipeline, err);
-        if (p == null || !p.isValid()) {
+        if (p == null) {
             throw new GError(err.getValue());
         }
         return Element.objectFor(p, true);
@@ -36,7 +36,7 @@ public class Parse {
     public static Element launch(String... pipeline) throws GError {
         PointerByReference err = new PointerByReference();
         Pointer p = gst.gst_parse_launchv(pipeline, err);
-        if (p == null || !p.isValid()) {
+        if (p == null) {
             throw new GError(err.getValue());
         }
         return Element.objectFor(p, true);
