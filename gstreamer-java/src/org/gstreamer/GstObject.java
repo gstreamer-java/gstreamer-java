@@ -89,7 +89,7 @@ public class GstObject extends GObject {
     public static <T extends GstObject> T returnedObject(Pointer ptr, Class<T> defaultClass) {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass });
         // Ignore null pointers
-        if (ptr == null || !ptr.isValid()) {
+        if (ptr == null) {
             return null;
         }
         // Try to retrieve an existing instance for the pointer

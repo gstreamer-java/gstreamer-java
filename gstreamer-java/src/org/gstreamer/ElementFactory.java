@@ -43,7 +43,7 @@ public class ElementFactory extends GstObject {
         logger.entering("ElementFactory", "create", name);
         Pointer elem = gst.gst_element_factory_create(this, name);
         logger.log(DEBUG, "gst_element_factory_create returned: " + elem);
-        if (elem == null || !elem.isValid()) {
+        if (elem == null) {
             throw new IllegalArgumentException("Cannot create GstElement");
         }
         return elementFor(elem, getName());
@@ -119,7 +119,7 @@ public class ElementFactory extends GstObject {
         logger.entering("ElementFactory", "makeRawElement", new Object[] { factoryName, name});
         Pointer elem = gst.gst_element_factory_make(factoryName, name);
         logger.log(DEBUG, "Return from gst_element_factory_make=" + elem);
-        if (elem == null || !elem.isValid()) {
+        if (elem == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: "
                     + factoryName);
         }
