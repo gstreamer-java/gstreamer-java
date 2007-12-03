@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import com.sun.jna.Platform;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -44,6 +45,10 @@ public class BusTest {
 
     @Test
     public void eosListener() {
+        // This test won't work on windows yet
+        if (Platform.isWindows()) {
+            return;
+        }
         Pipeline pipe = new Pipeline("pipe");
         Element src = ElementFactory.make("filesrc", "/dev/null");
         src.set("location", "/dev/null");
