@@ -12,7 +12,7 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.CallbackInvocationContext;
+import com.sun.jna.CallbackParameterContext;
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
@@ -61,7 +61,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                 //
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), -1, true);
             }
-            if (context instanceof CallbackInvocationContext) {
+            if (context instanceof CallbackParameterContext) {
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
             }
             if (context instanceof StructureReadContext) {
