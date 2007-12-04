@@ -45,6 +45,9 @@ public class GMainLoop extends NativeObject implements Runnable {
         return glib.g_main_loop_is_running(this);
     }
     
+    /**
+     * Start the main loop in a background thread.
+     */
     public void startInBackground() {
         bgThread = new java.lang.Thread(this);
         bgThread.setDaemon(true);
