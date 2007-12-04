@@ -14,7 +14,6 @@ package org.gstreamer;
 
 
 import org.gstreamer.lowlevel.GMainContext;
-import com.sun.jna.Function;
 import com.sun.jna.Memory;
 import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.Pointer;
@@ -25,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GlibAPI;
@@ -103,6 +103,9 @@ public final class Gst {
     }
     
     public static final String[] init(String progname, String[] args) throws GError {
+        if (initialized.get()) {
+            return args;
+        }
         NativeArgs argv = new NativeArgs(progname, args);
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         PointerByReference errRef = new PointerByReference();
@@ -117,11 +120,14 @@ public final class Gst {
         } else {
             mainContext = new GMainContext();
         }
+        initialized.set(true);
         return argv.toStringArray();
     }
     
     public static void deinit() {
+        mainContext = null;
         gst.gst_deinit();
+        initialized.set(false);
     }
     
     public static void setUseDefaultContext(boolean useDefault) {
@@ -129,16 +135,9 @@ public final class Gst {
     }
     private static GMainContext mainContext;
     private static boolean useDefaultContext = false;
-    static {
-        // Nasty hacks to pre-load required libraries
-        if (false) {
-            new Function("glib-2.0", "g_idle_add");
-            new Function("xml2", "xmlAddChild");
-            new Function("gmodule-2.0", "g_module_open");
-            new Function("gobject-2.0", "g_object_set");
-        }
-    }
+    private static AtomicBoolean initialized = new AtomicBoolean(false);
 }
+
 class NativeArgs {
     IntByReference argcRef;
     PointerByReference argvRef;
