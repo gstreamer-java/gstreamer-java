@@ -26,7 +26,7 @@ import org.gstreamer.elements.TypeFind;
  */
 public class TypeFindTest {
     
-    /** Creates a new instance of DynamicPadTest */
+    /** Creates a new instance of TypeFindTest */
     public TypeFindTest() {
     }
     public static void main(String[] args) {
@@ -41,7 +41,7 @@ public class TypeFindTest {
         
         /* put together a pipeline */
         pipeline.addMany(source, typefind);
-        Element.linkPads(source, "src", typefind, "sink");
+        Element.linkMany(source, typefind);
         
         /* listen for types found */
         typefind.connect(new TypeFind.HAVETYPE() {
