@@ -38,6 +38,9 @@ public class Element extends GstObject {
     protected Element(Pointer ptr) {
         super(ptr);
     }
+    protected Element(String factoryName, String elementName) {
+        this(ElementFactory.makeRawElement(factoryName, elementName));
+    }
     protected Element(Pointer ptr, boolean needRef) {
         super(ptr, needRef);
     }
@@ -162,7 +165,7 @@ public class Element extends GstObject {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
     public void connect(final PADADDED listener) {
-        connect("pad-added", PADADDED.class, listener,new Callback() {
+        connect("pad-added", PADADDED.class, listener, new Callback() {
             @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, Pointer user_data) {
                 listener.padAdded(Element.this, Pad.objectFor(pad, true));
