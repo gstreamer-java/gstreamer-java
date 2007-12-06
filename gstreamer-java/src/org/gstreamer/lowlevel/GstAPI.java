@@ -636,7 +636,16 @@ public interface GstAPI extends Library {
             read();
         }
     }
-    public interface HandoffCallback extends Callback {
+    public static interface HandoffCallback extends Callback {
         public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data);                
+    }
+    public static interface HaveTypeCallback extends Callback {
+        void callback(Element elem, int probability, Caps caps, Pointer user_data);
+    }
+    public static interface ElementAddedCallback extends Callback {
+        public void callback(Bin bin, Element elem, Pointer user_data);
+    }
+    public static interface ElementRemovedCallback extends Callback {
+        public void callback(Bin bin, Element elem, Pointer user_data);
     }
 }
