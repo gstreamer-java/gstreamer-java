@@ -38,6 +38,8 @@ import org.gstreamer.PadDirection;
 import org.gstreamer.PadLinkReturn;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.Pipeline;
+import org.gstreamer.Plugin;
+import org.gstreamer.Registry;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
@@ -47,6 +49,7 @@ import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
 import org.gstreamer.annotations.FreeReturnValue;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 
 /**
  *
@@ -349,6 +352,80 @@ public interface GstAPI extends Library {
     Element gst_pad_get_parent_element(Pad pad);
     GType gst_buffer_get_type();    
     Pointer gst_buffer_new_and_alloc(int size);
+    
+    /*
+     * GstPlugin functions
+     */
+    /* function for filters */
+    /**
+     * GstPluginFilter:
+     * @plugin: the plugin to check
+     * @user_data: the user_data that has been passed on e.g. gst_registry_plugin_filter()
+     *
+     * A function that can be used with e.g. gst_registry_plugin_filter()
+     * to get a list of plugins that match certain criteria.
+     *
+     * Returns: TRUE for a positive match, FALSE otherwise
+     */
+    interface PluginFilter extends Callback {
+        boolean callback(Plugin plugin);
+    }
+
+    GType gst_plugin_get_type();
+
+    String gst_plugin_get_name(Plugin plugin);
+    String gst_plugin_get_description(Plugin plugin);
+    String gst_plugin_get_filename(Plugin plugin);
+    String gst_plugin_get_version(Plugin plugin);
+    String gst_plugin_get_license(Plugin plugin);
+    String gst_plugin_get_source(Plugin plugin);
+    String gst_plugin_get_package(Plugin plugin);
+    String gst_plugin_get_origin(Plugin plugin);
+    //GModule *		gst_plugin_get_module		(Plugin plugin);
+    boolean gst_plugin_is_loaded(Plugin plugin);
+    boolean gst_plugin_name_filter(Plugin plugin, String name);
+
+    //Plugin 		gst_plugin_load_file		(String filename, GError** error);
+
+    Plugin gst_plugin_load(Plugin plugin);
+    Plugin gst_plugin_load_by_name(String name);
+    void gst_plugin_list_free(GList list);
+    
+    /*
+     * GstRegistry functions
+     */
+    /* normal GObject stuff */
+    GType gst_registry_get_type();
+
+    Pointer gst_registry_get_default();
+    boolean gst_registry_scan_path(Registry registry, String path);
+    GList gst_registry_get_path_list(Registry registry);
+
+    boolean gst_registry_add_plugin(Registry registry, Plugin plugin);
+    void gst_registry_remove_plugin	(Registry registry, Plugin plugin);
+    //boolean gst_registry_add_feature(Registry  registry, GstPluginFeature feature);
+    //void gst_registry_remove_feature(Registry  registry, GstPluginFeature * feature);
+    GList gst_registry_get_plugin_list(Registry registry);
+    GList gst_registry_plugin_filter(Registry registry, PluginFilter filter, boolean first, Pointer user_data);
+    //GList gst_registry_feature_filter(Registry registry, GstPluginFeatureFilter filter,
+    //							 boolean first,
+    //							 gpointer user_data);
+    GList gst_registry_get_feature_list(Registry registry, GType type);
+    GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
+
+    Plugin gst_registry_find_plugin(Registry registry, String name);
+    //GstPluginFeature gst_registry_find_feature(Registry registry, String name, GType type);
+
+    Plugin gst_registry_lookup(Registry registry, String filename);
+    //GstPluginFeature * 	gst_registry_lookup_feature 	(Registry registry, const char *name);
+
+
+    boolean gst_registry_binary_read_cache(Registry registry, String location);
+    boolean	gst_registry_binary_write_cache(Registry registry, String location);
+
+    boolean	gst_registry_xml_read_cache(Registry registry, String location);
+    boolean	gst_registry_xml_write_cache(Registry registry, String location);
+
     
     static final int GST_PADDING = 4;
     static final int GST_PADDING_LARGE = 20;

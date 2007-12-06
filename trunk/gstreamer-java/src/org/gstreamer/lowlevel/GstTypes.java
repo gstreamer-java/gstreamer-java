@@ -12,7 +12,6 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,6 +27,8 @@ import org.gstreamer.Message;
 import org.gstreamer.NativeObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.Plugin;
+import org.gstreamer.Registry;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
@@ -78,7 +79,8 @@ public class GstTypes {
         registerGType(gst.gst_pipeline_get_type(), Pipeline.class);
         registerGType(gst.gst_bus_get_type(), Bus.class);
         registerGType(gst.gst_pad_get_type(), Pad.class);
-        
+        registerGType(gst.gst_plugin_get_type(), Plugin.class);
+        registerGType(gst.gst_registry_get_type(), Registry.class);
         // GstMiniObject types
         registerGType(gst.gst_buffer_get_type(), Buffer.class);
         registerGType(gst.gst_message_get_type(), Message.class);

@@ -100,7 +100,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
         NativeObject obj = NativeObject.instanceFor(ptr);
         if (obj != null && cls.isInstance(obj)) {
-            if (refAdjust < 1) {
+            if (refAdjust < 0) {
                 obj.unref(); // Lose the extra ref added by gstreamer
             }
             return cls.cast(obj);

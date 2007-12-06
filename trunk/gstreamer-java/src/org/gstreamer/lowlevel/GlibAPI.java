@@ -84,5 +84,24 @@ public interface GlibAPI extends Library {
     void g_source_remove(int id);
     void g_free(Pointer ptr);
     
-    
+    public final static class GList extends com.sun.jna.Structure {
+        public volatile Pointer data;
+        public volatile Pointer _next;
+        public volatile Pointer _prev;
+        public GList() {            
+        }
+        private GList(Pointer pointer) {
+            useMemory(pointer);
+            read();
+        }
+        private static GList valueOf(Pointer ptr) {
+            return ptr != null ? new GList(ptr) : null;
+        }
+        public GList next() {
+            return valueOf(_next);
+        }
+        public GList prev() {
+            return valueOf(_prev);
+        }
+    }
 }
