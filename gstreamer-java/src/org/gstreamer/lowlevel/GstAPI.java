@@ -203,12 +203,12 @@ public interface GstAPI extends Library {
      * */
     GType gst_bus_get_type();
     void gst_bus_set_flushing(Bus ptr, int flushing);
-    interface BusCallback extends Callback {
+    interface BusCallback extends GstCallback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
     }
     NativeLong gst_bus_add_watch(Bus bus, BusCallback function, Pointer data);
     void gst_bus_set_sync_handler(Bus bus, Pointer function, Pointer data);
-    void gst_bus_set_sync_handler(Bus bus, Callback function, Pointer data);
+    void gst_bus_set_sync_handler(Bus bus, GstCallback function, Pointer data);
     void gst_bus_enable_sync_message_emission(Bus bus);
 
     /*
@@ -276,10 +276,10 @@ public interface GstAPI extends Library {
     /*
      * GstTagList functions
      */
-    interface TagForeachFunc extends Callback {
+    interface TagForeachFunc extends GstCallback {
         void callback(Pointer list, Pointer tag, Pointer user_data);
     }
-    interface TagMergeFunc extends Callback {
+    interface TagMergeFunc extends GstCallback {
         void callback(Pointer dest, Pointer src);
     }
     Pointer gst_tag_list_new();
@@ -369,7 +369,7 @@ public interface GstAPI extends Library {
      *
      * Returns: TRUE for a positive match, FALSE otherwise
      */
-    interface PluginFilter extends Callback {
+    interface PluginFilter extends GstCallback {
         boolean callback(Plugin plugin);
     }
 
@@ -491,20 +491,20 @@ public interface GstAPI extends Library {
         //
         // Callbacks for this class
         //
-        public static interface RequestNewPad extends Callback {
+        public static interface RequestNewPad extends GstCallback {
             public Pad callback(Element element, /* PadTemplate */ Pointer templ, String name);
         }
-        public static interface ReleasePad extends Callback {
+        public static interface ReleasePad extends GstCallback {
             public void callback(Element element, Pad pad);
         }
-        public static interface GetState extends Callback {
+        public static interface GetState extends GstCallback {
             public StateChangeReturn callback(Element element, Pointer p_state, 
                     Pointer p_pending, long timeout);
         }
-        public static interface SetState extends Callback {
+        public static interface SetState extends GstCallback {
             public StateChangeReturn callback(Element element, State state);
         }
-        public static interface ChangeState extends Callback {
+        public static interface ChangeState extends GstCallback {
             public StateChangeReturn callback(Element element, int transition);
         }
         //
@@ -638,16 +638,34 @@ public interface GstAPI extends Library {
             read();
         }
     }
-    public static interface HandoffCallback extends Callback {
+    // Do nothing, but provide a base Callback class that gets automatic type conversion
+    public static interface GstCallback extends com.sun.jna.Callback {}
+    
+    //
+    // Have to explicitly declare the callbacks here so they can use automatic type conversion
+    //
+    public static interface HandoffCallback extends GstCallback {
         public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data);                
     }
-    public static interface HaveTypeCallback extends Callback {
+    public static interface HaveTypeCallback extends GstCallback {
         void callback(Element elem, int probability, Caps caps, Pointer user_data);
     }
-    public static interface ElementAddedCallback extends Callback {
+    public static interface ElementAddedCallback extends GstCallback {
         public void callback(Bin bin, Element elem, Pointer user_data);
     }
-    public static interface ElementRemovedCallback extends Callback {
+    public static interface ElementRemovedCallback extends GstCallback {
         public void callback(Bin bin, Element elem, Pointer user_data);
+    }
+    public static interface PadAddedCallback extends GstCallback {
+        public void callback(Element elem, Pad pad, Pointer user_data);
+    }
+    public static interface PadRemovedCallback extends GstCallback {
+        public void callback(Element elem, Pad pad, Pointer user_data);
+    }
+    public static interface NewDecodedPadCallback extends GstCallback {
+        public void callback(Element elem, Pad pad, boolean last);
+    }
+    public static interface NoMorePadsCallback extends GstCallback {
+        public void callback(Element elem, Pointer user_data);
     }
 }
