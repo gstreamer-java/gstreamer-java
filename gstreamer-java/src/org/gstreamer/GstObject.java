@@ -20,7 +20,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  *
  */
 public class GstObject extends GObject {
-    static Logger logger = Logger.getLogger(GstObject.class.getName());
+    private static Logger logger = Logger.getLogger(GstObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
     

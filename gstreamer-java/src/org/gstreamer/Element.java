@@ -32,7 +32,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  *
  */
 public class Element extends GstObject {
-    static Logger logger = Logger.getLogger(Element.class.getName());
+    private static Logger logger = Logger.getLogger(Element.class.getName());
     
     /** Creates a new instance of GstElement */
     protected Element(Pointer ptr) {
