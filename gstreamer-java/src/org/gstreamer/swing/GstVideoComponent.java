@@ -20,6 +20,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
+import java.nio.IntBuffer;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingUtilities;
 import org.gstreamer.*;
 import org.gstreamer.event.*;
+import org.gstreamer.elements.RGBDataSink;
 
 /**
  *
@@ -34,14 +36,13 @@ import org.gstreamer.event.*;
 public class GstVideoComponent extends javax.swing.JComponent {
     
     AtomicReference<BufferedImage> nextRef = new AtomicReference<BufferedImage>(null);
-    Element fakesink, videofilter;
+    RGBDataSink videosink;
     Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
     Object quality = RenderingHints.VALUE_RENDER_SPEED;
     private static boolean openglEnabled = false;
     private static boolean useVolatile = false;
     private static boolean quartzEnabled = false;
     private static boolean ddscaleEnabled = false;
-    private Bin bin;
     private boolean keepAspect = true;
     private float alpha = 1.0f;
     
@@ -62,22 +63,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
     }
     /** Creates a new instance of GstVideoComponent */
     public GstVideoComponent() {
-        fakesink = ElementFactory.make("fakesink", "GstVideoComponent");
-        fakesink.set("signal-handoffs", true);
-        fakesink.set("sync", true);
-        fakesink.addHandoffListener(new VideoHandoffListener());
-        bin = new Bin("GstVideoComponent");
+        videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
+        videosink.setPassDirectBuffer(true);
+        
         setOpaque(true);
         setBackground(Color.BLACK);
-        
-        //
-        // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
-        //
-        Element conv = ElementFactory.make("ffmpegcolorspace", "conv");
-        videofilter = ElementFactory.make("capsfilter", "videoflt");
-        videofilter.setCaps(new Caps("video/x-raw-rgb, bpp=32, depth=24"));
-        bin.addMany(conv, videofilter, fakesink);
-        conv.link(videofilter, fakesink);
         
         if (openglEnabled) {
             // Bilinear interpolation can be accelerated by the OpenGL pipeline
@@ -95,15 +85,10 @@ public class GstVideoComponent extends javax.swing.JComponent {
             //quality = RenderingHints.VALUE_RENDER_QUALITY;
             useVolatile = false;
         }
-        //
-        // Link the ghost pads on the bin to the sink pad on the convertor
-        //
-        Pad pad = conv.getPad("sink");
-        bin.addPad(new GhostPad("sink", pad));
     }
     
     public Element getElement() {
-        return bin;
+        return videosink;
     }
     
     public void setKeepAspect(boolean keepAspect) {
@@ -281,27 +266,15 @@ public class GstVideoComponent extends javax.swing.JComponent {
     void freeBufferedImage(BufferedImage buf) {
         buffers.add(buf);
     }
-    class VideoHandoffListener implements HandoffListener {
-        public void handoff(HandoffEvent ev) {
+    class RGBListener implements RGBDataSink.Listener {
+        public void rgbFrame(int width, int height, IntBuffer rgb) {
             
-            Buffer buffer = ev.getBuffer();
-            Caps caps = buffer.getCaps();
-            Structure struct = caps.getStructure(0);
-            
-            int width = struct.getInteger("width");
-            int height = struct.getInteger("height");
-            if (width < 1 || height < 1) {
-                return;
-            }
             final BufferedImage bImage = getBufferedImage(width, height);
             int[] pixels = ((DataBufferInt) bImage.getRaster().getDataBuffer()).getData();
-            buffer.getByteBuffer().asIntBuffer().get(pixels, 0, width * height);
+            rgb.get(pixels, 0, width * height);
             
             // Tell swing to use the new buffer
             switchBuffer(bImage);
-            
-            // Dispose of the gstreamer buffer immediately
-            buffer.dispose();
         }
         
     }
