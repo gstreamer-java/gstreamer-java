@@ -12,7 +12,6 @@
 
 package org.gstreamer;
 
-import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
@@ -24,6 +23,7 @@ import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
 import org.gstreamer.event.HandoffListener;
 import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -165,10 +165,10 @@ public class Element extends GstObject {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
     public void connect(final PADADDED listener) {
-        connect("pad-added", PADADDED.class, listener, new Callback() {
+        connect("pad-added", PADADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padAdded(Element.this, Pad.objectFor(pad, true));
+            public void callback(Element elem, Pad pad, Pointer user_data) {
+                listener.padAdded(elem, pad);
             }
         });
     }
@@ -177,10 +177,10 @@ public class Element extends GstObject {
     }
     
     public void connect(final PADREMOVED listener) {
-        connect("pad-removed", PADREMOVED.class, listener,new Callback() {
+        connect("pad-removed", PADREMOVED.class, listener,new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer elem, Pointer pad, Pointer user_data) {
-                listener.padRemoved(Element.this, Pad.objectFor(pad, true));
+            public void callback(Element elem, Pad pad, Pointer user_data) {
+                listener.padRemoved(elem, pad);
             }
         });
     }
@@ -189,10 +189,10 @@ public class Element extends GstObject {
     }
     
     public void connect(final NOMOREPADS listener) {
-        connect("no-more-pads", NOMOREPADS.class, listener, new Callback() {
+        connect("no-more-pads", NOMOREPADS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer elem, Pointer user_data) {
-                listener.noMorePads(Element.this);
+            public void callback(Element elem, Pointer user_data) {
+                listener.noMorePads(elem);
             }
         });
     }
@@ -200,7 +200,7 @@ public class Element extends GstObject {
         disconnect(NOMOREPADS.class, listener);
     }
     public void connect(final NEWDECODEDPAD listener) {
-        connect("new-decoded-pad", NEWDECODEDPAD.class, listener, new Callback() {
+        connect("new-decoded-pad", NEWDECODEDPAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, boolean last) {
                 listener.newDecodedPad(Element.this, Pad.objectFor(pad, true), last);

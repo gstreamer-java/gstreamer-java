@@ -12,7 +12,6 @@
 
 package org.gstreamer;
 
-import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.Map;
@@ -25,6 +24,7 @@ import org.gstreamer.event.BusListener;
 import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.event.ErrorEvent;
 import org.gstreamer.event.StateEvent;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
@@ -97,7 +97,7 @@ public class Bus extends GstObject {
         public void segmentDone(GstObject source, Format format, long position);
     }
     public void connect(final EOS listener) {
-        connect("sync-message::eos", EOS.class, listener, new Callback() {
+        connect("sync-message::eos", EOS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 listener.eosMessage(messageSource(msgPtr));
@@ -108,7 +108,7 @@ public class Bus extends GstObject {
         super.disconnect(EOS.class, listener);
     }
     public void connect(final ERROR listener) {
-        connect("sync-message::error", ERROR.class, listener, new Callback() {
+        connect("sync-message::error", ERROR.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
@@ -123,7 +123,7 @@ public class Bus extends GstObject {
         super.disconnect(ERROR.class, listener);
     }
     public void connect(final WARNING listener) {
-        connect("sync-message::warning", WARNING.class, listener, new Callback() {
+        connect("sync-message::warning", WARNING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
@@ -138,7 +138,7 @@ public class Bus extends GstObject {
         super.disconnect(WARNING.class, listener);
     }
     public void connect(final INFO listener) {
-        connect("sync-message::info", INFO.class, listener, new Callback() {
+        connect("sync-message::info", INFO.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
@@ -153,7 +153,7 @@ public class Bus extends GstObject {
         super.disconnect(INFO.class, listener);
     }
     public void connect(final STATECHANGED listener) {
-        connect("sync-message::state-changed", STATECHANGED.class, listener, new Callback() {
+        connect("sync-message::state-changed", STATECHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference o = new IntByReference();
@@ -169,7 +169,7 @@ public class Bus extends GstObject {
         super.disconnect(STATECHANGED.class, listener);
     }
     public void connect(final TAG listener) {
-        connect("sync-message::tag", TAG.class, listener, new Callback() {
+        connect("sync-message::tag", TAG.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference list = new PointerByReference();
@@ -182,7 +182,7 @@ public class Bus extends GstObject {
         super.disconnect(TAG.class, listener);
     }
     public void connect(final BUFFERING listener) {
-        connect("sync-message::buffering", BUFFERING.class, listener, new Callback() {
+        connect("sync-message::buffering", BUFFERING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference percent = new IntByReference(0);
@@ -195,7 +195,7 @@ public class Bus extends GstObject {
         super.disconnect(BUFFERING.class, listener);
     }
     public void connect(final DURATION listener) {
-        connect("sync-message::duration", DURATION.class, listener, new Callback() {
+        connect("sync-message::duration", DURATION.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 System.out.println("duration update");
@@ -211,7 +211,7 @@ public class Bus extends GstObject {
         super.disconnect(DURATION.class, listener);
     }
     public void connect(final SEGMENT_START listener) {
-        connect("sync-message::segment-start", SEGMENT_START.class, listener, new Callback() {
+        connect("sync-message::segment-start", SEGMENT_START.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference format = new IntByReference(0);
@@ -226,7 +226,7 @@ public class Bus extends GstObject {
         super.disconnect(SEGMENT_START.class, listener);
     }
     public void connect(final SEGMENT_DONE listener) {
-        connect("sync-message::segment-done", SEGMENT_DONE.class, listener, new Callback() {
+        connect("sync-message::segment-done", SEGMENT_DONE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 IntByReference format = new IntByReference(0);
@@ -249,7 +249,7 @@ public class Bus extends GstObject {
             return BusSyncReply.PASS;
         }
     };
-    private static Callback syncCallback = new Callback() {
+    private static GstCallback syncCallback = new GstCallback() {
         @SuppressWarnings("unused")
         public int callback(Pointer busPtr, Pointer msgPtr, Pointer data) {
             Bus bus = (Bus) NativeObject.instanceFor(busPtr);

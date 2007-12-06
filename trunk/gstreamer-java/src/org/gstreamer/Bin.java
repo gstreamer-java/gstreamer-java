@@ -11,7 +11,6 @@
  */
 
 package org.gstreamer;
-import com.sun.jna.Callback;
 import org.gstreamer.event.BinEvent;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import com.sun.jna.Pointer;
@@ -20,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.gstreamer.event.BinListener;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.GstAPI.ElementRemovedCallback;
 
 /**
  *
@@ -129,20 +130,19 @@ public class Bin extends Element {
         public void elementRemoved(Bin bin, Element elem);
     }
     
-    
     public void connect(final ELEMENTADDED listener) {
-        connect("element-added", ELEMENTADDED.class, listener,new Callback() {
+        connect("element-added", ELEMENTADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer bin, Pointer elem, Pointer user_data) {
-                listener.elementAdded(Bin.this,Element.objectFor(elem, true));
+            public void callback(Bin bin, Element elem, Pointer user_data) {
+                listener.elementAdded(bin, elem);
             }
         });
     }
     public void connect(final ELEMENTREMOVED listener) {
-        connect("element-removed", ELEMENTREMOVED.class, listener,new Callback() {
+        connect("element-removed", ELEMENTREMOVED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer bin, Pointer elem, Pointer user_data) {
-                listener.elementRemoved(Bin.this,Element.objectFor(elem, true));
+            public void callback(Bin bin, Element elem, Pointer user_data) {
+                listener.elementRemoved(bin, elem);
             }
         });
     }
