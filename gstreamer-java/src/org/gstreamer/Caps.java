@@ -67,7 +67,9 @@ public class Caps extends NativeObject {
     public Structure getStructure(int index) {
         return Structure.objectFor(gst.gst_caps_get_structure(this, index), false, false);
     }
-
+    public String toString() {
+        return gst.gst_caps_to_string(this);
+    }
     public static Caps objectFor(Pointer ptr, boolean needRef) {
         return NativeObject.objectFor(ptr, Caps.class, needRef);
     }

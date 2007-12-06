@@ -258,6 +258,8 @@ public interface GstAPI extends Library {
     void gst_caps_truncate(Caps caps);
     void gst_caps_set_simple(Caps caps, String field, Object... values);
     Pointer gst_caps_union(Caps caps, Caps other);
+    @FreeReturnValue
+    String gst_caps_to_string(Caps caps);
     /*
      * GstStructure functions
      */

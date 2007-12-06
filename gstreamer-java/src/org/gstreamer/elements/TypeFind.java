@@ -26,19 +26,19 @@ public class TypeFind extends Element {
     public TypeFind(String name) {
         super("typefind", name);
     }
-    public static interface TYPEFIND {
+    public static interface HAVETYPE {
         void typeFound(Element elem, int probability, Caps caps);
     }
-    public void connect(final TYPEFIND listener) {
-        connect("have-type", TYPEFIND.class, listener, new HaveTypeCallback() {
+    public void connect(final HAVETYPE listener) {
+        connect("have-type", HAVETYPE.class, listener, new HaveTypeCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, int probability, Caps caps, Pointer user_data) {
                 listener.typeFound(elem, probability, caps);
             }
         });
     }
-    public void disconnect(TYPEFIND listener) {
-        disconnect(TYPEFIND.class, listener);
+    public void disconnect(HAVETYPE listener) {
+        disconnect(HAVETYPE.class, listener);
     }
     
 }
