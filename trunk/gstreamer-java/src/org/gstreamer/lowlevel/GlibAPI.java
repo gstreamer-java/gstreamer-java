@@ -15,6 +15,7 @@ import com.sun.jna.*;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.HashMap;
 import org.gstreamer.GMainLoop;
+import org.gstreamer.glib.GDate;
 
 /**
  *
@@ -83,6 +84,11 @@ public interface GlibAPI extends Library {
     
     void g_source_remove(int id);
     void g_free(Pointer ptr);
+    
+    Pointer g_date_new();
+    Pointer g_date_new_dmy(int day, int month, int year);
+    Pointer g_date_new_julian(int julian_day);
+    void g_date_free(Pointer date);
     
     public final static class GList extends com.sun.jna.Structure {
         public volatile Pointer data;

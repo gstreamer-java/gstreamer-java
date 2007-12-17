@@ -143,9 +143,8 @@ public class TagList extends Structure {
         return type;
     }
     
-    void ref() {}
-    void unref() {}
-    void disposeNativeHandle(Pointer ptr) {
+    @Override
+    protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_tag_list_free(ptr);
     }
     static final Map<String, GType> tagTypeMap = Collections.synchronizedMap(new HashMap<String, GType>());

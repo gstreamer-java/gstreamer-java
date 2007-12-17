@@ -32,13 +32,21 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     NativeObject(Pointer ptr, boolean needRef) {
         this(ptr, needRef, true);
     }
-    NativeObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
+    protected NativeObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         logger.entering("NativeObject", "<init>", new Object[] { ptr, needRef, ownsHandle });
         logger.log(LIFECYCLE, "Creating " + getClass().getSimpleName() + " (" + ptr + ")");
         this.handle = ptr;
         this.ownsHandle = new AtomicBoolean(ownsHandle);
         nativeRef = new NativeRef(this);
-        instanceMap.put(ptr, nativeRef);
+        //
+        // Only store this object in the map if we can tell when it has been disposed 
+        // (i.e. must be at least a GObject - MiniObject and other NativeObject subclasses
+        // don't signal destruction, so it is impossible to know if the instance 
+        // is stale or not
+        //
+        if (GObject.class.isAssignableFrom(getClass())) {
+            instanceMap.put(ptr, nativeRef);
+        }
         if (ownsHandle && needRef) {
             ref();
         }
@@ -47,7 +55,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         this(ptr, true, false);
     }
     
-    abstract void disposeNativeHandle(Pointer ptr);
+    abstract protected void disposeNativeHandle(Pointer ptr);
     
     public void dispose() {
         logger.log(LIFECYCLE, "Disposing object " + this + " = " + handle());
@@ -56,8 +64,8 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
             disposeNativeHandle(handle);
         }
     }
-    abstract void ref();
-    abstract void unref();
+    abstract protected void ref();
+    abstract protected void unref();
     
     protected void finalize() throws Throwable {
         try {
@@ -98,7 +106,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         if (ptr == null) {
             return null;
         }
-        NativeObject obj = NativeObject.instanceFor(ptr);
+        NativeObject obj = GObject.class.isAssignableFrom(cls) ? NativeObject.instanceFor(ptr) : null;
         if (obj != null && cls.isInstance(obj)) {
             if (refAdjust < 0) {
                 obj.unref(); // Lose the extra ref added by gstreamer

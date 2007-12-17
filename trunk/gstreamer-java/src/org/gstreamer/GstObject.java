@@ -62,10 +62,10 @@ public class GstObject extends GObject {
         return gst.gst_object_get_name(this);
     }
     
-    void ref() {
+    protected void ref() {
         gst.gst_object_ref(this);
     }
-    void unref() {
+    protected void unref() {
         gst.gst_object_unref(this);
     }
     void sink() {

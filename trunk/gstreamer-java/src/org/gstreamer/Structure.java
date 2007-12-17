@@ -13,8 +13,8 @@
 package org.gstreamer;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import org.gstreamer.lowlevel.GType;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
@@ -38,15 +38,42 @@ public class Structure extends NativeObject {
         this(gst.gst_structure_from_string(data, new PointerByReference()), true, false);
     }
     public Structure copy() {
-        return new Structure(gst.gst_structure_copy(this));
+        return gst.gst_structure_copy(this);
     }
-    public int getInteger(String field) {
-        IntByReference intRef = new IntByReference();
-        gst.gst_structure_get_int(this, field, intRef);
-        return intRef.getValue();
+    public class InvalidFieldException extends RuntimeException {
+        public InvalidFieldException(String type, String fieldName) {
+            super(String.format("Structure does not contain %s field '%s'", type, fieldName));
+        }
+    }
+    public int getInteger(String fieldName) {
+        int[] val = { 0 };
+        if (!gst.gst_structure_get_int(this, fieldName, val)) {
+            throw new InvalidFieldException("integer", fieldName);
+        }
+        return val[0];
     }
     public boolean setInteger(String field, Integer value) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, value);
+    }
+    /**
+     * 
+     * @param fieldName
+     * @return
+     */
+    public boolean getBoolean(String fieldName) {
+        int[] val = { 0 };
+        if (!gst.gst_structure_get_boolean(this, fieldName, val)) {
+            throw new InvalidFieldException("boolean", fieldName);
+        }
+        return val[0] != 0;
+    }
+    public Fraction getFraction(String fieldName) {
+        int[] numerator = { 0 };
+        int[] denominator = { 0 };
+        if (!gst.gst_structure_get_fraction(this, fieldName, numerator, denominator)) {
+            throw new InvalidFieldException("boolean", fieldName);
+        }
+        return new Fraction(numerator[0], denominator[0]);
     }
     public boolean fixateFieldNearestInteger(String field, Integer target) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, target);
@@ -62,14 +89,57 @@ public class Structure extends NativeObject {
     public boolean hasName(String name) {
         return gst.gst_structure_has_name(this, name);
     }
+    /**
+     * Check if the {@link Structure} contains a field named fieldName.
+     *
+     * @param fieldName The name of the field to check.
+     * @return true if the structure contains a field with the given name.
+     */
+    public boolean hasField(String fieldName) {
+        return gst.gst_structure_has_field(this, fieldName);
+    }
     
+    /**
+     * Check if the {@link Structure} contains a field named fieldName.
+     *
+     * @param fieldName The name of the field to check.
+     * @param fieldType The type of the field.
+     * @return true if the structure contains a field named fieldName and of type fieldType
+     */
+    public boolean hasField(String fieldName, GType fieldType) {
+        return gst.gst_structure_has_field_typed(this, fieldName, fieldType);
+    }
+    /**
+     * Check if the {@link Structure} contains an integer field named fieldName.
+     *
+     * @param fieldName The name of the field to check.
+     * @return true if the structure contains an integer field named fieldName
+     */
+    public boolean hasIntField(String fieldName) {
+        return hasField(fieldName, GType.INT);
+    }
+    
+    /**
+     * Check if the {@link Structure} contains a double field named fieldName.
+     *
+     * @param fieldName The name of the field to check.
+     * @return true if the structure contains a double field named fieldName
+     */
+    public boolean hasDoubleField(String fieldName) {
+        return hasField(fieldName, GType.DOUBLE);
+    }
+    
+    @Override
+    public String toString() {
+        return gst.gst_structure_to_string(this);
+    }
     public static Structure objectFor(Pointer ptr, boolean needRef, boolean ownsHandle) {
         return NativeObject.objectFor(ptr, Structure.class, needRef, ownsHandle);
     }
     //--------------------------------------------------------------------------
-    void ref() {}
-    void unref() {}
-    void disposeNativeHandle(Pointer ptr) {
+    protected void ref() {}
+    protected void unref() {}
+    protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_structure_free(ptr);
     }
     

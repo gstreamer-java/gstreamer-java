@@ -10,30 +10,8 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer;
+package org.gstreamer.glib;
 
-/**
- *
- */
-public enum TagFlag {
-    UNDEFINED,
-    META,
-    ENCODED,
-    DECODED,
-    COUNT;  
-    public int intValue() {
-        return ordinal();
-    }
-    
-    //
-    // Static functions
-    //
-    public static final TagFlag valueOf(int flag) {
-        for (TagFlag f : values()) {
-            if (f.intValue() == flag) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException("Invalid GstTagFlag(" + flag + ")");
-    }
+public class GQuark {
+
 }

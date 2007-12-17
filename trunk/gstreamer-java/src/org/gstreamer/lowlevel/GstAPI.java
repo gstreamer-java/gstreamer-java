@@ -12,7 +12,6 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
@@ -45,6 +44,7 @@ import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
 import org.gstreamer.Structure;
+import org.gstreamer.TagFlag;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
@@ -263,15 +263,40 @@ public interface GstAPI extends Library {
     /*
      * GstStructure functions
      */
+    GType gst_structure_get_type();
     void gst_structure_free(Pointer ptr);
     boolean gst_structure_get_int(Structure structure, String fieldname, IntByReference value);
     boolean gst_structure_fixate_field_nearest_int(Structure structure, String field, int target);
+    @FreeReturnValue
+    String gst_structure_to_string(Structure structure);
     Pointer gst_structure_from_string(String data, PointerByReference end);
-    Pointer gst_structure_copy(Structure src);
+    Structure gst_structure_copy(Structure src);
     
     String gst_structure_get_name(Structure structure);
     void gst_structure_set_name(Structure structure, String name);
     boolean gst_structure_has_name(Structure structure, String name); 
+    int gst_structure_n_fields(Structure structure);
+    String gst_structure_nth_field_name(Structure structure, int index);
+    boolean gst_structure_has_field(Structure structure, String fieldname);
+    boolean gst_structure_has_field_typed(Structure structure, String fieldname, GType type);
+
+    /* utility functions */
+    boolean gst_structure_get_boolean(Structure structure, String fieldname, int[] value);
+    boolean gst_structure_get_int(Structure structure, String fieldname, int[] value);
+    boolean gst_structure_get_fourcc(Structure structure, String fieldname, int[] value);
+    boolean gst_structure_get_double(Structure structure, String fieldname, double[] value);
+    /*
+    boolean gst_structure_get_date(Structure structure, String fieldname,
+                                                                GDate **value);
+    boolean gst_structure_get_clock_time(Structure structure,
+                                                                String fieldname,
+                                                                GstClockTime *value);
+     */
+    String gst_structure_get_string(Structure structure, String fieldname);
+    boolean gst_structure_get_enum(Structure structure, String fieldname, GType enumtype, int[] value);
+    boolean gst_structure_get_fraction(Structure structure, String fieldname,
+							    int[] value_numerator,
+							    int[] value_denominator);
 
     /*
      * GstTagList functions
@@ -312,7 +337,7 @@ public interface GstAPI extends Library {
     GType gst_tag_get_type(String tag);
     String gst_tag_get_nick(String tag);
     String gst_tag_get_description(String tag);
-    int gst_tag_get_flag(String tag);
+    TagFlag gst_tag_get_flag(String tag);
     boolean gst_tag_is_fixed(String tag);
     
     /*

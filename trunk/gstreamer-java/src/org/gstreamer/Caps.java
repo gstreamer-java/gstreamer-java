@@ -32,6 +32,9 @@ public class Caps extends NativeObject {
     public Caps(String caps) {
         this(gst.gst_caps_from_string(caps));
     }
+    public Caps(Caps caps) {
+        this(gst.gst_caps_copy(caps));
+    }
     Caps(Pointer ptr) {
         this(ptr, false);
     }
@@ -67,20 +70,23 @@ public class Caps extends NativeObject {
     public Structure getStructure(int index) {
         return Structure.objectFor(gst.gst_caps_get_structure(this, index), false, false);
     }
+    
+    @Override
     public String toString() {
         return gst.gst_caps_to_string(this);
     }
+    
     public static Caps objectFor(Pointer ptr, boolean needRef) {
-        return NativeObject.objectFor(ptr, Caps.class, needRef);
+        return new Caps(ptr, needRef, true);
     }
     
-    void ref() {
+    protected void ref() {
         gst.gst_caps_ref(this);
     }
-    void unref() {
+    protected void unref() {
         gst.gst_caps_unref(this);
     }
-    void disposeNativeHandle(Pointer ptr) {
+    protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_caps_unref(ptr);
     }
 

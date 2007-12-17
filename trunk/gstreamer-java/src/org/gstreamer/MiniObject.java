@@ -29,14 +29,14 @@ public class MiniObject extends NativeObject {
     MiniObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
-    void ref() {
+    protected void ref() {
         gst.gst_mini_object_ref(this);
     }
-    void unref() {
+    protected void unref() {
         gst.gst_mini_object_unref(this);
     }
     
-    void disposeNativeHandle(Pointer ptr) {
+    protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_mini_object_unref(ptr);
     }
     
