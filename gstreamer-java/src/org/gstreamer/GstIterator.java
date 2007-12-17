@@ -35,7 +35,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         return new IteratorImpl();
     }
     
-    void disposeNativeHandle(Pointer ptr) {
+    protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_iterator_free(ptr);
     }
     @SuppressWarnings("unchecked")
@@ -46,8 +46,8 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         }
         return Collections.unmodifiableList(list);
     }
-    void ref() {}
-    void unref() { }
+    protected void ref() {}
+    protected void unref() { }
     class IteratorImpl implements java.util.Iterator<T> {
         T next;        
         IteratorImpl() {

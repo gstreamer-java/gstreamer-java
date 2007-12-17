@@ -12,28 +12,11 @@
 
 package org.gstreamer;
 
-/**
- *
- */
-public enum TagFlag {
-    UNDEFINED,
-    META,
-    ENCODED,
-    DECODED,
-    COUNT;  
-    public int intValue() {
-        return ordinal();
-    }
-    
-    //
-    // Static functions
-    //
-    public static final TagFlag valueOf(int flag) {
-        for (TagFlag f : values()) {
-            if (f.intValue() == flag) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException("Invalid GstTagFlag(" + flag + ")");
+public class Fraction {
+    public final int numerator;
+    public final int denominator;
+    public Fraction(int numerator, int denominator) {
+        this.numerator = numerator;
+        this.denominator = denominator;
     }
 }

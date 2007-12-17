@@ -35,13 +35,13 @@ public class Buffer extends MiniObject {
         super(ptr, needRef, ownsHandle);
         struct = new BufferStruct(ptr);
     }
-    void ref() {
+    protected void ref() {
         super.ref();
         if (struct != null) {
             struct.read(); // sync up the refcnt
         }
     }
-    void unref() {
+    protected void unref() {
         super.unref();
         if (struct != null) {
             struct.read(); // sync up the refcnt

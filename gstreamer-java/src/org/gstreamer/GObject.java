@@ -63,10 +63,8 @@ public abstract class GObject extends NativeObject {
         logger.entering("GObject", "setProperty", new Object[] { property, data });
         gobj.g_object_set_property(this, property, data);
     }
-    abstract void ref();
-    abstract void unref();
     
-    void disposeNativeHandle(Pointer ptr) {
+    protected void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
         //gobj.g_object_weak_unref(this, weakNotify, toggleID);
         gobj.g_object_remove_toggle_ref(ptr, toggle, objectID);

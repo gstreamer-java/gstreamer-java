@@ -28,4 +28,15 @@ public enum TagMergeMode {
     public int intValue() {
         return ordinal();
     }
+    //
+    // Static functions
+    //
+    public static final TagMergeMode valueOf(int mode) {
+        for (TagMergeMode m : values()) {
+            if (m.intValue() == mode) {
+                return m;
+            }
+        }
+        throw new IllegalArgumentException("Invalid GstTagMergeMode(" + mode + ")");
+    }
 }
