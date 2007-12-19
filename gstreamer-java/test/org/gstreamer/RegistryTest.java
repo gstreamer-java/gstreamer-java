@@ -66,5 +66,25 @@ public class RegistryTest {
         }
         assertTrue("playbin plugin not found", playbinFound);
     }
-
+    @Test
+    public void listPluginFeatures() {
+        Registry registry = Registry.getDefault();
+        // Ensure some plugins are loaded
+        Element playbin = new PlayBin("test");
+        Element decodebin = ElementFactory.make("decodebin", "decoder");
+        List<PluginFeature> features = registry.getPluginFeatureListByPlugin("playbin");
+        assertFalse("No plugin features found", features.isEmpty());
+        boolean playbinFound = false;
+        for (PluginFeature p : features) {
+            System.out.println("Found plugin feature " + p.getName());
+            if (p.getName().equals("playbin")) {
+                playbinFound = true;
+            }
+        }
+        assertTrue("playbin plugin not found", playbinFound);
+    }
+    @Test
+    public void lookupFeature() {
+        PluginFeature f = Registry.getDefault().findPluginFeature("decodebin");
+    }
 }

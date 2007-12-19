@@ -28,6 +28,7 @@ import org.gstreamer.NativeObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
+import org.gstreamer.PluginFeature;
 import org.gstreamer.Registry;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -55,17 +56,21 @@ public class GstTypes {
         if (cls != null) {
             return cls;
         }
+        System.out.println("type=" + g_class.getNativeLong(0));
         GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
         logger.finer("Type of " + ptr + " = " + type);
+        System.out.println("Type of " + ptr + " = " + type);
         cls = typeMap.get(type);
         if (cls != null) {
             logger.finer("Found type of " + ptr + " = " + cls);
+            System.out.println("Found type of " + ptr + " = " + cls);
             gTypeInstanceMap.put(g_class, cls);
         }
         return cls;
     }
     private static final void registerGType(GType type, Class<? extends NativeObject> cls) {
         logger.fine("Registering gtype " + type + " = " + cls);
+        System.out.println("Registering gtype " + type + " = " + cls);
         typeMap.put(type, cls);
     }
     private static Map<GType, Class<? extends NativeObject>> typeMap = new HashMap<GType, Class<? extends NativeObject>>();
@@ -80,7 +85,10 @@ public class GstTypes {
         registerGType(gst.gst_bus_get_type(), Bus.class);
         registerGType(gst.gst_pad_get_type(), Pad.class);
         registerGType(gst.gst_plugin_get_type(), Plugin.class);
+        registerGType(gst.gst_plugin_feature_get_type(), PluginFeature.class);
         registerGType(gst.gst_registry_get_type(), Registry.class);
+        System.out.println("gst_element_factory_get_type()=" + gst.gst_element_factory_get_type());
+        System.out.println("gst_plugin_feature_get_type()=" + gst.gst_plugin_feature_get_type());
         // GstMiniObject types
         registerGType(gst.gst_buffer_get_type(), Buffer.class);
         registerGType(gst.gst_message_get_type(), Message.class);

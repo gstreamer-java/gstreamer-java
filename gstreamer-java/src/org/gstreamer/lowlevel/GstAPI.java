@@ -38,6 +38,7 @@ import org.gstreamer.PadLinkReturn;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
+import org.gstreamer.PluginFeature;
 import org.gstreamer.Registry;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
@@ -418,6 +419,24 @@ public interface GstAPI extends Library {
     Plugin gst_plugin_load_by_name(String name);
     void gst_plugin_list_free(GList list);
     
+    /* normal GObject stuff */
+    GType gst_plugin_feature_get_type();
+
+    PluginFeature gst_plugin_feature_load(PluginFeature feature);
+    class TypeNameData extends com.sun.jna.Structure {
+        public String name;
+        public GType type;
+    }
+    boolean gst_plugin_feature_type_name_filter(PluginFeature feature, TypeNameData data);
+
+    void gst_plugin_feature_set_rank(PluginFeature feature, int rank);
+    void gst_plugin_feature_set_name(PluginFeature feature, String name);
+    int gst_plugin_feature_get_rank(PluginFeature feature);
+    String gst_plugin_feature_get_name(PluginFeature feature);
+    void gst_plugin_feature_list_free(GList list);
+    boolean gst_plugin_feature_check_version(PluginFeature feature,
+            int min_major, int min_minor, int min_micro);
+
     /*
      * GstRegistry functions
      */
@@ -430,8 +449,8 @@ public interface GstAPI extends Library {
 
     boolean gst_registry_add_plugin(Registry registry, Plugin plugin);
     void gst_registry_remove_plugin	(Registry registry, Plugin plugin);
-    //boolean gst_registry_add_feature(Registry  registry, GstPluginFeature feature);
-    //void gst_registry_remove_feature(Registry  registry, GstPluginFeature * feature);
+    boolean gst_registry_add_feature(Registry  registry, PluginFeature feature);
+    void gst_registry_remove_feature(Registry  registry, PluginFeature feature);
     GList gst_registry_get_plugin_list(Registry registry);
     GList gst_registry_plugin_filter(Registry registry, PluginFilter filter, boolean first, Pointer user_data);
     //GList gst_registry_feature_filter(Registry registry, GstPluginFeatureFilter filter,
@@ -441,17 +460,17 @@ public interface GstAPI extends Library {
     GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
 
     Plugin gst_registry_find_plugin(Registry registry, String name);
-    //GstPluginFeature gst_registry_find_feature(Registry registry, String name, GType type);
+    PluginFeature gst_registry_find_feature(Registry registry, String name, GType type);
 
     Plugin gst_registry_lookup(Registry registry, String filename);
-    //GstPluginFeature * 	gst_registry_lookup_feature 	(Registry registry, const char *name);
+    PluginFeature gst_registry_lookup_feature(Registry registry, String name);
 
 
     boolean gst_registry_binary_read_cache(Registry registry, String location);
-    boolean	gst_registry_binary_write_cache(Registry registry, String location);
+    boolean gst_registry_binary_write_cache(Registry registry, String location);
 
-    boolean	gst_registry_xml_read_cache(Registry registry, String location);
-    boolean	gst_registry_xml_write_cache(Registry registry, String location);
+    boolean gst_registry_xml_read_cache(Registry registry, String location);
+    boolean gst_registry_xml_write_cache(Registry registry, String location);
 
     
     static final int GST_PADDING = 4;

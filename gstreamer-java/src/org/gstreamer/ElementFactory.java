@@ -22,7 +22,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 /**
  *
  */
-public class ElementFactory extends GstObject {
+public class ElementFactory extends PluginFeature {
     static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
     
