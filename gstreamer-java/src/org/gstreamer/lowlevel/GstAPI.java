@@ -395,7 +395,7 @@ public interface GstAPI extends Library {
      *
      * Returns: TRUE for a positive match, FALSE otherwise
      */
-    interface PluginFilter extends GstCallback {
+    static interface PluginFilter extends GstCallback {
         boolean callback(Plugin plugin);
     }
 
@@ -419,6 +419,20 @@ public interface GstAPI extends Library {
     Plugin gst_plugin_load_by_name(String name);
     void gst_plugin_list_free(GList list);
     
+    
+    /**
+     * GstPluginFeatureFilter:
+     * @feature: the pluginfeature to check
+     *
+     * A function that can be used with e.g. gst_registry_feature_filter()
+     * to get a list of pluginfeature that match certain criteria.
+     *
+     * Returns: TRUE for a positive match, FALSE otherwise
+     */
+    static interface PluginFeatureFilter extends GstCallback {
+        boolean callback(PluginFeature feature);
+    }
+
     /* normal GObject stuff */
     GType gst_plugin_feature_get_type();
 
@@ -453,9 +467,9 @@ public interface GstAPI extends Library {
     void gst_registry_remove_feature(Registry  registry, PluginFeature feature);
     GList gst_registry_get_plugin_list(Registry registry);
     GList gst_registry_plugin_filter(Registry registry, PluginFilter filter, boolean first, Pointer user_data);
-    //GList gst_registry_feature_filter(Registry registry, GstPluginFeatureFilter filter,
-    //							 boolean first,
-    //							 gpointer user_data);
+    GList gst_registry_feature_filter(Registry registry, PluginFeatureFilter filter,
+    							 boolean first,
+    							 Pointer user_data);
     GList gst_registry_get_feature_list(Registry registry, GType type);
     GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
 
