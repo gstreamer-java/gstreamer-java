@@ -18,6 +18,7 @@ import com.sun.jna.Pointer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 
 public class Registry extends GstObject {
@@ -39,6 +40,15 @@ public class Registry extends GstObject {
     protected Registry(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
+    public Plugin findPlugin(String name) {
+        return gst.gst_registry_find_plugin(this, name);
+    }
+    public PluginFeature findPluginFeature(String name, GType type) {
+        return gst.gst_registry_find_feature(this, name, type);
+    }
+    public PluginFeature findPluginFeature(String name) {
+        return gst.gst_registry_lookup_feature(this, name);
+    }
     public List<Plugin> getPluginList() {
         List<Plugin> list = new ArrayList<Plugin>();
         GList glist = gst.gst_registry_get_plugin_list(this);      
@@ -50,6 +60,19 @@ public class Registry extends GstObject {
             next = next.next();   
         }
         gst.gst_plugin_list_free(glist);
+        return list;
+    }
+    public List<PluginFeature> getPluginFeatureListByPlugin(String name) {
+        List<PluginFeature> list = new ArrayList<PluginFeature>();
+        GList glist = gst.gst_registry_get_feature_list_by_plugin(this, name);
+        GList next = glist;
+        while (next != null) {
+            if (next.data != null) {
+                list.add(GstObject.objectFor(next.data, PluginFeature.class));
+            }
+            next = next.next();   
+        }
+        gst.gst_plugin_feature_list_free(glist);
         return list;
     }
 }

@@ -1,0 +1,44 @@
+/*
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ */
+
+package org.gstreamer;
+
+import com.sun.jna.Pointer;
+import java.util.logging.Logger;
+import static org.gstreamer.lowlevel.GstAPI.gst;
+
+public class PluginFeature extends GstObject {
+    private static Logger logger = Logger.getLogger(PluginFeature.class.getName());
+    
+    /** Creates a new instance of GstElement */
+    protected PluginFeature(Pointer ptr) {
+        super(ptr);
+    }
+    protected PluginFeature(Pointer ptr, boolean needRef) {
+        super(ptr, needRef);
+    }
+    protected PluginFeature(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
+    }
+    public String toString() {
+        return getName();
+    }
+    public String getName() {
+        return gst.gst_plugin_feature_get_name(this);
+    }
+    public int getRank() {
+        return gst.gst_plugin_feature_get_rank(this);
+    }
+    public boolean checkVersion(int major, int minor, int micro) {
+        return gst.gst_plugin_feature_check_version(this, minor, minor, micro);
+    }
+}
