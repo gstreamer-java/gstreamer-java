@@ -26,6 +26,11 @@ public class TypeFind extends Element {
         super("typefind", name);
     }
     
+    @Deprecated /* Only used internally */
+    public TypeFind(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        super(ptr, needRef, ownsHandle);
+    }
+    
     /**
      * Signal emitted when a new media type is identified at the {@link TypeFind} element.
      */

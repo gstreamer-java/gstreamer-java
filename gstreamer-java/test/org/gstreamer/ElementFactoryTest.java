@@ -13,6 +13,8 @@
 package org.gstreamer;
 
 import java.lang.ref.WeakReference;
+import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.TypeFind;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -141,5 +143,16 @@ public class ElementFactoryTest {
         WeakReference<Element> ref = new WeakReference<Element>(e);
         e = null;
         assertTrue("Element not garbage collected", waitGC(ref));
+    }
+    @Test 
+    public void makeDecodeBinTest() {
+        Element elem = ElementFactory.make("decodebin", "foo");
+        assertTrue("decodebin element not instance of DecodeBin", elem instanceof DecodeBin);
+        assertTrue("decodebin not subclass of Bin", elem instanceof Bin);
+    }
+    @Test 
+    public void makeTypeFindTest() {
+        Element elem = ElementFactory.make("typefind", "foo");
+        assertTrue("typefind element not instance of TypeFind", elem instanceof TypeFind);
     }
 }

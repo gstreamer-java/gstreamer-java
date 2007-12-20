@@ -35,6 +35,15 @@ public class Bin extends Element {
     }
     
     /**
+     * Creates a new instance of GstBin.  This constructor is for use by subclasses.
+     * @param factoryName The type of Bin subclass to create.
+     * @param name The Name to assign to the new Bin
+     */
+    protected Bin(String factoryName, String name) {
+        super(factoryName, name);
+    }
+    
+    /**
      *
      * @param ptr
      */

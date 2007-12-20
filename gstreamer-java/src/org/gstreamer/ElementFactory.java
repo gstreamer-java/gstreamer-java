@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.TypeFind;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -131,6 +132,7 @@ public class ElementFactory extends PluginFeature {
     static {
         typeMap = new HashMap<String, Class<? extends Element>>();
         typeMap.put("playbin", PlayBin.class);
+        typeMap.put("decodebin", DecodeBin.class);
         typeMap.put("typefind", TypeFind.class);
     }
     private static Element elementFor(Pointer ptr, String factoryName) {
