@@ -17,6 +17,7 @@ import org.gstreamer.Bin;
 import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  * Utility {@link Element} to automatically identify media stream types and hook
@@ -24,7 +25,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 public class DecodeBin extends Bin {
     public DecodeBin(String name) {
-        super("decodebin", name);
+        super(gst.gst_element_factory_make("decodebin", name));
     }
     
     @Deprecated

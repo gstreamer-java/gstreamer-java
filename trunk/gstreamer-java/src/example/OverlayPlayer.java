@@ -30,7 +30,7 @@ import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Message;
-import org.gstreamer.PlayBin;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.Structure;
 import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.lowlevel.GstAPI;

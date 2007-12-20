@@ -27,7 +27,7 @@ import java.util.concurrent.Executor;
 import org.gstreamer.Element;
 import org.gstreamer.Format;
 import org.gstreamer.Pipeline;
-import org.gstreamer.PlayBin;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.State;
 import org.gstreamer.Time;
 import org.gstreamer.Timeout;
