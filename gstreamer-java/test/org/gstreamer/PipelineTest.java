@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.elements.PlayBin;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import org.gstreamer.lowlevel.GObjectAPI.GObjectStruct;

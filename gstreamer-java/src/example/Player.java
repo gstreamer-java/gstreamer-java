@@ -18,7 +18,7 @@ import org.gstreamer.GMainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Bus;
 import org.gstreamer.GstObject;
-import org.gstreamer.PlayBin;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 

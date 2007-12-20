@@ -11,6 +11,7 @@
  */
 
 package org.gstreamer;
+import org.gstreamer.elements.PlayBin;
 import com.sun.jna.Pointer;
 import java.util.HashMap;
 import java.util.Map;

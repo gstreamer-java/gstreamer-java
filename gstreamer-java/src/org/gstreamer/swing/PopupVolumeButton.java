@@ -31,7 +31,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.gstreamer.PlayBin;
+import org.gstreamer.elements.PlayBin;
 
 /**
  *

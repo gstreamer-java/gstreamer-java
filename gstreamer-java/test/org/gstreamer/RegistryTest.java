@@ -5,6 +5,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.elements.PlayBin;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;

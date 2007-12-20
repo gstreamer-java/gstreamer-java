@@ -10,12 +10,14 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer;
+package org.gstreamer.elements;
+import org.gstreamer.*;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
 import java.io.File;
 import java.net.URI;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  *
@@ -28,7 +30,7 @@ public class PlayBin extends Pipeline {
      * @param name The name used to identify this pipeline.
      */
     public PlayBin(String name) {
-        super(ElementFactory.makeRawElement("playbin", name));
+        super(gst.gst_element_factory_make("playbin", name));
     }
     
     /**
@@ -42,17 +44,6 @@ public class PlayBin extends Pipeline {
         setURI(uri);
     }
     
-    /**
-     * Creates a new PlayBin proxy for a native gstreamer playbin
-     * 
-     * This constructor assumes ownership of the underlying native GstPipeline
-     * and increments the reference count.
-     * 
-     * @param playbin The native Playbin object to wrap.
-     */
-    PlayBin(Pointer playbin, boolean needRef) {
-        super(playbin, needRef);
-    }
     
     /**
      * Creates a new PlayBin proxy.
@@ -65,7 +56,8 @@ public class PlayBin extends Pipeline {
      *          native handle or not.  If true, then the underlying pipeline will be
      *          unreffed when the java object is garbage collected.
      */
-    PlayBin(Pointer playbin, boolean needRef, boolean ownsHandle) {
+    @Deprecated
+    public PlayBin(Pointer playbin, boolean needRef, boolean ownsHandle) {
         super(playbin, needRef, ownsHandle);
     }
     

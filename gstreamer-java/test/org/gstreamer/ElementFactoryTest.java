@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.elements.PlayBin;
 import java.lang.ref.WeakReference;
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.TypeFind;
