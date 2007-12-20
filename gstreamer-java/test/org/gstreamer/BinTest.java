@@ -106,7 +106,7 @@ public class BinTest {
         final Element e2 = ElementFactory.make("fakesink", "sink");
         final AtomicInteger added = new AtomicInteger(0);
         
-        bin.connect(new Bin.ELEMENTADDED() {
+        bin.connect(new Bin.ELEMENT_ADDED() {
             public void elementAdded(Bin bin, Element elem) {
                 if (elem == e1 || elem == e2) {
                     added.incrementAndGet();
@@ -124,7 +124,7 @@ public class BinTest {
         final Element e2 = ElementFactory.make("fakesink", "sink");
         final AtomicInteger removed = new AtomicInteger(0);
         
-        bin.connect(new Bin.ELEMENTADDED() {
+        bin.connect(new Bin.ELEMENT_ADDED() {
             public void elementAdded(Bin bin, Element elem) {
                 if (elem == e1 || elem == e2) {
                     removed.incrementAndGet();

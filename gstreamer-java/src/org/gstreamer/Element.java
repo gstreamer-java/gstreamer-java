@@ -149,67 +149,134 @@ public class Element extends GstObject {
             listenerMap.remove(listener);
         }
     }
-    public static interface PADADDED {
+    /**
+     * Signal emitted when an {@link Pad} is added to this {@link Element}
+     */
+    public static interface PAD_ADDED {
         public void padAdded(Element element, Pad pad);
     }
-    public static interface PADREMOVED {
+    
+    /**
+     * Signal emitted when an {@link Pad} is removed from this {@link Element}
+     */
+    public static interface PAD_REMOVED {
         public void padRemoved(Element element, Pad pad);
     }
-    public static interface NOMOREPADS {
+    
+    /**
+     * Signal emitted when this {@link Element} ceases to generated dynamic pads.
+     */
+    public static interface NO_MORE_PADS {
         public void noMorePads(Element element);
     }
     public static interface HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
-    public static interface NEWDECODEDPAD {
+    public static interface NEW_DECODED_PAD {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
-    public void connect(final PADADDED listener) {
-        connect("pad-added", PADADDED.class, listener, new GstCallback() {
+    @Deprecated
+    public static interface PADADDED extends PAD_ADDED {}
+    @Deprecated
+    public static interface PADREMOVED extends PAD_REMOVED {}
+    @Deprecated
+    public static interface NOMOREPADS extends NO_MORE_PADS {}
+    @Deprecated
+    public static interface NEWDECODEDPAD extends NEW_DECODED_PAD {}
+    
+    /**
+     * Add a listener for the <code>pad-added</code> signal
+     * 
+     * @param listener Listener to be called when a {@link Pad} is added to the {@link Element}.
+     */
+    public void connect(final PAD_ADDED listener) {
+        connect("pad-added", PAD_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pad pad, Pointer user_data) {
                 listener.padAdded(elem, pad);
             }
         });
     }
-    public void disconnect(PADADDED listener) {
-        disconnect(PADADDED.class, listener);
-    }
     
-    public void connect(final PADREMOVED listener) {
-        connect("pad-removed", PADREMOVED.class, listener,new GstCallback() {
+    /**
+     * Remove a listener for the <code>pad-added</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(PAD_ADDED listener) {
+        disconnect(PAD_ADDED.class, listener);
+    }
+    /**
+     * Add a listener for the <code>pad-added</code> signal
+     * 
+     * @param listener Listener to be called when a {@link Pad} is removed from the {@link Element}.
+     */
+    public void connect(final PAD_REMOVED listener) {
+        connect("pad-removed", PAD_REMOVED.class, listener,new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pad pad, Pointer user_data) {
                 listener.padRemoved(elem, pad);
             }
         });
     }
-    public void disconnect(PADREMOVED listener) {
-        disconnect(PADREMOVED.class, listener);
+    
+    /**
+     * Remove a listener for the <code>pad-removed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(PAD_REMOVED listener) {
+        disconnect(PAD_REMOVED.class, listener);
     }
     
-    public void connect(final NOMOREPADS listener) {
-        connect("no-more-pads", NOMOREPADS.class, listener, new GstCallback() {
+    /**
+     * Add a listener for the <code>no-more-pads</code> signal
+     * 
+     * @param listener Listener to be called when the {@link Element} will has 
+     * finished generating dynamic pads.
+     */
+    public void connect(final NO_MORE_PADS listener) {
+        connect("no-more-pads", NO_MORE_PADS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pointer user_data) {
                 listener.noMorePads(elem);
             }
         });
     }
-    public void disconnect(NOMOREPADS listener) {
-        disconnect(NOMOREPADS.class, listener);
+    
+    /**
+     * Remove a listener for the <code>no-more-pads</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(NO_MORE_PADS listener) {
+        disconnect(NO_MORE_PADS.class, listener);
     }
-    public void connect(final NEWDECODEDPAD listener) {
-        connect("new-decoded-pad", NEWDECODEDPAD.class, listener, new GstCallback() {
+    
+    /**
+     * Add a listener for the <code>new-decoded-pad</code> signal
+     * 
+     * @param listener Listener to be called when a new {@link Pad} is encountered
+     * on the {@link Element}
+     */
+    public void connect(final NEW_DECODED_PAD listener) {
+        connect("new-decoded-pad", NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pointer elem, Pointer pad, boolean last) {
                 listener.newDecodedPad(Element.this, Pad.objectFor(pad, true), last);
             }
         });
     }
-    public void disconnect(NEWDECODEDPAD listener) {
-        disconnect(NEWDECODEDPAD.class, listener);
+    
+    /**
+     * Remove a listener for the <code>new-decoded-pad</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(NEW_DECODED_PAD listener) {
+        disconnect(NEW_DECODED_PAD.class, listener);
     }
+    
     public void connect(final HANDOFF listener) {
         connect("handoff", HANDOFF.class, listener, new GstAPI.HandoffCallback() {
             public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data) {
@@ -237,17 +304,17 @@ public class Element extends GstObject {
     
     class ElementListenerProxy {
         public ElementListenerProxy(final ElementListener listener) {
-            Element.this.connect(added = new PADADDED() {
+            Element.this.connect(added = new PAD_ADDED() {
                 public void padAdded(Element elem, Pad pad) {
                     listener.padAdded(new ElementEvent(elem, pad));
                 }
             });
-            Element.this.connect(removed = new PADREMOVED() {
+            Element.this.connect(removed = new PAD_REMOVED() {
                 public void padRemoved(Element elem, Pad pad) {
                     listener.padRemoved(new ElementEvent(elem, pad));
                 }
             });
-            Element.this.connect(nomorepads = new NOMOREPADS() {
+            Element.this.connect(nomorepads = new NO_MORE_PADS() {
                 public void noMorePads(Element elem) {
                     listener.noMorePads(new ElementEvent(elem, null));
                 }
@@ -258,9 +325,9 @@ public class Element extends GstObject {
             Element.this.disconnect(removed);
             Element.this.disconnect(added);
         }
-        private PADADDED added;
-        private PADREMOVED removed;
-        private NOMOREPADS nomorepads;
+        private PAD_ADDED added;
+        private PAD_REMOVED removed;
+        private NO_MORE_PADS nomorepads;
     }
     
     /**

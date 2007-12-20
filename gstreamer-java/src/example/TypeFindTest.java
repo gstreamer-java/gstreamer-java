@@ -44,7 +44,7 @@ public class TypeFindTest {
         Element.linkMany(source, typefind);
         
         /* listen for types found */
-        typefind.connect(new TypeFind.HAVETYPE() {
+        typefind.connect(new TypeFind.HAVE_TYPE() {
 
             public void typeFound(Element elem, int probability, Caps caps) {
                 System.out.printf("New type found: probability=%d caps=%s\n",

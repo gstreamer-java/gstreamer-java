@@ -85,7 +85,7 @@ public class OutputStreamSinkTest {
         
         pipe.add(audioBin);
 
-        decodeBin.connect(new Element.NEWDECODEDPAD() {
+        decodeBin.connect(new Element.NEW_DECODED_PAD() {
             public void newDecodedPad(Element elem, Pad pad, boolean last) {
                 System.out.println("newDecodedPad");
                   /* only link once */

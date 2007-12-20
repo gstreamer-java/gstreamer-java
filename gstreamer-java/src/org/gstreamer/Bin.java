@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import org.gstreamer.event.BinListener;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
-import org.gstreamer.lowlevel.GstAPI.ElementRemovedCallback;
 
 /**
  *
@@ -123,34 +122,69 @@ public class Bin extends Element {
     public Element getElementByNameRecurseUp(String name) {
         return gst.gst_bin_get_by_name_recurse_up(this, name);
     }
-    public static interface ELEMENTADDED {
+    
+    /**
+     * Signal emitted when an {@link Element} is added to this Bin
+     */
+    public static interface ELEMENT_ADDED {
         public void elementAdded(Bin bin, Element elem);
     }
-    public static interface ELEMENTREMOVED {
+    
+    /**
+     * Signal emitted when an {@link Element} is removed from this Bin
+     */
+    public static interface ELEMENT_REMOVED {
         public void elementRemoved(Bin bin, Element elem);
     }
     
-    public void connect(final ELEMENTADDED listener) {
-        connect("element-added", ELEMENTADDED.class, listener, new GstCallback() {
+    @Deprecated
+    public static interface ELEMENTADDED extends ELEMENT_ADDED { }
+    @Deprecated
+    public static interface ELEMENTREMOVED extends ELEMENT_REMOVED { }
+    
+    /**
+     * Add a listener for the <code>element-added</code> signal on this Bin
+     * 
+     * @param listener The listener to be called when an {@link Element} is added.
+     */
+    public void connect(final ELEMENT_ADDED listener) {
+        connect("element-added", ELEMENT_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Bin bin, Element elem, Pointer user_data) {
                 listener.elementAdded(bin, elem);
             }
         });
     }
-    public void connect(final ELEMENTREMOVED listener) {
-        connect("element-removed", ELEMENTREMOVED.class, listener, new GstCallback() {
+    
+    /**
+     * Add a listener for the <code>element-removed</code> signal on this Bin
+     * 
+     * @param listener The listener to be called when an {@link Element} is removed.
+     */
+    public void connect(final ELEMENT_REMOVED listener) {
+        connect("element-removed", ELEMENT_REMOVED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Bin bin, Element elem, Pointer user_data) {
                 listener.elementRemoved(bin, elem);
             }
         });
     }
-    public void disconnect(ELEMENTADDED listener) {
-        disconnect(ELEMENTADDED.class, listener);
+    /**
+     * Disconnect the listener for the <code>element-added</code> signal
+     * 
+     * @param listener The listener that was registered to receive the signal.
+     */
+    public void disconnect(ELEMENT_ADDED listener) {
+        disconnect(ELEMENT_ADDED.class, listener);
     }
-    public void disconnect(ELEMENTREMOVED listener) {
-        disconnect(ELEMENTREMOVED.class, listener);
+    
+    /**
+     * Disconnect the listener for the <code>element-removed</code> signal
+     * 
+     * @param listener The listener that was registered to receive the signal.
+     */
+    public void disconnect(ELEMENT_REMOVED listener) {
+        disconnect(ELEMENT_REMOVED.class, listener);
     }
     public void addBinListener(BinListener listener) {
         listenerMap.put(listener, new BinListenerProxy(listener));
@@ -164,19 +198,19 @@ public class Bin extends Element {
     }
     class BinListenerProxy {
         public BinListenerProxy(final BinListener listener) {
-            Bin.this.connect(added = new ELEMENTADDED() {
+            Bin.this.connect(added = new ELEMENT_ADDED() {
                 public void elementAdded(Bin bin, Element elem) {
                     listener.elementAdded(new BinEvent(bin, elem));
                 }
             });
-            Bin.this.connect(removed = new ELEMENTREMOVED() {
+            Bin.this.connect(removed = new ELEMENT_REMOVED() {
                 public void elementRemoved(Bin bin, Element elem) {
                     listener.elementRemoved(new BinEvent(bin, elem));
                 }
             });
         }
-        ELEMENTADDED added;
-        ELEMENTREMOVED removed;
+        ELEMENT_ADDED added;
+        ELEMENT_REMOVED removed;
     }
     private Map<BinListener, BinListenerProxy> listenerMap =
             Collections.synchronizedMap(new HashMap<BinListener, BinListenerProxy>());
