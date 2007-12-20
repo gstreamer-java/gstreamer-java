@@ -14,6 +14,7 @@ package org.gstreamer;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
@@ -62,60 +63,119 @@ public class Pad extends GstObject {
     public Element getParentElement() {
         return gst.gst_pad_get_parent_element(this);
     }
-    public static interface HAVEDATA {
+    /**
+     * Signal emitted when new data is available on the {@link Pad}
+     */
+    public static interface HAVE_DATA {
         public boolean haveData(Pad pad, Buffer buffer);
     }
+    
+    /**
+     * Signal emitted when new this {@link Pad} is linked to another {@link Pad}
+     */
     public static interface LINKED {
         public void linked(Pad pad, Pad peer);
     }
+    
+    /**
+     * Signal emitted when new this {@link Pad} is disconnected from a peer {@link Pad}
+     */
     public static interface UNLINKED {
         public void unlinked(Pad pad, Pad peer);
     }
-    public static interface REQUESTLINK {
-        public void requestLink(Pad pad);
+    
+    /**
+     * Signal emitted when a connection to a peer {@link Pad} is requested.
+     */
+    public static interface REQUEST_LINK {
+        public void requestLink(Pad pad, Pad peer);
     }
-    public void connect(final HAVEDATA listener) {
-        connect("have-data", HAVEDATA.class, listener, new Callback() {
+    
+    @Deprecated
+    public static interface HAVEDATA extends HAVE_DATA {}
+    @Deprecated
+    public static interface REQUESTLINK extends REQUEST_LINK {}
+    
+    /**
+     * Add a listener for the <code>have-data</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener to be called when data is available.
+     */
+    public void connect(final HAVE_DATA listener) {
+        connect("have-data", HAVE_DATA.class, listener, new Callback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer pad, Pointer buffer) {
-                return listener.haveData(objectFor(pad, true), new Buffer(buffer, true));
+            public boolean callback(Pad pad, Pointer buffer) {
+                return listener.haveData(pad, new Buffer(buffer, true));
             }
         });
     }
+    
+    /**
+     * Add a listener for the <code>linked</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener to be called when a peer {@link Pad} is linked.
+     */
     public void connect(final LINKED listener) {
-        connect("linked", LINKED.class, listener, new Callback() {
+        connect("linked", LINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer pad, Pointer peer) {
-                listener.linked(objectFor(pad,true),objectFor(peer, true));
+            public void callback(Pad pad, Pad peer, Pointer user_data) {
+                listener.linked(pad, peer);
             }
         });
     }
+    
+    /**
+     * Remove a listener for the <code>linked</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener previously added for this signal.
+     */
     public void disconnect(LINKED listener) {
         disconnect(LINKED.class, listener);
     }
     
+    /**
+     * Add a listener for the <code>unlinked</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener to be called when when a peer {@link Pad} is unlinked.
+     */
     public void connect(final UNLINKED listener) {
-        connect("unlinked", UNLINKED.class, listener, new Callback() {
+        connect("unlinked", UNLINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer pad, Pointer peer) {
-                listener.unlinked(objectFor(pad,true),objectFor(peer, true));
+            public void callback(Pad pad, Pad peer, Pointer user_data) {
+                listener.unlinked(pad, peer);
             }
         });
     }
+    /**
+     * Remove a listener for the <code>unlinked</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener previously added for this signal.
+     */
     public void disconnect(UNLINKED listener) {
         disconnect(UNLINKED.class, listener);
     }
     
-    
-    public void connect(final REQUESTLINK listener) {
-        connect("request-link", REQUESTLINK.class, listener,new Callback() {
+    /**
+     * Add a listener for the <code>request-link</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener to be called when a peer {@link Pad} requests
+     * to be linked to this one.
+     */
+    public void connect(final REQUEST_LINK listener) {
+        connect("request-link", REQUEST_LINK.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer pad, Pointer peer) {
-                listener.requestLink(objectFor(pad, true));
+            public void callback(Pad pad, Pad peer, Pointer user_daa) {
+                listener.requestLink(pad, peer);
             }
         });
     }
-    public void disconnect(REQUESTLINK listener) {
-        disconnect(REQUESTLINK.class, listener);
+    
+    /**
+     * Remove a listener for the <code>request-link</code> signal on this @{link Pad}
+     * 
+     * @param listener The listener previously added for this signal.
+     */
+    public void disconnect(REQUEST_LINK listener) {
+        disconnect(REQUEST_LINK.class, listener);
     }
 }

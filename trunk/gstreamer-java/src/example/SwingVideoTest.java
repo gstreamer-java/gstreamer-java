@@ -47,7 +47,7 @@ public class SwingVideoTest {
         Pipeline pipeline = new Pipeline("pipeline");
         System.out.println("Pipeline created");
         System.out.flush();
-        pipeline.connect(new Bin.ELEMENTADDED() {
+        pipeline.connect(new Bin.ELEMENT_ADDED() {
             public void  elementAdded(Bin bin, Element elem) {
                 System.out.println("Element " + elem + " added");
             }
