@@ -14,7 +14,7 @@ package example;
 
 import java.io.File;
 import java.util.Map;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Bus;
 import org.gstreamer.GstObject;
@@ -40,7 +40,7 @@ public class Player {
         for (String s : args) {
             System.out.println("Leftover arg=" + s);
         }
-        GMainLoop loop = new GMainLoop();
+        MainLoop loop = new MainLoop();
         PlayBin player = new PlayBin("Example Player");
         player.setInputFile(new File(args[0]));
         Bus bus = player.getBus();

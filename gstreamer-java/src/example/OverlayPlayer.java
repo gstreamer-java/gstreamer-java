@@ -26,7 +26,7 @@ import org.gstreamer.Bus;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Message;
@@ -99,9 +99,9 @@ public class OverlayPlayer {
                     GstInterfacesAPI.INSTANCE.gst_x_overlay_set_xwindow_id(videoSink, windowID);
                 } 
                 player.play();       
-                new GMainLoop().startInBackground();
+                new MainLoop().startInBackground();
             }  
         });
-        //new GMainLoop().run();
+        //new MainLoop().run();
     }
 }

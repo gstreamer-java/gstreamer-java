@@ -12,7 +12,7 @@
 
 package example;
 
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
@@ -57,6 +57,6 @@ public class DynamicPadTest {
         /* start the pipeline */
         pipeline.setState(State.PLAYING);
         
-        new GMainLoop().run();
+        new MainLoop().run();
     }
 }

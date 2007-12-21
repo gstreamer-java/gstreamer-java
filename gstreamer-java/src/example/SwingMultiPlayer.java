@@ -21,7 +21,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.swing.GstVideoPlayer;
 
@@ -81,6 +81,6 @@ public class SwingMultiPlayer {
                 window.setVisible(true);
             }
         });
-        new GMainLoop().run();
+        new MainLoop().run();
     }
 }

@@ -20,20 +20,20 @@ import static org.gstreamer.lowlevel.GlibAPI.glib;
 /**
  *
  */
-public class GMainLoop extends NativeObject implements Runnable {
+public class MainLoop extends NativeObject implements Runnable {
     
-    /** Creates a new instance of GMainLoop */
-    public GMainLoop() {
+    /** Creates a new instance of MainLoop */
+    public MainLoop() {
         this(glib.g_main_loop_new(Gst.getMainContext(), false), false, true);
     }
     
-    GMainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
+    MainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
     public void quit() {
         Gst.invokeLater(new Runnable() {
             public void run() {
-                glib.g_main_loop_quit(GMainLoop.this);
+                glib.g_main_loop_quit(MainLoop.this);
             }
         });
     }
