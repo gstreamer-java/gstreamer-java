@@ -35,6 +35,7 @@ import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadLinkReturn;
+import org.gstreamer.PadPresence;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
@@ -81,6 +82,7 @@ public interface GstAPI extends Library {
     String gst_element_factory_get_author(ElementFactory factory);
     int gst_element_factory_get_num_pad_templates(ElementFactory factory);
     int gst_element_factory_get_uri_type(ElementFactory factory);
+    GList gst_element_factory_get_static_pad_templates(ElementFactory factory);
     
     /*
      * GstElement methods
@@ -261,6 +263,32 @@ public interface GstAPI extends Library {
     Pointer gst_caps_union(Caps caps, Caps other);
     @FreeReturnValue
     String gst_caps_to_string(Caps caps);
+    
+    GType gst_static_caps_get_type();
+    Caps gst_static_caps_get(GstStaticCaps static_caps);
+    
+    public class GstCaps extends com.sun.jna.Structure {
+
+        public volatile GType type;
+        public volatile int refcount;
+
+        /*< public >*/ /* read only */
+
+        public volatile int flags;
+
+        /*< private >*/
+        public volatile Pointer structs;
+
+        /*< private >*/
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GST_PADDING];
+    }
+
+    class GstStaticCaps extends com.sun.jna.Structure {
+
+        public volatile GstCaps caps;
+        public volatile String string;
+    }
+
     /*
      * GstStructure functions
      */
@@ -381,6 +409,17 @@ public interface GstAPI extends Library {
     GType gst_buffer_get_type();    
     Pointer gst_buffer_new_and_alloc(int size);
     
+    public class GstStaticPadTemplate extends com.sun.jna.Structure {
+        public volatile String name_template;
+        public volatile PadDirection direction;
+        public volatile PadPresence presence;
+        public volatile GstStaticCaps static_caps;
+        public GstStaticPadTemplate(Pointer memory) {
+            useMemory(memory);
+            read();
+        }
+    }
+
     /*
      * GstPlugin functions
      */
@@ -628,13 +667,6 @@ public interface GstAPI extends Library {
     public final static class Segment {}
     public final static class Query {}
     
-    public final class GstStaticPadTemplate extends com.sun.jna.Structure {    
-        public Pointer name_template;
-        public PadDirection  direction;
-        public /* PadPresence */ int presence;
-        public Caps caps;
-};
-
     public final class BufferStruct extends com.sun.jna.Structure {
         volatile public MiniObjectStruct mini_object;
         public Pointer data;

@@ -14,6 +14,7 @@ package org.gstreamer;
 
 import org.gstreamer.elements.PlayBin;
 import java.lang.ref.WeakReference;
+import java.util.List;
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.TypeFind;
 import org.junit.After;
@@ -155,5 +156,14 @@ public class ElementFactoryTest {
     public void makeTypeFindTest() {
         Element elem = ElementFactory.make("typefind", "foo");
         assertTrue("typefind element not instance of TypeFind", elem instanceof TypeFind);
+    }
+    @Test
+    public void getStaticPadTemplates() {
+        ElementFactory f = ElementFactory.find("fakesink");
+        List<StaticPadTemplate> templates = f.getStaticPadTemplates();
+        assertTrue("No static pad templates found", !templates.isEmpty());
+        StaticPadTemplate t = templates.get(0);
+        assertEquals("Not a sink", "sink", t.getName());
+        assertEquals("Not a sink", PadDirection.SINK, t.getDirection());
     }
 }
