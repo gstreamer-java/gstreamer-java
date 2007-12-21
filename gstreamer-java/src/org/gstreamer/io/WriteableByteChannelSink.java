@@ -15,7 +15,7 @@ package org.gstreamer.io;
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;
 import org.gstreamer.Buffer;
-import org.gstreamer.CustomSink;
+import org.gstreamer.elements.CustomSink;
 import org.gstreamer.FlowReturn;
 
 /**

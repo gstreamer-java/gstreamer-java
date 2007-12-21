@@ -12,6 +12,7 @@
 
 package org.gstreamer.io;
 
+import org.gstreamer.elements.CustomSrc;
 import org.gstreamer.*;
 import java.io.EOFException;
 import java.io.FileInputStream;
