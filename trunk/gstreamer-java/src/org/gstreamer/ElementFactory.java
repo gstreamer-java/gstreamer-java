@@ -13,13 +13,17 @@
 package org.gstreamer;
 import org.gstreamer.elements.PlayBin;
 import com.sun.jna.Pointer;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.elements.TypeFind;
+import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.GstAPI.GstStaticPadTemplate;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
@@ -88,6 +92,26 @@ public class ElementFactory extends PluginFeature {
     public String getKlass() {
         logger.entering("ElementFactory", "getKlass");
         return gst.gst_element_factory_get_klass(this);
+    }
+    
+    /**
+     * Gets the list of {@link StaticPadTemplate} for this factory.
+     *
+     * @return The list of {@link StaticPadTemplate}
+     */
+    public List<StaticPadTemplate> getStaticPadTemplates() {
+        GList glist = gst.gst_element_factory_get_static_pad_templates(this);
+        List<StaticPadTemplate> templates = new ArrayList<StaticPadTemplate>();
+        GList next = glist;
+        while (next != null) {
+            if (next.data != null) {
+                GstStaticPadTemplate temp = new GstStaticPadTemplate(next.data);
+                templates.add(new StaticPadTemplate(temp.name_template, temp.direction,
+                        temp.presence, gst.gst_static_caps_get(temp.static_caps)));
+            }
+            next = next.next();
+        }
+        return templates;
     }
     
     /**
