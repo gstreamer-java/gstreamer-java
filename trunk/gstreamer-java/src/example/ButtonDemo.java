@@ -25,7 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.swing.GstVideoPlayer;
 
@@ -105,6 +105,6 @@ public class ButtonDemo {
                 frame.setVisible(true);
             }
         });
-        new GMainLoop().run();
+        new MainLoop().run();
     }
 }

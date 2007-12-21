@@ -16,7 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import org.gstreamer.Bin;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
@@ -39,7 +39,7 @@ public class SwingVideoTest {
         
         args = Gst.init("SwingVideoTest", args);        
         System.out.println("Creating MainLoop");
-        GMainLoop loop = new GMainLoop();
+        MainLoop loop = new MainLoop();
         Element fakesrc, flt, videosink;
         
         /* setup pipeline */

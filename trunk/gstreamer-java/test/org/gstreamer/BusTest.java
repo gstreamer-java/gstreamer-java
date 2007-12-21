@@ -52,7 +52,7 @@ public class BusTest {
         Pipeline pipe = new Pipeline("pipe");
         Element src = ElementFactory.make("filesrc", "/dev/null");
         src.set("location", "/dev/null");
-        final GMainLoop loop = new GMainLoop();
+        final MainLoop loop = new MainLoop();
         final boolean[] result = {false};
         Element sink = ElementFactory.make("fakesink", "sink");
         pipe.addMany(src, sink);
@@ -84,7 +84,7 @@ public class BusTest {
         Pipeline pipe = new Pipeline("pipe");
         Element src = ElementFactory.make("filesrc", "/dev/null");
         src.set("location", "/dev/null");
-        final GMainLoop loop = new GMainLoop();
+        final MainLoop loop = new MainLoop();
         final boolean[] result = {false};
         Element sink = ElementFactory.make("fakesink", "sink");
         pipe.addMany(src, sink);

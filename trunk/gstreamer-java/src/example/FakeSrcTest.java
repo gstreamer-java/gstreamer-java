@@ -16,7 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Arrays;
 import javax.swing.JFrame;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
@@ -42,7 +42,7 @@ public class FakeSrcTest {
         JFrame frame = new JFrame("FakeSrcTest");
         args = Gst.init("FakeSrcTest", args);
         final int width = 320, height = 200;
-        GMainLoop loop = new GMainLoop();
+        MainLoop loop = new MainLoop();
         Element fakesrc, flt, conv, videosink;
         /* setup pipeline */
         Pipeline pipeline = new Pipeline("pipeline");

@@ -14,7 +14,7 @@ package org.gstreamer.lowlevel;
 import com.sun.jna.*;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.HashMap;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.glib.GDate;
 
 /**
@@ -25,11 +25,11 @@ public interface GlibAPI extends Library {
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     Pointer g_main_loop_new(GMainContext context, boolean running);
-    void g_main_loop_run(GMainLoop loop);
-    boolean g_main_loop_is_running(GMainLoop loop);
-    void g_main_loop_quit(GMainLoop loop);
-    void g_main_loop_ref(GMainLoop ptr);
-    void g_main_loop_unref(GMainLoop ptr);
+    void g_main_loop_run(MainLoop loop);
+    boolean g_main_loop_is_running(MainLoop loop);
+    void g_main_loop_quit(MainLoop loop);
+    void g_main_loop_ref(MainLoop ptr);
+    void g_main_loop_unref(MainLoop ptr);
     void g_main_loop_unref(Pointer ptr);
     
     /*

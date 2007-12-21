@@ -20,7 +20,7 @@ import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
@@ -109,7 +109,7 @@ public class InputStreamSrcTest {
             
         });
         pipe.play();
-        new GMainLoop().run();
+        new MainLoop().run();
     }
     
 }

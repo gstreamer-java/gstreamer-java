@@ -26,7 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.swing.GstVideoPlayer;
 
@@ -102,6 +102,6 @@ public class PiPDemo {
                 frame.setVisible(true);
             }
         });
-        new GMainLoop().run();
+        new MainLoop().run();
     }
 }

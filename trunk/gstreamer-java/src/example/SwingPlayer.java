@@ -17,7 +17,7 @@ import java.awt.Dimension;
 import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
-import org.gstreamer.GMainLoop;
+import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.media.MediaPlayer;
 import org.gstreamer.media.event.EndOfMediaEvent;
@@ -40,7 +40,7 @@ public class SwingPlayer {
             System.err.println("Usage: SwingPlayer <filename>");
             System.exit(1);
         }
-        final GMainLoop loop = new GMainLoop();
+        final MainLoop loop = new MainLoop();
         final String[] playList = args;
         final String file = args[0];
 
