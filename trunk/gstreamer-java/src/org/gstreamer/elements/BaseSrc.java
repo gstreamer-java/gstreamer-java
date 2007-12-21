@@ -10,11 +10,12 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer;
+package org.gstreamer.elements;
 
+import org.gstreamer.*;
 import com.sun.jna.Pointer;
 
-public class BaseSink extends Element {
+public class BaseSrc extends Element {
     /**
      *
      * @param ptr C Pointer to the underlying GstBaseSrc
@@ -22,7 +23,7 @@ public class BaseSink extends Element {
      * @param ownsHandle Whether this instance should destroy the underlying object when finalized
      * 
      */
-    protected BaseSink(Pointer ptr, boolean needRef, boolean ownsHandle) {
+    protected BaseSrc(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
     
@@ -30,7 +31,7 @@ public class BaseSink extends Element {
      *
      * @param ptr
      */
-    protected BaseSink(Pointer ptr) {
+    protected BaseSrc(Pointer ptr) {
         super(ptr);
     }
 }

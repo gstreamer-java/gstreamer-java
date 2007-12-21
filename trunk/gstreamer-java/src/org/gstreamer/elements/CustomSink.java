@@ -10,8 +10,9 @@
  * Lesser General Public License for more details.
  */
 
-package org.gstreamer;
+package org.gstreamer.elements;
 
+import org.gstreamer.*;
 import com.sun.jna.Pointer;
 import java.io.IOException;
 import java.lang.annotation.ElementType;
