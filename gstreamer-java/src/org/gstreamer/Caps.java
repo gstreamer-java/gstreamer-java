@@ -140,6 +140,34 @@ public class Caps extends NativeObject {
         return gst.gst_caps_to_string(this);
     }
     
+    public boolean isAny() {
+        return gst.gst_caps_is_any(this);
+    }
+    public boolean isEmpty() {
+        return gst.gst_caps_is_empty(this);
+    }
+    public boolean isFixed() {
+        return gst.gst_caps_is_fixed(this);
+    }
+    public boolean isEqual(Caps other) {
+        return gst.gst_caps_is_equal(this, other);
+    }
+    public boolean isEqualFixed(Caps other) {
+        return gst.gst_caps_is_equal_fixed(this, other);
+    }
+    public boolean isSubset(Caps other) {
+        return gst.gst_caps_is_subset(this, other);
+    }
+    public boolean isAlwaysCompatible(Caps other) {
+        return gst.gst_caps_is_always_compatible(this, other);
+    }
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || !(other instanceof Caps)) {
+            return false;
+        }
+        return isEqual((Caps) other);
+    }
     public static Caps objectFor(Pointer ptr, boolean needRef) {
         return new Caps(ptr, needRef, true);
     }

@@ -276,7 +276,15 @@ public interface GstAPI extends Library {
     boolean gst_caps_do_simplify( Caps caps);
     @FreeReturnValue
     String gst_caps_to_string(Caps caps);
-    
+    /* tests */
+
+    boolean gst_caps_is_any(Caps caps);
+    boolean gst_caps_is_empty(Caps caps);
+    boolean gst_caps_is_fixed(Caps caps);
+    boolean gst_caps_is_always_compatible(Caps caps1,  Caps caps2);
+    boolean gst_caps_is_subset(Caps subset,  Caps superset);
+    boolean gst_caps_is_equal(Caps caps1,  Caps caps2);
+    boolean gst_caps_is_equal_fixed(Caps caps1,  Caps caps2);
     GType gst_static_caps_get_type();
     Caps gst_static_caps_get(GstStaticCaps static_caps);
     
