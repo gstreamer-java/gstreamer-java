@@ -14,14 +14,33 @@
 
 package org.gstreamer;
 
+/**
+ * The status of a {@link Pad}. After activating a pad, which usually happens when 
+ * the parent element goes from {@link State#READY} to {@link State#PAUSED}, the 
+ * ActivateMode defines if the {@link Pad} operates in push or pull mode.
+ */
 public enum ActivateMode {
+    /** 
+     * Pad will not handle dataflow
+     */
     NONE,
+    /**
+     * Pad handles dataflow in downstream push mode
+     */
     PUSH,
+    /**
+     * Pad handles dataflow in upstream pull mode
+     */
     PULL;
 
     public final int intValue() {
         return ordinal();
     }
+    /**
+     * Returns the enum constant of this type with the specified ordinal value.
+     * @param type integer value.
+     * @return Enum constant.
+     */
     public final static ActivateMode valueOf(int type) {
         for (ActivateMode m : values()) {
             if (m.intValue() == type) {
