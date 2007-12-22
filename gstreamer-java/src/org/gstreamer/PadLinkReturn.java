@@ -20,22 +20,38 @@
 package org.gstreamer;
 
 /**
- *
+ * Result values from {@link Pad#link(Pad)} and friends.
  */
 public enum PadLinkReturn {
+    /** Link succeeded. */
     OK(0),
+    /** Pads have no common grandparent. */
     WRONG_HIERARCHY(-1),
+    /** Pad was already linked. */
     WAS_LINKED(-2),
+    /** Pads have wrong direction. */
     WRONG_DIRECTION(-3),
+    /** Pads do not have common format. */
     NOFORMAT(-4),
+    /** Pads cannot cooperate in scheduling. */
     NOSCHED(-5),
+    /** Refused for some reason. */
     REFUSED(-6);
     PadLinkReturn(int value) {
         this.value = value;
     }
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public int intValue() {
         return value;
     }
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param value integer value.
+     * @return Enum constant.
+     */
     public static PadLinkReturn valueOf(int value) {
         for (PadLinkReturn r : values()) {
             if (r.value == value) {
@@ -45,5 +61,4 @@ public enum PadLinkReturn {
         throw new IllegalArgumentException("Invalid PadLinkReturn value: " + value);
     }
     private final int value;
-    
 }

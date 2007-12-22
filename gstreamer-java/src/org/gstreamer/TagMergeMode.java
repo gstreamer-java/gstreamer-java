@@ -20,24 +20,45 @@
 package org.gstreamer;
 
 /**
- *
+ * The different tag merging modes are basically replace, overwrite and append,
+ * but they can be seen from two directions.
+ * <p>
+ * Given two taglists: A - the one that are supplied to
+ * gst_tag_setter_merge_tags() or gst_tag_setter_add_tags() and B - the tags
+ * already in the element, how are the tags merged? In the table below this is
+ * shown for the cases that a tag exists in the list (A) or does not exists (!A)
+ * and combination thereof.
  */
 public enum TagMergeMode {
+    /** Undefined merge mode. */
     UNDEFINED,
+    /** Replace all tags (clear list and append). */
     REPLACE_ALL,
+    /** Replace tags */
     REPLACE,
+    /** Append tags */
     APPEND,
+    /** Prepend tags */
     PREPEND,
+    /** Keep existing tags */
     KEEP,
-    KEEP_ALL,
-    /* add more */
-    COUNT;
+    /** Keep all existing tags */
+    KEEP_ALL;
+    
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public int intValue() {
         return ordinal();
     }
-    //
-    // Static functions
-    //
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param mode integer value.
+     * @return The enum constant with the specified value.
+     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
+     */
     public static final TagMergeMode valueOf(int mode) {
         for (TagMergeMode m : values()) {
             if (m.intValue() == mode) {

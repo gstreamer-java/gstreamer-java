@@ -20,12 +20,21 @@
 package org.gstreamer;
 
 /**
- *
+ * The direction of a {@link Pad}.
  */
 public enum PadDirection {
+    /** The direction is unknown. */
     UNKNOWN,
+    /** The {@link Pad} is a source pad. */
     SRC,
+    /** The {@link Pad} is a sink pad. */
     SINK;
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param dir integer value.
+     * @return Enum constant.
+     */
     public static final PadDirection valueOf(int dir) {
         for (PadDirection d : values()) {
             if (d.ordinal() == dir) {

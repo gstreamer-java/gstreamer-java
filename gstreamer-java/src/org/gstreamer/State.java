@@ -19,25 +19,39 @@
 
 package org.gstreamer;
 
+/**
+ * The posible states an element can be in.
+ */
 public enum State {
-
+    /** No pending state. */
     VOID_PENDING(0),
+    /** The initial state of an {@link Element}. */
     NULL(1),
+    /** The {@link Element} is ready to go to PAUSED. */
     READY(2),
+    /** The {@link Element} is PAUSED */
     PAUSED(3),
+    /** The {@link Element} is PLAYING */
     PLAYING(4);
     
     State(int value) {
         this.value = value;
     }
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public int intValue() {
         return value;
     }
-    public final int value;
+    private final int value;
     
-    //
-    // Static functions
-    //
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param state integer value.
+     * @return Enum constant.
+     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
+     */
     public static final State valueOf(int state) {
         for (State s : values()) {
             if (s.value == state) {

@@ -19,17 +19,34 @@
 
 package org.gstreamer;
 
+/**
+ * The result values for a GstBusSyncHandler.
+ */
 public enum BusSyncReply {
+    /** Drop the {@link Message} */
     DROP(0),
+    /** Pass the {@link Message} to the async queue */
     PASS(1),
+    /** Pass {@link Message} to async queue, continue if message is handled */
     ASYNC(2);
     
     BusSyncReply(int value) {
         this.value = value;
     }
+    
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public int intValue() {
         return value;
     }
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param value integer value.
+     * @return Enum constant.
+     */
     public static BusSyncReply valueOf(int value) {
         for (BusSyncReply r : values()) {
             if (r.value == value) {

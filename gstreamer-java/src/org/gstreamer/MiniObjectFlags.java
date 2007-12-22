@@ -23,8 +23,10 @@ package org.gstreamer;
  *
  */
 public enum MiniObjectFlags {
+    /** The {@link MiniObject} is read-only */
     READONLY(1 << 0),
-    /* padding */
+    
+    /** The last valid MiniObject flag */
     LAST(1 << 4);
     
     

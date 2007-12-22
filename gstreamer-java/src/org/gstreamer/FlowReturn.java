@@ -19,18 +19,31 @@
 
 package org.gstreamer;
 
-
+/**
+ * The result of passing data to a pad.
+ */
 public enum FlowReturn {
-    /* core predefined */ 
+    /** Resend buffer, possibly with new caps (not send yet). */
     RESEND(1),
+    /** Data passing was ok. */
     OK(0),
-    /* expected failures */
+
+    /** {@link Pad} is not linked. */
     NOT_LINKED(-1),
+    /** {@link Pad} is in wrong state. */
     WRONG_STATE(-2),
-    /* error cases */
+    /** Did not expect anything, like after EOS. */
     UNEXPECTED(-3),
+    /** {@link Pad} is in not negotiated. */
     NOT_NEGOTIATED(-4),
+    
+    /**
+     * Some (fatal) error occured. Element generating this error should post 
+     * an error message with more details.
+     */
     ERROR(-5),
+    
+    /** This operation is not supported. */
     NOT_SUPPORTED(-6);
 
     FlowReturn(int value) {
@@ -39,6 +52,12 @@ public enum FlowReturn {
     public int intValue() {
         return value;
     }
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param value integer value.
+     * @return Enum constant.
+     */
     public static FlowReturn valueOf(int value) {
         for (FlowReturn r : values()) {
             if (r.value == value) {

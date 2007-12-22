@@ -20,22 +20,44 @@
 package org.gstreamer;
 
 /**
- *
+ * Standard predefined formats.
  */
 public enum Format {
+    /** Undefined format */
     UNDEFINED(0),
+    /**
+     * The default format of the pad/element. This can be samples for raw audio,
+     * frames/fields for raw video.
+     */
     DEFAULT(1),
+    /** bytes */
     BYTES(2),
+    /** Time in nanoseconds */
     TIME(3),
+    
+    /** {@link Buffer}s */
     BUFFERS(4),
+    /** Percentage of stream */
     PERCENT(5),
+    
+    /** Unknown Format */
     UNKNOWN(~0);
     Format(int value) {
         this.value = value;
     }
+    /**
+     * Gets the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public final int intValue() {
         return value;
     }
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param format integer value.
+     * @return Enum constant.
+     */
     public final static Format valueOf(int format) {
         for (Format f : values()) {
             if (f.value == format) {

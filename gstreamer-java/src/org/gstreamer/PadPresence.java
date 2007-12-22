@@ -19,7 +19,9 @@
 
 package org.gstreamer;
 
-
+/**
+ * Indicates when a {@link Pad} will become available.
+ */
 public enum PadPresence {
     /**
      * The Pad is always available.
@@ -37,7 +39,7 @@ public enum PadPresence {
     /**
      * Returns the enum constant of this type with the specified integer value.
      * @param value Integer value that corresponds to one of the constants.
-     * @return A {@link PadPresence} value that maps to the integer.
+     * @return Enum constant that maps to the integer.
      */
     public static final PadPresence valueOf(int value) {
         for (PadPresence p : values()) {

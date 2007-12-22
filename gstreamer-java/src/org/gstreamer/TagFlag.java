@@ -20,21 +20,34 @@
 package org.gstreamer;
 
 /**
- *
+ * Extra tag flags used when registering tags.
  */
 public enum TagFlag {
+    /** Undefined flag. */
     UNDEFINED,
+    /** Tag is meta data. */
     META,
+    /** Tag is encoded. */
     ENCODED,
+    /** Tag is decoded. */
     DECODED,
-    COUNT;  
+    /** Number of tag flags. */
+    COUNT;
+    
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public int intValue() {
         return ordinal();
     }
     
-    //
-    // Static functions
-    //
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param flag integer value.
+     * @return The enum constant with the specified value.
+     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
+     */
     public static final TagFlag valueOf(int flag) {
         for (TagFlag f : values()) {
             if (f.intValue() == flag) {

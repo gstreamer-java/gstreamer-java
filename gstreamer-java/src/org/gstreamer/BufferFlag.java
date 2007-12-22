@@ -20,24 +20,60 @@
 package org.gstreamer;
 
 /**
- *
+ * A set of buffer flags used to describe properties of a {@link Buffer}.
  */
 public enum BufferFlag {
+    /** 
+     * The {@link Buffer} is read-only.
+     * This means the data of the buffer should not be modified. The metadata 
+     * might still be modified.
+     */
     READONLY(MiniObjectFlags.READONLY.intValue()),
+    
+    /**  
+     * The {@link Buffer} is part of a preroll and should not be displayed.
+     */
     PREROLL(MiniObjectFlags.LAST.intValue() << 0),
+    /**
+     * The {@link Buffer} marks a discontinuity in the stream.
+     * This typically occurs after a seek or a dropped buffer from a live or
+     * network source.
+     */
     DISCONT(MiniObjectFlags.LAST.intValue() << 1),
+    
+    /** The {@link Buffer} has been added as a field in a {@link Caps}. */
     IN_CAPS(MiniObjectFlags.LAST.intValue() << 2),
+    
+    /**
+     * The {@link Buffer} has been created to fill a gap in the
+     * stream and contains media neutral data (elements can switch to optimized code
+     * path that ignores the buffer content).
+     */
     GAP(MiniObjectFlags.LAST.intValue() << 3),
+    
+    /** This unit cannot be decoded independently. */
     DELTA_UNIT(MiniObjectFlags.LAST.intValue() << 4),
+    
     /* padding */
     LAST(MiniObjectFlags.LAST.intValue() << 8),
     UNKNOWN(~0);
+    
     private BufferFlag(int value) {
         this.value = value;
     }
+    /**
+     * Get the integer value of the enum.
+     * @return The integer value for this enum.
+     */
     public final int intValue() {
         return value;
     }
+    
+    /**
+     * Returns the enum constant of this type with the specified integer value.
+     * @param type integer value.
+     * @return Enum constant.
+     */
     public final static BufferFlag valueOf(int type) {
         for (BufferFlag t : values()) {
             if (t.intValue() == type) {
