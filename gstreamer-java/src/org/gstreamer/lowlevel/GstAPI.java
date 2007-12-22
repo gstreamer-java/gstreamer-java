@@ -260,7 +260,13 @@ public interface GstAPI extends Library {
     Pointer gst_caps_copy_nth(Caps caps, int nth);
     void gst_caps_truncate(Caps caps);
     void gst_caps_set_simple(Caps caps, String field, Object... values);
-    Pointer gst_caps_union(Caps caps, Caps other);
+    /* operations */
+
+    Caps gst_caps_intersect( Caps caps1,  Caps caps2);
+    Caps gst_caps_subtract( Caps minuend,  Caps subtrahend);
+    Caps gst_caps_union( Caps caps1,  Caps caps2);
+    Caps gst_caps_normalize( Caps caps);
+    boolean gst_caps_do_simplify( Caps caps);
     @FreeReturnValue
     String gst_caps_to_string(Caps caps);
     

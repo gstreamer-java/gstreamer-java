@@ -52,16 +52,73 @@ public class Caps extends NativeObject {
     public Caps copy() {
         return new Caps(gst.gst_caps_copy(this));
     }
+    
+     /**
+     * Creates a new {@link Caps} that contains all the formats that are in
+     * either this Caps or the other Caps.
+     * @param other The {@link Caps} to union with this one.
+     * @return The new {@link Caps}
+     */
     public Caps union(Caps other) {
-        return new Caps(gst.gst_caps_union(this, other));
+        return gst.gst_caps_union(this, other);
     }
+    
+    /**
+     * Creates a new {@link Caps} that contains all the formats that are common
+     * to both this Caps and the other Caps.
+     * 
+     * @param other The {@link Caps} to intersect with this one.
+     *
+     * @return The new {@link Caps}
+     */
+    public Caps intersect(Caps other) {
+        return gst.gst_caps_intersect(this, other);
+    }
+    
+    /**
+     * Subtracts the subtrahend Caps from this Caps.
+     * 
+     * <note>This function does not work reliably if optional properties for caps
+     * are included on one caps and omitted on the other.</note>
+     * @param subtrahend The {@link Caps} to subtract.
+     * @return
+     */
+    public Caps subtract(Caps subtrahend) {
+        return gst.gst_caps_subtract(this, subtrahend);
+    }
+
+    /**
+     * Normalize the Caps.
+     * 
+     * Creates a new {@link Caps} that represents the same set of formats as
+     * this Caps, but contains no lists.  Each list is expanded into separate
+     * {@link Structure}s
+     * 
+     * @return The new {@link Caps}
+     * @see Structure
+     */
+    public Caps normalize() {
+        return gst.gst_caps_normalize(this);
+    }
+    
+    /**
+     * Merge another {@link Caps} with this one.
+     * Appends the structures contained in the other Caps to this one, if they 
+     * are not yet expressed by this Caps. The structures in other are not copied,
+     * they are transferred to this Caps, and then other is freed.
+     * If either caps is ANY, the resulting caps will be ANY.
+     * @param other The other {@link Caps} to merge.
+     */
     public void merge(Caps other) {
         gst.gst_caps_merge(this, other);
+        other.disown();
     }
+    
     public void merge(Structure struct) {
         gst.gst_caps_merge_structure(this, struct);
         struct.disown();
     }
+    
     public void append(Structure struct) {
         gst.gst_caps_append_structure(this, struct);
         struct.disown();
