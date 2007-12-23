@@ -52,7 +52,7 @@ public class RGBDataSink extends Bin {
         Element videosink = ElementFactory.make("fakesink", "VideoSink");
         videosink.set("signal-handoffs", true);
         videosink.set("sync", true);
-        videosink.addHandoffListener(new VideoHandoffListener());
+        videosink.connect(new VideoHandoffListener());
         
         //
         // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
@@ -66,7 +66,7 @@ public class RGBDataSink extends Bin {
         //
         // Link the ghost pads on the bin to the sink pad on the convertor
         //
-        Pad pad = conv.getPad("sink");
+        Pad pad = conv.getStaticPad("sink");
         addPad(new GhostPad("sink", pad));
     }
     /**
@@ -79,10 +79,9 @@ public class RGBDataSink extends Bin {
     public void setPassDirectBuffer(boolean passThru) {
         this.passDirectBuffer = passThru;
     }
-    class VideoHandoffListener implements HandoffListener {
-        public void handoff(HandoffEvent ev) {
+    class VideoHandoffListener implements Element.HANDOFF {
+        public void handoff(Element element, Buffer buffer, Pad pad) {
             
-            Buffer buffer = ev.getBuffer();
             Caps caps = buffer.getCaps();
             Structure struct = caps.getStructure(0);
             
@@ -106,6 +105,5 @@ public class RGBDataSink extends Bin {
             //
             buffer.dispose();
         }
-        
     }
 }
