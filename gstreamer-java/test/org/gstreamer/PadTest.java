@@ -59,8 +59,8 @@ public class PadTest {
     public void getPad() throws Exception {
         Element src = ElementFactory.make("fakesrc", "src");
         Element sink = ElementFactory.make("fakesink", "sink");
-        Pad srcPad = src.getPad("src");
-        Pad sinkPad = sink.getPad("sink");
+        Pad srcPad = src.getStaticPad("src");
+        Pad sinkPad = sink.getStaticPad("sink");
         assertNotNull("Could not get src pad", srcPad);
         assertNotNull("Could not get sink pad", sinkPad);
         src = null;
@@ -76,8 +76,8 @@ public class PadTest {
     public void padLink() throws Exception {
         Element src = ElementFactory.make("fakesrc", "src");
         Element sink = ElementFactory.make("fakesink", "src");
-        Pad srcPad = src.getPad("src");
-        Pad sinkPad = sink.getPad("sink");
+        Pad srcPad = src.getStaticPad("src");
+        Pad sinkPad = sink.getStaticPad("sink");
         assertEquals("Could not link pads", PadLinkReturn.OK, srcPad.link(sinkPad));
     }
     
