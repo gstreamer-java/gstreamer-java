@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeListener;
 import org.gstreamer.Element;
 import org.gstreamer.Format;
+import org.gstreamer.Pipeline;
 import org.gstreamer.Time;
 import org.gstreamer.Timeout;
 
@@ -39,10 +40,10 @@ import org.gstreamer.Timeout;
 public class ElementPositionModel extends DefaultBoundedRangeModel {
     
     /** Creates a new instance of MediaPositionModel */
-    public ElementPositionModel(final Element element) {
+    public ElementPositionModel(final Pipeline element) {
         this(element, Format.TIME);
     }
-    public ElementPositionModel(final Element element, final Format format) {
+    public ElementPositionModel(final Pipeline element, final Format format) {
         this.element = element;
         this.format = format;
         timer = new Timeout(1000, new Runnable() {
@@ -124,7 +125,7 @@ public class ElementPositionModel extends DefaultBoundedRangeModel {
     }
     private Format format;
     private AtomicInteger seeking = new AtomicInteger(0);
-    private Element element;
+    private Pipeline element;
     private boolean updating = false;
     private Timeout timer;
     private static final ExecutorService bgExec = Executors.newSingleThreadExecutor();

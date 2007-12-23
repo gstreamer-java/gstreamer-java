@@ -19,6 +19,8 @@
 
 package org.gstreamer;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
@@ -131,5 +133,63 @@ public class Pipeline extends Bin {
     @Override
     public Bus getBus() {
         return gst.gst_pipeline_get_bus(this);
+    }
+    
+    /**
+     * Sets the position in the media stream to time.
+     * 
+     * @param time The time to change the position to.
+     */
+    public void setPosition(Time time) {
+        setPosition(time.longValue(), Format.TIME);
+    }
+    public void setPosition(long pos, Format format) {
+        gst.gst_element_seek(this, 1.0, format,
+                SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
+                SeekType.SET, pos, SeekType.NONE, -1);
+    }
+    public long getPosition(Format format) {
+        IntByReference fmt = new IntByReference(format.intValue());
+        LongByReference pos = new LongByReference();
+        gst.gst_element_query_position(this, fmt, pos);
+        return pos.getValue();
+    }
+    public Time getPosition() {
+        return new Time(getPosition(Format.TIME));
+    }
+    public Time getDuration() {
+        IntByReference fmt = new IntByReference(Format.TIME.intValue());
+        LongByReference duration= new LongByReference();
+        gst.gst_element_query_duration(this, fmt, duration);
+        return new Time(duration.getValue());
+    }
+    
+    /**
+     * Test if the Pipeline is currently playing.
+     * @return true if the Pipeline is currently playing
+     */
+    public boolean isPlaying() {
+        return getState() == State.PLAYING;
+    }
+    
+    /**
+     * Tell the Pipeline to start playing the media stream.
+     */
+    public void play() {
+        setState(State.PLAYING);
+    }
+    
+    /**
+     * Tell the Pipeline to pause playing the media stream.
+     */
+    public void pause() {
+        setState(State.PAUSED);
+    }
+    
+    /**
+     * Tell the Pipeline to pause playing the media stream.
+     */
+    public void stop() {
+        setState(State.NULL);
     }
 }

@@ -21,7 +21,6 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.LongByReference;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,15 +97,7 @@ public class Element extends GstObject {
     public void unlink(Element e) {
         gst.gst_element_unlink(this, e);
     }
-    public void play() {
-        setState(State.PLAYING);
-    }
-    public void pause() {
-        setState(State.PAUSED);
-    }
-    public void stop() {
-        setState(State.NULL);
-    }
+    
     public StateChangeReturn setState(State state) {
         return gst.gst_element_set_state(this, state);
     }
@@ -203,9 +194,7 @@ public class Element extends GstObject {
         pad.ref(); // FIXME the comment says this seems to be needed.
         return gst.gst_element_remove_pad(this, pad);
     }
-    public boolean isPlaying() {
-        return getState() == State.PLAYING;
-    }
+    
     public State getState() {
         return getState(-1);
     }
@@ -217,6 +206,7 @@ public class Element extends GstObject {
      * {@link #setState}, this function will block up to the
      * specified timeout value for the state change to complete.
      * 
+     * @param timeout The amount of time in nanoseconds to wait.
      * @return The {@link State} the Element is currently in.
      *
      */
@@ -235,34 +225,7 @@ public class Element extends GstObject {
         states[0] = State.valueOf(state.getValue());
         states[1] = State.valueOf(pending.getValue());
     }
-    /**
-     * Sets the position in the media stream to time.
-     * 
-     * @param time The time to change the position to.
-     */
-    public void setPosition(Time time) {
-        setPosition(time.longValue(), Format.TIME);
-    }
-    public void setPosition(long pos, Format format) {
-        gst.gst_element_seek(this, 1.0, format,
-                SeekFlags.FLUSH.intValue() | SeekFlags.KEY_UNIT.intValue(), 
-                SeekType.SET, pos, SeekType.NONE, -1);
-    }
-    public long getPosition(Format format) {
-        IntByReference fmt = new IntByReference(format.intValue());
-        LongByReference pos = new LongByReference();
-        gst.gst_element_query_position(this, fmt, pos);
-        return pos.getValue();
-    }
-    public Time getPosition() {
-        return new Time(getPosition(Format.TIME));
-    }
-    public Time getDuration() {
-        IntByReference fmt = new IntByReference(Format.TIME.intValue());
-        LongByReference duration= new LongByReference();
-        gst.gst_element_query_duration(this, fmt, duration);
-        return new Time(duration.getValue());
-    }
+    
     /**
      * Retrieves the factory that was used to create this element.
      * @return the {@link ElementFactory} used for creating this element.
@@ -280,6 +243,7 @@ public class Element extends GstObject {
     public Bus getBus() {
         return gst.gst_element_get_bus(this);
     }
+    
     /**
      * Sends an event to an element.
      * <p>
