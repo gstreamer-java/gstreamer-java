@@ -34,10 +34,14 @@ import org.gstreamer.lowlevel.GstAPI.GstStaticPadTemplate;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
+ * ElementFactory is used to create instances of elements.
+ * 
+ * Use the {@link #find} and {@link #create} methods to create element instances 
+ * or use {@link #make} as a convenient shortcut.
  *
  */
 public class ElementFactory extends PluginFeature {
-    static Logger logger = Logger.getLogger(ElementFactory.class.getName());
+    private static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     static Level DEBUG = Level.FINE;
     
     /**
