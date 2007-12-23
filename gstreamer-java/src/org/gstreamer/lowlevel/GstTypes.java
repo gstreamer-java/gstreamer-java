@@ -73,6 +73,14 @@ public class GstTypes {
         }
         return cls;
     }
+    public static final GType typeFor(Class<? extends NativeObject> cls) {
+        for (Map.Entry<GType, Class<? extends NativeObject>> e : typeMap.entrySet()) {
+            if (e.getValue().equals(cls)) {
+                return e.getKey();
+            }
+        }
+        return GType.INVALID;
+    }
     private static final void registerGType(GType type, Class<? extends NativeObject> cls) {
         logger.fine("Registering gtype " + type + " = " + cls);
         typeMap.put(type, cls);
