@@ -107,6 +107,9 @@ public interface GstAPI extends Library {
     void gst_element_unlink_many(Element... elements);
     void gst_element_unlink(Element elem1, Element elem2);
     Pad gst_element_get_pad(Element elem, String name);
+    Pad gst_element_get_static_pad(Element element, String name);
+    Pad gst_element_get_request_pad(Element element, String name);
+    void gst_element_release_request_pad(Element element, Pad pad);
     boolean gst_element_add_pad(Element elem, Pad pad);
     boolean gst_element_remove_pad(Element elem, Pad pad);
     boolean gst_element_link_pads(Element src, String srcpadname, Element dest, String destpadname);

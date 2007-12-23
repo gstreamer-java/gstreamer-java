@@ -63,14 +63,14 @@ public class InputStreamSrcTest {
         Element sink = ElementFactory.make("autoaudiosink", "sink");
         audioBin.addMany(conv, sink);
         Element.linkMany(conv, sink);        
-        audioBin.addPad(new GhostPad("sink", conv.getPad("sink")));
+        audioBin.addPad(new GhostPad("sink", conv.getStaticPad("sink")));
         
         pipe.add(audioBin);
 
         decodeBin.connect(new Element.NEW_DECODED_PAD() {
             public void newDecodedPad(Element elem, Pad pad, boolean last) {
                   /* only link once */
-                Pad audioPad = audioBin.getPad("sink");
+                Pad audioPad = audioBin.getStaticPad("sink");
                 if (pad.isLinked()) {
                     return;
                 }

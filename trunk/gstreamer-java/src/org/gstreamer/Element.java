@@ -22,6 +22,7 @@ package org.gstreamer;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -36,6 +37,35 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 
 
 /**
+ * Abstract base class for all pipeline elements.
+ * <p>
+ * Element is the abstract base class needed to construct an element that
+ * can be used in a GStreamer pipeline. Please refer to the plugin writers
+ * guide for more information on creating Element subclasses.
+ * <p>
+ * The name of a Element can be retrieved with {@link #getName} and set with
+ * {@link #setName}.
+ * <p>
+ * All elements have pads (of the type {@link Pad}).  These pads link to pads on
+ * other elements.  {@link Buffer}s flow between these linked pads.
+ * An Element has a list of {@link Pad} structures for all their input (or sink)
+ * and output (or source) pads.
+ * Core and plug-in writers can add and remove pads with {@link #addPad}
+ * and {@link #removePad}.
+ * <p>
+ * A pad of an element can be retrieved by name with {@link #getPad}.
+ * An list of all pads can be retrieved with {@link #getPads}.
+ * <p>
+ * Elements can be linked through their pads.
+ * If the link is straightforward, use the {@link #link}
+ * convenience function to link two elements, or {@link #linkMany}
+ * for more elements in a row.
+ * <p>
+ * For finer control, use {@link #linkPads} and {@link #linkPadsFiltered}
+ * to specify the pads to link on each element by name.
+ * <p>
+ * Each element has a state (see {@link State}).  You can get and set the state
+ * of an element with {@link #getState} and {@link #setState}.
  *
  */
 public class Element extends GstObject {
@@ -83,13 +113,94 @@ public class Element extends GstObject {
     public void setCaps(Caps caps) {
         gobj.g_object_set(this, "caps", caps);
     }
+    /**
+     * @deprecated Use {@link #getStaticPad}
+     */
+    @Deprecated
     public Pad getPad(String padname) {
-        return gst.gst_element_get_pad(this, padname);
+        return gst.gst_element_get_static_pad(this, padname);
     }
+    
+    /**
+     * Retrieves a pad from the element by name. This version only retrieves
+     * already-existing (i.e. 'static') pads.
+     * 
+     * @param padname The name of the {@link Pad} to get.
+     * @return The requested {@link Pad} if found, otherwise null.
+     */
+    public Pad getStaticPad(String padname) {
+        return gst.gst_element_get_static_pad(this, padname);
+    }
+    
+    /**
+     *  Retrieves a list of the element's pads. 
+     *
+     * @return the List of {@link Pad}s.
+     */
+    public List<Pad> getPads() {
+        return new GstIterator<Pad>(gst.gst_element_iterate_pads(this), Pad.class).asList();
+    }
+    
+    /**
+     *  Retrieves a list of the element's source pads. 
+     *
+     * @return the List of {@link Pad}s.
+     */
+    public List<Pad> getSrcPads() {
+        return new GstIterator<Pad>(gst.gst_element_iterate_src_pads(this), Pad.class).asList();
+    }
+    
+    /**
+     *  Retrieves a list of the element's sink pads. 
+     *
+     * @return the List of {@link Pad}s.
+     */
+    public List<Pad> getSinkPads() {
+        return new GstIterator<Pad>(gst.gst_element_iterate_sink_pads(this), Pad.class).asList();
+    }
+    /**
+     * Adds a {@link Pad} (link point) to the Element. 
+     * The Pad's parent will be set to this element.
+     *
+     * Pads are not automatically activated so elements should perform the needed
+     * steps to activate the pad in case this pad is added in the PAUSED or PLAYING
+     * state. See {@link Pad#setActive} for more information about activating pads.
+     *
+     * This function will emit the {@link PAD_ADDED} signal on the element.
+     *
+     * @param pad The {@link Pad} to add.
+     * @return true if the pad could be added.  This function can fail when
+     * a pad with the same name already existed or the pad already had another
+     * parent. 
+     */
     public boolean addPad(Pad pad) {
         return gst.gst_element_add_pad(this, pad);
     }
+    
+    /**
+     * Remove a {@link Pad} from the element.
+     * 
+     * This method is used by plugin developers and should not be used
+     * by applications. Pads that were dynamically requested from elements
+     * with gst_element_get_request_pad() should be released with the
+     * gst_element_release_request_pad() function instead.
+     *
+     * Pads are not automatically deactivated so elements should perform the needed
+     * steps to deactivate the pad in case this pad is removed in the PAUSED or
+     * PLAYING state. See {@link Pad#setActive} for more information about
+     * deactivating pads.
+     *
+     * This function will emit the {@link PAD_REMOVED} signal on the element.
+     *
+     * Returns: %TRUE if the pad could be removed. Can return %FALSE if the
+     * pad does not belong to the provided element.
+     * 
+     * @param pad The {@link Pad} to remove.
+     * @return true if the pad could be removed. Can return false if the
+     * pad does not belong to the provided element.
+     */
     public boolean removePad(Pad pad) {
+        pad.ref(); // FIXME the comment says this seems to be needed.
         return gst.gst_element_remove_pad(this, pad);
     }
     public boolean isPlaying() {
@@ -98,10 +209,21 @@ public class Element extends GstObject {
     public State getState() {
         return getState(-1);
     }
+    
+    /**
+     * Gets the state of the element.
+     *<p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @return The {@link State} the Element is currently in.
+     *
+     */
     public State getState(long timeout) {
         IntByReference state = new IntByReference();
         IntByReference pending = new IntByReference();
-        
+
         gst.gst_element_get_state(this, state, pending, timeout);
         return State.valueOf(state.getValue());
     }
@@ -113,8 +235,13 @@ public class Element extends GstObject {
         states[0] = State.valueOf(state.getValue());
         states[1] = State.valueOf(pending.getValue());
     }
-    public void setPosition(Time t) {
-        setPosition(t.longValue(), Format.TIME);
+    /**
+     * Sets the position in the media stream to time.
+     * 
+     * @param time The time to change the position to.
+     */
+    public void setPosition(Time time) {
+        setPosition(time.longValue(), Format.TIME);
     }
     public void setPosition(long pos, Format format) {
         gst.gst_element_seek(this, 1.0, format,
@@ -136,19 +263,48 @@ public class Element extends GstObject {
         gst.gst_element_query_duration(this, fmt, duration);
         return new Time(duration.getValue());
     }
+    /**
+     * Retrieves the factory that was used to create this element.
+     * @return the {@link ElementFactory} used for creating this element.
+     */
     public ElementFactory getFactory() {
         return gst.gst_element_get_factory(this);
     }
+    
+    /**
+     * Get the bus of the element. Note that only a {@link Pipeline} will provide a
+     * bus for the application.
+     *
+     * @return the element's {@link Bus}
+     */
     public Bus getBus() {
         return gst.gst_element_get_bus(this);
     }
+    /**
+     * Sends an event to an element.
+     * <p>
+     * If the element doesn't implement an event handler, the event will be 
+     * pushed on a random linked sink pad for upstream events or a random 
+     * linked source pad for downstream events.
+     *
+     * @param ev The {@link Event} to send.
+     * @return true if the event was handled.
+     */
     public boolean sendEvent(Event ev) {
         ev.ref(); // send_event takes ownership, so need a ref here to keep using it
         return gst.gst_element_send_event(this, ev);
     }
+    /**
+     * 
+     * @param listener
+     */
     public void addElementListener(ElementListener listener) {
         listenerMap.put(listener, new ElementListenerProxy(listener));
     }
+    /**
+     * 
+     * @param listener
+     */
     public void removeElementListener(ElementListener listener) {
         ElementListenerProxy proxy = listenerMap.get(listener);
         if (proxy != null) {
@@ -176,9 +332,17 @@ public class Element extends GstObject {
     public static interface NO_MORE_PADS {
         public void noMorePads(Element element);
     }
+    /**
+     * Signal emitted when this {@link Element} has a {@link Buffer} ready.
+     */
     public static interface HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
+    /**
+     * Signal emitted when this {@link DecodeBin} decodes a new pad.
+     * @deprecarted use {@link DecodeBin#NEW_DECODED_PAD} instead.
+     */
+    @Deprecated
     public static interface NEW_DECODED_PAD {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
@@ -283,7 +447,11 @@ public class Element extends GstObject {
     public void disconnect(NEW_DECODED_PAD listener) {
         disconnect(NEW_DECODED_PAD.class, listener);
     }
-    
+    /**
+     * Add a listener for the <code>handoff</code> signal on this Bin
+     * 
+     * @param listener The listener to be called when a {@link Buffer} is ready.
+     */
     public void connect(final HANDOFF listener) {
         connect("handoff", HANDOFF.class, listener, new GstAPI.HandoffCallback() {
             public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data) {
@@ -292,6 +460,11 @@ public class Element extends GstObject {
             }            
         });
     }
+    /**
+     * Remove a listener for the <code>handoff</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
     public void disconnect(HANDOFF listener) {
         disconnect(HANDOFF.class, listener);
     }
