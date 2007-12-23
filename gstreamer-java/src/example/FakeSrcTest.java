@@ -22,6 +22,7 @@ import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.TagList;
@@ -63,11 +64,10 @@ public class FakeSrcTest {
         fakesrc.set("signal-handoffs", true);
         fakesrc.set("sizemax", width * height * 2);
         fakesrc.set("sizetype", 2);
-        fakesrc.addHandoffListener(new HandoffListener() {
+        fakesrc.connect(new Element.HANDOFF() {
             byte color = 0;
             byte[] data = new byte[width * height * 2];
-            public void handoff(HandoffEvent ev) {
-                Buffer buffer = ev.getBuffer();
+            public void handoff(Element element, Buffer buffer, Pad pad) {
                 Arrays.fill(data, color++);
                 buffer.write(0, data, 0, data.length);
             }
