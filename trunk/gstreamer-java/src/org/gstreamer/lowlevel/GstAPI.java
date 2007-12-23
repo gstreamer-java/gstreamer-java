@@ -188,11 +188,13 @@ public interface GstAPI extends Library {
     void gst_bin_remove_many(Bin bin, Element... elements);
     Element gst_bin_get_by_name(Bin bin, String name);
     Element gst_bin_get_by_name_recurse_up(Bin bin, String name);
+    Element gst_bin_get_by_interface(Bin bin, GType iface);
     Pointer gst_bin_iterate_elements(Bin bin);
     Pointer gst_bin_iterate_sorted(Bin bin);
     Pointer gst_bin_iterate_recurse(Bin bin);
     Pointer gst_bin_iterate_sinks(Bin bin);
     Pointer gst_bin_iterate_sources(Bin bin);
+    Pointer gst_bin_iterate_all_by_interface(Bin bin, GType iface);
     
     /*
      * GstMiniObject functions
