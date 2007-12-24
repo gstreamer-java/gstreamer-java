@@ -69,7 +69,7 @@ public class FakeSrcTest {
             byte[] data = new byte[width * height * 2];
             public void handoff(Element element, Buffer buffer, Pad pad) {
                 Arrays.fill(data, color++);
-                buffer.write(0, data, 0, data.length);
+                buffer.getByteBuffer().put(data, 0, data.length);
             }
         });
         frame.setSize(640, 480);

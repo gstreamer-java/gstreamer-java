@@ -303,8 +303,8 @@ public class Element extends GstObject {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
     /**
-     * Signal emitted when this {@link DecodeBin} decodes a new pad.
-     * @deprecarted use {@link DecodeBin#NEW_DECODED_PAD} instead.
+     * Signal emitted when this {@link org.gstramer.elements.DecodeBin} decodes a new pad.
+     * @deprecated use {@link DecodeBin#NEW_DECODED_PAD} instead.
      */
     @Deprecated
     public static interface NEW_DECODED_PAD {
