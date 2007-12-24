@@ -205,7 +205,10 @@ public interface GstAPI extends Library {
     void gst_mini_object_ref(MiniObject ptr);
     void gst_mini_object_unref(MiniObject ptr);
     void gst_mini_object_unref(Pointer ptr);
-    
+    Pointer gst_mini_object_copy(MiniObject mini_object);
+    boolean gst_mini_object_is_writable(MiniObject mini_object);
+    Pointer gst_mini_object_make_writable(MiniObject mini_object);
+
     /*
      * GstIterator functions
      */
@@ -432,9 +435,21 @@ public interface GstAPI extends Library {
     boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
     PadDirection gst_pad_get_direction(Pad pad);
     Element gst_pad_get_parent_element(Pad pad);
-    GType gst_buffer_get_type();    
+    /*
+     * GstBuffer functions
+     */
+    GType gst_buffer_get_type();   
+    Pointer gst_buffer_new();
     Pointer gst_buffer_new_and_alloc(int size);
-    
+    Buffer gst_buffer_try_new_and_alloc(int size);
+    boolean gst_buffer_is_metadata_writable(Buffer buf);
+    Buffer gst_buffer_make_metadata_writable(Buffer buf);
+    /* creating a subbuffer */
+    Buffer gst_buffer_create_sub(Buffer parent, int offset, int size);
+
+    Caps gst_buffer_get_caps(Buffer buffer);
+    void gst_buffer_set_caps(Buffer buffer, Caps caps);
+
     public class GstStaticPadTemplate extends com.sun.jna.Structure {
         public volatile String name_template;
         public volatile PadDirection direction;

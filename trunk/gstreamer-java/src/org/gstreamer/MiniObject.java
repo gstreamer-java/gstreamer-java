@@ -23,7 +23,12 @@ import com.sun.jna.Pointer;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
+ * Lightweight base class for the GStreamer object hierarchy
  *
+ * MiniObject is a baseclass like {@link GObject}, but has been stripped down of 
+ * features to be fast and small.
+ * It offers sub-classing and ref-counting in the same way as GObject does.
+ * It has no properties and no signal-support though.
  */
 public class MiniObject extends NativeObject {
 
@@ -36,6 +41,26 @@ public class MiniObject extends NativeObject {
     MiniObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
+    
+    /**
+     * Checks if a mini-object is writable.  A mini-object is writable
+     * if the reference count is one and the {@link MiniObjectFlags.READONLY}
+     * flag is not set.  Modification of a mini-object should only be
+     * done after verifying that it is writable.
+     *
+     * @return true if the object is writable.
+     */
+    public boolean isWritable() {
+        return gst.gst_mini_object_is_writable(this);
+    }
+    
+    /*
+     * FIXME: this one returns a new MiniObject, so we need to replace the Pointer
+     * with the new one.  Messy.
+    public void makeWritable() {
+        gst.gst_mini_object_make_writable(this);
+    }
+    */
     protected void ref() {
         gst.gst_mini_object_ref(this);
     }
