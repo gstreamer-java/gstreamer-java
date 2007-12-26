@@ -37,9 +37,9 @@ import static org.gstreamer.lowlevel.GObjectAPI.gobj;
  *
  */
 public abstract class GObject extends NativeObject {
-    private static Logger logger = Logger.getLogger(GObject.class.getName());
-    private static Level DEBUG = Level.FINE;
-    private static Level LIFECYCLE = NativeObject.LIFECYCLE;
+    private static final Logger logger = Logger.getLogger(GObject.class.getName());
+    private static final Level DEBUG = Level.FINE;
+    private static final Level LIFECYCLE = NativeObject.LIFECYCLE;
     
     public GObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, false, ownsHandle); // increase the refcount here
@@ -103,6 +103,11 @@ public abstract class GObject extends NativeObject {
     private Map<Class<?>, Map<Object, SignalCallback>> listeners =
             new HashMap<Class<?>, Map<Object, SignalCallback>>();
     private IntPtr objectID = new IntPtr(System.identityHashCode(this));
+    
+    public <T> void connect(Class<T> listenerClass, T listener, Callback cb) {
+        String signal = listenerClass.getSimpleName().toLowerCase().replaceAll("_", "-");
+        connect(signal, listenerClass, listener, cb);
+    }
     
     public <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
         Map<Object, SignalCallback> m;
