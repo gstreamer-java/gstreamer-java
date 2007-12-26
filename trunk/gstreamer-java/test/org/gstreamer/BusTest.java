@@ -90,7 +90,7 @@ public class BusTest {
         pipe.addMany(src, sink);
         Element.linkMany(src, sink);
 
-        Bus.STATECHANGED stateChanged = new Bus.STATECHANGED() {
+        Bus.STATE_CHANGED stateChanged = new Bus.STATE_CHANGED() {
            
             public void stateMessage(GstObject source, State old, State current, State pending) {
                 if (pending == State.PLAYING) {

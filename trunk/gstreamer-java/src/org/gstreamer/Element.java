@@ -304,7 +304,7 @@ public class Element extends GstObject {
     }
     /**
      * Signal emitted when this {@link org.gstramer.elements.DecodeBin} decodes a new pad.
-     * @deprecated use {@link DecodeBin#NEW_DECODED_PAD} instead.
+     * @deprecated use {@link org.gstreamer.elements.DecodeBin#NEW_DECODED_PAD} instead.
      */
     @Deprecated
     public static interface NEW_DECODED_PAD {
