@@ -12,15 +12,15 @@ Note: If you're using a version of MacPorts later than 1.6.x, check what version
 
   # Install needed ports:
     * Ports needed by gstreamer and gst-plugins-base:
-    gzip m4 perl5.8 pkgconfig  bison flex gettext glib2 libiconv libxml2 py25-gobject py25-numeric python25 zlib liboil libogg libtheora libvorbis cdparanoia
+    {{{gzip m4 perl5.8 pkgconfig  bison flex gettext glib2 libiconv libxml2 py25-gobject py25-numeric python25 zlib liboil libogg libtheora libvorbis cdparanoia}}}
     * Ports needed by gst-plugins-good:
-    libcdio aalib flac jpeg libcaca libdv  libpng libshout2  speex taglib wavpack
+    {{{libcdio aalib flac jpeg libcaca libdv  libpng libshout2  speex taglib wavpack}}}
     * Ports needed by gst-plugins-bad:
-    XviD libdts faac faad2 libmusicbrainz neon libsdl
+    {{{XviD libdts faac faad2 libmusicbrainz neon libsdl}}}
     * Ports needed by gst-plugins-ugly:
-    a52dec  lame libmpeg2 libmad libid3tag libdvdread
-    Or, the complete list for a full featured build with the max amount of plugins:
-    gzip m4 perl5.8 pkgconfig  bison flex gettext glib2 libiconv libxml2 py25-gobject py25-numeric python25 zlib liboil libogg libtheora libvorbis cdparanoia libcdio aalib flac jpeg libcaca libdv  libpng libshout2  speex taglib wavpack XviD libdts faac faad2 libmusicbrainz neon libsdl a52dec  lame libmpeg2 libmad libid3tag libdvdread
+    {{{a52dec  lame libmpeg2 libmad libid3tag libdvdread}}}
+    * Or, the complete list for a full featured build with the max amount of plugins:
+    {{{gzip m4 perl5.8 pkgconfig  bison flex gettext glib2 libiconv libxml2 py25-gobject py25-numeric python25 zlib liboil libogg libtheora libvorbis cdparanoia libcdio aalib flac jpeg libcaca libdv  libpng libshout2  speex taglib wavpack XviD libdts faac faad2 libmusicbrainz neon libsdl a52dec  lame libmpeg2 libmad libid3tag libdvdread}}}
     * Note: gst-plugins-bad would like x264, but one of x264's dependencies failed to compile on macports 1.6.0, so I left it out.
   # Download and extract the following packages from the gstreamer download site:
     * gstreamer-0.10.15.tar.bz2
