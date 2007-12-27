@@ -73,13 +73,16 @@ public class RegistryTest {
         // Ensure some plugins are loaded
         Element playbin = new PlayBin("test");
         Element decodebin = ElementFactory.make("decodebin", "decoder");
+        final boolean[] filterCalled = { false };
         List<Plugin> plugins = registry.getPluginList(new Registry.PluginFilter() {
 
             public boolean accept(Plugin plugin) {
+                filterCalled[0] = true;
                 return plugin.getName().equals("playbin");
             }
         }, true);
         assertFalse("No plugins found", plugins.isEmpty());
+        assertTrue("PluginFilter not called", filterCalled[0]);
         assertEquals("Plugin list should contain 1 item", 1, plugins.size());
         assertEquals("playbin plugin not found", "playbin", plugins.get(0).getName());
     }
