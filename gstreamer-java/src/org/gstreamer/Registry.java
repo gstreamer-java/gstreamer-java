@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.GstAPI;
 
 /**
  * Abstract base class for management of {@link Plugin} objects.
@@ -97,6 +98,14 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 public class Registry extends GstObject {
     private static Logger logger = Logger.getLogger(Registry.class.getName());
     
+    public static interface PluginFilter {
+        public boolean accept(Plugin plugin);
+    }
+    
+    public static interface PluginFeatureFilter {
+        public boolean accept(PluginFeature feature);
+    }
+    
     /**
      * Retrieves the default registry. 
      * 
@@ -127,6 +136,24 @@ public class Registry extends GstObject {
      */
     public Plugin findPlugin(String name) {
         return gst.gst_registry_find_plugin(this, name);
+    }
+    /**
+     * Add the plugin to the registry. The plugin-added signal will be emitted.
+     *
+     * @param plugin the {@link Plugin} to add
+     * @return true on success.
+     */
+    public boolean addPlugin(Plugin plugin) {
+        return gst.gst_registry_add_plugin(this, plugin);
+    }
+    
+    /**
+     * Remove a plugin from the registry.
+     * 
+     * @param plugin The plugin to remove.
+     */
+    public void removePlugin(Plugin plugin) {
+        gst.gst_registry_remove_plugin(this, plugin);
     }
     
     /**
@@ -165,6 +192,40 @@ public class Registry extends GstObject {
     }
     
     /**
+     * Get a subset of the Plugins in the registry, filtered by filter.
+     * 
+     * @param filter the filter to use
+     * @param onlyReturnFirstMatch If true, only return the first plugin that matches the filter.
+     * @return
+     */
+    public List<Plugin> getPluginList(final PluginFilter filter, boolean onlyReturnFirstMatch) {
+
+        GList glist = gst.gst_registry_plugin_filter(this, new GstAPI.PluginFilter() {
+
+            public boolean callback(Plugin plugin) {
+                return filter.accept(plugin);
+            }
+            
+        }, onlyReturnFirstMatch, null);      
+        List<Plugin> list = objectList(glist, Plugin.class);
+        gst.gst_plugin_list_free(glist);
+        return list;
+    }
+    
+    /**
+     * Retrieves a list of {@link PluginFeature} of the {@link Plugin} type.
+     * 
+     * @param type The plugin type.
+     * @return a List of {@link PluginFeature} for the plugin type.
+     */
+    public List<PluginFeature> getPluginFeatureListByType(GType type) {
+        GList glist = gst.gst_registry_get_feature_list(this, type);
+        List<PluginFeature> list = objectList(glist, PluginFeature.class);
+        gst.gst_plugin_feature_list_free(glist);
+        return list;
+    }
+    
+    /**
      * Retrieves a list of {@link PluginFeature} of the named {@link Plugin}.
      * 
      * @param name The plugin name.
@@ -175,6 +236,18 @@ public class Registry extends GstObject {
         List<PluginFeature> list = objectList(glist, PluginFeature.class);
         gst.gst_plugin_feature_list_free(glist);
         return list;
+    }
+    
+    /**
+     * Add the given path to the registry. The syntax of the
+     * path is specific to the registry. If the path has already been
+     * added, do nothing.
+     *
+     * @param path The path to add to the registry.
+     * @return true if the registry changed.
+     */
+    public boolean scanPath(String path) {
+        return gst.gst_registry_scan_path(this, path);
     }
     
     /**
