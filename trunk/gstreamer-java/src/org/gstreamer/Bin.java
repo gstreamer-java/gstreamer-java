@@ -1,5 +1,7 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (C) 2007 Wayne Meissner
+ * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
+ *                    2004 Wim Taymans <wim@fluendo.com>
  * 
  * This file is part of gstreamer-java.
  *
