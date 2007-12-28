@@ -70,6 +70,21 @@ public class GType extends NativeLong {
         }
         return new GType(value);
     }
+    public static GType valueOf(Class<?> javaType) {
+        if (Integer.class == javaType || int.class == javaType) {
+            return INT;
+        } else if (Long.class == javaType || long.class == javaType) {
+            return INT64;
+        } else if (Float.class == javaType || float.class == javaType) {
+            return FLOAT;
+        } else if (Double.class == javaType || double.class == javaType) {
+            return DOUBLE;
+        } else if (String.class == javaType) {
+            return STRING;
+        } else {
+            throw new IllegalArgumentException("No GType for " + javaType);
+        }
+    }
     @Override
     public Object fromNative(Object nativeValue, FromNativeContext context) {
         return valueOf(((Number) nativeValue).longValue());
