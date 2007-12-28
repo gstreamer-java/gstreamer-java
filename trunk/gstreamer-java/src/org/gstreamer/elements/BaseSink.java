@@ -20,25 +20,9 @@
 package org.gstreamer.elements;
 
 import org.gstreamer.*;
-import com.sun.jna.Pointer;
 
 public class BaseSink extends Element {
-    /**
-     *
-     * @param ptr C Pointer to the underlying GstBaseSrc
-     * @param needRef
-     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
-     * 
-     */
-    protected BaseSink(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
-    
-    /**
-     *
-     * @param ptr
-     */
-    protected BaseSink(Pointer ptr) {
-        super(ptr);
+    protected BaseSink(Initializer init) {
+        super(init);
     }
 }

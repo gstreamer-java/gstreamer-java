@@ -28,8 +28,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.Structure;
-import org.gstreamer.event.HandoffEvent;
-import org.gstreamer.event.HandoffListener;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 
@@ -47,7 +45,7 @@ public class RGBDataSink extends Bin {
      * @param name The name used to identify this pipeline.
      */
     public RGBDataSink(String name, Listener listener) {
-        super(gst.gst_bin_new(name));
+        super(initializer(gst.gst_bin_new(name)));
         this.listener = listener;
         Element videosink = ElementFactory.make("fakesink", "VideoSink");
         videosink.set("signal-handoffs", true);

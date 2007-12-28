@@ -19,20 +19,11 @@
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
 import org.gstreamer.lowlevel.GstAPI;
 
 public class Event extends MiniObject {
-    
-    /**
-     * Creates a new instance of Buffer
-     */    
-    Event(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
-    }
-    Event(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-        //struct = new BufferStruct(ptr);
+    protected Event(Initializer init) { 
+        super(init); 
     }
     public static Event eosEvent() {
         return GstAPI.gst.gst_event_new_eos();

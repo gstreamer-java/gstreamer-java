@@ -19,7 +19,6 @@
 
 package org.gstreamer.elements;
 import org.gstreamer.*;
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.DoubleByReference;
 import java.io.File;
 import java.net.URI;
@@ -37,7 +36,7 @@ public class PlayBin extends Pipeline {
      * @param name The name used to identify this pipeline.
      */
     public PlayBin(String name) {
-        super(gst.gst_element_factory_make("playbin", name));
+        this(initializer(gst.gst_element_factory_make("playbin", name)));
     }
     
     /**
@@ -51,21 +50,14 @@ public class PlayBin extends Pipeline {
         setURI(uri);
     }
     
-    
     /**
      * Creates a new PlayBin proxy.
      * 
-     * @param playbin The native GstPlaybin object to wrap.
+     * @param init proxy initialization args
      * 
-     * @param needRef true if the reference count needs to be incremented.
-     * 
-     * @param ownsHandle Whether this proxy should take ownership of the 
-     *          native handle or not.  If true, then the underlying pipeline will be
-     *          unreffed when the java object is garbage collected.
      */
-    @Deprecated
-    public PlayBin(Pointer playbin, boolean needRef, boolean ownsHandle) {
-        super(playbin, needRef, ownsHandle);
+    public PlayBin(Initializer init) {
+        super(init);
     }
     
     /**

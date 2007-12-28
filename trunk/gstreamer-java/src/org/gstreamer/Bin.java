@@ -59,48 +59,16 @@ import org.gstreamer.lowlevel.GstTypes;
  */
 public class Bin extends Element {
     
+    protected Bin(Initializer init) { 
+        super(init);
+    }
+    
     /**
      * Creates a new Bin with the given name.
      * @param name The Name to assign to the new Bin
      */
     public Bin(String name) {
-        super(gst.gst_bin_new(name));
-    }
-    
-    /**
-     * Creates a new instance of Bin.  This constructor is for use by subclasses.
-     * @param factoryName The type of Bin subclass to create.
-     * @param name The Name to assign to the new Bin
-     */
-    protected Bin(String factoryName, String name) {
-        super(factoryName, name);
-    }
-    
-    /**
-     *
-     * @param ptr
-     */
-    protected Bin(Pointer ptr) {
-        super(ptr);
-    }
-    
-    /**
-     *
-     * @param ptr
-     * @param needRef
-     */
-    protected Bin(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    /**
-     *
-     * @param ptr C Pointer to the underlying GstBin
-     * @param needRef
-     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
-     * 
-     */
-    protected Bin(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+        this(initializer(gst.gst_bin_new(name)));
     }
     
     /**

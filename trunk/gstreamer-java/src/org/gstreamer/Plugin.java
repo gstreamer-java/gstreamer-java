@@ -19,7 +19,6 @@
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
 import java.util.logging.Logger;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -27,15 +26,10 @@ public class Plugin extends GstObject {
     private static Logger logger = Logger.getLogger(Plugin.class.getName());
     
     /** Creates a new instance of GstElement */
-    protected Plugin(Pointer ptr) {
-        super(ptr);
+    protected Plugin(Initializer init) {
+        super(init);
     }
-    protected Plugin(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    protected Plugin(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
+    
     @Override
     public String getName() {
         return gst.gst_plugin_get_name(this);

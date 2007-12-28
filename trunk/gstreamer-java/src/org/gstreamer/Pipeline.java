@@ -18,7 +18,6 @@
  */
 
 package org.gstreamer;
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -28,52 +27,17 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class Pipeline extends Bin {
 
+    protected Pipeline(Initializer init) { 
+        super(init); 
+    }
+    
     /**
      * Creates a new instance of Pipeline with the given name.
      * 
      * @param name The name used to identify this pipeline.
      */
     public Pipeline(String name) {
-        super(gst.gst_pipeline_new(name));
-    }
-    
-    /**
-     * Creates a new Pipeline proxy.
-     * 
-     * This constructor assumes ownership of the underlying native GstPipeline
-     * and increments the reference count.
-     * 
-     * @param pipeline The native GstPipeline object to wrap.
-     */
-    protected Pipeline(Pointer pipeline) {
-        super(pipeline);
-    }
-    
-    /**
-     * Creates a new Pipeline proxy.
-     * 
-     * This constructor assumes ownership of the underlying native GstPipeline
-     * 
-     * @param pipeline The native GstPipeline object to wrap.
-     * @param needRef true if the reference count needs to be incremented.
-     */
-    protected Pipeline(Pointer pipeline, boolean needRef) {
-        super(pipeline, needRef);
-    }
-    
-    /**
-     * Creates a new Pipeline proxy.
-     * 
-     * @param pipeline The native GstPipeline object to wrap.
-     * 
-     * @param needRef true if the reference count needs to be incremented.
-     * 
-     * @param ownsHandle Whether this proxy should take ownership of the 
-     *          native handle or not.  If true, then the underlying pipeline will be
-     *          unreffed when the java object is garbage collected.
-     */
-    protected Pipeline(Pointer pipeline, boolean needRef, boolean ownsHandle) {
-        super(pipeline, needRef, ownsHandle);
+        this(initializer(gst.gst_pipeline_new(name)));
     }
     
     /**

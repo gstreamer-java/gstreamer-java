@@ -31,13 +31,13 @@ public class Message extends MiniObject {
     /**
      * Creates a new instance of Message
      */
-    protected Message(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);        
-        messageStruct = new GstAPI.MessageStruct(ptr);
+    protected Message(Initializer init) {
+        super(init);
+        messageStruct = new GstAPI.MessageStruct(handle());
     }
+    
     protected Message(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-        messageStruct = new GstAPI.MessageStruct(ptr);
+        this(initializer(ptr, needRef, ownsHandle));
     }
     public GstObject getSource() {
         return Element.objectFor(messageStruct.src, true);

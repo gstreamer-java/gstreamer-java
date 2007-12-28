@@ -32,17 +32,8 @@ public class Pad extends GstObject {
     /**
      * Creates a new instance of Pad
      */
-    
-    Pad(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    
-    protected Pad(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
-    
-    public static Pad objectFor(Pointer ptr, boolean needRef) {
-        return GstObject.objectFor(ptr, Pad.class, needRef);
+    Pad(Initializer init) { 
+        super(init); 
     }
     
     public Caps getCaps() {

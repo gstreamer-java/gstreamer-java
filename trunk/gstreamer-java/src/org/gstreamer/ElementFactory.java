@@ -47,10 +47,11 @@ public class ElementFactory extends PluginFeature {
     /**
      * Creates a new instance of ElementFactory
      */
-    ElementFactory(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-        logger.entering("ElementFactory", "<init>", new Object[] { ptr, needRef, ownsHandle});
+    ElementFactory(Initializer init) {
+        super(init); 
+        logger.entering("ElementFactory", "<init>", new Object[] { init });
     }
+    
     /**
      * Creates a new element from the factory.
      *

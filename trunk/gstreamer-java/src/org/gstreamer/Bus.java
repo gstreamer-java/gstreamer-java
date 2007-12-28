@@ -80,12 +80,12 @@ import org.gstreamer.lowlevel.GstAPI.MessageStruct;
 public class Bus extends GstObject {
     static final Logger log = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
-        
+    
     /**
      * Creates a new instance of Bus
      */
-    protected Bus(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    Bus(Initializer init) { 
+        super(init); 
         gst.gst_bus_enable_sync_message_emission(this);
         gst.gst_bus_set_sync_handler(this, Pointer.NULL, null);
         gst.gst_bus_set_sync_handler(this, syncCallback, null);
@@ -338,7 +338,7 @@ public class Bus extends GstObject {
             public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
                 PointerByReference list = new PointerByReference();
                 gst.gst_message_parse_tag(msgPtr, list);
-                listener.tagMessage(messageSource(msgPtr), new TagList(list.getValue(), true, false));
+                listener.tagMessage(messageSource(msgPtr), new TagList(TagList.initializer(list.getValue(), true, false)));
             }
         });
     }

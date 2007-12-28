@@ -87,12 +87,18 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class Buffer extends MiniObject {
     
+    protected Buffer(Initializer init) {
+        super(init);
+        struct = new BufferStruct(handle());
+    }
+    
     /**
      * Creates a newly allocated buffer without any data.
      */
     public Buffer() {
         this(gst.gst_buffer_new(), false);
     }
+    
     /**
      * Creates a newly allocated buffer with data of the given size.
      * The buffer memory is not cleared. If the requested amount of
@@ -103,8 +109,9 @@ public class Buffer extends MiniObject {
      * @param size
      */
     public Buffer(int size) {
-        this(allocBuffer(size), false, true);
+        this(initializer(allocBuffer(size), false, true));
     }
+    
     private static Pointer allocBuffer(int size) {
         Pointer ptr = GstAPI.gst.gst_buffer_new_and_alloc(size);
         if (ptr == null) {
@@ -113,12 +120,9 @@ public class Buffer extends MiniObject {
         return ptr;
     }
     Buffer(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
+        this(initializer(ptr, needRef, true));
     }
-    Buffer(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-        struct = new BufferStruct(ptr);
-    }
+    
     protected void ref() {
         super.ref();
         if (struct != null) {

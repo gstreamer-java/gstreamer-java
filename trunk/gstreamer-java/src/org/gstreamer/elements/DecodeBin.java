@@ -32,13 +32,12 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class DecodeBin extends Bin {
     public DecodeBin(String name) {
-        super(gst.gst_element_factory_make("decodebin", name));
+        this(initializer(gst.gst_element_factory_make("decodebin", name)));
+    }
+    public DecodeBin(Initializer init) {
+        super(init);
     }
     
-    @Deprecated
-    public DecodeBin(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
     public static interface NEW_DECODED_PAD {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }

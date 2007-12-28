@@ -111,6 +111,6 @@ public class BusTest {
         pipe.play();
         loop.run();
         pipe.getBus().disconnect(stateChanged);
-        assertTrue("STATECHANGED not received", result[0]);
+        assertTrue("STATE_CHANGED not received", result[0]);
     }
 }

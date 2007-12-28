@@ -35,16 +35,38 @@ import org.gstreamer.lowlevel.GstTypes;
 public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     private static Logger logger = Logger.getLogger(NativeObject.class.getName());
     static Level LIFECYCLE = Level.FINE;
-    /** Creates a new instance of NativeObject */
-    NativeObject(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
+    
+    // Use this as a dummy arg to identify the default constructor
+    protected static class Initializer {
+        public final Pointer ptr;
+        public final boolean needRef, ownsHandle;
+        public Initializer() {
+            this(null, false, false);
+        }
+        public Initializer(Pointer ptr, boolean needRef, boolean ownsHandle) {
+            this.ptr = ptr;
+            this.needRef = needRef;
+            this.ownsHandle = ownsHandle;
+        }
     }
-    protected NativeObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        logger.entering("NativeObject", "<init>", new Object[] { ptr, needRef, ownsHandle });
-        logger.log(LIFECYCLE, "Creating " + getClass().getSimpleName() + " (" + ptr + ")");
-        this.handle = ptr;
-        this.ownsHandle = new AtomicBoolean(ownsHandle);
+    protected static final Initializer defaultInit = new Initializer();
+    
+    protected static Initializer initializer(Pointer ptr) {
+        return new Initializer(ptr, true, false);
+    }
+    protected static Initializer initializer(Pointer ptr, boolean needRef, boolean ownsHandle) {
+        return new Initializer(ptr, needRef, ownsHandle);
+    }
+    /** Creates a new instance of NativeObject */
+    protected NativeObject() {
+        this(defaultInit);
+    }
+    protected NativeObject(Initializer init) {
+        logger.entering("NativeObject", "<init>", new Object[] { init });
+        logger.log(LIFECYCLE, "Creating " + getClass().getSimpleName() + " (" + init.ptr + ")");
         nativeRef = new NativeRef(this);
+        this.handle = init.ptr;
+        this.ownsHandle.set(init.ownsHandle);
         //
         // Only store this object in the map if we can tell when it has been disposed 
         // (i.e. must be at least a GObject - MiniObject and other NativeObject subclasses
@@ -52,14 +74,11 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         // is stale or not
         //
         if (GObject.class.isAssignableFrom(getClass())) {
-            instanceMap.put(ptr, nativeRef);
+            instanceMap.put(init.ptr, nativeRef);
         }
-        if (ownsHandle && needRef) {
+        if (init.ownsHandle && init.needRef) {
             ref();
         }
-    }
-    NativeObject(Pointer ptr) {
-        this(ptr, true, false);
     }
     
     abstract protected void disposeNativeHandle(Pointer ptr);
@@ -129,8 +148,10 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
             cls = classFor(ptr, cls);
         }
         try {
-            Constructor<T> constructor = cls.getDeclaredConstructor(Pointer.class, boolean.class, boolean.class);
-            return constructor.newInstance(ptr, refAdjust > 0, ownsHandle);
+            Constructor<T> constructor = cls.getDeclaredConstructor(Initializer.class);
+            T retVal = constructor.newInstance(initializer(ptr, refAdjust > 0, ownsHandle));
+            //retVal.initNativeHandle(ptr, refAdjust > 0, ownsHandle);
+            return retVal;
         } catch (SecurityException ex) {
             throw new RuntimeException(ex);
         } catch (IllegalAccessException ex) {
@@ -176,14 +197,14 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     static class NativeRef extends WeakReference<NativeObject> {
         public NativeRef(NativeObject obj) {
             super(obj);
-            handle = obj.handle();
+            //handle = obj.handle();
         }
-        public Pointer handle;
+        //public Pointer handle;
 
     }
     private AtomicBoolean disposed = new AtomicBoolean(false);
     private Pointer handle;
-    final AtomicBoolean ownsHandle;
+    final AtomicBoolean ownsHandle = new AtomicBoolean(false);
     final NativeRef nativeRef;
     private static ConcurrentHashMap<Pointer, NativeRef> instanceMap = new ConcurrentHashMap<Pointer, NativeRef>();
 }
