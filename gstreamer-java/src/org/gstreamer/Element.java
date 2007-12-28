@@ -80,18 +80,52 @@ public class Element extends GstObject {
         return initializer(ElementFactory.makeRawElement(factoryName, elementName));
     }
     
-    public boolean link(Element e) {
-        return gst.gst_element_link(this, e);
+    /**
+     * Links this element to another element. 
+     * The link must be from source to destination; the other direction will not 
+     * be tried. 
+     * <p>
+     * The function looks for existing pads that aren't linked yet. 
+     * It will request new pads if necessary. Such pads need to be released manualy when unlinking.
+     * If multiple links are possible, only one is established.
+     *<p>
+     * Make sure you have added your elements to a bin or pipeline with
+     * {@link Bin#add} or {@link Bin#addMany} before trying to link them.
+     *
+     * @param dest The {@link Element} containing the destination pad.
+     * @return true if the elements could be linked, false otherwise.
+     */
+    public boolean link(Element dest) {
+        return gst.gst_element_link(this, dest);
     }
-    public void link(Element... elems) {
-        Element prev = this;
-        for (Element e : elems) {
-            prev.link(e);
-            prev = e;
-        }
+    
+    /**
+     * Chain together a series of elements, with this element as the first in the list. 
+     * <p>
+     * Make sure you have added your elements to a bin or pipeline with
+     * {@link Bin#add} or {@link Bin#addMany} before trying to link them.
+     *
+     * @param elems The list of elements to be linked.
+     * @return true if the elements could be linked, false otherwise.
+     */
+    public boolean link(Element... elems) {
+        // Its much more efficient to copy the array and let the native code do the linking
+        Element[] list = new Element[elems.length + 1];
+        list[0] = this;
+        System.arraycopy(elems, 0, list, 1, elems.length);
+        return linkMany(list);
     }
-    public void unlink(Element e) {
-        gst.gst_element_unlink(this, e);
+    /**
+     * Unlinks all source pads of this source element with all sink pads
+     * of the sink element to which they are linked.
+     *<p>
+     * If the link has been made using {@link #link}, it could have created an
+     * requestpad, which has to be released using gst_element_release_request_pad().
+     * 
+     * @param dest The sink Element to unlink.
+     */
+    public void unlink(Element dest) {
+        gst.gst_element_unlink(this, dest);
     }
     
     public StateChangeReturn setState(State state) {
@@ -148,11 +182,11 @@ public class Element extends GstObject {
     /**
      * Adds a {@link Pad} (link point) to the Element. 
      * The Pad's parent will be set to this element.
-     *
+     *<p>
      * Pads are not automatically activated so elements should perform the needed
      * steps to activate the pad in case this pad is added in the PAUSED or PLAYING
      * state. See {@link Pad#setActive} for more information about activating pads.
-     *
+     *<p>
      * This function will emit the {@link PAD_ADDED} signal on the element.
      *
      * @param pad The {@link Pad} to add.
@@ -166,22 +200,19 @@ public class Element extends GstObject {
     
     /**
      * Remove a {@link Pad} from the element.
-     * 
+     * <p>
      * This method is used by plugin developers and should not be used
      * by applications. Pads that were dynamically requested from elements
      * with gst_element_get_request_pad() should be released with the
      * gst_element_release_request_pad() function instead.
-     *
+     *<p>
      * Pads are not automatically deactivated so elements should perform the needed
      * steps to deactivate the pad in case this pad is removed in the PAUSED or
      * PLAYING state. See {@link Pad#setActive} for more information about
      * deactivating pads.
-     *
+     *<p>
      * This function will emit the {@link PAD_REMOVED} signal on the element.
      *
-     * Returns: %TRUE if the pad could be removed. Can return %FALSE if the
-     * pad does not belong to the provided element.
-     * 
      * @param pad The {@link Pad} to remove.
      * @return true if the pad could be removed. Can return false if the
      * pad does not belong to the provided element.
@@ -299,8 +330,8 @@ public class Element extends GstObject {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
     /**
-     * Signal emitted when this {@link org.gstramer.elements.DecodeBin} decodes a new pad.
-     * @deprecated use {@link org.gstreamer.elements.DecodeBin#NEW_DECODED_PAD} instead.
+     * Signal emitted when this {@link org.gstreamer.elements.DecodeBin} decodes a new pad.
+     * @deprecated use {@link org.gstreamer.elements.DecodeBin.NEW_DECODED_PAD} instead.
      */
     @Deprecated
     public static interface NEW_DECODED_PAD {
@@ -472,9 +503,11 @@ public class Element extends GstObject {
     
     /**
      * Link together a list of elements.
-     * 
-     * @param elements The list of elements to link together
-     * 
+     * <p>
+     * Make sure you have added your elements to a bin or pipeline with
+     * {@link Bin#add} or {@link Bin#addMany} before trying to link them.
+     
+     * @param elements The list of elements to link together.
      * @return true if all elements successfully linked.
      */
     public static boolean linkMany(Element... elements) {
@@ -494,6 +527,10 @@ public class Element extends GstObject {
     /**
      * Link together source and destination pads of two elements.
      * 
+     * A side effect is that if one of the pads has no parent, it becomes a
+     * child of the parent of the other element.  If they have different
+     * parents, the link fails.
+     * 
      * @param src The {@link Element} containing the source {@link Pad}.
      * @param srcPadName The name of the source {@link Pad}.  Can be null for any pad.
      * @param dest The {@link Element} containing the destination {@link Pad}.
@@ -507,6 +544,9 @@ public class Element extends GstObject {
     
     /**
      * Link together source and destination pads of two elements.
+     * A side effect is that if one of the pads has no parent, it becomes a child of the parent of
+     * the other element. If they have different parents, the link fails. If caps
+     * is not null, makes sure that the caps of the link is a subset of caps.
      * 
      * @param src The {@link Element} containing the source {@link Pad}.
      * @param srcPadName The name of the source {@link Pad}.  Can be null for any pad.

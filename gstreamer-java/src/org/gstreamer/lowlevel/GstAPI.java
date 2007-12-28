@@ -430,17 +430,42 @@ public interface GstAPI extends Library {
      * GstPad functions
      */
     GType gst_pad_get_type();
-    boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
-    boolean gst_pad_set_caps(Pad pad, Caps caps);
-    Caps gst_pad_get_caps(Pad pad);
+    Pointer gst_pad_new(String name, PadDirection direction);
+    Pointer gst_pad_new_from_template(PadTemplate templ, String name);
+
     @FreeReturnValue
     String gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
     PadLinkReturn gst_pad_link(Pad src, Pad sink);
     boolean gst_pad_unlink(Pad src, Pad sink);
     boolean gst_pad_is_linked(Pad pad);
+    Pad gst_pad_get_peer(Pad pad);
     boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
     PadDirection gst_pad_get_direction(Pad pad);
     Element gst_pad_get_parent_element(Pad pad);
+    
+
+    boolean gst_pad_set_active(Pad pad, boolean active);
+    boolean gst_pad_is_active(Pad pad);
+    boolean gst_pad_activate_pull(Pad pad, boolean active);
+    boolean gst_pad_activate_push(Pad pad, boolean active);
+    boolean gst_pad_set_blocked(Pad pad, boolean blocked);
+    boolean gst_pad_is_blocked(Pad pad);
+    boolean gst_pad_is_blocking(Pad pad);
+    PadTemplate gst_pad_get_pad_template(Pad pad);
+    
+    /* capsnego function for connected/unconnected pads */
+    Caps gst_pad_get_caps(Pad  pad);
+    void gst_pad_fixate_caps(Pad  pad, Caps caps);
+    boolean gst_pad_accept_caps(Pad  pad, Caps caps);
+    boolean gst_pad_set_caps(Pad  pad, Caps caps);
+
+    Caps gst_pad_peer_get_caps(Pad  pad);
+    boolean gst_pad_peer_accept_caps(Pad  pad, Caps caps);
+
+    /* capsnego for connected pads */
+    Caps gst_pad_get_allowed_caps(Pad pad);
+    Caps gst_pad_get_negotiated_caps(Pad pad);
+
     /*
      * GstBuffer functions
      */
