@@ -1,5 +1,6 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (C) 2007 Wayne Meissner
+ * Copyright (C) 2003 David A. Schleef <ds@schleef.org>
  * 
  * This file is part of gstreamer-java.
  *
@@ -25,7 +26,30 @@ import org.gstreamer.lowlevel.GType;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
- *
+ * Generic structure containing fields of names and values
+ * @see Caps
+ * @see Event
+ * <p>
+ * A Structure is a collection of key/value pairs. The keys are expressed
+ * as GQuarks and the values can be of any GType.
+ * <p>
+ * In addition to the key/value pairs, a Structure also has a name. The name
+ * starts with a letter and can be followed by letters, numbers and any of "/-_.:".
+ * <p>
+ * Structure is used by various GStreamer subsystems to store information
+ * in a flexible and extensible way. 
+ * <p>
+ * A Structure can be created with new {@link #Structure()} or
+ * gst_structure_new(), which both take a name and an optional set of
+ * key/value pairs along with the types of the values.
+ * <p>
+ * Field values can be changed with {@link #setValue} or {@link #set}.
+ * <p>
+ * Field values can be retrieved with {@link #getValue} or the more
+ * specific get{Integer,String}() etc functions.
+ * <p>
+ * Fields can be removed with {@link #removeField} or
+ * gst_structure_remove_fields().
  */
 public class Structure extends NativeObject {
     
@@ -41,12 +65,36 @@ public class Structure extends NativeObject {
     protected Structure(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(ptr, needRef, ownsHandle);
     }
-    public Structure(String data) {
-        this(gst.gst_structure_from_string(data, new PointerByReference()), true, false);
+    /**
+     * Creates a new, empty #GstStructure with the given name.
+     *
+     * @param name The name of new structure.
+     */
+    public Structure(String name) {
+        this(gst.gst_structure_empty_new(name));
+    }
+    /**
+     * Creates a new Structure with the given name.  Parses the
+     * list of variable arguments and sets fields to the values listed.
+     * Variable arguments should be passed as field name, field type,
+     * and value.
+     *
+     * @param name The name of new structure.
+     * @param firstFieldName The name of first field to set
+     * @param data Additional arguments.
+     */
+    public Structure(String name, String firstFieldName, Object... data) {
+        this(gst.gst_structure_new(name, firstFieldName, data));
+    }
+    
+    public static Structure fromString(String data) {
+        return new Structure(gst.gst_structure_from_string(data, new PointerByReference()));
     }
     public Structure copy() {
         return gst.gst_structure_copy(this);
     }
+    
+     
     public class InvalidFieldException extends RuntimeException {
         public InvalidFieldException(String type, String fieldName) {
             super(String.format("Structure does not contain %s field '%s'", type, fieldName));
@@ -85,14 +133,34 @@ public class Structure extends NativeObject {
     public boolean fixateFieldNearestInteger(String field, Integer target) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, target);
     } 
+    
+    /**
+     * Get the name of @structure as a string.
+     *
+     * @return The name of the structure.
+     */
     public String getName() {
         return gst.gst_structure_get_name(this);
     }
     
+    /**
+     * Sets the name of the structure to the given name.
+     * 
+     * The name must not be empty, must start with a letter and can be followed 
+     * by letters, numbers and any of "/-_.:".
+     * 
+     * @param name The new name of the structure.
+     */
     public void setName(String name) {
         gst.gst_structure_set_name(this, name);
     }
     
+    /**
+     * Checks if the structure has the given name.
+     * 
+     * @param name structure name to check for
+     * @return true if @name matches the name of the structure.
+     */
     public boolean hasName(String name) {
         return gst.gst_structure_has_name(this, name);
     }
@@ -134,6 +202,15 @@ public class Structure extends NativeObject {
      */
     public boolean hasDoubleField(String fieldName) {
         return hasField(fieldName, GType.DOUBLE);
+    }
+    
+    /**
+     * Removes the field with the given name from the structure.
+     * If the field with the given name does not exist, the structure is unchanged.
+     * @param fieldName The name of the field to remove.
+     */
+    public void removeField(String fieldName) {
+        gst.gst_structure_remove_field(this, fieldName);
     }
     
     @Override

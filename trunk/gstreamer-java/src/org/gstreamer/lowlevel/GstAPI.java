@@ -328,7 +328,13 @@ public interface GstAPI extends Library {
     @FreeReturnValue
     String gst_structure_to_string(Structure structure);
     Pointer gst_structure_from_string(String data, PointerByReference end);
+    Pointer gst_structure_empty_new(String name);
+    //Pointer gst_structure_id_empty_new(GQuark                   quark);
+    Pointer gst_structure_new(String name, String firstField, Object... args);
     Structure gst_structure_copy(Structure src);
+    void gst_structure_remove_field(Structure structure, String fieldName);
+    void gst_structure_remove_fields(Structure structure, String... fieldNames);
+    void gst_structure_remove_all_fields(Structure structure);
     
     String gst_structure_get_name(Structure structure);
     void gst_structure_set_name(Structure structure, String name);
