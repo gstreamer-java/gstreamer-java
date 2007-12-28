@@ -26,9 +26,7 @@ import org.gstreamer.lowlevel.GType;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
- * Generic structure containing fields of names and values
- * @see Caps
- * @see Event
+ * Generic structure containing fields of names and values.
  * <p>
  * A Structure is a collection of key/value pairs. The keys are expressed
  * as GQuarks and the values can be of any GType.
@@ -39,17 +37,18 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * Structure is used by various GStreamer subsystems to store information
  * in a flexible and extensible way. 
  * <p>
- * A Structure can be created with new {@link #Structure()} or
- * gst_structure_new(), which both take a name and an optional set of
- * key/value pairs along with the types of the values.
+ * A Structure can be created with new {@link #Structure(String)} or 
+ * {@link #Structure(String, String, Object...)}, which both take a name and an
+ * optional set of key/value pairs along with the types of the values.
  * <p>
  * Field values can be changed with {@link #setValue} or {@link #set}.
  * <p>
  * Field values can be retrieved with {@link #getValue} or the more
  * specific get{Integer,String}() etc functions.
  * <p>
- * Fields can be removed with {@link #removeField} or
- * gst_structure_remove_fields().
+ * Fields can be removed with {@link #removeField} or {@link #removeFields}
+ * @see Caps
+ * @see Event
  */
 public class Structure extends NativeObject {
     
@@ -86,7 +85,12 @@ public class Structure extends NativeObject {
     public Structure(String name, String firstFieldName, Object... data) {
         this(gst.gst_structure_new(name, firstFieldName, data));
     }
-    
+    /**
+     * Creates a Structure from a string representation.
+     *
+     * @param data A string representation of a Structure.
+     * @return A new Structure or null when the string could not be parsed.
+     */
     public static Structure fromString(String data) {
         return new Structure(gst.gst_structure_from_string(data, new PointerByReference()));
     }
@@ -184,6 +188,18 @@ public class Structure extends NativeObject {
     public boolean hasField(String fieldName, GType fieldType) {
         return gst.gst_structure_has_field_typed(this, fieldName, fieldType);
     }
+    
+    /**
+     * Check if the {@link Structure} contains a field named fieldName.
+     *
+     * @param fieldName The name of the field to check.
+     * @param fieldType The type of the field.
+     * @return true if the structure contains a field named fieldName and of type fieldType
+     */
+    public boolean hasField(String fieldName, Class<?> fieldType) {
+        return gst.gst_structure_has_field_typed(this, fieldName, GType.valueOf(fieldType));
+    }
+    
     /**
      * Check if the {@link Structure} contains an integer field named fieldName.
      *
@@ -211,6 +227,16 @@ public class Structure extends NativeObject {
      */
     public void removeField(String fieldName) {
         gst.gst_structure_remove_field(this, fieldName);
+    }
+    
+    /**
+     * Removes the fields with the given names. 
+     * If a field does not exist, the argument is ignored.
+     * 
+     * @param fieldNames A list of field names to remove.
+     */
+    public void removeFields(String... fieldNames) {
+        gst.gst_structure_remove_fields(this, fieldNames);
     }
     
     @Override
