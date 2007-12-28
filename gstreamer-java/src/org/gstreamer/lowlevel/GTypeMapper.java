@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.gstreamer.NativeObject;
 import org.gstreamer.annotations.FreeReturnValue;
+import org.gstreamer.glib.GQuark;
 
 /**
  *
@@ -167,6 +168,20 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Integer.class;
         }
     };
+    private TypeConverter gquarkConverter = new TypeConverter() {
+
+        public Object fromNative(Object arg0, FromNativeContext arg1) {
+            return new GQuark((Integer) arg0);
+        }
+
+        public Class<?> nativeType() {
+            return Integer.class;
+        }
+
+        public Object toNative(Object arg0, ToNativeContext arg1) {
+            return ((GQuark) arg0).intValue();
+        }
+    };
     
     private TypeConverter intptrConverter = new TypeConverter() {
         
@@ -195,6 +210,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return stringConverter;
         } else if (IntPtr.class == type) {
             return intptrConverter;
+        } else if (GQuark.class == type) {
+            return gquarkConverter;
         }
         return null;
     }
@@ -211,6 +228,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return stringConverter;        
         } else if (IntPtr.class == type) {
             return intptrConverter;
+        } else if (GQuark.class == type) {
+            return gquarkConverter;
         }
         return null;
     }
