@@ -30,36 +30,25 @@ public class GstObject extends GObject {
     private static Logger logger = Logger.getLogger(GstObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
-    
-    /** Creates a new instance of GstObject */
-    protected GstObject(Pointer ptr) {
-        // By default, Owns the handle and needs to ref+sink it to retain it
-        this(ptr, true, true);
-    }
     /**
-     *
-     * @param ptr
-     * @param needRef
+     * Wraps an underlying C GstObject with a Java proxy
+     * @param init C initialization data
      */
-    protected GstObject(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
-    }
-    /**
-     * Wraps an underlying C GstObject with a Java object
-     * @param ptr C Pointer to the underlying GstObject.
-     * @param ownsHandle Whether this instance should destroy the underlying object when finalized.
-     * @param needRef Whether the reference count of the underlying object needs
-     *                to be incremented immediately to retain a reference.
-     */
-    protected GstObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-        if (ownsHandle && needRef) {
+    protected GstObject(Initializer init) {
+        super(init);
+        if (init.ownsHandle && init.needRef) {
             // Lose the floating ref so when this object is destroyed
             // and it is the last ref, the C object gets freed
             sink();
         }
     }
-    
+    protected static Initializer initializer(Pointer ptr) {
+        return initializer(ptr, true, true);
+    }
+    protected static Initializer initializer(Pointer ptr, boolean needRef) {
+        return initializer(ptr, needRef, true);
+    }
+   
     public void setName(String name) {
         logger.entering("GstObject", "setName", name);
         gst.gst_object_set_name(this, name);

@@ -34,7 +34,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 class GstIterator<T extends NativeObject> extends NativeObject implements java.lang.Iterable<T> {
     private Class<T> objectType;
     GstIterator(Pointer ptr, Class<T> cls) {
-        super(ptr, false, true);
+        super(initializer(ptr, false, true));
         objectType = cls;
     }
 

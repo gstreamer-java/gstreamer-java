@@ -64,7 +64,7 @@ abstract public class CustomSink extends BaseSink {
     }
     private static final Map<Class<? extends CustomSink>, CustomSinkInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSink>, CustomSinkInfo>();
     protected CustomSink(Class<? extends CustomSink> subClass, String name) {
-        super(gobj.g_object_new(getSubclassType(subClass), "name", name));
+        super(initializer(gobj.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSinkInfo getSubclassInfo(Class<? extends CustomSink> subClass) {
        synchronized (subClass) {

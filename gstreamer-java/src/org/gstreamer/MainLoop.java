@@ -31,12 +31,10 @@ public class MainLoop extends NativeObject implements Runnable {
     
     /** Creates a new instance of MainLoop */
     public MainLoop() {
-        this(glib.g_main_loop_new(Gst.getMainContext(), false), false, true);
+        super(initializer(glib.g_main_loop_new(Gst.getMainContext(), false), false, true));
     }
+    protected MainLoop(Initializer init) { super(init); }
     
-    MainLoop(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
     public void quit() {
         Gst.invokeLater(new Runnable() {
             public void run() {

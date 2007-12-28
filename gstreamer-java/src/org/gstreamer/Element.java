@@ -72,18 +72,12 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 public class Element extends GstObject {
     private static Logger logger = Logger.getLogger(Element.class.getName());
     
-    /** Creates a new instance of GstElement */
-    protected Element(Pointer ptr) {
-        super(ptr);
+    /** Creates a new instance of Element */
+    protected Element(Initializer init) { 
+        super(init);
     }
-    protected Element(String factoryName, String elementName) {
-        this(ElementFactory.makeRawElement(factoryName, elementName));
-    }
-    protected Element(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    protected Element(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    protected static Initializer makeRawElement(String factoryName, String elementName) {
+        return initializer(ElementFactory.makeRawElement(factoryName, elementName));
     }
     
     public boolean link(Element e) {
@@ -399,8 +393,8 @@ public class Element extends GstObject {
     public void connect(final NEW_DECODED_PAD listener) {
         connect("new-decoded-pad", NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer elem, Pointer pad, boolean last) {
-                listener.newDecodedPad(Element.this, Pad.objectFor(pad, true), last);
+            public void callback(Element elem, Pad pad, boolean last) {
+                listener.newDecodedPad(elem, pad, last);
             }
         });
     }

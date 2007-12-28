@@ -27,35 +27,35 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 public class Caps extends NativeObject {
     
     public static Caps emptyCaps() {
-        return new Caps(gst.gst_caps_new_empty());
+        return new Caps(initializer(gst.gst_caps_new_empty()));
     }
     public static Caps anyCaps() {
-        return new Caps(gst.gst_caps_new_any());
+        return new Caps(initializer(gst.gst_caps_new_any()));
     }
-    
+    public static Caps fromString(String caps) {
+        return new Caps(initializer(gst.gst_caps_from_string(caps)));
+    }
     public Caps() {
-        this(gst.gst_caps_new_empty());
+        this(initializer(gst.gst_caps_new_any()));
+    }
+    protected static Initializer initializer(Pointer ptr) {
+        return new Initializer(ptr, false, true);
+    }
+    protected Caps(Initializer init) {
+        super(init);
     }
     public Caps(String caps) {
-        this(gst.gst_caps_from_string(caps));
+        this(initializer(gst.gst_caps_from_string(caps)));
     }
     public Caps(Caps caps) {
-        this(gst.gst_caps_copy(caps));
+        this(initializer(gst.gst_caps_copy(caps)));
     }
-    Caps(Pointer ptr) {
-        this(ptr, false);
-    }
-    Caps(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
-    }
-    Caps(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
+    
     public int size() {
         return gst.gst_caps_get_size(this);
     }
     public Caps copy() {
-        return new Caps(gst.gst_caps_copy(this));
+        return new Caps(initializer(gst.gst_caps_copy(this)));
     }
     
      /**
@@ -166,12 +166,8 @@ public class Caps extends NativeObject {
         if (other == null || !(other instanceof Caps)) {
             return false;
         }
-        return isEqual((Caps) other);
+        return other == this || isEqual((Caps) other);
     }
-    public static Caps objectFor(Pointer ptr, boolean needRef) {
-        return new Caps(ptr, needRef, true);
-    }
-    
     protected void ref() {
         gst.gst_caps_ref(this);
     }

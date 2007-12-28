@@ -117,15 +117,9 @@ public class Registry extends GstObject {
         return GstObject.objectFor(gst.gst_registry_get_default(), Registry.class,
                 false, false);
     }
-    /** Creates a new instance of GstElement */
-    protected Registry(Pointer ptr) {
-        super(ptr);
-    }
-    protected Registry(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    protected Registry(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    /** Creates a new instance of Registry */
+    protected Registry(Initializer init) {
+        super(init);
     }
     
     /**

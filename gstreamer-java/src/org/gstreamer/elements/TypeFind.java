@@ -28,14 +28,13 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 /**
  * Utility {@link Element} to identify media types in the stream.
  */
-public class TypeFind extends Element {
+public final class TypeFind extends Element {
     public TypeFind(String name) {
-        super("typefind", name);
+        this(makeRawElement("typefind", name));
     }
     
-    @Deprecated /* Only used internally */
-    public TypeFind(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    public TypeFind(Initializer init) {
+        super(init);
     }
     
     /**

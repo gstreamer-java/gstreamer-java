@@ -19,20 +19,11 @@
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
-
 /**
  *
  */
 public class Clock extends GstObject {
-
-    public Clock(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
-    static Clock objectFor(Pointer ptr) {
-        return objectFor(ptr, true);
-    }
-    static Clock objectFor(Pointer ptr, boolean needRef) {
-        return GstObject.objectFor(ptr, Clock.class, needRef);
+    protected Clock(Initializer init) { 
+        super(init); 
     }
 }

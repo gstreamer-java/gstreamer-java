@@ -60,7 +60,7 @@ abstract public class CustomSrc extends BaseSrc {
     }
     private static final Map<Class<? extends CustomSrc>, CustomSrcInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSrc>, CustomSrcInfo>();
     protected CustomSrc(Class<? extends CustomSrc> subClass, String name) {
-        super(gobj.g_object_new(getSubclassType(subClass), "name", name));
+        super(initializer(gobj.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSrcInfo getSubclassInfo(Class<? extends CustomSrc> subClass) {
        synchronized (subClass) {

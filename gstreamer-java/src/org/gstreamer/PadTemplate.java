@@ -28,17 +28,11 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
 public class PadTemplate extends GstObject {
     static Logger logger = Logger.getLogger(PadTemplate.class.getName());
     
-    /** Creates a new instance of PadTemplate */
+    /** Creates a new proxy for PadTemplate */
+    PadTemplate(Initializer init) {
+        super(init);
+    }
     public PadTemplate(String nameTemplate, PadDirection direction, Caps caps) {
-        super(gst.gst_pad_template_new(nameTemplate, direction, 0, caps));            
+        this(initializer(gst.gst_pad_template_new(nameTemplate, direction, 0, caps)));
     }
-    protected PadTemplate(Pointer ptr) {
-        super(ptr);
-    }
-    protected PadTemplate(Pointer ptr, boolean needRef) {
-        super(ptr, needRef);
-    }
-    protected PadTemplate(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }    
 }

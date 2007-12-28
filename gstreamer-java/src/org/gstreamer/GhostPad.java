@@ -27,11 +27,14 @@ public class GhostPad extends Pad {
     /**
      * Creates a new instance of GhostPad
      */
+    GhostPad(Initializer init) { 
+        super(init); 
+    }
     public GhostPad(String name, Pad target) {
-        super(gst.gst_ghost_pad_new(name, target), true, true);
+        this(initializer(gst.gst_ghost_pad_new(name, target), true, true));
     }
     public GhostPad(String name, PadDirection direction) {
-        super(gst.gst_ghost_pad_new_no_target(name, direction.ordinal()), true, true);
+        this(initializer(gst.gst_ghost_pad_new_no_target(name, direction.ordinal()), true, true));
     }
     
     

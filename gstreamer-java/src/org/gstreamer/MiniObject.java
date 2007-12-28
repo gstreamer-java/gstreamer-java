@@ -35,11 +35,8 @@ public class MiniObject extends NativeObject {
     /**
      * Creates a new instance of MiniObject
      */
-    MiniObject(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
-    }
-    MiniObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+    MiniObject(Initializer init) {
+        super(init);
     }
     
     /**

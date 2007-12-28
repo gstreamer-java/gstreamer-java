@@ -41,19 +41,19 @@ public abstract class GObject extends NativeObject {
     private static final Level DEBUG = Level.FINE;
     private static final Level LIFECYCLE = NativeObject.LIFECYCLE;
     
-    public GObject(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, false, ownsHandle); // increase the refcount here
-        logger.entering("GObject", "<init>", new Object[] { ptr, ownsHandle, needRef });        
+    protected GObject(Initializer init) { 
+        super(initializer(init.ptr, false, init.ownsHandle));
+        logger.entering("GObject", "<init>", new Object[] { init });
         strongReferences.add(this);
-        if (ownsHandle) {
-            gobj.g_object_add_toggle_ref(ptr, toggle, objectID);
-            if (!needRef) {                
+        if (init.ownsHandle) {
+            gobj.g_object_add_toggle_ref(init.ptr, toggle, objectID);
+            if (!init.needRef) {                
                 unref();
             }
         }
         gobj.g_object_weak_ref(this, weakNotify, objectID);
     }
-    
+
     public void set(String property, String data) {
         logger.entering("GObject", "set", new Object[] { property, data });
         gobj.g_object_set(this, property, data, null);

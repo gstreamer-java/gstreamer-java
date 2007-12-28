@@ -42,15 +42,10 @@ public class TagList extends Structure {
     /**
      * Creates a new instance of TagList
      */
-    TagList(Pointer ptr, boolean needRef) {
-        this(ptr, needRef, true);
+    TagList(Initializer init) {
+        super(init);
     }
-    TagList(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
-    TagList(Pointer ptr) {
-        this(ptr, false, true);
-    }
+    
     public String getString(Tag tag) {
         return getString(tag.getId(), 0);
     }
@@ -138,7 +133,7 @@ public class TagList extends Structure {
         return m;
     }
     public TagList merge(TagList list2, TagMergeMode mode) {
-        return new TagList(gst.gst_tag_list_merge(this, list2, mode));
+        return new TagList(initializer(gst.gst_tag_list_merge(this, list2, mode), false, true));
     }
     public static GType getTagType(String tag) {        
 

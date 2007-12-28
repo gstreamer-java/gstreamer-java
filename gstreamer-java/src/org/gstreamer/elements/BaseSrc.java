@@ -20,25 +20,9 @@
 package org.gstreamer.elements;
 
 import org.gstreamer.*;
-import com.sun.jna.Pointer;
 
 public class BaseSrc extends Element {
-    /**
-     *
-     * @param ptr C Pointer to the underlying GstBaseSrc
-     * @param needRef
-     * @param ownsHandle Whether this instance should destroy the underlying object when finalized
-     * 
-     */
-    protected BaseSrc(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
-    }
-    
-    /**
-     *
-     * @param ptr
-     */
-    protected BaseSrc(Pointer ptr) {
-        super(ptr);
+    protected BaseSrc(Initializer init) {
+        super(init);
     }
 }

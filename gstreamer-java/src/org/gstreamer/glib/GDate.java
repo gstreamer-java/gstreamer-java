@@ -25,8 +25,11 @@ import org.gstreamer.lowlevel.GlibAPI;
 
 
 public class GDate extends NativeObject {
+    public GDate(Initializer init) {
+        super(init);
+    }
     public GDate(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        super(ptr, needRef, ownsHandle);
+        this(initializer(ptr, needRef, ownsHandle));
     }
     
     @Override
