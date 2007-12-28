@@ -190,7 +190,7 @@ public class Registry extends GstObject {
      * 
      * @param filter the filter to use
      * @param onlyReturnFirstMatch If true, only return the first plugin that matches the filter.
-     * @return
+     * @return A List of {@link Plugin} objects that match the filter.
      */
     public List<Plugin> getPluginList(final PluginFilter filter, boolean onlyReturnFirstMatch) {
 
