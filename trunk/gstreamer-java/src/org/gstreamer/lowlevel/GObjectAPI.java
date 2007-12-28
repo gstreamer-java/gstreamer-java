@@ -23,9 +23,9 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import java.util.HashMap;
 import org.gstreamer.GObject;
+import org.gstreamer.glib.GQuark;
 
 /**
  *
@@ -60,6 +60,14 @@ public interface GObjectAPI extends Library {
     }
     void g_object_weak_ref(GObject object, GWeakNotify notify, IntPtr data);
     void g_object_weak_unref(GObject object, GWeakNotify notify, IntPtr data);
+    
+    GQuark g_quark_try_string(String string);
+    GQuark g_quark_from_static_string(String string);
+    GQuark g_quark_from_string(String string);
+    String g_quark_to_string(GQuark quark);
+
+    String g_intern_string(String string);
+    String g_intern_static_string(String string);
     
     void g_type_init();
     void g_type_init_with_debug_flags(int flags);

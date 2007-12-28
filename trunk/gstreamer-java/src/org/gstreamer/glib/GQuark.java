@@ -19,6 +19,23 @@
 
 package org.gstreamer.glib;
 
-public class GQuark {
+import org.gstreamer.lowlevel.GObjectAPI;
 
+public class GQuark {
+    private final int value;
+    public GQuark(int value) {
+        this.value = value;
+    }
+    public int intValue() {
+        return value;
+    }
+    
+    public GQuark valueOf(String quark) {
+        return GObjectAPI.gobj.g_quark_from_string(quark);
+    }
+    
+    @Override
+    public String toString() {
+        return GObjectAPI.gobj.g_quark_to_string(this);
+    }
 }
