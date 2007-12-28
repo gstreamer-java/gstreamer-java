@@ -37,7 +37,9 @@ public class DecodeBin extends Bin {
     public DecodeBin(Initializer init) {
         super(init);
     }
-    
+    /**
+     * Signal emitted when this {@link DecodeBin} decodes a new pad.
+     */
     public static interface NEW_DECODED_PAD {
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
