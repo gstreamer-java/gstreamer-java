@@ -126,7 +126,7 @@ public class ElementFactory extends PluginFeature {
     }
     
     /**
-     * Retrieve a handle to a factory that can produce {@link Element}s
+     * Retrieve an instance of a factory that can produce {@link Element}s
      * 
      * @param name The type of {@link Element} to produce.
      * @return An ElementFactory that will produce {@link Element}s of the 

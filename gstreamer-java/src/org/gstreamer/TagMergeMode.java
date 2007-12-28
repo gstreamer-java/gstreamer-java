@@ -1,5 +1,6 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (C) 2007 Wayne Meissner
+ * Copyright (C) 2003 Benjamin Otte
  * 
  * This file is part of gstreamer-java.
  *
