@@ -58,7 +58,7 @@ import org.gstreamer.TagFlag;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
-import org.gstreamer.annotations.FreeReturnValue;
+import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
