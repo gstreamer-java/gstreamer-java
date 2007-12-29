@@ -59,6 +59,7 @@ import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
 import org.gstreamer.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.annotations.Invalidate;
 
 /**
  *
@@ -258,18 +259,23 @@ public interface GstAPI extends Library {
     GType gst_caps_get_type();
     Pointer gst_caps_new_empty();
     Pointer gst_caps_new_any();
+    Pointer gst_caps_new_simple(String media_type, String fieldName, Object... args);
+    Pointer gst_caps_new_full(Structure... data);
+    
     Pointer gst_caps_ref(Caps caps);
     Pointer gst_caps_unref(Caps caps);
     Pointer gst_caps_unref(Pointer caps);
     Pointer gst_caps_copy(Caps caps);
     Pointer gst_caps_from_string(String string);
     
+    Caps gst_caps_make_writable(@Invalidate Caps caps);
+    
     /* manipulation */
-    void gst_caps_append(Caps caps1, Caps caps2);
-    void gst_caps_merge(Caps caps1, Caps caps2);
-    void gst_caps_append_structure(Caps caps, Structure structure);
+    void gst_caps_append(Caps caps1, @Invalidate Caps caps2);
+    void gst_caps_merge(Caps caps1, @Invalidate Caps caps2);
+    void gst_caps_append_structure(Caps caps, @Invalidate Structure structure);
     void gst_caps_remove_structure(Caps caps, int idx);
-    void gst_caps_merge_structure(Caps caps, Structure structure);
+    void gst_caps_merge_structure(Caps caps, @Invalidate Structure structure);
     int gst_caps_get_size(Caps caps);
     Pointer gst_caps_get_structure(Caps caps, int index);
     Pointer gst_caps_copy_nth(Caps caps, int nth);
@@ -496,17 +502,15 @@ public interface GstAPI extends Library {
      * GstPlugin functions
      */
     /* function for filters */
-    /**
-     * GstPluginFilter:
-     * @plugin: the plugin to check
-     * @user_data: the user_data that has been passed on e.g. gst_registry_plugin_filter()
-     *
-     * A function that can be used with e.g. gst_registry_plugin_filter()
-     * to get a list of plugins that match certain criteria.
-     *
-     * Returns: TRUE for a positive match, FALSE otherwise
-     */
     static interface PluginFilter extends GstCallback {
+        /**
+         *
+         * A function that can be used with e.g. gst_registry_plugin_filter()
+         * to get a list of plugins that match certain criteria.
+         *
+         * @param plugin the plugin to check
+         * @return true for a positive match, false otherwise
+         */
         boolean callback(Plugin plugin);
     }
 
@@ -530,17 +534,13 @@ public interface GstAPI extends Library {
     Plugin gst_plugin_load_by_name(String name);
     void gst_plugin_list_free(GList list);
     
-    
-    /**
-     * GstPluginFeatureFilter:
-     * @feature: the pluginfeature to check
-     *
-     * A function that can be used with e.g. gst_registry_feature_filter()
-     * to get a list of pluginfeature that match certain criteria.
-     *
-     * Returns: TRUE for a positive match, FALSE otherwise
-     */
     static interface PluginFeatureFilter extends GstCallback {
+        /**
+         * A function that can be used with e.g. gst_registry_feature_filter()
+         * to get a list of pluginfeature that match certain criteria.
+         * @param feature the pluginfeature to check
+         * @return true if this plugin feature is accepted.
+         */
         boolean callback(PluginFeature feature);
     }
 

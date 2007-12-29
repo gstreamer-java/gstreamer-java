@@ -26,5 +26,7 @@ abstract public class Handle extends NativeValue {
 
     public Handle() {
     }
-
+    abstract protected void invalidate();
+    abstract protected void ref();
+    abstract protected void unref();
 }

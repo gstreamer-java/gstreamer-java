@@ -67,6 +67,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         nativeRef = new NativeRef(this);
         this.handle = init.ptr;
         this.ownsHandle.set(init.ownsHandle);
+        
         //
         // Only store this object in the map if we can tell when it has been disposed 
         // (i.e. must be at least a GObject - MiniObject and other NativeObject subclasses
@@ -85,14 +86,22 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     
     public void dispose() {
         logger.log(LIFECYCLE, "Disposing object " + this + " = " + handle());
-        instanceMap.remove(handle(), nativeRef);
+        instanceMap.remove(handle, nativeRef);
         if (!disposed.getAndSet(true) && ownsHandle.get()) {
             disposeNativeHandle(handle);
         }
     }
+    
+    protected void invalidate() {
+        logger.log(LIFECYCLE, "Invalidating object " + this + " = " + handle());
+        instanceMap.remove(handle(), nativeRef);
+        disposed.set(true);
+        ownsHandle.set(false);
+    }
     abstract protected void ref();
     abstract protected void unref();
     
+    @Override
     protected void finalize() throws Throwable {
         try {
             logger.log(LIFECYCLE, "Finalizing " + getClass().getSimpleName() + " (" + handle() + ")");
@@ -102,9 +111,12 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
     }
     protected Object nativeValue() {
-        return handle;
+        return handle();
     }
     Pointer handle() {
+        if (disposed.get()) {
+            throw new IllegalStateException("Native object has been disposed");
+        }
         return handle;
     }
     static NativeObject instanceFor(Pointer ptr) {
