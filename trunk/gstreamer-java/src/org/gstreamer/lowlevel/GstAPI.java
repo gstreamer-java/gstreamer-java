@@ -53,6 +53,7 @@ import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
+import org.gstreamer.StaticPadTemplate;
 import org.gstreamer.Structure;
 import org.gstreamer.TagFlag;
 import org.gstreamer.TagList;
@@ -138,6 +139,11 @@ public interface GstAPI extends Library {
 
     Pointer gst_pad_template_new(String name_template, PadDirection direction, 
             /* GstPadPresence */ int presence, Caps caps);
+
+    PadTemplate gst_static_pad_template_get(GstStaticPadTemplate pad_template);
+    Caps gst_static_pad_template_get_caps(GstStaticPadTemplate template);
+    Caps gst_pad_template_get_caps(PadTemplate template);
+    void gst_pad_template_pad_created(PadTemplate templ, Pad pad);
 
     /* flush events */
     Event gst_event_new_flush_start();
