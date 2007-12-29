@@ -52,7 +52,7 @@ public class GarbageCollectionTest {
     
     public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
         System.gc();
-        for (int i = 0; ref.get() != null && i < 20; ++i) {
+        for (int i = 0; ref.get() != null && i < 100; ++i) {
             Thread.sleep(10);
             System.gc();
         }

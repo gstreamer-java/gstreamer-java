@@ -79,8 +79,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                     Annotation[] annotations = parameterAnnotations[index];
                     for (int i = 0; i < annotations.length; ++i) {
                         if (annotations[i] instanceof Invalidate) {
-                            System.out.println("Invalidating handle");
                             ((Handle) arg).invalidate();
+                            break;
                         } else if (annotations[i] instanceof AddRef) {
                             ((Handle) arg).ref();
                         }

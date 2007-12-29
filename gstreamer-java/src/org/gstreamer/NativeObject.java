@@ -85,10 +85,13 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     abstract protected void disposeNativeHandle(Pointer ptr);
     
     public void dispose() {
-        logger.log(LIFECYCLE, "Disposing object " + this + " = " + handle());
-        instanceMap.remove(handle, nativeRef);
-        if (!disposed.getAndSet(true) && ownsHandle.get()) {
-            disposeNativeHandle(handle);
+        logger.log(LIFECYCLE, "Disposing object " + this + " = " + handle);
+//        System.out.println("Disposing " + handle);
+        if (!disposed.getAndSet(true)) {
+            instanceMap.remove(handle, nativeRef);
+            if (ownsHandle.get()) {
+                disposeNativeHandle(handle);
+            }
         }
     }
     
@@ -104,7 +107,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     @Override
     protected void finalize() throws Throwable {
         try {
-            logger.log(LIFECYCLE, "Finalizing " + getClass().getSimpleName() + " (" + handle() + ")");
+            logger.log(LIFECYCLE, "Finalizing " + getClass().getSimpleName() + " (" + handle + ")");
             dispose();
         } finally {
             super.finalize();
