@@ -12,7 +12,6 @@
 
 package example;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.util.Map;
 import org.gstreamer.Bin;
@@ -29,6 +28,7 @@ import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
+import org.gstreamer.elements.DecodeBin;
 
 public class InputStreamSrcTest {
     static final String name = "InputStreamSrcTest";    
@@ -51,7 +51,7 @@ public class InputStreamSrcTest {
         }
         //Element src = ElementFactory.make("filesrc", "Input File");
         //src.set("location", args[0]);
-        Element decodeBin = ElementFactory.make("decodebin", "Decode Bin");
+        DecodeBin decodeBin = (DecodeBin) ElementFactory.make("decodebin", "Decode Bin");
         Pipeline pipe = new Pipeline("main pipeline");
         pipe.addMany(src, decodeBin);
         src.link(decodeBin);
@@ -67,7 +67,7 @@ public class InputStreamSrcTest {
         
         pipe.add(audioBin);
 
-        decodeBin.connect(new Element.NEW_DECODED_PAD() {
+        decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
             public void newDecodedPad(Element elem, Pad pad, boolean last) {
                   /* only link once */
                 Pad audioPad = audioBin.getStaticPad("sink");

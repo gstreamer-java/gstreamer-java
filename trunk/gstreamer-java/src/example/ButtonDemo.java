@@ -73,11 +73,11 @@ public class ButtonDemo {
                         public void actionPerformed(ActionEvent evt) {
                             System.out.println("Button " + file.getName() + " clicked");
                             if (!playing) {
-                                player.play();
+                                player.getMediaPlayer().play();
                                 playing = true;
                             } else {
                                 playing = false;
-                                player.pause();
+                                player.getMediaPlayer().pause();
                             }
                         }
                     });
@@ -94,7 +94,7 @@ public class ButtonDemo {
                     // Delay the startup a bit so gstreamer doesn't get swamped
                     javax.swing.Timer timer = new javax.swing.Timer(2000 * i, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
-                            player.play();
+                            player.getMediaPlayer().play();
                         }
                     });
                     timer.setRepeats(false);

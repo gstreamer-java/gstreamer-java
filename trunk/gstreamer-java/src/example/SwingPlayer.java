@@ -64,7 +64,7 @@ public class SwingPlayer {
                     }
                 });
                 frame.add(player, BorderLayout.CENTER);
-                player.play();
+                player.getMediaPlayer().play();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.pack();
                 frame.setVisible(true);
