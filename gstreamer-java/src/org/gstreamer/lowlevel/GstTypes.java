@@ -30,6 +30,7 @@ import org.gstreamer.Bus;
 import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.GhostPad;
 import org.gstreamer.Message;
 import org.gstreamer.NativeObject;
 import org.gstreamer.Pad;
@@ -96,6 +97,7 @@ public class GstTypes {
         registerGType(gst.gst_pipeline_get_type(), Pipeline.class);
         registerGType(gst.gst_bus_get_type(), Bus.class);
         registerGType(gst.gst_pad_get_type(), Pad.class);
+        registerGType(gst.gst_ghost_pad_get_type(), GhostPad.class);
         registerGType(gst.gst_plugin_get_type(), Plugin.class);
         registerGType(gst.gst_plugin_feature_get_type(), PluginFeature.class);
         registerGType(gst.gst_registry_get_type(), Registry.class);

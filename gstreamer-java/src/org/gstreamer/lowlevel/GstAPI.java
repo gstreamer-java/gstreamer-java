@@ -37,6 +37,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Event;
 import org.gstreamer.Format;
+import org.gstreamer.GhostPad;
 import org.gstreamer.GstObject;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
@@ -147,9 +148,17 @@ public interface GstAPI extends Library {
     /*
      * GstGhostPad functions
      */
+    GType gst_ghost_pad_get_type();
+    
     Pointer gst_ghost_pad_new(String name, Pad target);
     Pointer gst_ghost_pad_new_no_target(String name, int direction);
-    
+
+    Pointer gst_ghost_pad_new_from_template(String name, Pad target, PadTemplate templ);
+    Pointer gst_ghost_pad_new_no_target_from_template(String name, PadTemplate templ);
+
+    Pad gst_ghost_pad_get_target(GhostPad gpad);
+    boolean gst_ghost_pad_set_target(GhostPad gpad, Pad newtarget);
+
     /*
      * GstPipeline
      */
