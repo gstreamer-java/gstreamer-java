@@ -69,4 +69,7 @@ public class GSource extends Handle {
     protected Object nativeValue() {
         return handle;
     }
+    protected void invalidate() {}
+    protected void ref() {}
+    protected void unref() {}
 }

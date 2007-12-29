@@ -23,18 +23,22 @@ import com.sun.jna.CallbackParameterContext;
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.FromNativeConverter;
 import com.sun.jna.FunctionResultContext;
+import com.sun.jna.MethodParameterContext;
 import com.sun.jna.MethodResultContext;
 import com.sun.jna.Pointer;
 import com.sun.jna.StructureReadContext;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.gstreamer.NativeObject;
 import org.gstreamer.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
+import org.gstreamer.lowlevel.annotations.AddRef;
+import org.gstreamer.lowlevel.annotations.Invalidate;
 
 /**
  *
@@ -55,8 +59,37 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         }        
     };
     
-    private static FromNativeConverter nativeObjectResultConverter = new FromNativeConverter() {
-
+    private static TypeConverter nativeObjectConverter = new TypeConverter() {
+        public Object toNative(Object arg, ToNativeContext context) {
+            if (arg == null) {
+                return null;
+            }
+            Pointer ptr = (Pointer)((NativeValue) arg).nativeValue();
+            
+            //
+            // Deal with any adjustments to the proxy neccessitated by gstreamer
+            // breaking their reference-counting idiom with special cases
+            //
+            if (context instanceof MethodParameterContext) {
+                MethodParameterContext mcontext = (MethodParameterContext) context;
+                Method method = mcontext.getMethod();
+                int index = mcontext.getParameterIndex();
+                Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+                if (index < parameterAnnotations.length) {
+                    Annotation[] annotations = parameterAnnotations[index];
+                    for (int i = 0; i < annotations.length; ++i) {
+                        if (annotations[i] instanceof Invalidate) {
+                            System.out.println("Invalidating handle");
+                            ((Handle) arg).invalidate();
+                        } else if (annotations[i] instanceof AddRef) {
+                            ((Handle) arg).ref();
+                        }
+                    }
+                }
+            }
+            return ptr;
+        }
+ 
         @SuppressWarnings(value = "unchecked")
         public Object fromNative(Object result, FromNativeContext context) {
             if (result == null) {
@@ -203,7 +236,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;              
         } else if (NativeObject.class.isAssignableFrom(type)) {
-            return nativeObjectResultConverter;
+            return nativeObjectConverter;
         } else if (Boolean.class == type || boolean.class == type) {
             return booleanConverter;
         } else if (String.class == type) {
@@ -218,7 +251,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
 
     @SuppressWarnings("unchecked")
 	public ToNativeConverter getToNativeConverter(Class type) {
-        if (NativeValue.class.isAssignableFrom(type)) {
+        if (NativeObject.class.isAssignableFrom(type)) {
+            return nativeObjectConverter;
+        } else if (NativeValue.class.isAssignableFrom(type)) {
             return nativeValueArgumentConverter;
         } else if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;

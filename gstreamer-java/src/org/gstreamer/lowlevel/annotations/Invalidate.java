@@ -17,36 +17,18 @@
  * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer.lowlevel;
+package org.gstreamer.lowlevel.annotations;
 
-import com.sun.jna.Pointer;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- *
+ * Signal that the Handle parameter should be invalidated (not used after this call)
  */
-public class GMainContext extends Handle {
-    private static GlibAPI glib = GlibAPI.glib;
-    
-    public GMainContext() {
-        this(glib.g_main_context_new());
-    }
-    private GMainContext(Pointer handle) {
-        this.handle = handle;
-    }
-    public int attach(GSource source) {
-        return glib.g_source_attach(source.handle(), this);
-    }
-    public static GMainContext getDefaultContext() {
-        return new GMainContext(glib.g_main_context_default());
-    }
-    
-    public Pointer handle() { return handle; }
-    Pointer handle;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Invalidate {
 
-    protected Object nativeValue() {
-        return handle;
-    }
-    protected void invalidate() {}
-    protected void ref() {}
-    protected void unref() {}
 }

@@ -118,7 +118,7 @@ public class Structure extends NativeObject {
     /**
      * 
      * @param fieldName
-     * @return
+     * @return The boolean value for fieldName
      */
     public boolean getBoolean(String fieldName) {
         int[] val = { 0 };
@@ -131,7 +131,7 @@ public class Structure extends NativeObject {
         int[] numerator = { 0 };
         int[] denominator = { 0 };
         if (!gst.gst_structure_get_fraction(this, fieldName, numerator, denominator)) {
-            throw new InvalidFieldException("boolean", fieldName);
+            throw new InvalidFieldException("fraction", fieldName);
         }
         return new Fraction(numerator[0], denominator[0]);
     }
