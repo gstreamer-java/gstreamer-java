@@ -150,11 +150,11 @@ public interface GstAPI extends Library {
      */
     GType gst_ghost_pad_get_type();
     
-    GhostPad gst_ghost_pad_new(String name, Pad target);
-    GhostPad gst_ghost_pad_new_no_target(String name, int direction);
+    Pointer gst_ghost_pad_new(String name, Pad target);
+    Pointer gst_ghost_pad_new_no_target(String name, int direction);
 
-    GhostPad gst_ghost_pad_new_from_template(String name, Pad target, PadTemplate templ);
-    GhostPad gst_ghost_pad_new_no_target_from_template(String name, PadTemplate templ);
+    Pointer gst_ghost_pad_new_from_template(String name, Pad target, PadTemplate templ);
+    Pointer gst_ghost_pad_new_no_target_from_template(String name, PadTemplate templ);
 
     Pad gst_ghost_pad_get_target(GhostPad gpad);
     boolean gst_ghost_pad_set_target(GhostPad gpad, Pad newtarget);

@@ -65,7 +65,7 @@ public class RGBDataSink extends Bin {
         // Link the ghost pads on the bin to the sink pad on the convertor
         //
         Pad pad = conv.getStaticPad("sink");
-        addPad(new GhostPad("sink", pad));
+        addPad(new GhostPad("ghostsink", pad));
     }
     /**
      * Indicate whether the {@link RGBDataSink} should pass the native {@link java.nio.IntBuffer}
