@@ -17,7 +17,7 @@
  * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer.annotations;
+package org.gstreamer.lowlevel.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -35,7 +35,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.gstreamer.NativeObject;
-import org.gstreamer.annotations.FreeReturnValue;
+import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.AddRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
