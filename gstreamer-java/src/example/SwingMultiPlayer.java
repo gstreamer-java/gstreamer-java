@@ -69,7 +69,7 @@ public class SwingMultiPlayer {
                     frame.setVisible(true);
                     javax.swing.Timer timer = new javax.swing.Timer(5000 * i, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
-                            player.play();
+                            player.getMediaPlayer().play();
                         }
                     });
                     timer.setRepeats(false);

@@ -55,7 +55,7 @@ public class GstObject extends GObject {
      * and any attempt to use it will throw an exception.
      * 
      * @param victim The GstObject to takeover.
-     * @return An Initializer that can be passed to {@link GstObject(Initializer)}
+     * @return An Initializer that can be passed to {@link #GstObject(Initializer)}
      */
     protected static Initializer steal(GstObject victim) {
         Initializer init = new Initializer(victim.handle(), false, true);

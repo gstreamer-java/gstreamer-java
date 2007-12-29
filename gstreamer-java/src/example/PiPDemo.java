@@ -57,7 +57,7 @@ public class PiPDemo {
                 full.setPreferredSize(new Dimension(1024, 768));
                 full.setControlsVisible(true);
                 full.setBounds(0, 0, 640, 480);
-                full.play();
+                full.getMediaPlayer().play();
                 layeredPane.add(full, JLayeredPane.DEFAULT_LAYER);
                 layeredPane.setPreferredSize(new Dimension(640, 480));
                 
@@ -91,7 +91,7 @@ public class PiPDemo {
                     // Stagger the start times, so gstreamer doesn't choke
                     javax.swing.Timer timer = new javax.swing.Timer(1000 * i, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
-                            player.play();
+                            player.getMediaPlayer().play();
                         }
                     });
                     timer.setRepeats(false);
