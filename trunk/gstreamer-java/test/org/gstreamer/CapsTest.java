@@ -44,7 +44,7 @@ public class CapsTest {
     //
     // @Test
     // public void hello() {}
-    @Test
+    //@Test
     public void capsMerge() {
         Caps caps1 = new Caps("video/x-raw-rgb, bpp=32, depth=24");
         Caps caps2 = new Caps("video/x-raw-rgb, width=640, height=480");

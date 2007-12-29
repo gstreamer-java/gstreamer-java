@@ -59,7 +59,7 @@ public class GhostPad extends Pad {
      * @param target The {@link Pad} to ghost.
      */
     public GhostPad(String name, Pad target) {
-        this(initializer(gst.gst_ghost_pad_new(name, target)));
+        this(steal(gst.gst_ghost_pad_new(name, target)));
     }
     
     /**
@@ -71,7 +71,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, Pad target, PadTemplate template) {
-        this(initializer(gst.gst_ghost_pad_new_from_template(name, target, template)));
+        this(steal(gst.gst_ghost_pad_new_from_template(name, target, template)));
     }
     
     /**
@@ -84,7 +84,7 @@ public class GhostPad extends Pad {
      * @param direction The direction of the ghostpad.
      */
     public GhostPad(String name, PadDirection direction) {
-        this(initializer(gst.gst_ghost_pad_new_no_target(name, direction.ordinal())));
+        this(steal(gst.gst_ghost_pad_new_no_target(name, direction.ordinal())));
     }
     
     /**
@@ -95,7 +95,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, PadTemplate template) {
-        this(initializer(gst.gst_ghost_pad_new_no_target_from_template(name, template)));
+        this(steal(gst.gst_ghost_pad_new_no_target_from_template(name, template)));
     }
     
     /**

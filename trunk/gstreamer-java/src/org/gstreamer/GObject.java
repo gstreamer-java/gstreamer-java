@@ -51,7 +51,6 @@ public abstract class GObject extends NativeObject {
                 unref();
             }
         }
-        gobj.g_object_weak_ref(this, weakNotify, objectID);
     }
 
     public void set(String property, String data) {
@@ -73,10 +72,24 @@ public abstract class GObject extends NativeObject {
     
     protected void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
-        //gobj.g_object_weak_unref(this, weakNotify, toggleID);
         gobj.g_object_remove_toggle_ref(ptr, toggle, objectID);
     }
     
+    protected void invalidate() {
+        try {
+            // Need to increase the ref count before removing the toggle ref, so 
+            // ensure the native object is not destroyed.
+            if (ownsHandle.get()) {
+                ref();
+
+                // Disconnect the callback.
+                gobj.g_object_remove_toggle_ref(handle(), toggle, objectID);
+            }
+            strongReferences.remove(this);
+        } finally { 
+            super.invalidate();
+        }
+    }
     
     protected NativeLong g_signal_connect(String signal, Callback callback) {
         logger.entering("GObject", "g_signal_connect", new Object[] { signal, callback });
@@ -171,11 +184,6 @@ public abstract class GObject extends NativeObject {
             }
         }
     };
-    private static final GObjectAPI.GWeakNotify weakNotify = new GObjectAPI.GWeakNotify() {
-        public void callback(IntPtr data, Pointer ptr) {
-            //System.out.println("GObject " + ptr + " id=" + data + " destroyed");
-        }        
-    };
-            
+         
     private static Set<Object> strongReferences = Collections.synchronizedSet(new HashSet<Object>());
 }

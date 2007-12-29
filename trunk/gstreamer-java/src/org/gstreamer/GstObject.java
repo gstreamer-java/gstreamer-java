@@ -48,7 +48,21 @@ public class GstObject extends GObject {
     protected static Initializer initializer(Pointer ptr, boolean needRef) {
         return initializer(ptr, needRef, true);
     }
-   
+    
+    /**
+     * Steal the native peer from another GstObject.
+     * After calling this, the victim object is disconnected from the native object
+     * and any attempt to use it will throw an exception.
+     * 
+     * @param victim The GstObject to takeover.
+     * @return An Initializer that can be passed to {@link GstObject(Initializer)}
+     */
+    protected static Initializer steal(GstObject victim) {
+        Initializer init = new Initializer(victim.handle(), false, true);
+        victim.invalidate();
+        return init;
+    }
+    
     public void setName(String name) {
         logger.entering("GstObject", "setName", name);
         gst.gst_object_set_name(this, name);
