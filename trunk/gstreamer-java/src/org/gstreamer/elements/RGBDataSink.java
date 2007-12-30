@@ -98,7 +98,7 @@ public class RGBDataSink extends Bin {
             listener.rgbFrame(width, height, rgb);
             
             //
-            // Dispose of the gstreamer buffer immediately to aoid more being 
+            // Dispose of the gstreamer buffer immediately to avoid more being 
             // allocated before the java GC kicks in
             //
             buffer.dispose();
