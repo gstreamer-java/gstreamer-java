@@ -2,9 +2,9 @@
 
 = Introduction =
 
-Although macports comes with a version of gstreamer, it is somewhat old and incomplete - you won't be able to play most useful files (e.g. XviD or h264) with it.  These instructions tell you how to update to the latest stable gstreamer release using MacPorts 1.6.0 or later.
+Although macports comes with a version of gstreamer, it is somewhat old and incomplete - you won't be able to play most useful files (e.g. XviD or h264) with it.  These instructions tell you how to update to the latest stable gstreamer release using !MacPorts 1.6.0 or later.
 
-Note: If you're using a version of MacPorts later than 1.6.x, check what version of gstreamer is present - I have submitted patches to macports to update gstreamer, so that might eventually get done.
+Note: If you're using a version of !MacPorts later than 1.6.x, check what version of gstreamer is present - I have submitted patches to macports to update gstreamer, so that might eventually get done.
 
 = Details =
 
