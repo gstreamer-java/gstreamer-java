@@ -26,8 +26,209 @@ import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
- *
- */;
+ * Playbin provides a stand-alone everything-in-one abstraction for an audio 
+ * and/or video player.
+ * <p>
+ * It can handle both audio and video files and features
+ * <ul>
+ * <li>
+ * automatic file type recognition and based on that automatic
+ * selection and usage of the right audio/video/subtitle demuxers/decoders
+ * <li>visualisations for audio files
+ * <li> subtitle support for video files
+ * <li> stream selection between different audio/subtitles streams
+ * <li> meta info (tag) extraction
+ * <li> easy access to the last video frame
+ * <li> buffering when playing streams over a network
+ * <li> volume control
+ * </ul>
+ * <h3>Usage</h3>
+ * <p>
+ * A playbin element can be created just like any other element using
+ * {@link ElementFactory#make}, although to call PlayBin specific methods, it 
+ * is best to create one via a {@link #PlayBin(String)} or {@link #PlayBin(String, URI)} constructor.
+ * 
+ * <p>
+ * The file/URI to play should be set via {@link #setInputFile} or {@link #setURI}
+ * 
+ * <p>
+ * Playbin is a {@link org.gstreamer.Pipeline}. It will notify the application of everything
+ * that's happening (errors, end of stream, tags found, state changes, etc.)
+ * by posting messages on its {@link org.gstreamer.Bus}. The application needs to watch the
+ * bus.
+ * 
+ * <p>
+ * Playback can be initiated by setting the PlayBin to PLAYING state using
+ * {@link #setState} or {@link #play}. Note that the state change will take place in
+ * the background in a separate thread, when the function returns playback
+ * is probably not happening yet and any errors might not have occured yet.
+ * Applications using playbin should ideally be written to deal with things
+ * completely asynchroneous.
+ * </p>
+ * 
+ * <p>
+ * When playback has finished (an EOS message has been received on the bus)
+ * or an error has occured (an ERROR message has been received on the bus) or
+ * the user wants to play a different track, playbin should be set back to
+ * READY or NULL state, then the input file/URI should be set to the new
+ * location and then playbin be set to PLAYING state again.
+ * </p>
+ * 
+ * <p>
+ * Seeking can be done using {@link #setPosition} on the playbin element. 
+ * Again, the seek will not be executed instantaneously, but will be done in a
+ * background thread. When the seek call returns the seek will most likely still
+ * be in process. An application may wait for the seek to finish (or fail) using 
+ * {@link #getState(long)} with -1 as the timeout, but this will block the user 
+ * interface and is not recommended at all.
+ * 
+ * <p>
+ * Applications may query the current position and duration of the stream
+ * via {@link #getPosition} and {@link #getDuration} and
+ * setting the format passed to {@link Format#TIME}. If the query was successful,
+ * the duration or position will have been returned in units of nanoseconds.
+ * </p>
+ * 
+ * <h3>Advanced Usage: specifying the audio and video sink</h3>
+ * <p>
+ * By default, if no audio sink or video sink has been specified via {@link #setAudioSink} 
+ * and {@link #setVideoSink}, playbin will use the autoaudiosink and autovideosink
+ * elements to find the first-best available output method.
+ * This should work in most cases, but is not always desirable. Often either
+ * the user or application might want to specify more explicitly what to use
+ * for audio and video output.
+ * </p>
+ * <p>
+ * If the application wants more control over how audio or video should be
+ * output, it may create the audio/video sink elements itself (for example
+ * using {@link ElementFactory#make}) and provide them to playbin using {@link #setAudioSink} 
+ * and {@link #setVideoSink}
+ * </p>
+ * <p>
+ * GNOME-based applications, for example, will usually want to create
+ * gconfaudiosink and gconfvideosink elements and make playbin use those,
+ * so that output happens to whatever the user has configured in the GNOME
+ * Multimedia System Selector confinguration dialog.
+ * </p>
+ * <p>
+ * The sink elements do not necessarily need to be ready-made sinks. It is
+ * possible to create container elements that look like a sink to playbin,
+ * but in reality contain a number of custom elements linked together. This
+ * can be achieved by creating a {@link Bin} and putting elements in there and
+ * linking them, and then creating a sink {@link GhostPad} for the bin and pointing
+ * it to the sink pad of the first element within the bin. This can be used
+ * for a number of purposes, for example to force output to a particular
+ * format or to modify or observe the data before it is output.
+ * </p>
+ * <p>
+ * It is also possible to 'suppress' audio and/or video output by using
+ * 'fakesink' elements (or capture it from there using the fakesink element's
+ * "handoff" signal, which, nota bene, is fired from the streaming thread!).
+ * </p>
+ * <h3>Retrieving Tags and Other Meta Data</h3>
+ * <p>
+ * Most of the common meta data (artist, title, etc.) can be retrieved by
+ * watching for TAG messages on the pipeline's bus (see above).
+ * </p>
+ * <p>
+ * Other more specific meta information like width/height/framerate of video
+ * streams or samplerate/number of channels of audio streams can be obtained
+ * using the "stream-info" property, which will return a GList of stream info
+ * objects, one for each stream. These are opaque objects that can only be
+ * accessed via the standard GObject property interface, ie. g_object_get().
+ * Each stream info object has the following properties:
+ * <ul>
+ * <li>"object" (GstObject) (the decoder source pad usually)</li>
+ * <li>"type" (enum) (if this is an audio/video/subtitle stream)</li>
+ * <li>"decoder" (string) (name of decoder used to decode this stream)</li>
+ * <li>"mute" (boolean) (to mute or unmute this stream)</li>
+ * <li>"caps" (GstCaps) (caps of the decoded stream)</li>
+ * <li>"language-code" (string) (ISO-639 language code for this stream, mostly used for audio/subtitle streams)</li>
+ * <li>"codec" (string) (format this stream was encoded in)</li>
+ * </ul>
+ * <p>
+ * Stream information from the stream-info properties is best queried once
+ * playbin has changed into PAUSED or PLAYING state (which can be detected
+ * via a state-changed message on the bus where old_state=READY and
+ * new_state=PAUSED), since before that the list might not be complete yet or
+ * not contain all available information (like language-codes).
+ * </>
+ * <h3>Buffering</h3>
+ * <p>
+ * Playbin handles buffering automatically for the most part, but applications
+ * need to handle parts of the buffering process as well. Whenever playbin is
+ * buffering, it will post BUFFERING messages on the bus with a percentage
+ * value that shows the progress of the buffering process. Applications need
+ * to set playbin to PLAYING or PAUSED state in response to these messages.
+ * They may also want to convey the buffering progress to the user in some
+ * way. Here is how to extract the percentage information from the message
+ * (requires GStreamer >= 0.10.11):
+ * </p>
+ * <p>
+ * <pre>
+ * PlayBin playbin = new PlayBin("player");
+ * playbin.getBus().connect(new Bus.BUFFERING() {
+ *     public void bufferingMessage(GstObject element, int percent) {
+ *         System.out.printf("Buffering (%u percent done)\n", percent);
+ *     }
+ * }
+ * </pre>
+ * Note that applications should keep/set the pipeline in the PAUSED state when
+ * a BUFFERING message is received with a buffer percent value < 100 and set
+ * the pipeline back to PLAYING state when a BUFFERING message with a value
+ * of 100 percent is received (if PLAYING is the desired state, that is).
+ * </>
+ * <h3>Embedding the video window in your application</h3>
+ * <p>
+ * By default, playbin (or rather the video sinks used) will create their own
+ * window. Applications will usually want to force output to a window of their
+ * own, however. This can be done using the GstXOverlay interface, which most
+ * video sinks implement. See the documentation there for more details.
+ * </p>
+ * <h3>Specifying which CD/DVD device to use</h3>
+ * <p>
+ * The device to use for CDs/DVDs needs to be set on the source element
+ * playbin creates before it is opened. The only way to do this at the moment
+ * is to connect to playbin's "notify::source" signal, which will be emitted
+ * by playbin when it has created the source element for a particular URI.
+ * In the signal callback you can check if the source element has a "device"
+ * property and set it appropriately. In future ways might be added to specify
+ * the device as part of the URI, but at the time of writing this is not
+ * possible yet.
+ * </p>
+ * <h3>Examples</h3>
+ * <p>
+ * Here is a simple pipeline to play back a video or audio file:
+ * <p>
+ * <code>
+ * gst-launch -v playbin uri=file:///path/to/somefile.avi
+ * </code>
+ * <p>
+ * This will play back the given AVI video file, given that the video and
+ * audio decoders required to decode the content are installed. Since no
+ * special audio sink or video sink is supplied (not possible via gst-launch),
+ * playbin will try to find a suitable audio and video sink automatically
+ * using the autoaudiosink and autovideosink elements.
+ * </p>
+ * <p>
+ * Here is a another pipeline to play track 4 of an audio CD:
+ * <p>
+ * <code>
+ * gst-launch -v playbin uri=cdda://4
+ * </code>
+ * <p>
+ * This will play back track 4 on an audio CD in your disc drive (assuming
+ * the drive is detected automatically by the plugin).
+ * </p>
+ * <p>
+ * Here is a another pipeline to play title 1 of a DVD:
+ * <code>
+ * gst-launch -v playbin uri=dvd://1
+ * </code>
+ * This will play back title 1 of a DVD in your disc drive (assuming
+ * the drive is detected automatically by the plugin).
+ * </p>
+ */
 public class PlayBin extends Pipeline {
     
     /**
@@ -115,17 +316,33 @@ public class PlayBin extends Pipeline {
         setElement("vis-plugin", element);
     }
     
+    /**
+     * Set an output {@link Element} on the PlayBin.
+     * @param key The name of the output to change.
+     * @param element The Element to set as the output.
+     */
+    private void setElement(String key, Element element) {
+        set(key, element);
+    }
+    
+    /**
+     * Set the volume for the PlayBin.
+     * 
+     * @param percent Percentage (between 0 and 100) to set the volume to.
+     */
     public void setVolume(int percent) {
         double volume = Math.max(Math.min((double) percent, 100d), 0d) / 100.0d;
         gobj.g_object_set(this, "volume", volume);
     }
     
+    /**
+     * Get the current volume.
+     * @return The current volume as a percentage between 0 and 100 of the max volume.
+     */
     public int getVolume() {
         DoubleByReference ref = new DoubleByReference();
         gobj.g_object_get(this, "volume", ref);
         return (int) ((ref.getValue() * 100.0) + 0.5);
     }
-    private void setElement(String key, Element e) {
-        set(key, e);
-    }
+    
 }
