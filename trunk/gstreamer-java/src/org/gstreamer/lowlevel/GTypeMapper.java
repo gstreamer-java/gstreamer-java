@@ -35,6 +35,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.gstreamer.NativeObject;
+import org.gstreamer.State;
+import org.gstreamer.StateChangeReturn;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.AddRef;
@@ -119,20 +121,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
 
         @SuppressWarnings(value = "unchecked")
         public Object fromNative(Object value, FromNativeContext context) {
-            Class<? extends Enum> returnType = context.getTargetType();
-            try {
-                Method valueOf = returnType.getDeclaredMethod("valueOf", new Class[]{int.class});
-                if ((valueOf.getModifiers() & Modifier.STATIC) == 0) {
-                    throw new IllegalArgumentException(returnType.getName() + ".valueOf(int) MUST be static");
-                }
-                return valueOf.invoke(returnType, value);
-            } catch (NoSuchMethodException ex) {
-            throw new IllegalArgumentException("Enum requires a 'valueOf(Integer)' method", ex);
-            } catch (RuntimeException ex) {
-                throw ex;
-            } catch (Exception ex) {
-                throw new RuntimeException("Failed to convert int to Enum", ex);
-            }
+            return EnumMapper.getInstance().valueOf((Integer) value, context.getTargetType());
         }
 
         public Class<?> nativeType() {
@@ -144,17 +133,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             if (arg == null) {
                 return null;
             }
-            Enum e = (Enum) arg;
-            try {
-                Method intValue = e.getClass().getMethod("intValue", new Class[]{});
-                return intValue.invoke(e, new Object[]{});
-            } catch (NoSuchMethodException ex) {
-                return new Integer(e.ordinal());
-            } catch (IllegalAccessException ex) {
-                throw new IllegalArgumentException(ex);
-            } catch (InvocationTargetException ex) {
-                throw new IllegalArgumentException(ex);
-            }
+            return EnumMapper.getInstance().intValue((Enum) arg);
         }
     };
 

@@ -19,10 +19,13 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.EnumMapper;
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  * Standard predefined formats.
  */
-public enum Format {
+public enum Format implements IntegerEnum {
     /** Undefined format */
     UNDEFINED(0),
     /**
@@ -40,8 +43,8 @@ public enum Format {
     /** Percentage of stream */
     PERCENT(5),
     
-    /** Unknown Format */
-    UNKNOWN(~0);
+    /** Unknown Format value - used by EnumMapper.valueOf(), so don't change the name */
+    __UNKNOWN_NATIVE_VALUE(~0);
     Format(int value) {
         this.value = value;
     }
@@ -59,12 +62,7 @@ public enum Format {
      * @return Enum constant.
      */
     public final static Format valueOf(int format) {
-        for (Format f : values()) {
-            if (f.value == format) {
-                return f;
-            }
-        }
-        return UNKNOWN;
+        return EnumMapper.getInstance().valueOf(format, Format.class);
     }
     public final int value;
 }

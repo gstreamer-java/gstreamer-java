@@ -53,55 +53,63 @@ public class RegistryTest {
     }
     @Test
     public void listPlugins() {
+        final String PLUGIN = "flac"; // Use something that is likely to be there
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
-        Element playbin = new PlayBin("test");
-        Element decodebin = ElementFactory.make("decodebin", "decoder");
+        ElementFactory.make("playbin", "test");
+        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("decodebin", "decoder");
         List<Plugin> plugins = registry.getPluginList();
         assertFalse("No plugins found", plugins.isEmpty());
-        boolean playbinFound = false;
+        boolean pluginFound = false;
         for (Plugin p : plugins) {
-            if (p.getName().equals("playbin")) {
-                playbinFound = true;
+//            System.out.println("Found plugin: " + p.getName());
+            if (p.getName().equals(PLUGIN)) {
+                pluginFound = true;
             }
         }
-        assertTrue("playbin plugin not found", playbinFound);
+        assertTrue(PLUGIN + " plugin not found", pluginFound);
     }
     @Test
     public void filterPlugins() {
+            final String PLUGIN = "flac"; // Use something that is likely to be there
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
-        Element playbin = new PlayBin("test");
-        Element decodebin = ElementFactory.make("decodebin", "decoder");
+        ElementFactory.make("playbin", "test");
+        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("decodebin", "decoder");
         final boolean[] filterCalled = { false };
         List<Plugin> plugins = registry.getPluginList(new Registry.PluginFilter() {
 
             public boolean accept(Plugin plugin) {
                 filterCalled[0] = true;
-                return plugin.getName().equals("playbin");
+                return plugin.getName().equals(PLUGIN);
             }
         }, true);
         assertFalse("No plugins found", plugins.isEmpty());
         assertTrue("PluginFilter not called", filterCalled[0]);
         assertEquals("Plugin list should contain 1 item", 1, plugins.size());
-        assertEquals("playbin plugin not found", "playbin", plugins.get(0).getName());
+        assertEquals(PLUGIN + " plugin not found", "flac", plugins.get(0).getName());
     }
     @Test
     public void listPluginFeatures() {
+        final String PLUGIN = "flac"; // Use something that is likely to be there
+        final String FEATURE = "flacdec";
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
-        Element playbin = new PlayBin("test");
-        Element decodebin = ElementFactory.make("decodebin", "decoder");
-        List<PluginFeature> features = registry.getPluginFeatureListByPlugin("playbin");
+        ElementFactory.make("playbin", "test");
+        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("decodebin", "decoder");
+        List<PluginFeature> features = registry.getPluginFeatureListByPlugin(PLUGIN);
         assertFalse("No plugin features found", features.isEmpty());
-        boolean playbinFound = false;
+        boolean pluginFound = false;
         for (PluginFeature p : features) {
             System.out.println("Found plugin feature " + p.getName());
-            if (p.getName().equals("playbin")) {
-                playbinFound = true;
+            if (p.getName().equals(FEATURE)) {
+                pluginFound = true;
             }
         }
-        assertTrue("playbin plugin not found", playbinFound);
+        assertTrue(PLUGIN + " plugin not found", pluginFound);
     }
     @Test
     public void lookupFeature() {

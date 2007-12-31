@@ -35,18 +35,4 @@ public enum PadPresence {
      * The pad is only available on request.
      */
     REQUEST;
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param value Integer value that corresponds to one of the constants.
-     * @return Enum constant that maps to the integer.
-     */
-    public static final PadPresence valueOf(int value) {
-        for (PadPresence p : values()) {
-            if (p.ordinal() == value) {
-                return p;
-            }
-        }
-        throw new IllegalArgumentException("Invalid PadPresence: " + value);
-    }
 }

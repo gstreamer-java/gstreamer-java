@@ -36,17 +36,4 @@ public enum StateChangeReturn {
      * {@link State#PAUSED}. This typically happens with live sources.
      */
     NO_PREROLL;
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param val integer value.
-     * @return The enum constant with the specified value.
-     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
-     */
-    public static final StateChangeReturn valueOf(int val) {
-        if (val < 0 || val >= values().length) {
-            throw new IllegalArgumentException("Invalid StateChangeReturn");
-        }
-        return values()[val];
-    }
 }

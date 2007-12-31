@@ -19,10 +19,13 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.EnumMapper;
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  * The posible states an element can be in.
  */
-public enum State {
+public enum State implements IntegerEnum {
     /** No pending state. */
     VOID_PENDING(0),
     /** The initial state of an {@link Element}. */
@@ -37,8 +40,9 @@ public enum State {
     State(int value) {
         this.value = value;
     }
+    
     /**
-     * Get the integer value of the enum.
+     * Gets the integer value of the enum.
      * @return The integer value for this enum.
      */
     public int intValue() {
@@ -53,12 +57,6 @@ public enum State {
      * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
      */
     public static final State valueOf(int state) {
-        for (State s : values()) {
-            if (s.value == state) {
-                return s;
-            }
-        }
-        throw new IllegalArgumentException("Invalid GstState(" + state + ")");
+        return EnumMapper.getInstance().valueOf(state, State.class);
     }
-    
 }

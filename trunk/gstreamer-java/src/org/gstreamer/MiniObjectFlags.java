@@ -19,10 +19,12 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  *
  */
-public enum MiniObjectFlags {
+public enum MiniObjectFlags implements IntegerEnum {
     /** The {@link MiniObject} is read-only */
     READONLY(1 << 0),
     

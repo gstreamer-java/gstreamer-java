@@ -19,10 +19,12 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  * The result values for a GstBusSyncHandler.
  */
-public enum BusSyncReply {
+public enum BusSyncReply implements IntegerEnum {
     /** Drop the {@link Message} */
     DROP(0),
     /** Pass the {@link Message} to the async queue */
@@ -35,25 +37,11 @@ public enum BusSyncReply {
     }
     
     /**
-     * Get the integer value of the enum.
+     * Gets the integer value of the enum.
      * @return The integer value for this enum.
      */
     public int intValue() {
         return value;
-    }
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param value integer value.
-     * @return Enum constant.
-     */
-    public static BusSyncReply valueOf(int value) {
-        for (BusSyncReply r : values()) {
-            if (r.value == value) {
-                return r;
-            }
-        }
-        throw new IllegalArgumentException("Invalid BusSyncReply value: " + value);
     }
     private final int value;
 }

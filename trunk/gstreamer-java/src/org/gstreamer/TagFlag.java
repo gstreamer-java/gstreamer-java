@@ -34,27 +34,4 @@ public enum TagFlag {
     DECODED,
     /** Number of tag flags. */
     COUNT;
-    
-    /**
-     * Get the integer value of the enum.
-     * @return The integer value for this enum.
-     */
-    public int intValue() {
-        return ordinal();
-    }
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param flag integer value.
-     * @return The enum constant with the specified value.
-     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
-     */
-    public static final TagFlag valueOf(int flag) {
-        for (TagFlag f : values()) {
-            if (f.intValue() == flag) {
-                return f;
-            }
-        }
-        throw new IllegalArgumentException("Invalid GstTagFlag(" + flag + ")");
-    }
 }
