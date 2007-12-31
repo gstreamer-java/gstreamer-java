@@ -45,27 +45,4 @@ public enum TagMergeMode {
     KEEP,
     /** Keep all existing tags */
     KEEP_ALL;
-    
-    /**
-     * Get the integer value of the enum.
-     * @return The integer value for this enum.
-     */
-    public int intValue() {
-        return ordinal();
-    }
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param mode integer value.
-     * @return The enum constant with the specified value.
-     * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
-     */
-    public static final TagMergeMode valueOf(int mode) {
-        for (TagMergeMode m : values()) {
-            if (m.intValue() == mode) {
-                return m;
-            }
-        }
-        throw new IllegalArgumentException("Invalid GstTagMergeMode(" + mode + ")");
-    }
 }

@@ -21,10 +21,12 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  * The result of passing data to a pad.
  */
-public enum FlowReturn {
+public enum FlowReturn implements IntegerEnum {
     /** Resend buffer, possibly with new caps (not send yet). */
     RESEND(1),
     /** Data passing was ok. */
@@ -46,27 +48,19 @@ public enum FlowReturn {
     ERROR(-5),
     
     /** This operation is not supported. */
-    NOT_SUPPORTED(-6);
+    NOT_SUPPORTED(-6),
+    __UNKNOWN_NATIVE_VALUE(~0);
 
     FlowReturn(int value) {
         this.value = value;
     }
-    public int intValue() {
-        return value;
-    }
     
     /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param value integer value.
-     * @return Enum constant.
+     * Gets the integer value of the enum.
+     * @return The integer value for this enum.
      */
-    public static FlowReturn valueOf(int value) {
-        for (FlowReturn r : values()) {
-            if (r.value == value) {
-                return r;
-            }
-        }
-        throw new IllegalArgumentException("Invalid FlowReturn value: " + value);
+    public int intValue() {
+        return value;
     }
     private int value;
 }

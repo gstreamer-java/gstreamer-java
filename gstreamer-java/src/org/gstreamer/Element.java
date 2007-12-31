@@ -31,6 +31,7 @@ import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
 import org.gstreamer.event.HandoffEvent;
 import org.gstreamer.event.HandoffListener;
+import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
@@ -242,15 +243,15 @@ public class Element extends GstObject {
         IntByReference pending = new IntByReference();
 
         gst.gst_element_get_state(this, state, pending, timeout);
-        return State.valueOf(state.getValue());
+        return EnumMapper.getInstance().valueOf(state.getValue(), State.class);
     }
     public void getState(long timeout, State[] states) {
         IntByReference state = new IntByReference();
         IntByReference pending = new IntByReference();
         
         gst.gst_element_get_state(this, state, pending, timeout);
-        states[0] = State.valueOf(state.getValue());
-        states[1] = State.valueOf(pending.getValue());
+        states[0] = EnumMapper.getInstance().valueOf(state.getValue(), State.class);
+        states[1] = EnumMapper.getInstance().valueOf(pending.getValue(), State.class);
     }
     
     /**

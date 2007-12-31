@@ -17,23 +17,12 @@
  * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer;
+package org.gstreamer.lowlevel;
 
 /**
- * The different types of seek events. 
- * <p>
- * When constructing a seek event with
- * gst_event_new_seek(), a format, a seek method and optional flags are to
- * be provided. The seek event is then inserted into the graph with
- * gst_pad_send_event() or gst_element_send_event().
+ * Interface for int enums that are non-contiguous (i.e. can't just use Enum.ordinal())
+ * to find the native value.
  */
-public enum SeekType {
-    /** No change in position is required. */
-    NONE,
-    /** Change relative to current position. */
-    CUR,
-    /** Absolute position is requested. */
-    SET,
-    /** Relative position to duration is requested. */
-    END;
+public interface IntegerEnum {
+    public int intValue();
 }

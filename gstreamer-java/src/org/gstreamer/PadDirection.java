@@ -29,18 +29,4 @@ public enum PadDirection {
     SRC,
     /** The {@link Pad} is a sink pad. */
     SINK;
-    
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param dir integer value.
-     * @return Enum constant.
-     */
-    public static final PadDirection valueOf(int dir) {
-        for (PadDirection d : values()) {
-            if (d.ordinal() == dir) {
-                return d;
-            }
-        }
-        throw new IllegalArgumentException("Invalid PadDirection: " + dir);
-    }
 }

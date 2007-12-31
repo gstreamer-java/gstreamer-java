@@ -19,10 +19,12 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.IntegerEnum;
+
 /**
  * Result values from {@link Pad#link(Pad)} and friends.
  */
-public enum PadLinkReturn {
+public enum PadLinkReturn implements IntegerEnum {
     /** Link succeeded. */
     OK(0),
     /** Pads have no common grandparent. */
@@ -36,29 +38,18 @@ public enum PadLinkReturn {
     /** Pads cannot cooperate in scheduling. */
     NOSCHED(-5),
     /** Refused for some reason. */
-    REFUSED(-6);
+    REFUSED(-6),
+    __UNKNOWN_NATIVE_VALUE(Integer.MIN_VALUE);
     PadLinkReturn(int value) {
         this.value = value;
     }
     /**
-     * Get the integer value of the enum.
+     * Gets the integer value of the enum.
      * @return The integer value for this enum.
      */
     public int intValue() {
         return value;
     }
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param value integer value.
-     * @return Enum constant.
-     */
-    public static PadLinkReturn valueOf(int value) {
-        for (PadLinkReturn r : values()) {
-            if (r.value == value) {
-                return r;
-            }
-        }
-        throw new IllegalArgumentException("Invalid PadLinkReturn value: " + value);
-    }
+    
     private final int value;
 }

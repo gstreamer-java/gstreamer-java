@@ -63,4 +63,18 @@ public class ElementTest {
         List<Pad> pads = element.getSrcPads();
         assertTrue("no pads found", !pads.isEmpty());
     }
+    @Test 
+    public void setState() {
+        Element element = ElementFactory.make("fakesrc", "fs");
+        // This should exercise EnumMapper.intValue()
+        element.setState(State.PLAYING);
+    }
+    @Test 
+    public void getState() {
+        Element element = ElementFactory.make("fakesrc", "fs");
+        // This should exercise EnumMapper.intValue()
+        element.setState(State.PLAYING);
+        State state = element.getState(-1);
+        assertEquals("Element state not set correctly", State.PLAYING, element.getState(-1));
+    }
 }
