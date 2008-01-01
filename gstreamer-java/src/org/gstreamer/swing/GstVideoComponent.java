@@ -28,10 +28,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
 import java.nio.IntBuffer;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.SwingUtilities;
 import org.gstreamer.*;
 import org.gstreamer.event.*;
@@ -41,13 +39,12 @@ import org.gstreamer.elements.RGBDataSink;
  *
  */
 public class GstVideoComponent extends javax.swing.JComponent {
-    
-    AtomicReference<BufferedImage> nextRef = new AtomicReference<BufferedImage>(null);
-    RGBDataSink videosink;
-    Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
-    Object quality = RenderingHints.VALUE_RENDER_SPEED;
+    private VideoFrame currentFrame = null;
+    private RGBDataSink videosink;
+    private Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
+    private Object quality = RenderingHints.VALUE_RENDER_SPEED;
     private static boolean openglEnabled = false;
-    private static boolean useVolatile = false;
+    private static boolean useVolatile = true;
     private static boolean quartzEnabled = false;
     private static boolean ddscaleEnabled = false;
     private boolean keepAspect = true;
@@ -83,8 +80,9 @@ public class GstVideoComponent extends javax.swing.JComponent {
             useVolatile = true;
         }
         if (quartzEnabled) {
-            //interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-            //quality = RenderingHints.VALUE_RENDER_QUALITY;            
+            interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
+            quality = RenderingHints.VALUE_RENDER_QUALITY;            
+            useVolatile = true;
         }
         if (ddscaleEnabled) {
             // Bilinear interpolation can be accelerated by the OpenGL pipeline
@@ -112,8 +110,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
         }
         g2d.setColor(getBackground());
         
-        if (currentImage != null) {
-            int imgWidth = currentImage.getWidth(null), imgHeight = currentImage.getHeight(null);
+        if (currentFrame != null) {
+            int imgWidth = currentFrame.getWidth(), imgHeight = currentFrame.getHeight();
             // Figure out the aspect ratio
             double aspect = (double) imgWidth / (double) imgHeight;
             // Draw & scale on the fly
@@ -167,62 +165,30 @@ public class GstVideoComponent extends javax.swing.JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, quality);
         if (useVolatile) {
             do {
-                if (volatileImage == null ||
-                        volatileImage.validate(getGraphicsConfiguration()) != VolatileImage.IMAGE_OK) {
-                    renderOffscreenVolatileImage();
+                if (volatileImage == null 
+                    || volatileImage.validate(getGraphicsConfiguration()) != VolatileImage.IMAGE_OK) {
+                    currentFrame.renderVolatileImage();
                 }
                 g.drawImage(volatileImage, x, y, w, h, null);
             } while (volatileImage.contentsLost());
         } else {
-            g.drawImage(currentImage, x, y, w, h, null);
+            g.drawImage(currentFrame.bufferedImage, x, y, w, h, null);
         }
-    }
-    private void renderOffscreenVolatileImage() {
-        if (currentImage == null) {
-            return;
-        }
-        do {
-            int w = currentImage.getWidth(), h = currentImage.getHeight();
-            if (volatileImage == null || volatileImage.getWidth() != w ||
-                    volatileImage.getHeight() != h ||
-                    volatileImage.validate(getGraphicsConfiguration()) == VolatileImage.IMAGE_INCOMPATIBLE) {
-                if (volatileImage != null) {
-                    volatileImage.flush();
-                }
-                GraphicsConfiguration gc = getGraphicsConfiguration();
-                volatileImage = gc.createCompatibleVolatileImage(w, h);
-            }
-            Graphics2D g = volatileImage.createGraphics();
-            g.drawImage(currentImage, 0, 0, null);
-            g.dispose();
-        } while (volatileImage.contentsLost());
     }
     
-    private volatile VolatileImage volatileImage = null;
-    BufferedImage currentImage = null;
-    private void switchBuffer(BufferedImage bImage) {
-        // Atomically set the next buffer to be rendered
-        BufferedImage oldbuf = nextRef.getAndSet(bImage);
-        if (oldbuf != null) {
-            freeBufferedImage(oldbuf);
-        } else {
-            // Only signal swing to switch buffers if the previous buffer was sent for display
-            SwingUtilities.invokeLater(update);
-        }
-    }
     int oldWidth = 0, oldHeight = 0;
     Runnable update = new Runnable() {
         public void run() {
-            BufferedImage nextBuffer = nextRef.getAndSet(null);
-            if (nextBuffer != null) {
-                if (currentImage != null) {
-                    freeBufferedImage(currentImage);
-                }
-                currentImage = nextBuffer;
+            VideoFrame nextImage = renderQueue.poll();
+            if (nextImage != null) {
+                if (currentFrame != null) {
+                    freeVideoFrame(currentFrame);
+                }                
+                currentFrame = nextImage;
                 if (useVolatile) {
-                    renderOffscreenVolatileImage();
+                    currentFrame.renderVolatileImage();
                 }
-                final int imgWidth = currentImage.getWidth(), imgHeight = currentImage.getHeight();
+                final int imgWidth = currentFrame.getWidth(), imgHeight = currentFrame.getHeight();
                 if (imgWidth != oldWidth || imgHeight != oldHeight || !keepAspect) {
                     paintImmediately(0, 0, getWidth(), getHeight());
                 } else {
@@ -246,42 +212,75 @@ public class GstVideoComponent extends javax.swing.JComponent {
         }
     };
     
-    private List<BufferedImage> buffers = Collections.synchronizedList(new LinkedList<BufferedImage>());
-    BufferedImage getBufferedImage(int width, int height) {
-        BufferedImage buf;
+    //
+    // We only need one volatile image per VideoComponent
+    //
+    private VolatileImage volatileImage;
+    private class VideoFrame {
+        BufferedImage bufferedImage;
+        public VideoFrame(int w, int h) {
+            bufferedImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        }
+        public final int getWidth() { return bufferedImage.getWidth(null); }
+        public final int getHeight() { return bufferedImage.getHeight(null); }
+        public void flush() {
+            bufferedImage.flush();
+        }
+        public void renderVolatileImage() {
+            do {
+                int w = bufferedImage.getWidth(), h = bufferedImage.getHeight();
+                GraphicsConfiguration gc = getGraphicsConfiguration();
+                if (volatileImage == null || volatileImage.getWidth() != w 
+                        || volatileImage.getHeight() != h 
+                        || volatileImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
+                    if (volatileImage != null) {
+                        volatileImage.flush();
+                    }
+                    volatileImage = gc.createCompatibleVolatileImage(w, h);
+                    volatileImage.setAccelerationPriority(1.0f);
+                }
+                Graphics2D g = volatileImage.createGraphics();
+                g.drawImage(bufferedImage, 0, 0, null);
+                g.dispose();
+            } while (volatileImage.contentsLost());
+        }
+    }
+    private Queue<VideoFrame> renderQueue = new ArrayBlockingQueue<VideoFrame>(1);
+    private Queue<VideoFrame> freeQueue = new ArrayBlockingQueue<VideoFrame>(1);
+    VideoFrame allocVideoFrame(int width, int height) {
+        VideoFrame buf;
         
-        //
-        // If the swing thread has not had time to render the current Image, just re-use it
-        //
-        if ((buf = nextRef.getAndSet(null)) != null) {
+        if ((buf = freeQueue.poll()) != null) {
             if (buf.getWidth() == width && buf.getHeight() == height) {
                 return buf;
             }
+            // The buffer was not the correct type - flush it and move on
             buf.flush();
         }
-        if (!buffers.isEmpty()) {
-            buf = buffers.remove(0);
-            // If the size matches, return the cached buffer
-            if (buf.getWidth() == width && buf.getHeight() == height) {
-                return buf;
-            }
-            // Invalidate all the pooled buffers
-            buffers.clear();
-        }
-        return new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        return new VideoFrame(width, height);
     }
-    void freeBufferedImage(BufferedImage buf) {
-        buffers.add(buf);
+    void freeVideoFrame(VideoFrame buf) {
+        if (!freeQueue.offer(buf)) {
+            buf.flush();
+        }
     }
     class RGBListener implements RGBDataSink.Listener {
         public void rgbFrame(int width, int height, IntBuffer rgb) {
-            
-            final BufferedImage bImage = getBufferedImage(width, height);
-            int[] pixels = ((DataBufferInt) bImage.getRaster().getDataBuffer()).getData();
+            //
+            // If the current frame has not been rendered, just ignore this one
+            //
+            if (!renderQueue.isEmpty()) {
+                return;
+            }
+            final VideoFrame renderImage = allocVideoFrame(width, height);
+            int[] pixels = ((DataBufferInt) renderImage.bufferedImage.getRaster().getDataBuffer()).getData();
             rgb.get(pixels, 0, width * height);
             
+            if (!renderQueue.offer(renderImage)) {
+                freeVideoFrame(renderImage);
+            }
             // Tell swing to use the new buffer
-            switchBuffer(bImage);
+            SwingUtilities.invokeLater(update);
         }
         
     }
