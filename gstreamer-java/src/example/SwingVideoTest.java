@@ -36,6 +36,8 @@ public class SwingVideoTest {
     public static void main(String[] args) {
         int width = 720, height = 576;
         //System.setProperty("sun.java2d.opengl", "true");
+        // Quartz is abysmally slow at scaling video for some reason, so turn it off.
+        System.setProperty("apple.awt.graphics.UseQuartz", "false");
         
         args = Gst.init("SwingVideoTest", args);        
         System.out.println("Creating MainLoop");
