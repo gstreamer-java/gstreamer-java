@@ -24,6 +24,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
@@ -31,6 +33,7 @@ import java.nio.IntBuffer;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import org.gstreamer.*;
 import org.gstreamer.event.*;
 import org.gstreamer.elements.RGBDataSink;
@@ -49,6 +52,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
     private static boolean ddscaleEnabled = false;
     private boolean keepAspect = true;
     private float alpha = 1.0f;
+    private Timer resourceTimer;
     
     static {
         try {
@@ -90,8 +94,24 @@ public class GstVideoComponent extends javax.swing.JComponent {
             //quality = RenderingHints.VALUE_RENDER_QUALITY;
             useVolatile = false;
         }
+        
+        //
+        // Kick off a timer to free up the volatile image if there have been no recent updates
+        // (e.g. the player is paused)
+        //
+        resourceTimer = new Timer(250, resourceReaper);
     }
-    
+
+    private ActionListener resourceReaper = new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                if (!volatileImageUpdated && volatileImage != null) {
+                    volatileImage.flush();
+                    volatileImage = null;
+                    resourceTimer.stop();
+                }
+                volatileImageUpdated = false;
+            }
+    };
     public Element getElement() {
         return videosink;
     }
@@ -216,6 +236,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
     // We only need one volatile image per VideoComponent
     //
     private VolatileImage volatileImage;
+    private boolean volatileImageUpdated = false;
     private class VideoFrame {
         BufferedImage bufferedImage;
         public VideoFrame(int w, int h) {
@@ -243,6 +264,16 @@ public class GstVideoComponent extends javax.swing.JComponent {
                 g.drawImage(bufferedImage, 0, 0, null);
                 g.dispose();
             } while (volatileImage.contentsLost());
+            
+            //
+            // Restart the resource reaper timer if neccessary
+            //
+            if (!volatileImageUpdated) {
+                volatileImageUpdated = true;
+                if (!resourceTimer.isRunning()) {
+                    resourceTimer.restart();
+                }
+            }
         }
     }
     private Queue<VideoFrame> renderQueue = new ArrayBlockingQueue<VideoFrame>(1);
