@@ -30,6 +30,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.VolatileImage;
 import java.nio.IntBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.SwingUtilities;
@@ -44,15 +46,15 @@ import org.gstreamer.elements.RGBDataSink;
 public class GstVideoComponent extends javax.swing.JComponent {
     private VideoFrame currentFrame = null;
     private RGBDataSink videosink;
-    private Object interpolation = RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR;
-    private Object quality = RenderingHints.VALUE_RENDER_SPEED;
+    private RenderingHints renderingHints;
     private static boolean openglEnabled = false;
-    private static boolean useVolatile = true;
     private static boolean quartzEnabled = false;
     private static boolean ddscaleEnabled = false;
     private boolean keepAspect = true;
     private float alpha = 1.0f;
     private Timer resourceTimer;
+    private VolatileImage volatileImage;
+    private boolean frameRendered = false;
     
     static {
         try {
@@ -73,28 +75,25 @@ public class GstVideoComponent extends javax.swing.JComponent {
     public GstVideoComponent() {
         videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
         videosink.setPassDirectBuffer(true);
-        
+        Map<RenderingHints.Key, Object> hints = new HashMap<RenderingHints.Key, Object>();
         setOpaque(true);
         setBackground(Color.BLACK);
         
         if (openglEnabled) {
             // Bilinear interpolation can be accelerated by the OpenGL pipeline
-            interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-            quality = RenderingHints.VALUE_RENDER_QUALITY;
-            useVolatile = true;
+            hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+            
+        } else if (quartzEnabled) {
+            //hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+            hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+            
+        } else if (ddscaleEnabled) {
+            hints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         }
-        if (quartzEnabled) {
-            interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-            quality = RenderingHints.VALUE_RENDER_QUALITY;            
-            useVolatile = true;
-        }
-        if (ddscaleEnabled) {
-            // Bilinear interpolation can be accelerated by the OpenGL pipeline
-            interpolation = RenderingHints.VALUE_INTERPOLATION_BILINEAR;
-            //quality = RenderingHints.VALUE_RENDER_QUALITY;
-            useVolatile = false;
-        }
-        
+        renderingHints = new RenderingHints(hints);
         //
         // Kick off a timer to free up the volatile image if there have been no recent updates
         // (e.g. the player is paused)
@@ -104,12 +103,23 @@ public class GstVideoComponent extends javax.swing.JComponent {
 
     private ActionListener resourceReaper = new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                if (!volatileImageUpdated && volatileImage != null) {
-                    volatileImage.flush();
-                    volatileImage = null;
+                if (!frameRendered) {
+                    if (volatileImage != null) {
+                        volatileImage.flush();
+                        volatileImage = null;
+                    }
+                    //
+                    // Flush any cached VideoFrames
+                    //
+                    VideoFrame f;
+                    while ((f = freeQueue.poll()) != null) {
+                        f.flush();
+                    }
+                    frameRendered = false;
+                    
+                    // Stop the timer so we don't wakeup needlessly
                     resourceTimer.stop();
                 }
-                volatileImageUpdated = false;
             }
     };
     public Element getElement() {
@@ -170,8 +180,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
             g2d.fillRect(0, 0, width, height);
         }
         g2d.dispose();
-        
     }
+    
     public void setAlpha(float alpha) {
         this.alpha = alpha;
         repaint();
@@ -179,20 +189,49 @@ public class GstVideoComponent extends javax.swing.JComponent {
     public float getAlpha() {
         return alpha;
     }
-    private void render(Graphics g, int x, int y, int w, int h) {
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, interpolation);
-        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, quality);
-        if (useVolatile) {
-            do {
-                if (volatileImage == null 
-                    || volatileImage.validate(getGraphicsConfiguration()) != VolatileImage.IMAGE_OK) {
-                    currentFrame.renderVolatileImage();
+    
+    public void renderVolatileImage(BufferedImage bufferedImage) {
+        do {
+            int w = bufferedImage.getWidth(), h = bufferedImage.getHeight();
+            GraphicsConfiguration gc = getGraphicsConfiguration();
+            if (volatileImage == null || volatileImage.getWidth() != w 
+                    || volatileImage.getHeight() != h 
+                    || volatileImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
+                if (volatileImage != null) {
+                    volatileImage.flush();
                 }
-                g.drawImage(volatileImage, x, y, w, h, null);
-            } while (volatileImage.contentsLost());
-        } else {
-            g.drawImage(currentFrame.bufferedImage, x, y, w, h, null);
+                volatileImage = gc.createCompatibleVolatileImage(w, h);
+                volatileImage.setAccelerationPriority(1.0f);
+            }
+            // 
+            // Now paint the BufferedImage into the accelerated image
+            //
+            Graphics2D g = volatileImage.createGraphics();
+            g.drawImage(bufferedImage, 0, 0, null);
+            g.dispose();
+        } while (volatileImage.contentsLost());
+    }
+    private void render(Graphics g, int x, int y, int w, int h) {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setRenderingHints(renderingHints);
+        do {
+            if (volatileImage == null 
+                || volatileImage.validate(getGraphicsConfiguration()) != VolatileImage.IMAGE_OK) {
+                renderVolatileImage(currentFrame.bufferedImage);
+            }
+            g2d.drawImage(volatileImage, x, y, w, h, null);
+        } while (volatileImage.contentsLost());
+        
+        g2d.dispose();
+        
+        //
+        // Restart the resource reaper timer if neccessary
+        //
+        if (!frameRendered) {
+            frameRendered = true;
+            if (!resourceTimer.isRunning()) {
+                resourceTimer.restart();
+            }
         }
     }
     
@@ -205,9 +244,8 @@ public class GstVideoComponent extends javax.swing.JComponent {
                     freeVideoFrame(currentFrame);
                 }                
                 currentFrame = nextImage;
-                if (useVolatile) {
-                    currentFrame.renderVolatileImage();
-                }
+                renderVolatileImage(currentFrame.bufferedImage);
+                
                 final int imgWidth = currentFrame.getWidth(), imgHeight = currentFrame.getHeight();
                 if (imgWidth != oldWidth || imgHeight != oldHeight || !keepAspect) {
                     paintImmediately(0, 0, getWidth(), getHeight());
@@ -232,11 +270,7 @@ public class GstVideoComponent extends javax.swing.JComponent {
         }
     };
     
-    //
-    // We only need one volatile image per VideoComponent
-    //
-    private VolatileImage volatileImage;
-    private boolean volatileImageUpdated = false;
+    
     private class VideoFrame {
         BufferedImage bufferedImage;
         public VideoFrame(int w, int h) {
@@ -246,34 +280,6 @@ public class GstVideoComponent extends javax.swing.JComponent {
         public final int getHeight() { return bufferedImage.getHeight(null); }
         public void flush() {
             bufferedImage.flush();
-        }
-        public void renderVolatileImage() {
-            do {
-                int w = bufferedImage.getWidth(), h = bufferedImage.getHeight();
-                GraphicsConfiguration gc = getGraphicsConfiguration();
-                if (volatileImage == null || volatileImage.getWidth() != w 
-                        || volatileImage.getHeight() != h 
-                        || volatileImage.validate(gc) == VolatileImage.IMAGE_INCOMPATIBLE) {
-                    if (volatileImage != null) {
-                        volatileImage.flush();
-                    }
-                    volatileImage = gc.createCompatibleVolatileImage(w, h);
-                    volatileImage.setAccelerationPriority(1.0f);
-                }
-                Graphics2D g = volatileImage.createGraphics();
-                g.drawImage(bufferedImage, 0, 0, null);
-                g.dispose();
-            } while (volatileImage.contentsLost());
-            
-            //
-            // Restart the resource reaper timer if neccessary
-            //
-            if (!volatileImageUpdated) {
-                volatileImageUpdated = true;
-                if (!resourceTimer.isRunning()) {
-                    resourceTimer.restart();
-                }
-            }
         }
     }
     private Queue<VideoFrame> renderQueue = new ArrayBlockingQueue<VideoFrame>(1);

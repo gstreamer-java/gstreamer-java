@@ -35,6 +35,9 @@ public class SwingPlayer {
     public static void main(String[] args) {
         //System.setProperty("sun.java2d.opengl", "True");
         
+        // Quartz is abysmally slow at scaling video for some reason, so turn it off.
+        System.setProperty("apple.awt.graphics.UseQuartz", "false");
+        
         args = Gst.init("Swing Player", args);
         if (args.length < 1) {
             System.err.println("Usage: SwingPlayer <filename>");
