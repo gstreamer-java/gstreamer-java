@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -36,11 +36,12 @@ import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Event;
+import org.gstreamer.FlowReturn;
 import org.gstreamer.Format;
-import org.gstreamer.GError;
 import org.gstreamer.GhostPad;
 import org.gstreamer.GstObject;
 import org.gstreamer.Message;
+import org.gstreamer.MessageType;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
@@ -140,7 +141,7 @@ public interface GstAPI extends Library {
     GType gst_static_pad_template_get_type();
 
     Pointer gst_pad_template_new(String name_template, PadDirection direction, 
-            /* GstPadPresence */ int presence, Caps caps);
+            /* GstPadPresence */ int presence, @IncRef Caps caps);
 
     PadTemplate gst_static_pad_template_get(GstStaticPadTemplate pad_template);
     Caps gst_static_pad_template_get_caps(GstStaticPadTemplate template);
@@ -238,6 +239,16 @@ public interface GstAPI extends Library {
      * GstBus functions
      * */
     GType gst_bus_get_type();
+    Bus gst_bus_new();
+    boolean gst_bus_post(Bus bus, @IncRef Message message);
+
+    boolean gst_bus_have_pending(Bus bus);
+    Message gst_bus_peek(Bus bus);
+    Message gst_bus_pop(Bus bus);
+    Message gst_bus_pop_filtered(Bus bus, MessageType types);
+    Message gst_bus_timed_pop(Bus bus, /* GstClockTime */ long timeout);
+    Message gst_bus_timed_pop_filtered(Bus bus, /* GstClockTime */ long timeout, MessageType types);
+
     void gst_bus_set_flushing(Bus ptr, int flushing);
     interface BusCallback extends GstCallback {
         boolean callback(Pointer bus, Pointer msg, Pointer data);
@@ -246,6 +257,7 @@ public interface GstAPI extends Library {
     void gst_bus_set_sync_handler(Bus bus, Pointer function, Pointer data);
     void gst_bus_set_sync_handler(Bus bus, GstCallback function, Pointer data);
     void gst_bus_enable_sync_message_emission(Bus bus);
+    void gst_bus_disable_sync_message_emission(Bus bus);
 
     /*
      * GstMessage functions
@@ -283,6 +295,8 @@ public interface GstAPI extends Library {
     Message gst_message_new_async_start(GstObject src, boolean new_base_time);
     Message gst_message_new_async_done(GstObject src);
     Message gst_message_new_latency(GstObject src);
+    Message gst_message_new_custom(MessageType type, GstObject src, @Invalidate Structure structure);
+
     /*
      * gstparse functions
      */
@@ -503,6 +517,19 @@ public interface GstAPI extends Library {
 
     Caps gst_pad_peer_get_caps(Pad  pad);
     boolean gst_pad_peer_accept_caps(Pad  pad, Caps caps);
+
+    /* data passing functions to peer */
+    FlowReturn gst_pad_push(Pad pad, @IncRef Buffer buffer);
+    boolean gst_pad_check_pull_range(Pad pad);
+    FlowReturn gst_pad_pull_range(Pad pad, /* guint64 */ long offset, /* guint */ int size,
+            Buffer[] buffer);
+    boolean gst_pad_push_event(Pad pad, @IncRef Event event);
+    boolean gst_pad_event_default(Pad pad, Event event);
+    /* data passing functions on pad */
+    FlowReturn gst_pad_chain(Pad pad, @IncRef Buffer buffer);
+    FlowReturn gst_pad_get_range(Pad pad, /* guint64 */ long offset, /* guint */ int size,
+        Buffer[] buffer);
+    boolean gst_pad_send_event(Pad pad, @IncRef Event event);
 
     /* capsnego for connected pads */
     Caps gst_pad_get_allowed_caps(Pad pad);
