@@ -92,7 +92,7 @@ public class RegistryTest {
         assertFalse("No plugins found", plugins.isEmpty());
         assertTrue("PluginFilter not called", filterCalled[0]);
         assertEquals("Plugin list should contain 1 item", 1, plugins.size());
-        assertEquals(PLUGIN + " plugin not found", "flac", plugins.get(0).getName());
+        assertEquals(PLUGIN + " plugin not found", PLUGIN, plugins.get(0).getName());
     }
     @Test
     public void listPluginFeatures() {
