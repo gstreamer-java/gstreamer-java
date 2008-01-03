@@ -22,6 +22,6 @@ package org.gstreamer.event;
 /**
  *
  */
-public interface HandoffListener {
+public interface HandoffListener extends java.util.EventListener {
     public void handoff(HandoffEvent ev);
 }

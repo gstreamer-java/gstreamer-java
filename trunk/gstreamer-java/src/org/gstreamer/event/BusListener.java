@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -25,7 +25,7 @@ import org.gstreamer.TagList;
 /**
  *
  */
-public interface BusListener {
+public interface BusListener extends java.util.EventListener {
     public void errorEvent(ErrorEvent e);
     public void warningEvent(ErrorEvent e);
     public void infoEvent(ErrorEvent e);

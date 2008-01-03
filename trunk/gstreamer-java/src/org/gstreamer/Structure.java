@@ -62,9 +62,6 @@ public class Structure extends NativeObject {
         this(initializer(ptr, false, true));
     }
     
-    protected Structure(Pointer ptr, boolean needRef, boolean ownsHandle) {
-        this(initializer(ptr, needRef, ownsHandle));
-    }
     /**
      * Creates a new, empty #GstStructure with the given name.
      *

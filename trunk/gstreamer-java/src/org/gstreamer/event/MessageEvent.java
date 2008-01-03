@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -19,11 +19,30 @@
 
 package org.gstreamer.event;
 
+import org.gstreamer.Element;
+import org.gstreamer.GstObject;
+
 /**
  *
  */
-public interface BinListener extends java.util.EventListener {
-    public void elementAdded(BinEvent evt);
-    public void elementRemoved(BinEvent evt);
+public class MessageEvent extends java.util.EventObject {
     
+    /** Creates a new instance of GstError */
+    public MessageEvent(GstObject src, int code, String msg) {
+        super(src);
+        this.code = code;
+        this.message = msg;
+    }
+    public Element getElement() {
+        return (Element) getSource();
+    }
+    public int getCode() {
+        return code;
+    }
+    public String getMessage() {
+        return message;
+    }
+    
+    public final int code;
+    public final String message;
 }

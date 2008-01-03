@@ -22,7 +22,7 @@ package org.gstreamer.event;
 /**
  *
  */
-public interface ElementListener {
+public interface ElementListener extends java.util.EventListener {
     public void padAdded(ElementEvent evt);
     public void padRemoved(ElementEvent evt);
     public void noMorePads(ElementEvent evt);

@@ -30,8 +30,16 @@ import java.util.logging.Logger;
 
 import org.gstreamer.event.BusListener;
 import org.gstreamer.event.BusSyncHandler;
+import org.gstreamer.event.EOSEvent;
+import org.gstreamer.event.EOSListener;
 import org.gstreamer.event.ErrorEvent;
+import org.gstreamer.event.MessageEvent;
+import org.gstreamer.event.MessageListener;
+import org.gstreamer.event.StateChangeEvent;
+import org.gstreamer.event.StateChangeListener;
 import org.gstreamer.event.StateEvent;
+import org.gstreamer.event.TagEvent;
+import org.gstreamer.event.TagListener;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -97,10 +105,10 @@ public class Bus extends GstObject {
      * @param listener
      */
     public void addBusListener(BusListener listener) {
-        listeners.put(listener, new BusListenerProxy(this, listener));
+        busListeners.put(listener, new BusListenerProxy(this, listener));
     }
     public void removeBusListener(BusListener listener) {
-        BusListenerProxy proxy = listeners.remove(listener);
+        BusListenerProxy proxy = busListeners.remove(listener);
         if (proxy != null) {
             proxy.disconnect();
         }
@@ -403,6 +411,12 @@ public class Bus extends GstObject {
     public void disconnect(DURATION listener) {
         super.disconnect(DURATION.class, listener);
     }
+    
+    /**
+     * Add a listener for {@link SEGMENT_START} messages in the Pipeline.
+     * 
+     * @param listener The listener to be called when the Pipeline has started a segment.
+     */
     public void connect(final SEGMENT_START listener) {
         connect("sync-message::segment-start", SEGMENT_START.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
@@ -415,9 +429,21 @@ public class Bus extends GstObject {
             }
         });
     }
+    
+    /**
+     * Disconnect the listener for segment-start messages.
+     * 
+     * @param listener The listener that was registered to receive the message.
+     */
     public void disconnect(SEGMENT_START listener) {
         super.disconnect(SEGMENT_START.class, listener);
     }
+    
+    /**
+     * Add a listener for {@link SEGMENT_DONE} messages in the Pipeline.
+     * 
+     * @param listener The listener to be called when the Pipeline has finished a segment.
+     */
     public void connect(final SEGMENT_DONE listener) {
         connect("sync-message::segment-done", SEGMENT_DONE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
@@ -430,6 +456,12 @@ public class Bus extends GstObject {
             }
         });
     }
+    
+    /**
+     * Disconnect the listener for segment-done messages.
+     * 
+     * @param listener The listener that was registered to receive the message.
+     */
     public void disconnect(SEGMENT_DONE listener) {
         super.disconnect(SEGMENT_DONE.class, listener);
     }
@@ -467,12 +499,110 @@ public class Bus extends GstObject {
         }
     };
     
+    public void addMessageListener(MessageListener listener) {
+        MessageListenerProxy proxy = new MessageListenerProxy(listener);
+        messageListeners.put(listener, proxy);
+        connect((Bus.ERROR) proxy);
+        connect((Bus.WARNING) proxy);
+        connect((Bus.INFO) proxy);
+    }
+    public void removeMessageListener(MessageListener listener) {
+        MessageListenerProxy proxy = messageListeners.remove(listener);
+        if (proxy != null) {
+            disconnect((Bus.ERROR) proxy);
+            disconnect((Bus.WARNING) proxy);
+            disconnect((Bus.INFO) proxy);
+        }
+    }
+    public void addStateChangeListener(StateChangeListener listener) {
+        StateChangeListenerProxy proxy = new StateChangeListenerProxy(listener);
+        stateChangeListeners.put(listener, proxy);
+        connect((Bus.STATE_CHANGED) proxy);
+    }
+    public void removeStateChangeListener(StateChangeListener listener) {
+        StateChangeListenerProxy proxy = stateChangeListeners.remove(listener);
+        if (proxy != null) {
+            disconnect((Bus.STATE_CHANGED) proxy);
+        }
+    }
+    public void addEOSListener(EOSListener listener) {
+        EOSListenerProxy proxy = new EOSListenerProxy(listener);
+        eosListeners.put(listener, proxy);
+        connect(proxy);
+    }
+    public void removeEOSListener(EOSListener listener) {
+        EOSListenerProxy proxy = eosListeners.remove(listener);
+        if (proxy != null) {
+            disconnect(proxy);
+        }
+    }
+    public void addTagListener(TagListener listener) {
+        TagListenerProxy proxy = new TagListenerProxy(listener);
+        tagListeners.put(listener, proxy);
+        connect(proxy);
+    }
+    public void removeTagListener(TagListener listener) {
+        TagListenerProxy proxy = tagListeners.remove(listener);
+        if (proxy != null) {
+            disconnect(proxy);
+        }
+    }
+    private class MessageListenerProxy extends java.util.EventListenerProxy implements ERROR, WARNING, INFO {
+        private MessageListener listener;
+        public MessageListenerProxy(MessageListener listener) {
+            super(listener);
+            this.listener = listener;
+        }
+        public void errorMessage(GstObject source, int code, String message) {
+            listener.errorMessage(new MessageEvent(source, code, message));
+        }
+
+        public void warningMessage(GstObject source, int code, String message) {
+            listener.warningMessage(new MessageEvent(source, code, message));
+        }
+
+        public void infoMessage(GstObject source, int code, String message) {
+            listener.informationMessage(new MessageEvent(source, code, message));
+        } 
+    }
+    private class StateChangeListenerProxy extends java.util.EventListenerProxy implements STATE_CHANGED {
+        public StateChangeListenerProxy(StateChangeListener listener) {
+            super(listener);
+        }
+        public void stateMessage(GstObject source, State old, State current, State pending) {
+            ((StateChangeListener) getListener()).stateChange(new StateChangeEvent(source, old, current, pending));
+        } 
+    }
+    private class EOSListenerProxy extends java.util.EventListenerProxy implements EOS {
+        public EOSListenerProxy(EOSListener listener) {
+            super(listener);
+        }
+        public void eosMessage(GstObject source) {
+            ((EOSListener) getListener()).endOfStream(new EOSEvent(source));
+        }
+    }
+    private class TagListenerProxy extends java.util.EventListenerProxy implements TAG {
+        public TagListenerProxy(TagListener listener) {
+            super(listener);
+        }
+        public void tagMessage(GstObject source, TagList tagList) {
+            ((TagListener) getListener()).tagsFound(new TagEvent(source, tagList));
+        }
+    }
     private final static GstObject messageSource(Pointer msgPtr) {
         return Element.objectFor(new MessageStruct(msgPtr).src, true);
     }
-    
-    private Map<BusListener, BusListenerProxy> listeners
+
+    private Map<BusListener, BusListenerProxy> busListeners
             = Collections.synchronizedMap(new HashMap<BusListener, BusListenerProxy>());
+    private Map<MessageListener, MessageListenerProxy> messageListeners
+            = Collections.synchronizedMap(new HashMap<MessageListener, MessageListenerProxy>());
+    private Map<EOSListener, EOSListenerProxy> eosListeners
+            = Collections.synchronizedMap(new HashMap<EOSListener, EOSListenerProxy>());
+    private Map<TagListener, TagListenerProxy> tagListeners
+            = Collections.synchronizedMap(new HashMap<TagListener, TagListenerProxy>());
+    private Map<StateChangeListener, StateChangeListenerProxy> stateChangeListeners
+            = Collections.synchronizedMap(new HashMap<StateChangeListener, StateChangeListenerProxy>());
 }
 class BusListenerProxy implements Bus.EOS, Bus.STATE_CHANGED, Bus.ERROR, Bus.WARNING, 
         Bus.INFO, Bus.TAG, Bus.BUFFERING, Bus.DURATION, Bus.SEGMENT_START, Bus.SEGMENT_DONE {
