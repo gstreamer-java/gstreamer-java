@@ -5,7 +5,7 @@
 
 package org.gstreamer;
 
-import org.gstreamer.elements.PlayBin;
+import com.sun.jna.Platform;
 import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -72,6 +72,9 @@ public class RegistryTest {
     }
     @Test
     public void filterPlugins() {
+        if (Platform.isWindows()) {
+            return; // gst_registry_plugin_filter doesn't exist on windows
+        }
         final String PLUGIN = "vorbis"; // Use something that is likely to be there
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
