@@ -12,6 +12,7 @@
 
 package org.gstreamer;
 
+import com.sun.jna.Platform;
 import org.gstreamer.event.EOSEvent;
 import org.gstreamer.event.EOSListener;
 import org.gstreamer.event.MessageAdapter;
@@ -224,6 +225,9 @@ public class BusTest {
     }
     @Test
     public void infoMessage() {
+        if (Platform.isWindows()) {
+            return; // This test does not work on windows - gst_message_new_info() doesn't exist.
+        }
         final TestPipe pipe = new TestPipe();
        
         final boolean[] signalFired = { false };
