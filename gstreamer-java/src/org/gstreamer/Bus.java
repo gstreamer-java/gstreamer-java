@@ -24,11 +24,12 @@ import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.Map;
 import com.sun.jna.ptr.*;
+import java.util.EventListenerProxy;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gstreamer.event.BusListener;
+
 import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.event.EOSEvent;
 import org.gstreamer.event.EOSListener;
@@ -100,14 +101,22 @@ public class Bus extends GstObject {
     }
     
     /**
-     * Add a listener for all message types transmitted on the Bus.
+     * Adds a listener for all message types transmitted on the Bus.
      * 
      * @param listener
      */
-    public void addBusListener(BusListener listener) {
+    @SuppressWarnings("deprecation") 
+    public void addBusListener(org.gstreamer.event.BusListener listener) {
         busListeners.put(listener, new BusListenerProxy(this, listener));
     }
-    public void removeBusListener(BusListener listener) {
+    
+    /**
+     * Removes the listener for all message types transmitted on the Bus.
+     * 
+     * @param listener
+     */
+    @SuppressWarnings("deprecation") 
+    public void removeBusListener(org.gstreamer.event.BusListener listener) {
         BusListenerProxy proxy = busListeners.remove(listener);
         if (proxy != null) {
             proxy.disconnect();
@@ -499,6 +508,11 @@ public class Bus extends GstObject {
         }
     };
     
+    /**
+     * Adds the specified message listener to receive messages sent on the bus. 
+     *
+     * @param listener the message listener
+     */
     public void addMessageListener(MessageListener listener) {
         MessageListenerProxy proxy = new MessageListenerProxy(listener);
         messageListeners.put(listener, proxy);
@@ -506,6 +520,11 @@ public class Bus extends GstObject {
         connect((Bus.WARNING) proxy);
         connect((Bus.INFO) proxy);
     }
+    /**
+     * Removes the message listener so it no longer receives messages posted on this bus.
+     * 
+     * @param listener the message listener
+     */
     public void removeMessageListener(MessageListener listener) {
         MessageListenerProxy proxy = messageListeners.remove(listener);
         if (proxy != null) {
@@ -514,33 +533,69 @@ public class Bus extends GstObject {
             disconnect((Bus.INFO) proxy);
         }
     }
+    
+    /**
+     * Adds the specified state change listener to receive state-changed events sent on the bus. 
+     *
+     * @param listener the state change listener
+     */
     public void addStateChangeListener(StateChangeListener listener) {
         StateChangeListenerProxy proxy = new StateChangeListenerProxy(listener);
         stateChangeListeners.put(listener, proxy);
         connect((Bus.STATE_CHANGED) proxy);
     }
+    
+    /**
+     * Removes the state change listener so it no longer receives state change 
+     * messages posted on this bus.
+     * 
+     * @param listener the state change listener
+     */
     public void removeStateChangeListener(StateChangeListener listener) {
         StateChangeListenerProxy proxy = stateChangeListeners.remove(listener);
         if (proxy != null) {
             disconnect((Bus.STATE_CHANGED) proxy);
         }
     }
+    
+    /**
+     * Adds the specified EOS listener to receive end-of-stream events posted on this bus. 
+     *
+     * @param listener the end of stream listener
+     */
     public void addEOSListener(EOSListener listener) {
         EOSListenerProxy proxy = new EOSListenerProxy(listener);
         eosListeners.put(listener, proxy);
         connect(proxy);
     }
+    
+    /**
+     * Removes the end of stream listener so it no longer receives end of stream events posted on this bus.
+     * @param listener the end of stream listener
+     */
     public void removeEOSListener(EOSListener listener) {
         EOSListenerProxy proxy = eosListeners.remove(listener);
         if (proxy != null) {
             disconnect(proxy);
         }
     }
+    
+    /**
+     * Adds the specified tag listener to receive tag events sent on the bus. 
+     *
+     * @param listener the tag listener
+     */
     public void addTagListener(TagListener listener) {
         TagListenerProxy proxy = new TagListenerProxy(listener);
         tagListeners.put(listener, proxy);
         connect(proxy);
     }
+    
+    /**
+     * Removes the tag listener so it no longer receives tag events posted on this bus.
+     * 
+     * @param listener the tag listener
+     */
     public void removeTagListener(TagListener listener) {
         TagListenerProxy proxy = tagListeners.remove(listener);
         if (proxy != null) {
@@ -593,8 +648,12 @@ public class Bus extends GstObject {
         return Element.objectFor(new MessageStruct(msgPtr).src, true);
     }
 
-    private Map<BusListener, BusListenerProxy> busListeners
-            = Collections.synchronizedMap(new HashMap<BusListener, BusListenerProxy>());
+    /**
+     * 
+     * @deprecated
+     */
+    private Map<org.gstreamer.event.BusListener, BusListenerProxy> busListeners
+            = Collections.synchronizedMap(new HashMap<org.gstreamer.event.BusListener, BusListenerProxy>());
     private Map<MessageListener, MessageListenerProxy> messageListeners
             = Collections.synchronizedMap(new HashMap<MessageListener, MessageListenerProxy>());
     private Map<EOSListener, EOSListenerProxy> eosListeners
@@ -604,9 +663,18 @@ public class Bus extends GstObject {
     private Map<StateChangeListener, StateChangeListenerProxy> stateChangeListeners
             = Collections.synchronizedMap(new HashMap<StateChangeListener, StateChangeListenerProxy>());
 }
-class BusListenerProxy implements Bus.EOS, Bus.STATE_CHANGED, Bus.ERROR, Bus.WARNING, 
+
+
+class BusListenerProxy extends EventListenerProxy implements Bus.EOS, Bus.STATE_CHANGED, Bus.ERROR, Bus.WARNING, 
         Bus.INFO, Bus.TAG, Bus.BUFFERING, Bus.DURATION, Bus.SEGMENT_START, Bus.SEGMENT_DONE {
-    public BusListenerProxy(Bus bus, final BusListener listener) {
+    /**
+     * @deprecated
+     * @param bus
+     * @param listener
+     */
+    @SuppressWarnings("deprecation") 
+    public BusListenerProxy(Bus bus, final org.gstreamer.event.BusListener listener) {
+        super(listener);
         this.bus = bus;
         this.listener = listener;
         bus.connect((Bus.EOS) this);
@@ -662,6 +730,7 @@ class BusListenerProxy implements Bus.EOS, Bus.STATE_CHANGED, Bus.ERROR, Bus.WAR
         bus.disconnect((Bus.SEGMENT_DONE) this);
     }
     private Bus bus;
-    private BusListener listener;
+    @SuppressWarnings("deprecation")
+    private org.gstreamer.event.BusListener listener;
 
 }
