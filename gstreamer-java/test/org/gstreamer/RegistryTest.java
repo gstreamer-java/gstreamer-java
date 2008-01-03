@@ -53,11 +53,11 @@ public class RegistryTest {
     }
     @Test
     public void listPlugins() {
-        final String PLUGIN = "flac"; // Use something that is likely to be there
+        final String PLUGIN = "vorbis"; // Use something that is likely to be there
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
         ElementFactory.make("playbin", "test");
-        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("vorbisdec", "vorbis");
         ElementFactory.make("decodebin", "decoder");
         List<Plugin> plugins = registry.getPluginList();
         assertFalse("No plugins found", plugins.isEmpty());
@@ -72,11 +72,11 @@ public class RegistryTest {
     }
     @Test
     public void filterPlugins() {
-            final String PLUGIN = "flac"; // Use something that is likely to be there
+        final String PLUGIN = "vorbis"; // Use something that is likely to be there
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
         ElementFactory.make("playbin", "test");
-        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("vorbisdec", "vorbis");
         ElementFactory.make("decodebin", "decoder");
         final boolean[] filterCalled = { false };
         List<Plugin> plugins = registry.getPluginList(new Registry.PluginFilter() {
@@ -93,18 +93,18 @@ public class RegistryTest {
     }
     @Test
     public void listPluginFeatures() {
-        final String PLUGIN = "flac"; // Use something that is likely to be there
-        final String FEATURE = "flacdec";
+        final String PLUGIN = "vorbis"; // Use something that is likely to be there
+        final String FEATURE = "vorbisdec";
         Registry registry = Registry.getDefault();
         // Ensure some plugins are loaded
         ElementFactory.make("playbin", "test");
-        ElementFactory.make("flacdec", "flac");
+        ElementFactory.make("vorbisdec", "vorbis");
         ElementFactory.make("decodebin", "decoder");
         List<PluginFeature> features = registry.getPluginFeatureListByPlugin(PLUGIN);
         assertFalse("No plugin features found", features.isEmpty());
         boolean pluginFound = false;
         for (PluginFeature p : features) {
-            System.out.println("Found plugin feature " + p.getName());
+//            System.out.println("Found plugin feature " + p.getName());
             if (p.getName().equals(FEATURE)) {
                 pluginFound = true;
             }
