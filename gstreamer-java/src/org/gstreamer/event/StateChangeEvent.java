@@ -19,11 +19,23 @@
 
 package org.gstreamer.event;
 
+import org.gstreamer.GstObject;
+import org.gstreamer.State;
+
+
 /**
  *
  */
-public interface BinListener extends java.util.EventListener {
-    public void elementAdded(BinEvent evt);
-    public void elementRemoved(BinEvent evt);
+public class StateChangeEvent extends java.util.EventObject {
     
+    /**
+     * Creates a new instance of State
+     */
+    public StateChangeEvent(GstObject src, State o, State n, State p) {
+        super(src);
+        oldState = o;
+        newState = n;
+        pendingState = p;
+    }
+    public final State oldState, newState, pendingState;
 }

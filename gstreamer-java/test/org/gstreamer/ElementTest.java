@@ -68,6 +68,7 @@ public class ElementTest {
         Element element = ElementFactory.make("fakesrc", "fs");
         // This should exercise EnumMapper.intValue()
         element.setState(State.PLAYING);
+        element.setState(State.NULL);
     }
     @Test 
     public void getState() {
@@ -76,5 +77,6 @@ public class ElementTest {
         element.setState(State.PLAYING);
         State state = element.getState(-1);
         assertEquals("Element state not set correctly", State.PLAYING, element.getState(-1));
+        element.setState(State.NULL);
     }
 }

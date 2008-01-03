@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -19,11 +19,8 @@
 
 package org.gstreamer.event;
 
-/**
- *
- */
-public interface BinListener extends java.util.EventListener {
-    public void elementAdded(BinEvent evt);
-    public void elementRemoved(BinEvent evt);
-    
+public interface MessageListener extends java.util.EventListener {
+    public void errorMessage(MessageEvent evt);
+    public void warningMessage(MessageEvent evt);
+    public void informationMessage(MessageEvent evt);
 }

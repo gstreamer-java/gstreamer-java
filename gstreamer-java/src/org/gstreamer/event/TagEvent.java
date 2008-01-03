@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -19,11 +19,20 @@
 
 package org.gstreamer.event;
 
+import org.gstreamer.GstObject;
+import org.gstreamer.TagList;
+
 /**
  *
+ * @author wayne
  */
-public interface BinListener extends java.util.EventListener {
-    public void elementAdded(BinEvent evt);
-    public void elementRemoved(BinEvent evt);
-    
+public class TagEvent extends java.util.EventObject {
+    public TagEvent(GstObject source, TagList tagList) {
+        super(source);
+        this.tagList = tagList;
+    }
+    public TagList getTagList() {
+        return tagList;
+    }
+    private final TagList tagList;
 }

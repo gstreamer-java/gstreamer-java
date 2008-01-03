@@ -45,7 +45,9 @@ public class TagList extends Structure {
     TagList(Initializer init) {
         super(init);
     }
-    
+    public TagList() {
+        super(initializer(gst.gst_tag_list_new()));
+    }
     public String getString(Tag tag) {
         return getString(tag.getId(), 0);
     }

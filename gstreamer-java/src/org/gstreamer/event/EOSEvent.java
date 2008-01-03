@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (C) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -19,11 +19,11 @@
 
 package org.gstreamer.event;
 
-/**
- *
- */
-public interface BinListener extends java.util.EventListener {
-    public void elementAdded(BinEvent evt);
-    public void elementRemoved(BinEvent evt);
-    
+import org.gstreamer.GstObject;
+
+
+public class EOSEvent extends java.util.EventObject {
+    public EOSEvent(GstObject source) { 
+        super(source);
+    }
 }

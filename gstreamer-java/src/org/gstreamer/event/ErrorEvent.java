@@ -32,6 +32,13 @@ public class ErrorEvent extends java.util.EventObject {
         this.code = code;
         this.message = msg;
     }
+    public int getCode() {
+        return code;
+    }
+    public String getMessage() {
+        return message;
+    }
+    
     public final int code;
     public final String message;
 }

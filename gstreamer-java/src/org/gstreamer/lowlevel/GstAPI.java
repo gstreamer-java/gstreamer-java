@@ -37,8 +37,10 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Event;
 import org.gstreamer.Format;
+import org.gstreamer.GError;
 import org.gstreamer.GhostPad;
 import org.gstreamer.GstObject;
+import org.gstreamer.Message;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
@@ -53,7 +55,6 @@ import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
 import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
-import org.gstreamer.StaticPadTemplate;
 import org.gstreamer.Structure;
 import org.gstreamer.TagFlag;
 import org.gstreamer.TagList;
@@ -61,6 +62,7 @@ import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.annotations.AddRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 /**
@@ -126,8 +128,8 @@ public interface GstAPI extends Library {
     /* factory management */
     ElementFactory gst_element_get_factory(Element element);
     Bus gst_element_get_bus(Element element);
-    boolean gst_element_send_event(Element element, Event event);
-
+    boolean gst_element_send_event(Element element, @AddRef Event event);
+    boolean gst_element_post_message(Element element, @AddRef Message message);
 
     /* element class pad templates */
     void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);
@@ -262,6 +264,25 @@ public interface GstAPI extends Library {
     void gst_message_parse_segment_done(Pointer message, IntByReference format, LongByReference position);
     void gst_message_parse_duration(Pointer message, IntByReference format, LongByReference position);
     
+    Message gst_message_new_eos(GstObject src);
+    Message gst_message_new_error(GstObject src, GErrorStruct error, String debug);
+    Message gst_message_new_warning(GstObject src, GErrorStruct error, String debug);
+    Message gst_message_new_info(GstObject src, GErrorStruct error, String debug);
+    Message gst_message_new_tag(GstObject src, @Invalidate TagList tag_list);
+    Message gst_message_new_buffering(GstObject src, int percent);
+    Message gst_message_new_state_changed(GstObject src, State oldstate, State newstate, State pending);
+    Message gst_message_new_state_dirty(GstObject src);
+    Message gst_message_new_clock_provide(GstObject src, Clock clock, boolean ready);
+    Message gst_message_new_clock_lost(GstObject src, Clock clock);
+    Message gst_message_new_new_clock(GstObject src, Clock clock);
+    Message gst_message_new_application(GstObject src, Structure structure);
+    Message gst_message_new_element(GstObject src, Structure structure);
+    Message gst_message_new_segment_start(GstObject src, Format format, long position);
+    Message gst_message_new_segment_done(GstObject src, Format format, long position);
+    Message gst_message_new_duration(GstObject src, Format format, long duration);
+    Message gst_message_new_async_start(GstObject src, boolean new_base_time);
+    Message gst_message_new_async_done(GstObject src);
+    Message gst_message_new_latency(GstObject src);
     /*
      * gstparse functions
      */
