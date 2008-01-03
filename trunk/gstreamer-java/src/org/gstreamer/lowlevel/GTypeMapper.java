@@ -39,7 +39,7 @@ import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
-import org.gstreamer.lowlevel.annotations.AddRef;
+import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 /**
@@ -83,7 +83,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                         if (annotations[i] instanceof Invalidate) {
                             ((Handle) arg).invalidate();
                             break;
-                        } else if (annotations[i] instanceof AddRef) {
+                        } else if (annotations[i] instanceof IncRef) {
                             ((Handle) arg).ref();
                         }
                     }

@@ -62,7 +62,7 @@ import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
-import org.gstreamer.lowlevel.annotations.AddRef;
+import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 /**
@@ -128,8 +128,8 @@ public interface GstAPI extends Library {
     /* factory management */
     ElementFactory gst_element_get_factory(Element element);
     Bus gst_element_get_bus(Element element);
-    boolean gst_element_send_event(Element element, @AddRef Event event);
-    boolean gst_element_post_message(Element element, @AddRef Message message);
+    boolean gst_element_send_event(Element element, @IncRef Event event);
+    boolean gst_element_post_message(Element element, @IncRef Message message);
 
     /* element class pad templates */
     void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);
