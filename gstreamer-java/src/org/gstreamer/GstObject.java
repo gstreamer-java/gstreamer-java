@@ -90,24 +90,4 @@ public class GstObject extends GObject {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
         return GObject.objectFor(ptr, defaultClass, needRef);
     }
-    
-    //
-    // Returned objects have their refcount incremented by gstreamer.  If we
-    // have an existing object for the pointer, unref() it to remove the extra ref.
-    //
-    @SuppressWarnings("unchecked")
-    public static <T extends GstObject> T returnedObject(Pointer ptr, Class<T> defaultClass) {
-        logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass });
-        // Ignore null pointers
-        if (ptr == null) {
-            return null;
-        }
-        // Try to retrieve an existing instance for the pointer
-        NativeObject obj = NativeObject.instanceFor(ptr);
-        if (obj != null) {
-            obj.unref(); // Lose the extra ref added by gstreamer
-            return (T) obj;
-        }        
-        return NativeObject.objectFor(ptr, NativeObject.classFor(ptr, defaultClass), false);
-    }
 }

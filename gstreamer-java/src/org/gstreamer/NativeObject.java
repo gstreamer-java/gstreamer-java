@@ -212,10 +212,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     static class NativeRef extends WeakReference<NativeObject> {
         public NativeRef(NativeObject obj) {
             super(obj);
-            //handle = obj.handle();
         }
-        //public Pointer handle;
-
     }
     private AtomicBoolean disposed = new AtomicBoolean(false);
     private Pointer handle;
