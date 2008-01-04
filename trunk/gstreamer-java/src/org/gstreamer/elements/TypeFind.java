@@ -43,7 +43,6 @@ public final class TypeFind extends Element {
     public static interface HAVE_TYPE {
         void typeFound(Element elem, int probability, Caps caps);
     }
-    @Deprecated public static interface HAVETYPE extends HAVE_TYPE {}
     
     /**
      * Add a listener for the <code>have-type</code> signal.
