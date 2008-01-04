@@ -58,9 +58,6 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         return new Initializer(ptr, needRef, ownsHandle);
     }
     /** Creates a new instance of NativeObject */
-    protected NativeObject() {
-        this(defaultInit);
-    }
     protected NativeObject(Initializer init) {
         logger.entering("NativeObject", "<init>", new Object[] { init });
         logger.log(LIFECYCLE, "Creating " + getClass().getSimpleName() + " (" + init.ptr + ")");
