@@ -39,6 +39,7 @@ import org.gstreamer.State;
 import org.gstreamer.StateChangeReturn;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
@@ -97,11 +98,12 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             if (result == null) {
                 return null;
             }
-            if (context instanceof FunctionResultContext) {
+            if (context instanceof MethodResultContext) {
                 //
                 // By default, gstreamer increments the refcount on objects 
                 // returned from functions, so drop a ref here
                 //
+                boolean ownsHandle = ((MethodResultContext) context).getMethod().isAnnotationPresent(CallerOwnsReturn.class);
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), -1, true);
             }
             if (context instanceof CallbackParameterContext) {

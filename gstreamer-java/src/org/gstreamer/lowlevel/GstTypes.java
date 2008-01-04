@@ -30,6 +30,7 @@ import org.gstreamer.Bus;
 import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Event;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Message;
 import org.gstreamer.NativeObject;
@@ -37,6 +38,7 @@ import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
+import org.gstreamer.Query;
 import org.gstreamer.Registry;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
@@ -103,7 +105,9 @@ public class GstTypes {
         registerGType(gst.gst_registry_get_type(), Registry.class);
         // GstMiniObject types
         registerGType(gst.gst_buffer_get_type(), Buffer.class);
+        registerGType(gst.gst_event_get_type(), Event.class);
         registerGType(gst.gst_message_get_type(), Message.class);
+        registerGType(gst.gst_query_get_type(), Query.class);
     }
     
 }

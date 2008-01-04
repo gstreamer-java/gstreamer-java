@@ -184,7 +184,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     @SuppressWarnings("unchecked")
     protected static <T extends NativeObject> Class<T> classFor(Pointer ptr, Class<T> defaultClass) {
         Class<? extends NativeObject> cls = GstTypes.classFor(ptr);
-        return (cls != null) ? (Class<T>) cls : defaultClass; 
+        return (cls != null && defaultClass.isAssignableFrom(cls)) ? (Class<T>) cls : defaultClass; 
     }
     
     @Override
