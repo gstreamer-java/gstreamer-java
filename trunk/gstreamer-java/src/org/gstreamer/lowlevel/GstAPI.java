@@ -51,6 +51,8 @@ import org.gstreamer.PadTemplate;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
+import org.gstreamer.Query;
+import org.gstreamer.QueryType;
 import org.gstreamer.Registry;
 import org.gstreamer.SeekFlags;
 import org.gstreamer.SeekType;
@@ -61,8 +63,11 @@ import org.gstreamer.TagFlag;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
 import org.gstreamer.Time;
+import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+import org.gstreamer.lowlevel.annotations.Const;
 import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
@@ -85,9 +90,8 @@ public interface GstAPI extends Library {
      */
     GType gst_element_factory_get_type();
     ElementFactory gst_element_factory_find(String factoryName);
-    Pointer gst_element_factory_make(String factoryName, String elementName);
-    
-    Pointer gst_element_factory_create(ElementFactory factory, String elementName);
+    @CallerOwnsReturn Pointer gst_element_factory_make(String factoryName, String elementName);
+    @CallerOwnsReturn Pointer gst_element_factory_create(ElementFactory factory, String elementName);
     GType gst_element_factory_get_element_type(ElementFactory factory);
     String gst_element_factory_get_longname(ElementFactory factory);
     String gst_element_factory_get_klass(ElementFactory factory);
@@ -97,6 +101,10 @@ public interface GstAPI extends Library {
     int gst_element_factory_get_uri_type(ElementFactory factory);
     GList gst_element_factory_get_static_pad_templates(ElementFactory factory);
     
+    /* util elementfactory functions */
+    boolean gst_element_factory_can_src_caps(ElementFactory factory, @Const Caps caps);
+    boolean gst_element_factory_can_sink_caps(ElementFactory factory, @Const Caps caps);
+
     /*
      * GstElement methods
      */
@@ -112,9 +120,9 @@ public interface GstAPI extends Library {
     boolean gst_element_link_many(Element... elements);
     void gst_element_unlink_many(Element... elements);
     void gst_element_unlink(Element elem1, Element elem2);
-    Pad gst_element_get_pad(Element elem, String name);
-    Pad gst_element_get_static_pad(Element element, String name);
-    Pad gst_element_get_request_pad(Element element, String name);
+    @CallerOwnsReturn Pad gst_element_get_pad(Element elem, String name);
+    @CallerOwnsReturn Pad gst_element_get_static_pad(Element element, String name);
+    @CallerOwnsReturn Pad gst_element_get_request_pad(Element element, String name);
     void gst_element_release_request_pad(Element element, Pad pad);
     boolean gst_element_add_pad(Element elem, Pad pad);
     boolean gst_element_remove_pad(Element elem, Pad pad);
@@ -128,7 +136,7 @@ public interface GstAPI extends Library {
     Pointer gst_element_iterate_sink_pads(Element element);
     /* factory management */
     ElementFactory gst_element_get_factory(Element element);
-    Bus gst_element_get_bus(Element element);
+    @CallerOwnsReturn Bus gst_element_get_bus(Element element);
     boolean gst_element_send_event(Element element, @IncRef Event event);
     boolean gst_element_post_message(Element element, @IncRef Message message);
 
@@ -140,47 +148,51 @@ public interface GstAPI extends Library {
     GType gst_pad_template_get_type();
     GType gst_static_pad_template_get_type();
 
-    Pointer gst_pad_template_new(String name_template, PadDirection direction, 
-            /* GstPadPresence */ int presence, @IncRef Caps caps);
-
-    PadTemplate gst_static_pad_template_get(GstStaticPadTemplate pad_template);
-    Caps gst_static_pad_template_get_caps(GstStaticPadTemplate template);
-    Caps gst_pad_template_get_caps(PadTemplate template);
+    @CallerOwnsReturn Pointer gst_pad_template_new(String name_template, PadDirection direction, 
+            PadPresence presence, @IncRef Caps caps);
+    @CallerOwnsReturn PadTemplate gst_static_pad_template_get(GstStaticPadTemplate pad_template);
+    @CallerOwnsReturn Caps gst_static_pad_template_get_caps(GstStaticPadTemplate template);
+    @CallerOwnsReturn Caps gst_pad_template_get_caps(PadTemplate template);
     void gst_pad_template_pad_created(PadTemplate templ, Pad pad);
 
+    /* 
+     * gstevent.h functions
+     */
+    GType gst_event_get_type();
+    
     /* flush events */
-    Event gst_event_new_flush_start();
-    Event gst_event_new_flush_stop();
+    @CallerOwnsReturn Event gst_event_new_flush_start();
+    @CallerOwnsReturn Event gst_event_new_flush_stop();
     /* EOS event */
-    Event gst_event_new_eos();
+    @CallerOwnsReturn Event gst_event_new_eos();
 
     /*
      * GstGhostPad functions
      */
     GType gst_ghost_pad_get_type();
     
-    Pointer gst_ghost_pad_new(String name, Pad target);
-    Pointer gst_ghost_pad_new_no_target(String name, int direction);
+    @CallerOwnsReturn Pointer gst_ghost_pad_new(String name, Pad target);
+    @CallerOwnsReturn Pointer gst_ghost_pad_new_no_target(String name, int direction);
 
-    Pointer gst_ghost_pad_new_from_template(String name, Pad target, PadTemplate templ);
-    Pointer gst_ghost_pad_new_no_target_from_template(String name, PadTemplate templ);
+    @CallerOwnsReturn Pointer gst_ghost_pad_new_from_template(String name, Pad target, PadTemplate templ);
+    @CallerOwnsReturn Pointer gst_ghost_pad_new_no_target_from_template(String name, PadTemplate templ);
 
-    Pad gst_ghost_pad_get_target(GhostPad gpad);
+    @CallerOwnsReturn Pad gst_ghost_pad_get_target(GhostPad gpad);
     boolean gst_ghost_pad_set_target(GhostPad gpad, Pad newtarget);
 
     /*
      * GstPipeline
      */
-    Pointer gst_pipeline_new(String name);
+    @CallerOwnsReturn Pointer gst_pipeline_new(String name);
     GType gst_pipeline_get_type();
-    Bus gst_pipeline_get_bus(Pipeline pipeline);
+    @CallerOwnsReturn Bus gst_pipeline_get_bus(Pipeline pipeline);
     void gst_pipeline_set_auto_flush_bus(Pipeline pipeline, boolean flush);
     boolean gst_pipeline_get_auto_flush_bus(Pipeline pipeline);
     void gst_pipeline_set_new_stream_time(Pipeline pipeline, Time time);
     long gst_pipeline_get_last_stream_time(Pipeline pipeline);
     void gst_pipeline_use_clock(Pipeline pipeline, Clock clock);
     boolean gst_pipeline_set_clock(Pipeline pipeline, Clock clock);
-    Clock gst_pipeline_get_clock(Pipeline pipeline);
+    @CallerOwnsReturn Clock gst_pipeline_get_clock(Pipeline pipeline);
     void gst_pipeline_auto_clock(Pipeline pipeline);
     void gst_pipeline_set_delay(Pipeline pipeline, Time delay);
     long gst_pipeline_get_delay(Pipeline pipeline);
@@ -195,22 +207,29 @@ public interface GstAPI extends Library {
     void gst_object_sink(GstObject ptr);
     
     void gst_object_set_name(GstObject obj, String name);
-    @FreeReturnValue
-    String gst_object_get_name(GstObject obj); // returns a string - needs to be freed
+    @FreeReturnValue String gst_object_get_name(GstObject obj); // returns a string - needs to be freed
+    void gst_object_set_name_prefix(GstObject object, String name_prefix);
+    @FreeReturnValue String gst_object_get_name_prefix(GstObject object);
     
+    /* parentage routines */
+    boolean gst_object_set_parent(GstObject object, GstObject parent);
+    @CallerOwnsReturn GstObject gst_object_get_parent(GstObject object);
+    void gst_object_unparent(GstObject object);
+    boolean gst_object_has_ancestor(GstObject object, GstObject ancestor);
+
     /*
      * GstBin functions
      */
-    Pointer gst_bin_new(String name);
+    @CallerOwnsReturn Pointer gst_bin_new(String name);
     GType gst_bin_get_type();
     
     boolean gst_bin_add(Bin bin, Element element);
     void gst_bin_add_many(Bin bin, Element... elements);
     boolean gst_bin_remove(Bin bin, Element element);
     void gst_bin_remove_many(Bin bin, Element... elements);
-    Element gst_bin_get_by_name(Bin bin, String name);
-    Element gst_bin_get_by_name_recurse_up(Bin bin, String name);
-    Element gst_bin_get_by_interface(Bin bin, GType iface);
+    @CallerOwnsReturn Element gst_bin_get_by_name(Bin bin, String name);
+    @CallerOwnsReturn Element gst_bin_get_by_name_recurse_up(Bin bin, String name);
+    @CallerOwnsReturn Element gst_bin_get_by_interface(Bin bin, GType iface);
     Pointer gst_bin_iterate_elements(Bin bin);
     Pointer gst_bin_iterate_sorted(Bin bin);
     Pointer gst_bin_iterate_recurse(Bin bin);
@@ -224,9 +243,10 @@ public interface GstAPI extends Library {
     void gst_mini_object_ref(MiniObject ptr);
     void gst_mini_object_unref(MiniObject ptr);
     void gst_mini_object_unref(Pointer ptr);
-    Pointer gst_mini_object_copy(MiniObject mini_object);
+    @CallerOwnsReturn Pointer gst_mini_object_copy(MiniObject mini_object);
     boolean gst_mini_object_is_writable(MiniObject mini_object);
-    Pointer gst_mini_object_make_writable(MiniObject mini_object);
+    /* FIXME - invalidate the argument, and return a MiniObject */
+    @CallerOwnsReturn Pointer gst_mini_object_make_writable(MiniObject mini_object);
 
     /*
      * GstIterator functions
@@ -243,11 +263,13 @@ public interface GstAPI extends Library {
     boolean gst_bus_post(Bus bus, @IncRef Message message);
 
     boolean gst_bus_have_pending(Bus bus);
-    Message gst_bus_peek(Bus bus);
-    Message gst_bus_pop(Bus bus);
-    Message gst_bus_pop_filtered(Bus bus, MessageType types);
-    Message gst_bus_timed_pop(Bus bus, /* GstClockTime */ long timeout);
-    Message gst_bus_timed_pop_filtered(Bus bus, /* GstClockTime */ long timeout, MessageType types);
+    @CallerOwnsReturn Message gst_bus_peek(Bus bus);
+    @CallerOwnsReturn Message gst_bus_pop(Bus bus);
+    @CallerOwnsReturn Message gst_bus_pop_filtered(Bus bus, MessageType types);
+    @CallerOwnsReturn Message gst_bus_timed_pop(Bus bus, /* GstClockTime */ long timeout);
+    @CallerOwnsReturn Message gst_bus_timed_pop_filtered(Bus bus, /* GstClockTime */ long timeout, MessageType types);
+    /* polling the bus */
+    @CallerOwnsReturn Message gst_bus_poll(Bus bus, MessageType events, /* GstClockTimeDiff */ long timeout);
 
     void gst_bus_set_flushing(Bus ptr, int flushing);
     interface BusCallback extends GstCallback {
@@ -275,50 +297,49 @@ public interface GstAPI extends Library {
     void gst_message_parse_segment_start(Pointer message, IntByReference format, LongByReference position); 
     void gst_message_parse_segment_done(Pointer message, IntByReference format, LongByReference position);
     void gst_message_parse_duration(Pointer message, IntByReference format, LongByReference position);
-    
-    Message gst_message_new_eos(GstObject src);
-    Message gst_message_new_error(GstObject src, GErrorStruct error, String debug);
-    Message gst_message_new_warning(GstObject src, GErrorStruct error, String debug);
-    Message gst_message_new_info(GstObject src, GErrorStruct error, String debug);
-    Message gst_message_new_tag(GstObject src, @Invalidate TagList tag_list);
-    Message gst_message_new_buffering(GstObject src, int percent);
-    Message gst_message_new_state_changed(GstObject src, State oldstate, State newstate, State pending);
-    Message gst_message_new_state_dirty(GstObject src);
-    Message gst_message_new_clock_provide(GstObject src, Clock clock, boolean ready);
-    Message gst_message_new_clock_lost(GstObject src, Clock clock);
-    Message gst_message_new_new_clock(GstObject src, Clock clock);
-    Message gst_message_new_application(GstObject src, Structure structure);
-    Message gst_message_new_element(GstObject src, Structure structure);
-    Message gst_message_new_segment_start(GstObject src, Format format, long position);
-    Message gst_message_new_segment_done(GstObject src, Format format, long position);
-    Message gst_message_new_duration(GstObject src, Format format, long duration);
-    Message gst_message_new_async_start(GstObject src, boolean new_base_time);
-    Message gst_message_new_async_done(GstObject src);
-    Message gst_message_new_latency(GstObject src);
-    Message gst_message_new_custom(MessageType type, GstObject src, @Invalidate Structure structure);
+    @CallerOwnsReturn Message gst_message_new_eos(GstObject src);
+    @CallerOwnsReturn Message gst_message_new_error(GstObject src, GErrorStruct error, String debug);
+    @CallerOwnsReturn Message gst_message_new_warning(GstObject src, GErrorStruct error, String debug);
+    @CallerOwnsReturn Message gst_message_new_info(GstObject src, GErrorStruct error, String debug);
+    @CallerOwnsReturn Message gst_message_new_tag(GstObject src, @Invalidate TagList tag_list);
+    @CallerOwnsReturn Message gst_message_new_buffering(GstObject src, int percent);
+    @CallerOwnsReturn Message gst_message_new_state_changed(GstObject src, State oldstate, State newstate, State pending);
+    @CallerOwnsReturn Message gst_message_new_state_dirty(GstObject src);
+    @CallerOwnsReturn Message gst_message_new_clock_provide(GstObject src, Clock clock, boolean ready);
+    @CallerOwnsReturn Message gst_message_new_clock_lost(GstObject src, Clock clock);
+    @CallerOwnsReturn Message gst_message_new_new_clock(GstObject src, Clock clock);
+    @CallerOwnsReturn Message gst_message_new_application(GstObject src, Structure structure);
+    @CallerOwnsReturn Message gst_message_new_element(GstObject src, Structure structure);
+    @CallerOwnsReturn Message gst_message_new_segment_start(GstObject src, Format format, long position);
+    @CallerOwnsReturn Message gst_message_new_segment_done(GstObject src, Format format, long position);
+    @CallerOwnsReturn Message gst_message_new_duration(GstObject src, Format format, long duration);
+    @CallerOwnsReturn Message gst_message_new_async_start(GstObject src, boolean new_base_time);
+    @CallerOwnsReturn Message gst_message_new_async_done(GstObject src);
+    @CallerOwnsReturn Message gst_message_new_latency(GstObject src);
+    @CallerOwnsReturn Message gst_message_new_custom(MessageType type, GstObject src, @Invalidate Structure structure);
 
     /*
      * gstparse functions
      */
-    Pointer gst_parse_launch(String pipeline_description, PointerByReference error);
-    Pointer gst_parse_launchv(String[] pipeline_description, PointerByReference error);
+    @CallerOwnsReturn Pointer gst_parse_launch(String pipeline_description, PointerByReference error);
+    @CallerOwnsReturn Pointer gst_parse_launchv(String[] pipeline_description, PointerByReference error);
     
     /*
      * GstCaps functions
      */
     GType gst_caps_get_type();
-    Pointer gst_caps_new_empty();
-    Pointer gst_caps_new_any();
-    Pointer gst_caps_new_simple(String media_type, String fieldName, Object... args);
-    Pointer gst_caps_new_full(Structure... data);
+    @CallerOwnsReturn Pointer gst_caps_new_empty();
+    @CallerOwnsReturn Pointer gst_caps_new_any();
+    @CallerOwnsReturn Pointer gst_caps_new_simple(String media_type, String fieldName, Object... args);
+    @CallerOwnsReturn Pointer gst_caps_new_full(Structure... data);
     
     Pointer gst_caps_ref(Caps caps);
     Pointer gst_caps_unref(Caps caps);
     Pointer gst_caps_unref(Pointer caps);
-    Pointer gst_caps_copy(Caps caps);
-    Pointer gst_caps_from_string(String string);
+    @CallerOwnsReturn Pointer gst_caps_copy(Caps caps);
+    @CallerOwnsReturn Pointer gst_caps_from_string(String string);
     
-    Caps gst_caps_make_writable(@Invalidate Caps caps);
+    @CallerOwnsReturn Caps gst_caps_make_writable(@Invalidate Caps caps);
     
     /* manipulation */
     void gst_caps_append(Caps caps1, @Invalidate Caps caps2);
@@ -328,18 +349,16 @@ public interface GstAPI extends Library {
     void gst_caps_merge_structure(Caps caps, @Invalidate Structure structure);
     int gst_caps_get_size(Caps caps);
     Pointer gst_caps_get_structure(Caps caps, int index);
-    Pointer gst_caps_copy_nth(Caps caps, int nth);
+    @CallerOwnsReturn Caps gst_caps_copy_nth(Caps caps, int nth);
     void gst_caps_truncate(Caps caps);
     void gst_caps_set_simple(Caps caps, String field, Object... values);
     /* operations */
-
-    Caps gst_caps_intersect( Caps caps1,  Caps caps2);
-    Caps gst_caps_subtract( Caps minuend,  Caps subtrahend);
-    Caps gst_caps_union( Caps caps1,  Caps caps2);
-    Caps gst_caps_normalize( Caps caps);
-    boolean gst_caps_do_simplify( Caps caps);
-    @FreeReturnValue
-    String gst_caps_to_string(Caps caps);
+    @CallerOwnsReturn Caps gst_caps_intersect( Caps caps1,  Caps caps2);
+    @CallerOwnsReturn Caps gst_caps_subtract( Caps minuend,  Caps subtrahend);
+    @CallerOwnsReturn Caps gst_caps_union( Caps caps1,  Caps caps2);
+    @CallerOwnsReturn Caps gst_caps_normalize( Caps caps);
+    boolean gst_caps_do_simplify(Caps caps);
+    @FreeReturnValue String gst_caps_to_string(Caps caps);
     /* tests */
 
     boolean gst_caps_is_any(Caps caps);
@@ -349,7 +368,10 @@ public interface GstAPI extends Library {
     boolean gst_caps_is_subset(Caps subset,  Caps superset);
     boolean gst_caps_is_equal(Caps caps1,  Caps caps2);
     boolean gst_caps_is_equal_fixed(Caps caps1,  Caps caps2);
+    
+    
     GType gst_static_caps_get_type();
+    /* static_caps_get returns a static Caps reference - do not deref */
     Caps gst_static_caps_get(GstStaticCaps static_caps);
     
     public class GstCaps extends com.sun.jna.Structure {
@@ -381,13 +403,12 @@ public interface GstAPI extends Library {
     void gst_structure_free(Pointer ptr);
     boolean gst_structure_get_int(Structure structure, String fieldname, IntByReference value);
     boolean gst_structure_fixate_field_nearest_int(Structure structure, String field, int target);
-    @FreeReturnValue
-    String gst_structure_to_string(Structure structure);
-    Pointer gst_structure_from_string(String data, PointerByReference end);
-    Pointer gst_structure_empty_new(String name);
+    @FreeReturnValue String gst_structure_to_string(Structure structure);
+    @CallerOwnsReturn Pointer gst_structure_from_string(String data, PointerByReference end);
+    @CallerOwnsReturn Pointer gst_structure_empty_new(String name);
     //Pointer gst_structure_id_empty_new(GQuark                   quark);
-    Pointer gst_structure_new(String name, String firstField, Object... args);
-    Structure gst_structure_copy(Structure src);
+    @CallerOwnsReturn Pointer gst_structure_new(String name, String firstField, Object... args);
+    @CallerOwnsReturn Structure gst_structure_copy(Structure src);
     void gst_structure_remove_field(Structure structure, String fieldName);
     void gst_structure_remove_fields(Structure structure, String... fieldNames);
     void gst_structure_remove_all_fields(Structure structure);
@@ -427,13 +448,13 @@ public interface GstAPI extends Library {
     interface TagMergeFunc extends GstCallback {
         void callback(Pointer dest, Pointer src);
     }
-    Pointer gst_tag_list_new();
+    @CallerOwnsReturn Pointer gst_tag_list_new();
     void gst_tag_list_free(Pointer list);
     boolean gst_is_tag_list(TagList p);
-    Pointer gst_tag_list_copy(TagList list);
+    @CallerOwnsReturn Pointer gst_tag_list_copy(TagList list);
     boolean gst_tag_list_is_empty(TagList list);
     void gst_tag_list_insert(TagList into, TagList from, TagMergeMode mode);
-    Pointer gst_tag_list_merge(TagList list1, TagList list2, TagMergeMode mode);
+    @CallerOwnsReturn Pointer gst_tag_list_merge(TagList list1, TagList list2, TagMergeMode mode);
     int gst_tag_list_get_tag_size(TagList list, TagList tag);
     void gst_tag_list_remove_tag(TagList list, TagList tag);
     void gst_tag_list_foreach(TagList list, TagForeachFunc func, Pointer user_data);
@@ -486,18 +507,23 @@ public interface GstAPI extends Library {
      * GstPad functions
      */
     GType gst_pad_get_type();
-    Pointer gst_pad_new(String name, PadDirection direction);
-    Pointer gst_pad_new_from_template(PadTemplate templ, String name);
+    @CallerOwnsReturn Pointer gst_pad_new(String name, PadDirection direction);
+    @CallerOwnsReturn Pointer gst_pad_new_from_template(PadTemplate templ, String name);
 
-    @FreeReturnValue
-    String gst_pad_get_name(Pad pad); // Returns a string that needs to be freed
+    @FreeReturnValue String gst_pad_get_name(Pad pad);
     PadLinkReturn gst_pad_link(Pad src, Pad sink);
     boolean gst_pad_unlink(Pad src, Pad sink);
     boolean gst_pad_is_linked(Pad pad);
-    Pad gst_pad_get_peer(Pad pad);
-    boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
+    @CallerOwnsReturn Pad gst_pad_get_peer(Pad pad);
     PadDirection gst_pad_get_direction(Pad pad);
-    Element gst_pad_get_parent_element(Pad pad);
+    /* pad functions from gstutils.h */
+    boolean gst_pad_can_link(Pad srcpad, Pad sinkpad);
+
+    void gst_pad_use_fixed_caps(Pad pad);
+    @CallerOwnsReturn Caps gst_pad_get_fixed_caps_func(Pad pad);
+    @CallerOwnsReturn Caps gst_pad_proxy_getcaps(Pad pad);
+    boolean gst_pad_proxy_setcaps(Pad pad, Caps caps);
+    @CallerOwnsReturn Element gst_pad_get_parent_element(Pad pad);
     
 
     boolean gst_pad_set_active(Pad pad, boolean active);
@@ -507,16 +533,20 @@ public interface GstAPI extends Library {
     boolean gst_pad_set_blocked(Pad pad, boolean blocked);
     boolean gst_pad_is_blocked(Pad pad);
     boolean gst_pad_is_blocking(Pad pad);
+    /* get_pad_template returns a non-refcounted PadTemplate */
     PadTemplate gst_pad_get_pad_template(Pad pad);
     
     /* capsnego function for connected/unconnected pads */
-    Caps gst_pad_get_caps(Pad  pad);
-    void gst_pad_fixate_caps(Pad  pad, Caps caps);
-    boolean gst_pad_accept_caps(Pad  pad, Caps caps);
-    boolean gst_pad_set_caps(Pad  pad, Caps caps);
-
-    Caps gst_pad_peer_get_caps(Pad  pad);
-    boolean gst_pad_peer_accept_caps(Pad  pad, Caps caps);
+    @CallerOwnsReturn Caps gst_pad_get_caps(Pad  pad);
+    void gst_pad_fixate_caps(Pad pad, Caps caps);
+    boolean gst_pad_accept_caps(Pad pad, Caps caps);
+    boolean gst_pad_set_caps(Pad pad, Caps caps);
+    @CallerOwnsReturn Caps gst_pad_peer_get_caps(Pad pad);
+    boolean gst_pad_peer_accept_caps(Pad pad, Caps caps);
+    
+    /* capsnego for connected pads */
+    @CallerOwnsReturn Caps gst_pad_get_allowed_caps(Pad pad);
+    @CallerOwnsReturn Caps gst_pad_get_negotiated_caps(Pad pad);
 
     /* data passing functions to peer */
     FlowReturn gst_pad_push(Pad pad, @IncRef Buffer buffer);
@@ -530,26 +560,28 @@ public interface GstAPI extends Library {
     FlowReturn gst_pad_get_range(Pad pad, /* guint64 */ long offset, /* guint */ int size,
         Buffer[] buffer);
     boolean gst_pad_send_event(Pad pad, @IncRef Event event);
-
-    /* capsnego for connected pads */
-    Caps gst_pad_get_allowed_caps(Pad pad);
-    Caps gst_pad_get_negotiated_caps(Pad pad);
-
+    
     /*
      * GstBuffer functions
      */
     GType gst_buffer_get_type();   
-    Pointer gst_buffer_new();
-    Pointer gst_buffer_new_and_alloc(int size);
-    Buffer gst_buffer_try_new_and_alloc(int size);
+    @CallerOwnsReturn Pointer gst_buffer_new();
+    @CallerOwnsReturn Pointer gst_buffer_new_and_alloc(int size);
+    @CallerOwnsReturn Buffer gst_buffer_try_new_and_alloc(int size);
     boolean gst_buffer_is_metadata_writable(Buffer buf);
     Buffer gst_buffer_make_metadata_writable(Buffer buf);
     /* creating a subbuffer */
-    Buffer gst_buffer_create_sub(Buffer parent, int offset, int size);
-
-    Caps gst_buffer_get_caps(Buffer buffer);
+    @CallerOwnsReturn Buffer gst_buffer_create_sub(Buffer parent, int offset, int size);
+    
+    @CallerOwnsReturn Caps gst_buffer_get_caps(Buffer buffer);
     void gst_buffer_set_caps(Buffer buffer, Caps caps);
-
+    /* span two buffers intelligently */
+    boolean gst_buffer_is_span_fast(Buffer buf1, Buffer buf2);
+    @CallerOwnsReturn Buffer gst_buffer_span(Buffer buf1, int offset, Buffer buf2, int len);
+    /* buffer functions from gstutils.h */
+    @CallerOwnsReturn Buffer gst_buffer_merge(Buffer buf1, Buffer buf2);
+    @CallerOwnsReturn Buffer gst_buffer_join(Buffer buf1, Buffer buf2);
+    
     public class GstStaticPadTemplate extends com.sun.jna.Structure {
         public volatile String name_template;
         public volatile PadDirection direction;
@@ -560,6 +592,65 @@ public interface GstAPI extends Library {
             read();
         }
     }
+    
+    /*
+     * GstQuery functions
+     */
+    String gst_query_type_get_name(QueryType query);
+    GQuark gst_query_type_to_quark(QueryType query);
+
+    GType gst_query_get_type();
+
+    /* register a new query */
+    QueryType gst_query_type_register(String nick, String description);
+    QueryType gst_query_type_get_by_nick(String nick);
+
+    /* position query */
+    @CallerOwnsReturn Query gst_query_new_position(Format format);
+    void gst_query_set_position(Query query, Format format, /* gint64 */ long cur);
+    void gst_query_parse_position(Query query, int[] format, /* gint64 * */ long[] cur);
+
+    /* duration query */
+    @CallerOwnsReturn Query gst_query_new_duration(Format format);
+    void gst_query_set_duration(Query query, Format format, /* gint64 */ long duration);
+    void gst_query_parse_duration(Query query, /* Format **/ int[] format, /* gint64 * */ long[] duration);
+
+    /* latency query */
+    @CallerOwnsReturn Query gst_query_new_latency();
+    void gst_query_set_latency(Query query, boolean live, /* GstClockTime */ long min_latency,
+         /* GstClockTime */ long max_latency);
+    void gst_query_parse_latency(Query query, boolean[] live, /* GstClockTime * */ long[] min_latency, 
+		                                 /*GstClockTime * */ long[] max_latency);
+
+    /* convert query */
+    @CallerOwnsReturn Query gst_query_new_convert(Format src_format, /* gint64 */ long value, Format dest_format);
+    void gst_query_set_convert(Query query, Format src_format, /* gint64 */ long src_value,
+						 Format dest_format, /* gint64 */ long dest_value);
+    void gst_query_parse_convert(Query query, /* GstFormat **/ int[] src_format, /*gint64 **/ long[] src_value,
+						 /*GstFormat **/ int[] dest_format, /*gint64 **/ long[] dest_value);
+    /* segment query */
+    @CallerOwnsReturn Query gst_query_new_segment(Format format);
+    void gst_query_set_segment(Query query, double rate, Format format,
+         /* gint64 */ long start_value, /* gint64 */ long stop_value);
+    void gst_query_parse_segment(Query query, double[] rate, /*GstFormat **/ int[] format,
+         /* gint64 * */ long[] start_value, /* gint64 * */ long[] stop_value);
+
+    /* application specific query */
+    @CallerOwnsReturn Query gst_query_new_application(QueryType type, Structure structure);
+    Structure gst_query_get_structure(Query query);
+
+    /* seeking query */
+    @CallerOwnsReturn Query gst_query_new_seeking(Format format);
+    void gst_query_set_seeking(Query query, Format format,
+        boolean seekable, /* gint64 */ long segment_start, /* gint64 */ long segment_end);
+    void gst_query_parse_seeking(Query query, /* Format * */int[] format,
+        boolean[] seekable, /* gint64 * */ long[] segment_start, /* gint64 * */ long[] segment_end);
+    /* formats query */
+    @CallerOwnsReturn Query gst_query_new_formats();
+    void gst_query_set_formats(Query query, int n_formats, Object... formats);
+    void gst_query_set_formatsv(Query query, int n_formats, /* GstFormat * */ int[] formats);
+    void gst_query_parse_formats_length(Query query, int[] n_formats);
+    void gst_query_parse_formats_nth(Query query, int nth, /*GstFormat * */ int[] format);
 
     /*
      * GstPlugin functions
@@ -593,8 +684,8 @@ public interface GstAPI extends Library {
 
     //Plugin 		gst_plugin_load_file		(String filename, GError** error);
 
-    Plugin gst_plugin_load(Plugin plugin);
-    Plugin gst_plugin_load_by_name(String name);
+    @CallerOwnsReturn Plugin gst_plugin_load(Plugin plugin);
+    @CallerOwnsReturn Plugin gst_plugin_load_by_name(String name);
     void gst_plugin_list_free(GList list);
     
     static interface PluginFeatureFilter extends GstCallback {
@@ -610,7 +701,7 @@ public interface GstAPI extends Library {
     /* normal GObject stuff */
     GType gst_plugin_feature_get_type();
 
-    PluginFeature gst_plugin_feature_load(PluginFeature feature);
+    @CallerOwnsReturn PluginFeature gst_plugin_feature_load(PluginFeature feature);
     class TypeNameData extends com.sun.jna.Structure {
         public String name;
         public GType type;
@@ -630,13 +721,13 @@ public interface GstAPI extends Library {
      */
     /* normal GObject stuff */
     GType gst_registry_get_type();
-
+    /* registry_get_default returns a non-refcounted object */
     Pointer gst_registry_get_default();
     boolean gst_registry_scan_path(Registry registry, String path);
     GList gst_registry_get_path_list(Registry registry);
 
     boolean gst_registry_add_plugin(Registry registry, Plugin plugin);
-    void gst_registry_remove_plugin	(Registry registry, Plugin plugin);
+    void gst_registry_remove_plugin(Registry registry, Plugin plugin);
     boolean gst_registry_add_feature(Registry  registry, PluginFeature feature);
     void gst_registry_remove_feature(Registry  registry, PluginFeature feature);
     GList gst_registry_get_plugin_list(Registry registry);
@@ -646,12 +737,12 @@ public interface GstAPI extends Library {
     							 Pointer user_data);
     GList gst_registry_get_feature_list(Registry registry, GType type);
     GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
+    
+    @CallerOwnsReturn Plugin gst_registry_find_plugin(Registry registry, String name);
+    @CallerOwnsReturn PluginFeature gst_registry_find_feature(Registry registry, String name, GType type);
 
-    Plugin gst_registry_find_plugin(Registry registry, String name);
-    PluginFeature gst_registry_find_feature(Registry registry, String name, GType type);
-
-    Plugin gst_registry_lookup(Registry registry, String filename);
-    PluginFeature gst_registry_lookup_feature(Registry registry, String name);
+    @CallerOwnsReturn Plugin gst_registry_lookup(Registry registry, String filename);
+    @CallerOwnsReturn PluginFeature gst_registry_lookup_feature(Registry registry, String name);
 
 
     boolean gst_registry_binary_read_cache(Registry registry, String location);
@@ -800,7 +891,6 @@ public interface GstAPI extends Library {
     };
 
     public final static class Segment {}
-    public final static class Query {}
     
     public final class BufferStruct extends com.sun.jna.Structure {
         volatile public MiniObjectStruct mini_object;

@@ -1,7 +1,9 @@
 /* 
- * Copyright (C) 2007 Wayne Meissner
+ * Copyright (C) 2008 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
- *                    2000 Wim Taymans <wtay@chello.be>
+ *                    2000 Wim Taymans <wim.taymans@chello.be>
+ *                    2005 Wim Taymans <wim@fluendo.com>
+ * 
  * 
  * This file is part of gstreamer-java.
  *
@@ -21,19 +23,28 @@
 
 package org.gstreamer;
 
-import java.util.logging.Logger;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-
-
-public class PadTemplate extends GstObject {
-    static Logger logger = Logger.getLogger(PadTemplate.class.getName());
-    
-    /** Creates a new proxy for PadTemplate */
-    PadTemplate(Initializer init) {
-        super(init);
-    }
-    public PadTemplate(String nameTemplate, PadDirection direction, Caps caps) {
-        this(initializer(gst.gst_pad_template_new(nameTemplate, direction, PadPresence.ALWAYS, caps)));
-    }
+/**
+ * Standard predefined Query types
+ */
+public enum QueryType {
+    /** invalid query type */
+    NONE,
+    /** current position in stream */
+    POSITION,
+    /** total duration of the stream */
+    DURATION,
+    /** latency of stream */
+    LATENCY,
+    /** current jitter of stream */
+    JITTER,
+    /** current rate of the stream */
+    RATE,
+    /** seeking capabilities */
+    SEEKING,
+    /** segment start/stop positions */
+    SEGMENT,
+    /** convert values between formats */
+    CONVERT,
+    /** query supported formats for convert */
+    FORMATS
 }

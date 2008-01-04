@@ -1,8 +1,6 @@
 /* 
- * Copyright (C) 2007 Wayne Meissner
- * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
- *                    2000 Wim Taymans <wtay@chello.be>
- * 
+ * Copyright (C) 2008 Wayne Meissner
+ *
  * This file is part of gstreamer-java.
  *
  * gstreamer-java is free software: you can redistribute it and/or modify
@@ -20,20 +18,20 @@
  */
 
 package org.gstreamer;
-
-import java.util.logging.Logger;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 
-public class PadTemplate extends GstObject {
-    static Logger logger = Logger.getLogger(PadTemplate.class.getName());
-    
-    /** Creates a new proxy for PadTemplate */
-    PadTemplate(Initializer init) {
+public class Query extends MiniObject {
+    public Query(Initializer init) {
         super(init);
     }
-    public PadTemplate(String nameTemplate, PadDirection direction, Caps caps) {
-        this(initializer(gst.gst_pad_template_new(nameTemplate, direction, PadPresence.ALWAYS, caps)));
+    public static Query newPosition(Format format) {
+        return gst.gst_query_new_position(format);
+    }
+    public static Query newDuration(Format format) {
+        return gst.gst_query_new_duration(format);
+    }
+    public static Query newLatency() {
+        return gst.gst_query_new_latency();
     }
 }
