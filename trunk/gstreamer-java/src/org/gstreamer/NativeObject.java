@@ -34,7 +34,7 @@ import org.gstreamer.lowlevel.GstTypes;
  */
 public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     private static Logger logger = Logger.getLogger(NativeObject.class.getName());
-    static Level LIFECYCLE = Level.FINE;
+    public static Level LIFECYCLE = Level.FINE;
     
     // Use this as a dummy arg to identify the default constructor
     protected static class Initializer {
@@ -116,13 +116,13 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     protected Object nativeValue() {
         return handle();
     }
-    Pointer handle() {
+    protected Pointer handle() {
         if (disposed.get()) {
             throw new IllegalStateException("Native object has been disposed");
         }
         return handle;
     }
-    static NativeObject instanceFor(Pointer ptr) {
+    protected static NativeObject instanceFor(Pointer ptr) {
         WeakReference<NativeObject> ref = instanceMap.get(ptr);
         
         //
@@ -216,7 +216,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     }
     private AtomicBoolean disposed = new AtomicBoolean(false);
     private Pointer handle;
-    final AtomicBoolean ownsHandle = new AtomicBoolean(false);
-    final NativeRef nativeRef;
+    protected final AtomicBoolean ownsHandle = new AtomicBoolean(false);
+    private final NativeRef nativeRef;
     private static ConcurrentHashMap<Pointer, NativeRef> instanceMap = new ConcurrentHashMap<Pointer, NativeRef>();
 }
