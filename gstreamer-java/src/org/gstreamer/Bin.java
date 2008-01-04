@@ -217,17 +217,6 @@ public class Bin extends Element {
     }
     
     /**
-     * @deprecated Use {@link ELEMENT_ADDED} instead
-     */
-    @Deprecated
-    public static interface ELEMENTADDED extends ELEMENT_ADDED { }
-    /**
-     * @deprecated Use {@link ELEMENT_REMOVED} instead
-     */
-    @Deprecated
-    public static interface ELEMENTREMOVED extends ELEMENT_REMOVED { }
-    
-    /**
      * Add a listener for the <code>element-added</code> signal on this Bin
      * 
      * @param listener The listener to be called when an {@link Element} is added.

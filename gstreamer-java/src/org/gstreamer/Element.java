@@ -328,22 +328,6 @@ public class Element extends GstObject {
     public static interface HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
-    /**
-     * Signal emitted when this {@link org.gstreamer.elements.DecodeBin} decodes a new pad.
-     * @deprecated use {@link org.gstreamer.elements.DecodeBin.NEW_DECODED_PAD} instead.
-     */
-    @Deprecated
-    public static interface NEW_DECODED_PAD {
-        public void newDecodedPad(Element element, Pad pad, boolean last);
-    }
-    @Deprecated
-    public static interface PADADDED extends PAD_ADDED {}
-    @Deprecated
-    public static interface PADREMOVED extends PAD_REMOVED {}
-    @Deprecated
-    public static interface NOMOREPADS extends NO_MORE_PADS {}
-    @Deprecated
-    public static interface NEWDECODEDPAD extends NEW_DECODED_PAD {}
     
     /**
      * Add a listener for the <code>pad-added</code> signal
@@ -414,29 +398,6 @@ public class Element extends GstObject {
         disconnect(NO_MORE_PADS.class, listener);
     }
     
-    /**
-     * Add a listener for the <code>new-decoded-pad</code> signal
-     * 
-     * @param listener Listener to be called when a new {@link Pad} is encountered
-     * on the {@link Element}
-     */
-    public void connect(final NEW_DECODED_PAD listener) {
-        connect("new-decoded-pad", NEW_DECODED_PAD.class, listener, new GstCallback() {
-            @SuppressWarnings("unused")
-            public void callback(Element elem, Pad pad, boolean last) {
-                listener.newDecodedPad(elem, pad, last);
-            }
-        });
-    }
-    
-    /**
-     * Remove a listener for the <code>new-decoded-pad</code> signal
-     * 
-     * @param listener The listener that was previously added.
-     */
-    public void disconnect(NEW_DECODED_PAD listener) {
-        disconnect(NEW_DECODED_PAD.class, listener);
-    }
     /**
      * Add a listener for the <code>handoff</code> signal on this Bin
      * 

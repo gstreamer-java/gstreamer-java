@@ -334,11 +334,6 @@ public class Pad extends GstObject {
         public void requestLink(Pad pad, Pad peer);
     }
     
-    @Deprecated
-    public static interface HAVEDATA extends HAVE_DATA {}
-    @Deprecated
-    public static interface REQUESTLINK extends REQUEST_LINK {}
-    
     /**
      * Add a listener for the <code>have-data</code> signal on this {@link Pad}
      * 

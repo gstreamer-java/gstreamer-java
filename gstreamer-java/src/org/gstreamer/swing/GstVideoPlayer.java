@@ -153,20 +153,6 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     public void setInputFile(File file) {
         mediaPlayer.setURI(file.toURI());
     }
-    /**
-     * Use getMediaPlayer().addMediaListener() instead
-     */
-    @Deprecated
-    public void addMediaListener(MediaListener listener) {
-        mediaPlayer.addMediaListener(listener);        
-    }
-    /**
-     * Use getMediaPlayer().addMediaListener() instead
-     */
-    @Deprecated
-    public void removeMediaListener(MediaListener listener) {
-        mediaPlayer.removeMediaListener(listener);
-    }
     
     /**
      * Obtain the MediaPlayer instance used by this VideoPlayer
@@ -175,28 +161,7 @@ public class GstVideoPlayer extends javax.swing.JPanel {
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
-    /**
-     * Use getMediaPlayer().pause() instead.
-     */
-    @Deprecated
-    public void pause() {
-        mediaPlayer.pause();
-    }
-    /**
-     * Use getMediaPlayer().play() instead.
-     */
-    @Deprecated
-    public void play() {
-        mediaPlayer.play();
-    }
     
-    /**
-     * Use getMediaPlayer().stop() instead.
-     */
-    @Deprecated
-    public void stop() {
-        mediaPlayer.stop();
-    }
     ImageIcon playIcon = loadIcon("actions/media-playback-start");
     ImageIcon pauseIcon = loadIcon("actions/media-playback-pause");
     ImageIcon stopIcon = loadIcon("actions/media-playback-stop");
@@ -247,10 +212,10 @@ public class GstVideoPlayer extends javax.swing.JPanel {
         }
         public void actionPerformed(ActionEvent e) {
             if (mediaPlayer.isPlaying()) {
-                pause();
+                mediaPlayer.pause();
                 setState(State.PAUSED);
             } else {
-                play();
+                mediaPlayer.play();
                 setState(State.PLAYING);
             }
         }
