@@ -219,7 +219,6 @@ public class Element extends GstObject {
      * pad does not belong to the provided element.
      */
     public boolean removePad(Pad pad) {
-        pad.ref(); // FIXME the comment says this seems to be needed.
         return gst.gst_element_remove_pad(this, pad);
     }
     
@@ -283,7 +282,6 @@ public class Element extends GstObject {
      * @return true if the event was handled.
      */
     public boolean sendEvent(Event ev) {
-        ev.ref(); // send_event takes ownership, so need a ref here to keep using it
         return gst.gst_element_send_event(this, ev);
     }
     /**
