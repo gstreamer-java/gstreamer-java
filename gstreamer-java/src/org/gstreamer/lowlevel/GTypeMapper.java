@@ -22,7 +22,6 @@ package org.gstreamer.lowlevel;
 import com.sun.jna.CallbackParameterContext;
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.FromNativeConverter;
-import com.sun.jna.FunctionResultContext;
 import com.sun.jna.MethodParameterContext;
 import com.sun.jna.MethodResultContext;
 import com.sun.jna.Pointer;
@@ -31,12 +30,8 @@ import com.sun.jna.ToNativeContext;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import org.gstreamer.NativeObject;
-import org.gstreamer.State;
-import org.gstreamer.StateChangeReturn;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
@@ -86,6 +81,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                             break;
                         } else if (annotations[i] instanceof IncRef) {
                             ((Handle) arg).ref();
+                            break;
                         }
                     }
                 }
@@ -104,7 +100,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                 // returned from functions, so drop a ref here
                 //
                 boolean ownsHandle = ((MethodResultContext) context).getMethod().isAnnotationPresent(CallerOwnsReturn.class);
-                return NativeObject.objectFor((Pointer) result, context.getTargetType(), -1, true);
+                int refadj = ownsHandle ? -1 : 0;
+                return NativeObject.objectFor((Pointer) result, context.getTargetType(), refadj, ownsHandle);
             }
             if (context instanceof CallbackParameterContext) {
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);

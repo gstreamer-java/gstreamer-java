@@ -125,7 +125,7 @@ public interface GstAPI extends Library {
     @CallerOwnsReturn Pad gst_element_get_request_pad(Element element, String name);
     void gst_element_release_request_pad(Element element, Pad pad);
     boolean gst_element_add_pad(Element elem, Pad pad);
-    boolean gst_element_remove_pad(Element elem, Pad pad);
+    boolean gst_element_remove_pad(Element elem, @IncRef Pad pad);
     boolean gst_element_link_pads(Element src, String srcpadname, Element dest, String destpadname);
     void gst_element_unlink_pads(Element src, String srcpadname, Element dest, String destpadname);
     boolean gst_element_link_pads_filtered(Element src, String srcpadname, Element dest, String destpadname,
