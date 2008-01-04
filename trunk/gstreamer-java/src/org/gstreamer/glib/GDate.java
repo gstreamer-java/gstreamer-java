@@ -20,7 +20,7 @@
 package org.gstreamer.glib;
 
 import com.sun.jna.Pointer;
-import org.gstreamer.NativeObject;
+import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GlibAPI;
 
 

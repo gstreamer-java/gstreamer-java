@@ -31,7 +31,7 @@ import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import org.gstreamer.NativeObject;
+import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
