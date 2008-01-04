@@ -17,8 +17,9 @@
  * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer;
+package org.gstreamer.lowlevel;
 
+import org.gstreamer.*;
 import com.sun.jna.Pointer;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
@@ -27,14 +28,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.gstreamer.lowlevel.GstTypes;
 
 /**
  *
  */
 public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
-    private static Logger logger = Logger.getLogger(NativeObject.class.getName());
-    public static Level LIFECYCLE = Level.FINE;
+    private static final Logger logger = Logger.getLogger(NativeObject.class.getName());
+    public static final Level LIFECYCLE = Level.FINE;
     
     // Use this as a dummy arg to identify the default constructor
     protected static class Initializer {

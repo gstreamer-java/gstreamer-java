@@ -19,6 +19,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.Collections;

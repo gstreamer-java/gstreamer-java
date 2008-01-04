@@ -19,6 +19,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;

@@ -20,6 +20,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
 import java.util.Collections;
 import java.util.Map;

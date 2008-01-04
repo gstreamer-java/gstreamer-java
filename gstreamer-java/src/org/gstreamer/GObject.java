@@ -19,6 +19,7 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;

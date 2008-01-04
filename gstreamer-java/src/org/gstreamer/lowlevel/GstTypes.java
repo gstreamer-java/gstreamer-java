@@ -33,7 +33,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Event;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Message;
-import org.gstreamer.NativeObject;
+import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Plugin;
