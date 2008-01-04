@@ -39,7 +39,7 @@ import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 public abstract class GObject extends NativeObject {
     private static final Logger logger = Logger.getLogger(GObject.class.getName());
     private static final Level DEBUG = Level.FINE;
-    private static final Level LIFECYCLE = NativeObject.LIFECYCLE;
+    private static final Level LIFECYCLE = Level.FINE;
     
     protected GObject(Initializer init) { 
         super(initializer(init.ptr, false, init.ownsHandle));
