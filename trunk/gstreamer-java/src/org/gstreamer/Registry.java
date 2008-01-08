@@ -118,7 +118,7 @@ public class Registry extends GstObject {
                 false, false);
     }
     /** Creates a new instance of Registry */
-    protected Registry(Initializer init) {
+    public Registry(Initializer init) {
         super(init);
     }
     

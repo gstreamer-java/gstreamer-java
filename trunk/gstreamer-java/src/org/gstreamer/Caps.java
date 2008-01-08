@@ -122,7 +122,7 @@ public class Caps extends NativeObject {
         return new Initializer(ptr, false, true);
     }
     
-    protected Caps(Initializer init) {
+    public Caps(Initializer init) {
         super(init);
     }
     
@@ -307,7 +307,8 @@ public class Caps extends NativeObject {
          * #GstCaps should not be modified.
          */
         // The above means we return a Structure proxy which does not own the pointer.
-        return Structure.objectFor(gst.gst_caps_get_structure(this, index), false, false);
+        // gst_caps_get_structure is not marked as CallerOwnsReturn, so it should work
+        return gst.gst_caps_get_structure(this, index);
     }
     
     @Override

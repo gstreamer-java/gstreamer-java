@@ -59,7 +59,7 @@ import org.gstreamer.lowlevel.GstTypes;
  */
 public class Bin extends Element {
     
-    protected Bin(Initializer init) { 
+    public Bin(Initializer init) { 
         super(init);
     }
     
@@ -222,7 +222,7 @@ public class Bin extends Element {
      * @param listener The listener to be called when an {@link Element} is added.
      */
     public void connect(final ELEMENT_ADDED listener) {
-        connect("element-added", ELEMENT_ADDED.class, listener, new GstCallback() {
+        connect(ELEMENT_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Bin bin, Element elem, Pointer user_data) {
                 listener.elementAdded(bin, elem);
@@ -236,7 +236,7 @@ public class Bin extends Element {
      * @param listener The listener to be called when an {@link Element} is removed.
      */
     public void connect(final ELEMENT_REMOVED listener) {
-        connect("element-removed", ELEMENT_REMOVED.class, listener, new GstCallback() {
+        connect(ELEMENT_REMOVED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Bin bin, Element elem, Pointer user_data) {
                 listener.elementRemoved(bin, elem);
@@ -271,7 +271,7 @@ public class Bin extends Element {
      * @param listener The listener to send events to.
      */
     public void addBinListener(BinListener listener) {
-        listenerMap.put(listener, new BinListenerProxy(listener));
+        getListenerMap().put(listener, new BinListenerProxy(listener));
     }
     
     /**
@@ -281,14 +281,15 @@ public class Bin extends Element {
      * {@link #addBinListener(BinListener)}.
      */
     public void removeBinListener(BinListener listener) {
-        BinListenerProxy proxy = listenerMap.remove(listener);
+        BinListenerProxy proxy = getListenerMap().remove(listener);
         if (proxy != null) {
             disconnect(proxy.added);
             disconnect(proxy.removed);
         }
     }
-    class BinListenerProxy {
+    class BinListenerProxy extends java.util.EventListenerProxy {
         public BinListenerProxy(final BinListener listener) {
+            super(listener);
             Bin.this.connect(added = new ELEMENT_ADDED() {
                 public void elementAdded(Bin bin, Element elem) {
                     listener.elementAdded(new BinEvent(bin, elem));
@@ -303,6 +304,11 @@ public class Bin extends Element {
         ELEMENT_ADDED added;
         ELEMENT_REMOVED removed;
     }
-    private Map<BinListener, BinListenerProxy> listenerMap =
-            Collections.synchronizedMap(new HashMap<BinListener, BinListenerProxy>());
+    private synchronized final Map<BinListener, BinListenerProxy> getListenerMap() {
+        if (listenerMap == null) {
+            listenerMap = Collections.synchronizedMap(new HashMap<BinListener, BinListenerProxy>());
+        }
+        return listenerMap;
+    }
+    private Map<BinListener, BinListenerProxy> listenerMap;
 }

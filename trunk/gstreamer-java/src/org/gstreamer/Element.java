@@ -23,9 +23,12 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.util.Collections;
+import java.util.EventListener;
+import java.util.EventListenerProxy;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import org.gstreamer.event.ElementEvent;
 import org.gstreamer.event.ElementListener;
@@ -74,7 +77,7 @@ public class Element extends GstObject {
     private static Logger logger = Logger.getLogger(Element.class.getName());
     
     /** Creates a new instance of Element */
-    protected Element(Initializer init) { 
+    public Element(Initializer init) { 
         super(init);
     }
     protected static Initializer makeRawElement(String factoryName, String elementName) {
@@ -289,17 +292,17 @@ public class Element extends GstObject {
      * @param listener
      */
     public void addElementListener(ElementListener listener) {
-        listenerMap.put(listener, new ElementListenerProxy(listener));
+        addListenerProxy(ElementListener.class, listener, new ElementListenerProxy(listener));
     }
+    
     /**
      * 
      * @param listener
      */
     public void removeElementListener(ElementListener listener) {
-        ElementListenerProxy proxy = listenerMap.get(listener);
+        ElementListenerProxy proxy = (ElementListenerProxy) removeListenerProxy(ElementListener.class, listener);
         if (proxy != null) {
             proxy.disconnect();
-            listenerMap.remove(listener);
         }
     }
     /**
@@ -335,7 +338,7 @@ public class Element extends GstObject {
      * @param listener Listener to be called when a {@link Pad} is added to the {@link Element}.
      */
     public void connect(final PAD_ADDED listener) {
-        connect("pad-added", PAD_ADDED.class, listener, new GstCallback() {
+        connect(PAD_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pad pad, Pointer user_data) {
                 listener.padAdded(elem, pad);
@@ -357,7 +360,7 @@ public class Element extends GstObject {
      * @param listener Listener to be called when a {@link Pad} is removed from the {@link Element}.
      */
     public void connect(final PAD_REMOVED listener) {
-        connect("pad-removed", PAD_REMOVED.class, listener,new GstCallback() {
+        connect(PAD_REMOVED.class, listener,new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pad pad, Pointer user_data) {
                 listener.padRemoved(elem, pad);
@@ -381,7 +384,7 @@ public class Element extends GstObject {
      * finished generating dynamic pads.
      */
     public void connect(final NO_MORE_PADS listener) {
-        connect("no-more-pads", NO_MORE_PADS.class, listener, new GstCallback() {
+        connect(NO_MORE_PADS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pointer user_data) {
                 listener.noMorePads(elem);
@@ -404,7 +407,7 @@ public class Element extends GstObject {
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final HANDOFF listener) {
-        connect("handoff", HANDOFF.class, listener, new GstAPI.HandoffCallback() {
+        connect(HANDOFF.class, listener, new GstAPI.HandoffCallback() {
             public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data) {
                 buffer.struct.read();
                 listener.handoff(src, buffer, pad);
@@ -421,20 +424,28 @@ public class Element extends GstObject {
     }
     
     public void addHandoffListener(final HandoffListener listener) {
-        HANDOFF handoff = new HANDOFF() {
-            public void handoff(Element elem, Buffer buffer, Pad pad) {
-                listener.handoff(new HandoffEvent(elem, buffer, pad));
-            }
-        };
-        handoffMap.put(listener, handoff);
-        connect(handoff);
+        HandoffListenerProxy proxy = new HandoffListenerProxy(listener);
+        addListenerProxy(HandoffListener.class, listener, proxy);
+        connect(proxy);
     }
     public void removeHandoffListener(HandoffListener listener) {
-        disconnect(handoffMap.get(listener));
+        EventListenerProxy proxy = removeListenerProxy(HandoffListener.class, listener);
+        if (proxy != null) {
+            disconnect((HANDOFF) proxy);
+        }
     }
-    
-    class ElementListenerProxy {
+    private class HandoffListenerProxy extends java.util.EventListenerProxy implements HANDOFF {
+        public HandoffListenerProxy(final HandoffListener listener) {
+            super(listener);
+        }
+
+        public void handoff(Element element, Buffer buffer, Pad pad) {
+            ((HandoffListener) getListener()).handoff(new HandoffEvent(element, buffer, pad));
+        }
+    }
+    private class ElementListenerProxy extends java.util.EventListenerProxy {
         public ElementListenerProxy(final ElementListener listener) {
+            super(listener);
             Element.this.connect(added = new PAD_ADDED() {
                 public void padAdded(Element elem, Pad pad) {
                     listener.padAdded(new ElementEvent(elem, pad));
@@ -537,10 +548,5 @@ public class Element extends GstObject {
     static Element objectFor(Pointer ptr, boolean needRef) {
         return GstObject.objectFor(ptr, Element.class, needRef);
     }
-    
-    private Map<HandoffListener, HANDOFF> handoffMap =
-            new ConcurrentHashMap<HandoffListener, HANDOFF>();
-    private Map<ElementListener, ElementListenerProxy> listenerMap =
-            new ConcurrentHashMap<ElementListener, ElementListenerProxy>();
 }
 

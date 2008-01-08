@@ -42,7 +42,7 @@ public class TagList extends Structure {
     /**
      * Creates a new instance of TagList
      */
-    TagList(Initializer init) {
+    public TagList(Initializer init) {
         super(init);
     }
     public TagList() {

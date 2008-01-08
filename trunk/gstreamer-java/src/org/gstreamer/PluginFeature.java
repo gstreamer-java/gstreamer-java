@@ -34,7 +34,7 @@ public class PluginFeature extends GstObject {
     private static Logger logger = Logger.getLogger(PluginFeature.class.getName());
     
     /** Creates a new instance of PluginFeature */
-    PluginFeature(Initializer init) { 
+    public PluginFeature(Initializer init) { 
         super(init); 
     }
     

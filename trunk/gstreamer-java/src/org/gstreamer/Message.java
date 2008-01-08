@@ -31,7 +31,7 @@ public class Message extends MiniObject {
     /**
      * Creates a new instance of Message
      */
-    protected Message(Initializer init) {
+    public Message(Initializer init) {
         super(init);
         messageStruct = new GstAPI.MessageStruct(handle());
     }
@@ -40,7 +40,7 @@ public class Message extends MiniObject {
         this(initializer(ptr, needRef, ownsHandle));
     }
     public GstObject getSource() {
-        return Element.objectFor(messageStruct.src, true);
+        return messageStruct.src;
     }
     public Structure getStructure() {
         return Structure.objectFor(messageStruct.structure, false, false);

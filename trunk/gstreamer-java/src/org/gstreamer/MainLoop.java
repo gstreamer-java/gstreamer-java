@@ -34,7 +34,9 @@ public class MainLoop extends NativeObject implements Runnable {
     public MainLoop() {
         super(initializer(glib.g_main_loop_new(Gst.getMainContext(), false), false, true));
     }
-    protected MainLoop(Initializer init) { super(init); }
+    public MainLoop(Initializer init) { 
+        super(init); 
+    }
     
     public void quit() {
         Gst.invokeLater(new Runnable() {
