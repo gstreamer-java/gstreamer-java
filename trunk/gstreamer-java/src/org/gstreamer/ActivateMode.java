@@ -37,21 +37,4 @@ public enum ActivateMode {
      * Pad handles dataflow in upstream pull mode
      */
     PULL;
-
-    public final int intValue() {
-        return ordinal();
-    }
-    /**
-     * Returns the enum constant of this type with the specified ordinal value.
-     * @param type integer value.
-     * @return Enum constant.
-     */
-    public final static ActivateMode valueOf(int type) {
-        for (ActivateMode m : values()) {
-            if (m.intValue() == type) {
-                return m;
-            }
-        }
-        return NONE;
-    }
 }
