@@ -31,12 +31,12 @@ import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
+import org.gstreamer.lowlevel.annotations.ConstField;
 
 /**
  *
@@ -107,7 +107,9 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                 return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
             }
             if (context instanceof StructureReadContext) {
-                return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, true);
+                StructureReadContext sctx = (StructureReadContext) context;
+                boolean ownsHandle = sctx.getField().getAnnotation(ConstField.class) == null;
+                return NativeObject.objectFor((Pointer) result, context.getTargetType(), 1, ownsHandle);
             }
             throw new IllegalStateException("Cannot convert to NativeObject from " + context);
         }

@@ -22,7 +22,7 @@ package org.gstreamer.elements;
 import org.gstreamer.*;
 
 public class BaseSink extends Element {
-    protected BaseSink(Initializer init) {
+    public BaseSink(Initializer init) {
         super(init);
     }
 }

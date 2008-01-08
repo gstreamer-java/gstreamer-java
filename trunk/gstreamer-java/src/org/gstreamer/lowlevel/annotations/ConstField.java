@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (C) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -17,12 +17,19 @@
  * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer.elements;
+package org.gstreamer.lowlevel.annotations;
 
-import org.gstreamer.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class BaseSrc extends Element {
-    public BaseSrc(Initializer init) {
-        super(init);
-    }
+/**
+ *
+ * @author wayne
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface ConstField {
+
 }

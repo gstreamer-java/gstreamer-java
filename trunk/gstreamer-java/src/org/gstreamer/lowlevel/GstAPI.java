@@ -70,6 +70,7 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Const;
 import org.gstreamer.lowlevel.annotations.IncRef;
 import org.gstreamer.lowlevel.annotations.Invalidate;
+import org.gstreamer.lowlevel.annotations.ConstField;
 
 /**
  *
@@ -286,17 +287,18 @@ public interface GstAPI extends Library {
      */
     GType gst_message_get_type();
     int gst_message_type(Pointer msg);
-    void gst_message_parse_state_changed(Pointer msg, IntByReference o, IntByReference n, IntByReference p);
-    void gst_message_parse_tag(Pointer msg, PointerByReference tagList);
-    void gst_message_parse_clock_provide(Pointer msg, PointerByReference clock, IntByReference reader);
-    void gst_message_parse_new_clock(Pointer msg, PointerByReference clock);
-    void gst_message_parse_error(Pointer msg, PointerByReference err, PointerByReference debug);
-    void gst_message_parse_warning(Pointer msg, PointerByReference err, PointerByReference debug);
-    void gst_message_parse_info(Pointer msg, PointerByReference err, PointerByReference debug);
-    void gst_message_parse_buffering(Pointer msg, IntByReference percent);
-    void gst_message_parse_segment_start(Pointer message, IntByReference format, LongByReference position); 
-    void gst_message_parse_segment_done(Pointer message, IntByReference format, LongByReference position);
-    void gst_message_parse_duration(Pointer message, IntByReference format, LongByReference position);
+    void gst_message_parse_state_changed(Message msg, IntByReference o, IntByReference n, IntByReference p);
+    void gst_message_parse_tag(Message msg, PointerByReference tagList);
+    void gst_message_parse_clock_provide(Message msg, PointerByReference clock, IntByReference reader);
+    void gst_message_parse_new_clock(Message msg, PointerByReference clock);
+    void gst_message_parse_error(Message msg, PointerByReference err, PointerByReference debug);
+    void gst_message_parse_warning(Message msg, PointerByReference err, PointerByReference debug);
+    void gst_message_parse_info(Message msg, PointerByReference err, PointerByReference debug);
+    void gst_message_parse_buffering(Message msg, IntByReference percent);
+    void gst_message_parse_segment_start(Message message, IntByReference format, LongByReference position); 
+    void gst_message_parse_segment_done(Message message, IntByReference format, LongByReference position);
+    void gst_message_parse_duration(Message message, IntByReference format, LongByReference position);
+    
     @CallerOwnsReturn Message gst_message_new_eos(GstObject src);
     @CallerOwnsReturn Message gst_message_new_error(GstObject src, GErrorStruct error, String debug);
     @CallerOwnsReturn Message gst_message_new_warning(GstObject src, GErrorStruct error, String debug);
@@ -348,7 +350,7 @@ public interface GstAPI extends Library {
     void gst_caps_remove_structure(Caps caps, int idx);
     void gst_caps_merge_structure(Caps caps, @Invalidate Structure structure);
     int gst_caps_get_size(Caps caps);
-    Pointer gst_caps_get_structure(Caps caps, int index);
+    Structure gst_caps_get_structure(Caps caps, int index);
     @CallerOwnsReturn Caps gst_caps_copy_nth(Caps caps, int nth);
     void gst_caps_truncate(Caps caps);
     void gst_caps_set_simple(Caps caps, String field, Object... values);
@@ -926,7 +928,7 @@ public interface GstAPI extends Library {
         public volatile Pointer cond;
         public volatile int type;
         public long timestamp;
-        public Pointer src;
+        public volatile GstObject src;
         public Pointer structure;
         
         /**

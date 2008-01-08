@@ -40,6 +40,7 @@ import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
 import org.gstreamer.Query;
 import org.gstreamer.Registry;
+import org.gstreamer.StaticPadTemplate;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**

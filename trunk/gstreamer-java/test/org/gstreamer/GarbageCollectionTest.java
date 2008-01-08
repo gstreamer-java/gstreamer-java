@@ -14,6 +14,10 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicBoolean;
+import org.gstreamer.Bus;
+import org.gstreamer.event.EOSEvent;
+import org.gstreamer.event.EOSListener;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.IntPtr;
 import org.junit.Test;
@@ -50,29 +54,50 @@ public class GarbageCollectionTest {
     public void tearDown() throws Exception {
     }
     
-    public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
+    public static boolean waitGC(WeakReference<?> ref) {
         System.gc();
-        for (int i = 0; ref.get() != null && i < 100; ++i) {
-            Thread.sleep(10);
+        for (int i = 0; ref.get() != null && i < 10; ++i) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {}
             System.gc();
         }
         return ref.get() == null;
     }
-    @Test
-    public void testElement() throws Exception {
-        final boolean[] destroyed = new boolean[] { false };
-        Element e = ElementFactory.make("fakesrc", "test element");
+    
+    private static class Tracker {
+        public Tracker(GObject obj) {
+            GObjectAPI.gobj.g_object_weak_ref(obj, notify, new IntPtr(System.identityHashCode(this)));
+            ref = new WeakReference<GObject>(obj);
+        }
+        WeakReference<GObject> ref;
+        private final AtomicBoolean destroyed = new AtomicBoolean(false);
         GObjectAPI.GWeakNotify notify = new GObjectAPI.GWeakNotify() {
             public void callback(IntPtr id, Pointer obj) {
-                destroyed[0] = true;
+                destroyed.set(true);
             }
         };
-        GObjectAPI.gobj.g_object_weak_ref(e, notify, new IntPtr(System.identityHashCode(this)));
-        WeakReference<Element> ref = new WeakReference<Element>(e);
-        destroyed[0] = false;
+        public boolean waitGC() {
+            return GarbageCollectionTest.waitGC(ref);
+        }
+        public boolean waitDestroyed() {
+            for (int i = 0; !destroyed.get() && i < 10; ++i) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ex) {
+                }
+            }
+            return destroyed.get();
+        }
+    }
+    @Test
+    public void testElement() throws Exception {
+        
+        Element e = ElementFactory.make("fakesrc", "test element");
+        Tracker tracker = new Tracker(e);
         e = null;        
-        assertTrue("Element not garbage collected", waitGC(ref));        
-        assertTrue("GObject not destroyed", destroyed[0]);
+        assertTrue("Element not garbage collected", tracker.waitGC());        
+        assertTrue("GObject not destroyed", tracker.waitDestroyed());
     }
     @Test
     public void testBin() throws Exception {
@@ -111,5 +136,52 @@ public class GarbageCollectionTest {
         // Should return the same object that was put into the bin
         assertEquals("source ID does not match", id1, System.identityHashCode(bin.getElementByName("source")));
         assertEquals("sink ID does not match", id2, System.identityHashCode(bin.getElementByName("sink")));       
-    } 
+    }
+    @Test
+    public void pipeline() {
+        Pipeline pipe = new Pipeline("test");
+        Tracker pipeTracker = new Tracker(pipe);
+        pipe = null;
+        assertTrue("Pipe not garbage collected", pipeTracker.waitGC());
+        System.out.println("checking if pipeline is destroyed");
+        assertTrue("Pipe not destroyed", pipeTracker.waitDestroyed());
+    }
+    @Test
+    public void pipelineBus() {
+        Pipeline pipe = new Pipeline("test");
+        Bus bus = pipe.getBus();
+        Tracker busTracker = new Tracker(bus);
+        Tracker pipeTracker = new Tracker(pipe);
+        
+        pipe = null;
+        bus = null;
+        assertTrue("Bus not garbage collected", busTracker.waitGC());
+        assertTrue("Bus not destroyed", busTracker.waitDestroyed());
+        assertTrue("Pipe not garbage collected", pipeTracker.waitGC());
+        assertTrue("Pipe not destroyed", pipeTracker.waitDestroyed());
+
+    }
+    @Test
+    public void busWithListeners() {
+        Pipeline pipe = new Pipeline("test");
+        Bus bus = pipe.getBus();
+        bus.connect(new Bus.EOS() {
+
+            public void eosMessage(GstObject source) {
+            }
+        });
+        bus.addEOSListener(new EOSListener() {
+
+            public void endOfStream(EOSEvent evt) {
+            }
+        });
+        Tracker busTracker = new Tracker(bus);
+        Tracker pipeTracker = new Tracker(pipe);
+        bus = null;
+        pipe = null;
+        assertTrue("Bus not garbage collected", busTracker.waitGC());
+        assertTrue("Bus not destroyed", busTracker.waitDestroyed());
+        assertTrue("Pipe not garbage collected", pipeTracker.waitGC());
+        assertTrue("Pipe not destroyed", pipeTracker.waitDestroyed());
+    }
 }
