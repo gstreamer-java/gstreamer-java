@@ -20,8 +20,6 @@
 package org.gstreamer;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.LongByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.Collections;
 import java.util.HashMap;
