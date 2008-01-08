@@ -445,7 +445,7 @@ public interface GstAPI extends Library {
      * GstTagList functions
      */
     interface TagForeachFunc extends GstCallback {
-        void callback(Pointer list, Pointer tag, Pointer user_data);
+        void callback(Pointer list, String tag, Pointer user_data);
     }
     interface TagMergeFunc extends GstCallback {
         void callback(Pointer dest, Pointer src);
@@ -461,20 +461,22 @@ public interface GstAPI extends Library {
     void gst_tag_list_remove_tag(TagList list, TagList tag);
     void gst_tag_list_foreach(TagList list, TagForeachFunc func, Pointer user_data);
     
-    boolean gst_tag_list_get_char(TagList list, String tag, ByteByReference value);
-    boolean gst_tag_list_get_char_index(TagList list, String tag, int index, ByteByReference value);
-    boolean gst_tag_list_get_uchar(TagList list, String tag, ByteByReference value);
-    boolean gst_tag_list_get_uchar_index(TagList list, String tag, int index, ByteByReference value);
-    boolean gst_tag_list_get_boolean(TagList list, String tag, IntByReference value);
-    boolean gst_tag_list_get_boolean_index(TagList list, String tag, int index, IntByReference value);
-    boolean gst_tag_list_get_int(TagList list, String tag, IntByReference value);
-    boolean gst_tag_list_get_int_index(TagList list, String tag, int index, IntByReference value);
-    boolean gst_tag_list_get_uint(TagList list, String tag, IntByReference value);
-    boolean gst_tag_list_get_uint_index(TagList list, String tag, int index, IntByReference value);
-    boolean gst_tag_list_get_int64(TagList list, String tag, LongByReference value);
-    boolean gst_tag_list_get_int64_index(TagList list, String tag, int index, LongByReference value);
+    boolean gst_tag_list_get_char(TagList list, String tag, byte[] value);
+    boolean gst_tag_list_get_char_index(TagList list, String tag, int index, byte[] value);
+    boolean gst_tag_list_get_uchar(TagList list, String tag, byte[] value);
+    boolean gst_tag_list_get_uchar_index(TagList list, String tag, int index, byte[] value);
+    boolean gst_tag_list_get_boolean(TagList list, String tag, int[] value);
+    boolean gst_tag_list_get_boolean_index(TagList list, String tag, int index, int[] value);
+    boolean gst_tag_list_get_int(TagList list, String tag, int[] value);
+    boolean gst_tag_list_get_int_index(TagList list, String tag, int index, int[] value);
+    boolean gst_tag_list_get_uint(TagList list, String tag, int[] value);
+    boolean gst_tag_list_get_uint_index(TagList list, String tag, int index, int[] value);
+    boolean gst_tag_list_get_int64(TagList list, String tag, long[] value);
+    boolean gst_tag_list_get_int64_index(TagList list, String tag, int index, long[] value);
     boolean gst_tag_list_get_string(TagList list, String tag, PointerByReference value);
     boolean gst_tag_list_get_string_index(TagList list, String tag, int index, PointerByReference value);
+    boolean gst_tag_list_get_double(TagList list, String tag, double[] value);
+    boolean gst_tag_list_get_double_index(TagList list, String tag, int index, double[] value);
     
     boolean gst_tag_exists(String tag);
     GType gst_tag_get_type(String tag);

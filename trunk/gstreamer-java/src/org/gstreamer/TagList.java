@@ -49,14 +49,40 @@ public class TagList extends Structure {
         super(initializer(gst.gst_tag_list_new()));
     }
     public String getString(Tag tag) {
-        return getString(tag.getId(), 0);
+        return getTag(tag).toString();
     }
     public String getString(String tag) {
-        return getString(tag, 0);
+        return getTag(tag, 0).toString();
     }
-    
+    public Object getTag(String tag) {
+        return getTag(tag, 0);
+    }
+    public Object getTag(Tag tag) {
+        return getTag(tag, 0);
+    }
+    public Object getTag(String tag, int index) {
+        GType type = getTagType(tag);
+        if (GType.STRING.equals(type)) {
+            return getString(tag, index);
+        } else if (GType.INT.equals(type)) {
+            return getInt(tag, index);
+        } else if (GType.UINT.equals(type)) {
+            return getUInt(tag, index);
+        } else if (GType.INT64.equals(type)) {
+            return getInt64(tag, index);
+        } else if (GType.DOUBLE.equals(type)) {
+            return getDouble(tag, index);
+        }
+        return null;
+    }
+    public Object getTag(Tag tag, int index) {
+        return getTag(tag.getId(), index);
+    }
+        
     public String getString(String tag, int index) {
-        ensureType(tag, GType.STRING);
+        if (!isTagType(tag, GType.STRING)) {
+            return getTag(tag, index).toString();
+        }
         
         PointerByReference value = new PointerByReference();
         gst.gst_tag_list_get_string_index(this, tag, index, value);
@@ -75,29 +101,36 @@ public class TagList extends Structure {
             return getUInt(tag, index);
         } else if (GType.INT64.equals(type)) {        
             return getInt64(tag, index);
+        } else if (GType.DOUBLE.equals(type)) {
+            return getDouble(tag, index);
         } else {
             throw new IllegalArgumentException("Tag [" + tag + "] is not a number");
         }
     }
     public Integer getInt(String tag, int index) {
         ensureType(tag, GType.INT);
-        IntByReference value = new IntByReference();
+        int[] value = new int[1];
         gst.gst_tag_list_get_int_index(this, tag, index, value);
-        return value.getValue();
+        return value[0];
     }
     public Integer getUInt(String tag, int index) {
         ensureType(tag, GType.UINT);
-        IntByReference value = new IntByReference();
+        int[] value = new int[1];
         gst.gst_tag_list_get_uint_index(this, tag, index, value);
-        return value.getValue();
+        return value[0];
     }
     public Long getInt64(String tag, int index) {
-        if (!isTagType(tag, GType.INT64)) {
-            throw new IllegalArgumentException("Tag [" + tag + "] is not of type INT");
-        }
-        LongByReference value = new LongByReference();
+        ensureType(tag, GType.INT64);
+        long[] value = new long[1];
         gst.gst_tag_list_get_int64_index(this, tag, index, value);
-        return value.getValue();
+        return value[0];
+    }
+    
+    public Double getDouble(String tag, int index) {
+        ensureType(tag, GType.DOUBLE);
+        double[] value = new double[1];
+        gst.gst_tag_list_get_double_index(this, tag, index, value);
+        return value[0];
     }
     private boolean isTagType(String tag, GType type) {
         return getTagType(tag).equals(type);
@@ -110,28 +143,22 @@ public class TagList extends Structure {
     public List<String> getTagNames() {
         final List<String> list = new LinkedList<String>();
         gst.gst_tag_list_foreach(this, new GstAPI.TagForeachFunc() {
-            public void callback(Pointer ptr, Pointer tagPointer, Pointer user_data) {
-                list.add(tagPointer.getString(0, false));
+            public void callback(Pointer ptr, String tag, Pointer user_data) {
+                list.add(tag);
             }
         }, null);
         return list;
     }
     public Map<String, Object> getTags() {
         final Map<String, Object> m = new HashMap<String, Object>();
-        for (String tag : getTagNames()) {  
-            GType type = getTagType(tag);
-            if (GType.STRING.equals(type)) {            
-                m.put(tag, getString(tag));
-            } else if (GType.INT.equals(type)) {
-                m.put(tag, getInt(tag, 0));
-            } else if (GType.UINT.equals(type)) {
-                m.put(tag, getUInt(tag, 0));
-            } else if (GType.INT64.equals(type)) {            
-                m.put(tag, getInt64(tag, 0));
-            } else {            
-                System.out.println("Unknown type for tag " + tag);                
+        gst.gst_tag_list_foreach(this, new GstAPI.TagForeachFunc() {
+            public void callback(Pointer ptr, String tag, Pointer user_data) {
+                Object data = getTag(tag, 0);
+                if (data != null) {
+                    m.put(tag, data);
+                }
             }
-        }
+        }, null);
         return m;
     }
     public TagList merge(TagList list2, TagMergeMode mode) {
