@@ -30,7 +30,7 @@ public class PadTemplate extends GstObject {
     static Logger logger = Logger.getLogger(PadTemplate.class.getName());
     
     /** Creates a new proxy for PadTemplate */
-    PadTemplate(Initializer init) {
+    public PadTemplate(Initializer init) {
         super(init);
     }
     public PadTemplate(String nameTemplate, PadDirection direction, Caps caps) {

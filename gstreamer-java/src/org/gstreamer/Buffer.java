@@ -23,7 +23,6 @@ package org.gstreamer;
 
 import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicReference;
 import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstAPI.BufferStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -87,7 +86,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class Buffer extends MiniObject {
     
-    protected Buffer(Initializer init) {
+    public Buffer(Initializer init) {
         super(init);
         struct = new BufferStruct(handle());
     }

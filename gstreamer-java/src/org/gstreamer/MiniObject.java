@@ -36,7 +36,7 @@ public class MiniObject extends NativeObject {
     /**
      * Creates a new instance of MiniObject
      */
-    MiniObject(Initializer init) {
+    public MiniObject(Initializer init) {
         super(init);
     }
     

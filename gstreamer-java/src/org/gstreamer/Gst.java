@@ -27,6 +27,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -130,11 +131,18 @@ public final class Gst {
         initialized.set(true);
         return argv.toStringArray();
     }
-    
+
+    public static void addStaticShutdownTask(Runnable task) {
+        shutdownTasks.add(task);
+    }
     public static void deinit() {
+        for (Runnable task : shutdownTasks) {
+            task.run();
+        }
         mainContext = null;
-        gst.gst_deinit();
+        System.gc(); // Make sure any dangling objects are unreffed before calling deinit().
         initialized.set(false);
+        gst.gst_deinit();
     }
     
     public static void setUseDefaultContext(boolean useDefault) {
@@ -143,6 +151,7 @@ public final class Gst {
     private static GMainContext mainContext;
     private static boolean useDefaultContext = false;
     private static AtomicBoolean initialized = new AtomicBoolean(false);
+    private static List<Runnable> shutdownTasks = Collections.synchronizedList(new ArrayList<Runnable>());
 }
 
 class NativeArgs {

@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
@@ -20,6 +20,10 @@
 package org.gstreamer;
 import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
+import java.util.EventListener;
+import java.util.EventListenerProxy;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static org.gstreamer.lowlevel.GstAPI.gst;
@@ -35,7 +39,7 @@ public class GstObject extends GObject {
      * Wraps an underlying C GstObject with a Java proxy
      * @param init C initialization data
      */
-    protected GstObject(Initializer init) {
+    public GstObject(Initializer init) {
         super(init);
         if (init.ownsHandle && init.needRef) {
             // Lose the floating ref so when this object is destroyed
@@ -91,4 +95,62 @@ public class GstObject extends GObject {
         logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
         return GObject.objectFor(ptr, defaultClass, needRef);
     }
+    
+    /**
+     * Adds an {@link EventListenerProxy} on this object.
+     * This is used by subclasses that wish to map between java style event listeners 
+     * and gstreamer signals.
+     * 
+     * @param listenerClass Class of the listener being added.
+     * @param listener The listener being added.
+     * @param proxy Proxy for the event listener.
+     */
+    protected synchronized void addListenerProxy(Class<? extends EventListener> listenerClass, EventListener listener, EventListenerProxy proxy) {
+        Map<EventListener, EventListenerProxy> map = getListenerMap().get(listenerClass);
+        /*
+         * Create the map for this class if it doesn't exist
+         */
+        if (map == null) {
+            map = new HashMap<EventListener, EventListenerProxy>();
+            getListenerMap().put(listenerClass, map);
+        }
+        map.put(listener, proxy);
+    }
+    
+    /**
+     * Removes an {@link EventListenerProxy} from this object.
+     * This is used by subclasses that wish to map between java style event listeners 
+     * and gstreamer signals.
+     * 
+     * @param listenerClass The class of listener the proxy was added for.
+     * @param listener The listener the proxy was added for.
+     * @return The proxy that was removed, or null if no proxy was found.
+     */
+    protected synchronized EventListenerProxy removeListenerProxy(Class<? extends EventListener> listenerClass, EventListener listener) {
+        Map<EventListener, EventListenerProxy> map = getListenerMap().get(listenerClass);
+        if (map == null) {
+            return null;
+        }
+        EventListenerProxy proxy = map.remove(listener);
+        
+        /*
+         * Reclaim memory if this listener class is no longer used
+         */
+        if (map.isEmpty()) {
+            listenerMap.remove(listenerClass);
+            if (listenerMap.isEmpty()) {
+                listenerMap = null;
+            }
+        }
+        return proxy;
+    }
+    private Map<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>> getListenerMap() {
+        if (listenerMap == null) {
+            listenerMap = new HashMap<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>>();
+        }
+        return listenerMap;
+    }
+    
+    private Map<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>> listenerMap;
+
 }

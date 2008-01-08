@@ -56,10 +56,10 @@ public class Structure extends NativeObject {
     /**
      * Creates a new instance of Structure
      */
-    Structure(Initializer init) {
+    public Structure(Initializer init) {
         super(init);
     }
-    Structure(Pointer ptr) {
+    private Structure(Pointer ptr) {
         this(initializer(ptr, false, true));
     }
     

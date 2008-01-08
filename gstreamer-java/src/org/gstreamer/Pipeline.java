@@ -27,7 +27,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class Pipeline extends Bin {
 
-    protected Pipeline(Initializer init) { 
+    public Pipeline(Initializer init) { 
         super(init); 
     }
     

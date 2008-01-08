@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gstreamer.lowlevel.GObjectAPI;
@@ -42,11 +43,12 @@ public abstract class GObject extends NativeObject {
     private static final Level DEBUG = Level.FINE;
     private static final Level LIFECYCLE = Level.FINE;
     
-    protected GObject(Initializer init) { 
+    public GObject(Initializer init) { 
         super(initializer(init.ptr, false, init.ownsHandle));
         logger.entering("GObject", "<init>", new Object[] { init });
-        strongReferences.add(this);
+
         if (init.ownsHandle) {
+            strongReferences.add(this);
             gobj.g_object_add_toggle_ref(init.ptr, toggle, objectID);
             if (!init.needRef) {                
                 unref();
@@ -102,7 +104,7 @@ public abstract class GObject extends NativeObject {
             id = g_signal_connect(signal, cb);
         }
         synchronized protected void disconnect() {
-            if (id != null) {
+            if (id != null && id.intValue() != 0) {
                 gobj.g_signal_handler_disconnect(GObject.this, id);
                 id = null;
             }
@@ -114,40 +116,44 @@ public abstract class GObject extends NativeObject {
         Callback cb;
         NativeLong id;
     }
-    private Map<Class<?>, Map<Object, SignalCallback>> listeners =
-            new HashMap<Class<?>, Map<Object, SignalCallback>>();
-    private IntPtr objectID = new IntPtr(System.identityHashCode(this));
+    private synchronized final Map<Class<?>, Map<Object, SignalCallback>> getListenerMap() {
+        if (signalListeners == null) {
+            signalListeners = new ConcurrentHashMap<Class<?>, Map<Object, SignalCallback>>();
+        }
+        return signalListeners;
+    }
     
     public <T> void connect(Class<T> listenerClass, T listener, Callback cb) {
         String signal = listenerClass.getSimpleName().toLowerCase().replaceAll("_", "-");
         connect(signal, listenerClass, listener, cb);
     }
     
-    public <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
-        Map<Object, SignalCallback> m;
-        synchronized (listeners) {
-            m = listeners.get(listenerClass);
-            if (m == null) {
-                m = Collections.synchronizedMap(new HashMap<Object, SignalCallback>());
-                listeners.put(listenerClass, m);
-            }
+    public synchronized <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
+        final Map<Class<?>, Map<Object, SignalCallback>> signals = getListenerMap();
+        Map<Object, SignalCallback> m = signals.get(listenerClass);
+        if (m == null) {
+            m = new HashMap<Object, SignalCallback>();
+            signals.put(listenerClass, m);
         }
         m.put(listener, new SignalCallback(signal, cb));
     }
     
-    public <T> void disconnect(Class<T> listenerClass, T listener) {
-        synchronized (listeners) {
-            Map<Object, SignalCallback> m = listeners.get(listenerClass);
-            if (m != null) {
-                SignalCallback cb = m.remove(listener);
-                if (cb != null) {
-                    cb.disconnect();
-                }
-                if (m.isEmpty()) {
-                    listeners.remove(listenerClass);
+    public synchronized <T> void disconnect(Class<T> listenerClass, T listener) {
+        final Map<Class<?>, Map<Object, SignalCallback>> signals = getListenerMap();
+        Map<Object, SignalCallback> map = signals.get(listenerClass);
+        if (map != null) {
+            SignalCallback cb = map.remove(listener);
+            if (cb != null) {
+                cb.disconnect();
+            }
+            if (map.isEmpty()) {
+                signals.remove(listenerClass);
+                if (signalListeners.isEmpty()) {
+                    signalListeners = null;
                 }
             }
         }
+        
     }
     public static GObject objectFor(Pointer ptr, Class<? extends GObject> defaultClass) {
         return GObject.objectFor(ptr, defaultClass, true);
@@ -185,6 +191,8 @@ public abstract class GObject extends NativeObject {
             }
         }
     };
-         
+    private Map<Class<?>, Map<Object, SignalCallback>> signalListeners;
+    private IntPtr objectID = new IntPtr(System.identityHashCode(this));
+    
     private static Set<Object> strongReferences = Collections.synchronizedSet(new HashSet<Object>());
 }

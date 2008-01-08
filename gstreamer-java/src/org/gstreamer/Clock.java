@@ -23,7 +23,7 @@ package org.gstreamer;
  *
  */
 public class Clock extends GstObject {
-    protected Clock(Initializer init) { 
+    public Clock(Initializer init) { 
         super(init); 
     }
 }

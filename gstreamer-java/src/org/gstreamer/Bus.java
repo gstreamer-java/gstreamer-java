@@ -20,13 +20,9 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
-import java.util.Collections;
-import java.util.Map;
 import com.sun.jna.ptr.*;
 import java.util.EventListenerProxy;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,7 +42,6 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import static org.gstreamer.lowlevel.GstAPI.gst;
 import static org.gstreamer.lowlevel.GlibAPI.glib;
-import org.gstreamer.lowlevel.GstAPI.MessageStruct;
 
 
 /**
@@ -94,7 +89,7 @@ public class Bus extends GstObject {
     /**
      * Creates a new instance of Bus
      */
-    Bus(Initializer init) { 
+    public Bus(Initializer init) { 
         super(init); 
         gst.gst_bus_enable_sync_message_emission(this);
         gst.gst_bus_set_sync_handler(this, Pointer.NULL, null);
@@ -108,7 +103,7 @@ public class Bus extends GstObject {
      */
     @SuppressWarnings("deprecation") 
     public void addBusListener(org.gstreamer.event.BusListener listener) {
-        busListeners.put(listener, new BusListenerProxy(this, listener));
+        addListenerProxy(org.gstreamer.event.BusListener.class, listener, new BusListenerProxy(this, listener));
     }
     
     /**
@@ -118,9 +113,9 @@ public class Bus extends GstObject {
      */
     @SuppressWarnings("deprecation") 
     public void removeBusListener(org.gstreamer.event.BusListener listener) {
-        BusListenerProxy proxy = busListeners.remove(listener);
+        EventListenerProxy proxy = removeListenerProxy(org.gstreamer.event.BusListener.class, listener);
         if (proxy != null) {
-            proxy.disconnect();
+            ((BusListenerProxy) proxy).disconnect();
         }
     }
     
@@ -223,8 +218,8 @@ public class Bus extends GstObject {
     public void connect(final EOS listener) {
         connect("sync-message::eos", EOS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
-                listener.eosMessage(messageSource(msgPtr));
+            public void callback(Bus bus, Message msg, Pointer user_data) {
+                listener.eosMessage(msg.getSource());
             }
         });
     }
@@ -246,12 +241,12 @@ public class Bus extends GstObject {
     public void connect(final ERROR listener) {
         connect("sync-message::error", ERROR.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
-                gst.gst_message_parse_error(msgPtr, err, null);
+                gst.gst_message_parse_error(msg, err, null);
                 glib.g_error_free(err.getValue());
                 GErrorStruct error = new GErrorStruct(err.getValue());
-                listener.errorMessage(messageSource(msgPtr), error.code, error.message);
+                listener.errorMessage(msg.getSource(), error.code, error.message);
             }
         });
     }
@@ -273,11 +268,11 @@ public class Bus extends GstObject {
     public void connect(final WARNING listener) {
         connect("sync-message::warning", WARNING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
-                gst.gst_message_parse_warning(msgPtr, err, null);                
+                gst.gst_message_parse_warning(msg, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
-                listener.warningMessage(messageSource(msgPtr), error.code, error.message);
+                listener.warningMessage(msg.getSource(), error.code, error.message);
                 glib.g_error_free(err.getValue());
             }
         });
@@ -300,11 +295,11 @@ public class Bus extends GstObject {
     public void connect(final INFO listener) {
         connect("sync-message::info", INFO.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 PointerByReference err = new PointerByReference();
-                gst.gst_message_parse_info(msgPtr, err, null);                
+                gst.gst_message_parse_info(msg, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
-                listener.infoMessage(messageSource(msgPtr), error.code, error.message);
+                listener.infoMessage(msg.getSource(), error.code, error.message);
                 glib.g_error_free(err.getValue());
             }
         });
@@ -327,12 +322,12 @@ public class Bus extends GstObject {
     public void connect(final STATE_CHANGED listener) {
         connect("sync-message::state-changed", STATE_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Pointer busPtr, Message msg, Pointer user_data) {
                 IntByReference o = new IntByReference();
                 IntByReference n = new IntByReference();
                 IntByReference p = new IntByReference();
-                gst.gst_message_parse_state_changed(msgPtr, o, n, p);
-                listener.stateMessage(messageSource(msgPtr), State.valueOf(o.getValue()),
+                gst.gst_message_parse_state_changed(msg, o, n, p);
+                listener.stateMessage(msg.getSource(), State.valueOf(o.getValue()),
                         State.valueOf(n.getValue()), State.valueOf(p.getValue()));
             }
         });
@@ -353,10 +348,10 @@ public class Bus extends GstObject {
     public void connect(final TAG listener) {
         connect("sync-message::tag", TAG.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Pointer busPtr, Message msg, Pointer user_data) {
                 PointerByReference list = new PointerByReference();
-                gst.gst_message_parse_tag(msgPtr, list);
-                listener.tagMessage(messageSource(msgPtr), new TagList(TagList.initializer(list.getValue(), true, false)));
+                gst.gst_message_parse_tag(msg, list);
+                listener.tagMessage(msg.getSource(), new TagList(TagList.initializer(list.getValue(), false, false)));
             }
         });
     }
@@ -378,10 +373,10 @@ public class Bus extends GstObject {
     public void connect(final BUFFERING listener) {
         connect("sync-message::buffering", BUFFERING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Pointer busPtr, Message msg, Pointer user_data) {
                 IntByReference percent = new IntByReference(0);
-                gst.gst_message_parse_buffering(msgPtr, percent);
-                listener.bufferingMessage(messageSource(msgPtr), percent.getValue());
+                gst.gst_message_parse_buffering(msg, percent);
+                listener.bufferingMessage(msg.getSource(), percent.getValue());
             }
         });
     }
@@ -403,12 +398,12 @@ public class Bus extends GstObject {
     public void connect(final DURATION listener) {
         connect("sync-message::duration", DURATION.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 System.out.println("duration update");
                 IntByReference format = new IntByReference(0);
                 LongByReference duration = new LongByReference(0);
-                gst.gst_message_parse_duration(msgPtr, format, duration);
-                listener.durationMessage(messageSource(msgPtr), 
+                gst.gst_message_parse_duration(msg, format, duration);
+                listener.durationMessage(msg.getSource(), 
                         Format.valueOf(format.getValue()), duration.getValue());
             }
         });
@@ -430,11 +425,11 @@ public class Bus extends GstObject {
     public void connect(final SEGMENT_START listener) {
         connect("sync-message::segment-start", SEGMENT_START.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 IntByReference format = new IntByReference(0);
                 LongByReference position = new LongByReference(0);
-                gst.gst_message_parse_segment_start(msgPtr, format, position);
-                listener.segmentStart(messageSource(msgPtr), 
+                gst.gst_message_parse_segment_start(msg, format, position);
+                listener.segmentStart(msg.getSource(), 
                         Format.valueOf(format.getValue()), position.getValue());
             }
         });
@@ -457,11 +452,11 @@ public class Bus extends GstObject {
     public void connect(final SEGMENT_DONE listener) {
         connect("sync-message::segment-done", SEGMENT_DONE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pointer busPtr, Pointer msgPtr, Pointer user_data) {
+            public void callback(Bus bus, Message msg, Pointer user_data) {
                 IntByReference format = new IntByReference(0);
                 LongByReference position = new LongByReference(0);
-                gst.gst_message_parse_segment_done(msgPtr, format, position);
-                listener.segmentDone(messageSource(msgPtr), 
+                gst.gst_message_parse_segment_done(msg, format, position);
+                listener.segmentDone(msg.getSource(), 
                         Format.valueOf(format.getValue()), position.getValue());
             }
         });
@@ -486,8 +481,7 @@ public class Bus extends GstObject {
     };
     private static GstCallback syncCallback = new GstCallback() {
         @SuppressWarnings("unused")
-        public int callback(Pointer busPtr, Pointer msgPtr, Pointer data) {
-            Bus bus = (Bus) NativeObject.instanceFor(busPtr);
+        public int callback(Bus bus, Pointer msgPtr, Pointer data) {
             //
             // If the Bus proxy has been disposed, just ignore
             //
@@ -516,18 +510,19 @@ public class Bus extends GstObject {
      */
     public void addMessageListener(MessageListener listener) {
         MessageListenerProxy proxy = new MessageListenerProxy(listener);
-        messageListeners.put(listener, proxy);
+        addListenerProxy(MessageListener.class, listener, proxy);
         connect((Bus.ERROR) proxy);
         connect((Bus.WARNING) proxy);
         connect((Bus.INFO) proxy);
     }
+    
     /**
      * Removes the message listener so it no longer receives messages posted on this bus.
      * 
      * @param listener the message listener
      */
     public void removeMessageListener(MessageListener listener) {
-        MessageListenerProxy proxy = messageListeners.remove(listener);
+        EventListenerProxy proxy = removeListenerProxy(MessageListener.class, listener);
         if (proxy != null) {
             disconnect((Bus.ERROR) proxy);
             disconnect((Bus.WARNING) proxy);
@@ -542,7 +537,7 @@ public class Bus extends GstObject {
      */
     public void addStateChangeListener(StateChangeListener listener) {
         StateChangeListenerProxy proxy = new StateChangeListenerProxy(listener);
-        stateChangeListeners.put(listener, proxy);
+        addListenerProxy(StateChangeListener.class, listener, proxy);
         connect((Bus.STATE_CHANGED) proxy);
     }
     
@@ -553,7 +548,7 @@ public class Bus extends GstObject {
      * @param listener the state change listener
      */
     public void removeStateChangeListener(StateChangeListener listener) {
-        StateChangeListenerProxy proxy = stateChangeListeners.remove(listener);
+        EventListenerProxy proxy = removeListenerProxy(StateChangeListener.class, listener);
         if (proxy != null) {
             disconnect((Bus.STATE_CHANGED) proxy);
         }
@@ -566,7 +561,7 @@ public class Bus extends GstObject {
      */
     public void addEOSListener(EOSListener listener) {
         EOSListenerProxy proxy = new EOSListenerProxy(listener);
-        eosListeners.put(listener, proxy);
+        addListenerProxy(EOSListener.class, listener, proxy);
         connect(proxy);
     }
     
@@ -575,9 +570,9 @@ public class Bus extends GstObject {
      * @param listener the end of stream listener
      */
     public void removeEOSListener(EOSListener listener) {
-        EOSListenerProxy proxy = eosListeners.remove(listener);
+        EventListenerProxy proxy = removeListenerProxy(EOSListener.class, listener);
         if (proxy != null) {
-            disconnect(proxy);
+            disconnect((Bus.EOS) proxy);
         }
     }
     
@@ -588,7 +583,7 @@ public class Bus extends GstObject {
      */
     public void addTagListener(TagListener listener) {
         TagListenerProxy proxy = new TagListenerProxy(listener);
-        tagListeners.put(listener, proxy);
+        addListenerProxy(TagListener.class, listener, proxy);
         connect(proxy);
     }
     
@@ -598,9 +593,9 @@ public class Bus extends GstObject {
      * @param listener the tag listener
      */
     public void removeTagListener(TagListener listener) {
-        TagListenerProxy proxy = tagListeners.remove(listener);
+        EventListenerProxy proxy = removeListenerProxy(TagListener.class, listener);
         if (proxy != null) {
-            disconnect(proxy);
+            disconnect((Bus.TAG) proxy);
         }
     }
     private class MessageListenerProxy extends java.util.EventListenerProxy implements ERROR, WARNING, INFO {
@@ -645,24 +640,6 @@ public class Bus extends GstObject {
             ((TagListener) getListener()).tagsFound(new TagEvent(source, tagList));
         }
     }
-    private final static GstObject messageSource(Pointer msgPtr) {
-        return Element.objectFor(new MessageStruct(msgPtr).src, true);
-    }
-
-    /**
-     * 
-     * @deprecated
-     */
-    private Map<org.gstreamer.event.BusListener, BusListenerProxy> busListeners
-            = Collections.synchronizedMap(new HashMap<org.gstreamer.event.BusListener, BusListenerProxy>());
-    private Map<MessageListener, MessageListenerProxy> messageListeners
-            = Collections.synchronizedMap(new HashMap<MessageListener, MessageListenerProxy>());
-    private Map<EOSListener, EOSListenerProxy> eosListeners
-            = Collections.synchronizedMap(new HashMap<EOSListener, EOSListenerProxy>());
-    private Map<TagListener, TagListenerProxy> tagListeners
-            = Collections.synchronizedMap(new HashMap<TagListener, TagListenerProxy>());
-    private Map<StateChangeListener, StateChangeListenerProxy> stateChangeListeners
-            = Collections.synchronizedMap(new HashMap<StateChangeListener, StateChangeListenerProxy>());
 }
 
 

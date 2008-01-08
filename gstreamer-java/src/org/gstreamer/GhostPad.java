@@ -47,7 +47,7 @@ public class GhostPad extends Pad {
     /**
      * Creates a new instance of GhostPad
      */
-    GhostPad(Initializer init) { 
+    public GhostPad(Initializer init) { 
         super(init); 
     }
     

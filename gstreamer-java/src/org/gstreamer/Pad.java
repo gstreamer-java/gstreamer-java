@@ -68,7 +68,7 @@ public class Pad extends GstObject {
     /**
      * Creates a new instance of Pad
      */
-    Pad(Initializer init) { 
+    public Pad(Initializer init) { 
         super(init); 
     }
     /**
@@ -340,7 +340,7 @@ public class Pad extends GstObject {
      * @param listener The listener to be called when data is available.
      */
     public void connect(final HAVE_DATA listener) {
-        connect("have-data", HAVE_DATA.class, listener, new Callback() {
+        connect(HAVE_DATA.class, listener, new Callback() {
             @SuppressWarnings("unused")
             public boolean callback(Pad pad, Pointer buffer) {
                 return listener.haveData(pad, new Buffer(buffer, true));
@@ -354,7 +354,7 @@ public class Pad extends GstObject {
      * @param listener The listener to be called when a peer {@link Pad} is linked.
      */
     public void connect(final LINKED listener) {
-        connect("linked", LINKED.class, listener, new GstCallback() {
+        connect(LINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pad pad, Pad peer, Pointer user_data) {
                 listener.linked(pad, peer);
@@ -377,7 +377,7 @@ public class Pad extends GstObject {
      * @param listener The listener to be called when when a peer {@link Pad} is unlinked.
      */
     public void connect(final UNLINKED listener) {
-        connect("unlinked", UNLINKED.class, listener, new GstCallback() {
+        connect(UNLINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pad pad, Pad peer, Pointer user_data) {
                 listener.unlinked(pad, peer);
@@ -400,7 +400,7 @@ public class Pad extends GstObject {
      * to be linked to this one.
      */
     public void connect(final REQUEST_LINK listener) {
-        connect("request-link", REQUEST_LINK.class, listener, new GstCallback() {
+        connect(REQUEST_LINK.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Pad pad, Pad peer, Pointer user_daa) {
                 listener.requestLink(pad, peer);

@@ -47,7 +47,7 @@ public class ElementFactory extends PluginFeature {
     /**
      * Creates a new instance of ElementFactory
      */
-    ElementFactory(Initializer init) {
+    public ElementFactory(Initializer init) {
         super(init); 
         logger.entering("ElementFactory", "<init>", new Object[] { init });
     }

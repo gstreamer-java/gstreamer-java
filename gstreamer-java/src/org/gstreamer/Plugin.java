@@ -57,7 +57,7 @@ public class Plugin extends GstObject {
     private static Logger logger = Logger.getLogger(Plugin.class.getName());
     
     /** Creates a new instance of GstElement */
-    protected Plugin(Initializer init) {
+    public Plugin(Initializer init) {
         super(init);
     }
     
