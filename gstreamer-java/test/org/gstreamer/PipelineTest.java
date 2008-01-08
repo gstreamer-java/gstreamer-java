@@ -73,7 +73,7 @@ public class PipelineTest {
         pipe.setInputFile(new File("/dev/null"));
         pipe.play();
         Bus bus = pipe.getBus();
-        GObjectStruct struct = new GObjectStruct(bus.handle());
+        GObjectStruct struct = new GObjectStruct(bus);
         int refcnt = struct.ref_count;
         assertTrue(refcnt > 1);
         // reget the Bus - should return the same object and not increment ref count

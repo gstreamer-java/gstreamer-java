@@ -129,6 +129,11 @@ public class GstVideoComponent extends javax.swing.JComponent {
     public void setKeepAspect(boolean keepAspect) {
         this.keepAspect = keepAspect;
     }
+
+    @Override
+    public boolean isLightweight() {
+        return true;
+    }
     
     @Override
     protected void paintComponent(Graphics g) {

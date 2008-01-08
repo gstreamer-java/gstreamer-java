@@ -123,8 +123,8 @@ public interface GObjectAPI extends Library {
         public volatile int ref_count;
         public volatile Pointer qdata;
         public GObjectStruct() {}
-        public GObjectStruct(Pointer ptr) {
-            useMemory(ptr);
+        public GObjectStruct(GObject obj) {
+            useMemory(obj.handle());
             read();
         }
     }
