@@ -10,10 +10,13 @@
  * GNU General Public License for more details.
  */
 
-package example;
+package org.gstreamer.example;
 
-import java.awt.BorderLayout;
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -28,10 +31,10 @@ import org.gstreamer.swing.GstVideoPlayer;
 /**
  *
  */
-public class SwingMultiPlayer {
+public class SwingMultiPlayerAlpha {
     
     /** Creates a new instance of SwingPlayer */
-    public SwingMultiPlayer() {
+    public SwingMultiPlayerAlpha() {
     }
     public static void main(String[] args) {
         //System.setProperty("sun.java2d.opengl", "True");
@@ -56,18 +59,32 @@ public class SwingMultiPlayer {
                 for (int i = files.length - 1; i >= 0; --i) {
                     File file = files[i];
                     JInternalFrame frame = new JInternalFrame(file.getName());
+                    panel.add(frame);
                     frame.setResizable(true);
                     frame.setClosable(true);
                     frame.setIconifiable(true);
                     frame.setMaximizable(true);
                     
                     frame.setLocation(i * 100, i * 100);
-                    final GstVideoPlayer player = new GstVideoPlayer(file);
+                    final float alpha = 0.6f;
+                    final GstVideoPlayer player = new GstVideoPlayer(file) {
+                        protected void paintComponent(Graphics g) {
+                            Graphics2D g2d = (Graphics2D) g.create();
+                            g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+                            g2d.setColor(Color.BLACK);
+                            g2d.fillRect(0, 0, getWidth(), getHeight());
+                            g2d.dispose();
+                        }
+                    };
                     player.setPreferredSize(new Dimension(640, 480));
                     player.setControlsVisible(true);
-                    frame.add(player, BorderLayout.CENTER);
+                    player.setOpaque(false);
+                    player.setAlpha(alpha);
+                    
+                    frame.setOpaque(false);
+                    frame.setContentPane(player);
                     frame.pack();
-                    panel.add(frame);
+                    
                     frame.setVisible(true);
                     javax.swing.Timer timer = new javax.swing.Timer(5000 * i, new ActionListener() {
                         public void actionPerformed(ActionEvent evt) {
@@ -85,4 +102,5 @@ public class SwingMultiPlayer {
         });
         new MainLoop().run();
     }
+  
 }

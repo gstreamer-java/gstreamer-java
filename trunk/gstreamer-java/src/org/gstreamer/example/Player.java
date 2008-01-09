@@ -10,7 +10,7 @@
  * GNU General Public License for more details.
  */
 
-package example;
+package org.gstreamer.example;
 
 import java.io.File;
 import java.util.Map;
