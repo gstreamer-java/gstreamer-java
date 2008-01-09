@@ -10,9 +10,9 @@
  * GNU General Public License for more details.
  */
 
-package example;
+package org.gstreamer.example;
 
-import java.nio.channels.Pipe;
+import java.io.FileInputStream;
 import java.util.Map;
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
@@ -23,15 +23,14 @@ import org.gstreamer.MainLoop;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
+import org.gstreamer.io.InputStreamSrc;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.io.ReadableByteChannelSrc;
-import org.gstreamer.io.WriteableByteChannelSink;
 
-public class OutputStreamSinkTest {
+public class InputStreamSrcTest {
     static final String name = "InputStreamSrcTest";    
 
     public static void main(String[] args) {
@@ -41,35 +40,17 @@ public class OutputStreamSinkTest {
             System.err.println("Usage: " + name + " <filename>");
             System.exit(1);
         }
-        Pipe pipeChannel;
+        InputStreamSrc src = null;
         try {
-            pipeChannel = Pipe.open();
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        
-        //
-        // Construct a pipeline: filesrc ! OutputStreamSink
-        //
-        Pipeline inputPipe = new Pipeline("input pipeline");
-        Element filesrc = ElementFactory.make("filesrc", "File source");
-        filesrc.set("location", args[0]);
-        Element outputstream = new WriteableByteChannelSink(pipeChannel.sink(), "output stream");
-        inputPipe.addMany(filesrc, outputstream);
-        Element.linkMany(filesrc, outputstream);
-        inputPipe.play();
-        //
-        // Now construct the output pipeline to process the data
-        //
-        
-        Element src = null;
-        try {            
-            src = new ReadableByteChannelSrc(pipeChannel.source(), "input file");
+            final FileInputStream srcFile = new FileInputStream(args[0]);
+//            src = new InputStreamSrc(new BufferedInputStream(srcFile), "input file");
+            src = new InputStreamSrc(srcFile, "input file");
         } catch (Exception ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
-        
+        //Element src = ElementFactory.make("filesrc", "Input File");
+        //src.set("location", args[0]);
         DecodeBin decodeBin = (DecodeBin) ElementFactory.make("decodebin", "Decode Bin");
         Pipeline pipe = new Pipeline("main pipeline");
         pipe.addMany(src, decodeBin);
@@ -88,7 +69,6 @@ public class OutputStreamSinkTest {
 
         decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
             public void newDecodedPad(Element elem, Pad pad, boolean last) {
-                System.out.println("newDecodedPad");
                   /* only link once */
                 Pad audioPad = audioBin.getStaticPad("sink");
                 if (pad.isLinked()) {
