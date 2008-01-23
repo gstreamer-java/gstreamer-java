@@ -1,0 +1,20 @@
+#summary Basic usage of gstreamer-java
+#labels Featured
+
+= Introduction =
+
+Using gstreamer-java is simple, if not totally obvious, due to its dependency on JNA.
+
+= Details =
+
+Do use gstreamer-java, both gstreamer-java.jar and jna.jar need to be in the classpath.
+e.g.  
+To invoke the SwingVideoTest example program:
+{{{
+    java -cp jna-r433.jar:gstreamer-java-0.5.jar org.gstreamer.example.SwingVideoTest
+}}}
+Note: On windows, separate the jar files with a semi-colon ';' instead of a colon ':'.
+
+Note: On Linux, you must use the Sun JVM - GCJ will not work.  Use java-version to determine which one you have.
+
+gstreamer-java should automatically work on any platform JNA supports, but it is only regularly tested on MacOS, Linux and Windows.
