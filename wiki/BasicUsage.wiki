@@ -8,6 +8,7 @@ Using gstreamer-java is simple, if not totally obvious, due to its dependency on
 = Details =
 
 To use gstreamer-java, you need to download the latest versions of both gstreamer-java.jar and jna.jar and put them in the classpath.
+
 e.g.
 Download jna-r433.jar and gstreamer-java-0.5.jar from http://code.google.com/p/gstreamer-java/
 
