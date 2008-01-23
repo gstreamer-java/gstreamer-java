@@ -10,9 +10,10 @@ Using gstreamer-java is simple, if not totally obvious, due to its dependency on
 To use gstreamer-java, you need to download the latest versions of both gstreamer-java.jar and jna.jar and put them in the classpath.
 
 e.g.
-Download jna-r433.jar and gstreamer-java-0.5.jar from http://code.google.com/p/gstreamer-java/
 
-To invoke the SwingVideoTest example program:
+Download [http://gstreamer-java.googlecode.com/files/jna-r433.jar jna-r433.jar] and [http://gstreamer-java.googlecode.com/files/gstreamer-java-0.5.jar gstreamer-java-0.5.jar]. 
+
+Then, to invoke the SwingVideoTest example program:
 {{{
     java -cp jna-r433.jar:gstreamer-java-0.5.jar org.gstreamer.example.SwingVideoTest
 }}}
