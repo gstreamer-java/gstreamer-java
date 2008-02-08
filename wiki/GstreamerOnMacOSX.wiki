@@ -1,4 +1,5 @@
 #summary Build instructions for gstreamer on macosx.
+#labels Featured
 
 = Introduction =
 
