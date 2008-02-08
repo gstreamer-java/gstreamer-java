@@ -1,6 +1,8 @@
 #summary Windows Installation Instructions.
 #labels gstreamer,windows
 
+*Note: Windows is no longer supported, as gstreamer is just too buggy on that platform*
+
 = Introduction =
 
 Getting gstreamer running on Windows is not as easy as Linux (where it is installed by default), so here are some helpful instructions.
@@ -19,4 +21,3 @@ You should then restart Windows to have the GST_PLUGIN_PATH and PATH global vari
 Test that the gstreamer binaries work with the windows command interpreter (change the file to play, and you can remove the debug if everything works):
 
 {{{gst-launch-0.10 --gst-debug-level=2 playbin uri=file://C:/mymedia/mediatest.avi}}}
-
