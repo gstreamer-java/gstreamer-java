@@ -16,4 +16,6 @@ AudioPlayerWithMetadata shows how to retrieve meta-data (media file tags).
 
 VideoPlayerTutorial shows how to build a very simple video player.
 
+BusMessageTutorial shows how to detect pipeline changes using Bus messages.
+
 There are links to gstreamer tutorials for other languages at [http://www.ocf.berkeley.edu/~brandon/wiki/index.php5?title=Main_Page Brandon's wiki]
