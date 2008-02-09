@@ -1,5 +1,5 @@
 #summary Learn how to build a simple pipeline
-#labels Featured,Phase-Deploy
+#labels Phase-Deploy
 
 = Introduction =
 
