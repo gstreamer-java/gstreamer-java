@@ -1,11 +1,5 @@
-#summary Obtaining gstreamer-java source
-
-= Introduction =
 
 The gstreamer-java source is hosted in an external mercurial repository.
-
-
-= Details =
 
 To get the source use mercurial on the command line:
 {{{
