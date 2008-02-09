@@ -1,0 +1,26 @@
+#summary Basic usage of gstreamer-java
+#labels Featured
+
+= Introduction =
+
+Using gstreamer-java is simple, if not totally obvious, due to its dependency on JNA.
+
+= Details =
+
+To use gstreamer-java, you need to download the latest versions of both gstreamer-java.jar and jna.jar and put them in the classpath.
+
+e.g.
+
+Download [http://gstreamer-java.googlecode.com/files/jna-3.0.jar jna-3.0.jar] and [http://gstreamer-java.googlecode.com/files/gstreamer-java-0.5.jar gstreamer-java-0.6.jar]. 
+
+Then, to invoke the SwingVideoTest example program on linux:
+{{{
+    java -Djna.library.path=/usr/lib -cp jna-3.0.jar:gstreamer-java-0.6.jar org.gstreamer.example.SwingVideoTest
+}}}
+Note: On windows, separate the jar files with a semi-colon ';' instead of a colon ':', and you should not need to set the jna.library.path
+
+Note: On Linux, you must use the Sun JVM - GCJ will not work.  Use java -version to determine which one you have.
+
+gstreamer-java should automatically work on any platform JNA supports, but it is only regularly tested on MacOSX and Linux.
+
+*Please* use the [http://code.google.com/p/gstreamer-java/issues Issue Tracker] or the mailing list to report bugs, since I don't read comments on the wiki entries very often.
