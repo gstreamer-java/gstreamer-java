@@ -1,4 +1,5 @@
 #summary Some tutorials for learning how to use gstreamer-java
+#labels Featured,Phase-Implementation
 
 = Introduction =
 
