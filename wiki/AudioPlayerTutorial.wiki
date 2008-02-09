@@ -1,5 +1,5 @@
 #summary Audio Player Tutorial
-#labels Featured,Phase-Deploy
+#labels Phase-Implementation
 
 = Introduction =
 
