@@ -31,7 +31,7 @@ You've already seen this line in the SimplePipelineTutorial:
 
         {{{args = Gst.init("AudioPlayer", args);}}}
 
-Next we created a PlayBin instead of a basic Pipeline:
+Next we created a !PlayBin instead of a basic Pipeline:
 
         {{{PlayBin playbin = new PlayBin("AudioPlayer");}}}
 
