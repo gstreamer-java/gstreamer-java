@@ -1,9 +1,8 @@
-
 The gstreamer-java source is hosted in an external mercurial repository.
 
-To get the source use mercurial on the command line:
+To get the source use mercurial:
 {{{
 hg clone http://hg.assembla.com/gstreamer-java gstreamer-java
 }}}
 
-or checkout the project in your IDE using http://hg.assembla.com/gstreamer-java as the mercurial repository.
+You can browse the source at http://trac-hg.assembla.com/gstreamer-java/browser
