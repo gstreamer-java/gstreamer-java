@@ -22,5 +22,3 @@ Note: On windows, separate the jar files with a semi-colon ';' instead of a colo
 Note: On Linux, you must use the Sun JVM - GCJ will not work.  Use java -version to determine which one you have.
 
 gstreamer-java should automatically work on any platform JNA supports, but it is only regularly tested on MacOSX and Linux.
-
-*Please* use the [http://code.google.com/p/gstreamer-java/issues Issue Tracker] or the mailing list to report bugs, since I don't read comments on the wiki entries very often.
