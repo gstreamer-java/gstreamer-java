@@ -1,5 +1,5 @@
 #summary Build instructions for gstreamer on macosx.
-#labels Featured
+#labels Deprecated
 
 = Introduction =
 
