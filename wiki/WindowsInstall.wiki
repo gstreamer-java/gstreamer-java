@@ -1,5 +1,5 @@
 #summary Windows Installation Instructions.
-#labels gstreamer,windows
+#labels gstreamer,windows,Deprecated
 
 *Note: Windows is no longer supported, as gstreamer is just too buggy on that platform*
 
