@@ -55,17 +55,17 @@ import org.gstreamer.media.event.StopEvent;
 /**
  * Basic implementation of a MediaPlayer
  */
-abstract public class AbstractMediaPlayer implements MediaPlayer {
+abstract public class PlayBinMediaPlayer implements MediaPlayer {
     private PlayBin playbin;
     private Executor eventExecutor;
     private volatile ScheduledFuture<?> positionTimer = null;
     private Queue<URI> playList = new ConcurrentLinkedQueue<URI>();
     private State currentState = State.NULL;
-    private final MediaPlayer mediaPlayer = AbstractMediaPlayer.this;
+    private final MediaPlayer mediaPlayer = PlayBinMediaPlayer.this;
     private final Map<MediaListener, MediaListener> mediaListeners = new HashMap<MediaListener, MediaListener>();
     private final List<MediaListener> listeners = new CopyOnWriteArrayList<MediaListener>();
     
-    protected AbstractMediaPlayer(Executor eventExecutor) {
+    protected PlayBinMediaPlayer(Executor eventExecutor) {
         playbin = new PlayBin(getClass().getSimpleName());
         this.eventExecutor = eventExecutor;
         playbin.getBus().connect(eosSignal);
@@ -323,9 +323,9 @@ abstract public class AbstractMediaPlayer implements MediaPlayer {
             lastDuration = duration;
             final boolean positionChanged = position != lastPosition && position >= 0;
             lastPosition = position;
-            final PositionChangedEvent pue = new PositionChangedEvent(AbstractMediaPlayer.this, 
+            final PositionChangedEvent pue = new PositionChangedEvent(PlayBinMediaPlayer.this,
                     ClockTime.valueOf(position, TimeUnit.NANOSECONDS), (int) percent);
-            final DurationChangedEvent due = new DurationChangedEvent(AbstractMediaPlayer.this, 
+            final DurationChangedEvent due = new DurationChangedEvent(PlayBinMediaPlayer.this,
                     duration);
             for (MediaListener l : getMediaListeners()) {
                 if (durationChanged) {
