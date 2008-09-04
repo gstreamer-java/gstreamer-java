@@ -45,7 +45,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.gstreamer.State;
-import org.gstreamer.media.AbstractMediaPlayer;
+import org.gstreamer.media.PlayBinMediaPlayer;
 import org.gstreamer.media.MediaPlayer;
 import org.gstreamer.media.event.EndOfMediaEvent;
 import org.gstreamer.media.event.MediaAdapter;
@@ -315,7 +315,7 @@ public class VideoPlayer extends javax.swing.JPanel {
         }
     }
     
-    private static class SwingMediaPlayer extends AbstractMediaPlayer {
+    private static class SwingMediaPlayer extends PlayBinMediaPlayer {
         public SwingMediaPlayer() {
             super(swingExec);
         }
