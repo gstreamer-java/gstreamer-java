@@ -5,24 +5,25 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
 import java.util.logging.Logger;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPluginAPI;
 
 /**
  * Container for features loaded from a shared object module
@@ -54,9 +55,16 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * @see ElementFactory
  */
 public class Plugin extends GstObject {
+    @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(Plugin.class.getName());
+    private static interface API extends GstPluginAPI {}
+    private static final API gst = GstNative.load(API.class);
     
-    /** Creates a new instance of GstElement */
+    /** 
+     * Creates a new instance of GstElement 
+     * 
+     * @param init internal initialization data.
+     */
     public Plugin(Initializer init) {
         super(init);
     }
@@ -152,6 +160,12 @@ public class Plugin extends GstObject {
     public boolean isLoaded() {
         return gst.gst_plugin_is_loaded(this);
     }
+    
+    /**
+     * Ensures this plugin is loaded.
+     * 
+     * @return a potentially new <tt>Plugin</tt> reference.
+     */
     public Plugin load() {
         return gst.gst_plugin_load(this);
     }

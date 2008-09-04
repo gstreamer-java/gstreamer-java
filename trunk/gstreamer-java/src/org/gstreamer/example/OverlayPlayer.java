@@ -1,40 +1,48 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007, 2008 Wayne Meissner
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package org.gstreamer.example;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+
 import org.gstreamer.Bus;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.MainLoop;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Message;
-import org.gstreamer.elements.PlayBin;
 import org.gstreamer.Structure;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.event.BusSyncHandler;
-import org.gstreamer.lowlevel.GstAPI;
-import org.gstreamer.lowlevel.GstInterfacesAPI;
+import org.gstreamer.interfaces.XOverlay;
+
+import com.sun.jna.Platform;
 
 public class OverlayPlayer {
 
@@ -87,21 +95,15 @@ public class OverlayPlayer {
                             if (s == null || !s.hasName("prepare-xwindow-id")) {
                                 return BusSyncReply.PASS;
                             }
-                            NativeLong windowID = new NativeLong(Native.getComponentID(canvas));
-                            GstInterfacesAPI.INSTANCE.gst_x_overlay_set_xwindow_id(videoSink, windowID);
+                            XOverlay.wrap(videoSink).setWindowID(canvas);
                             return BusSyncReply.DROP;
                         }
                     });
                 } else {
-
-                    Pointer windowID = Native.getComponentPointer(canvas);
-                    System.out.println("Native window handle=" + windowID);
-                    GstInterfacesAPI.INSTANCE.gst_x_overlay_set_xwindow_id(videoSink, windowID);
+                    XOverlay.wrap(videoSink).setWindowID(canvas);
                 } 
                 player.play();       
-                new MainLoop().startInBackground();
             }  
         });
-        //new MainLoop().run();
     }
 }

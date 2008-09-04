@@ -5,27 +5,30 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
 import java.nio.ByteBuffer;
-import org.gstreamer.lowlevel.GstAPI;
-import org.gstreamer.lowlevel.GstAPI.BufferStruct;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import org.gstreamer.lowlevel.GstBufferAPI;
+import org.gstreamer.lowlevel.GstMiniObjectAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstBufferAPI.BufferStruct;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+
+import com.sun.jna.Pointer;
 
 /**
  * Data-passing buffer type, supporting sub-buffers.
@@ -85,7 +88,11 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * <p>
  */
 public class Buffer extends MiniObject {
-    
+    private static interface API extends GstBufferAPI, GstMiniObjectAPI {
+        @CallerOwnsReturn Pointer ptr_gst_buffer_new();
+        @CallerOwnsReturn Pointer ptr_gst_buffer_new_and_alloc(int size);
+    }
+    private static final API gst = GstNative.load(API.class);
     public Buffer(Initializer init) {
         super(init);
         struct = new BufferStruct(handle());
@@ -95,7 +102,7 @@ public class Buffer extends MiniObject {
      * Creates a newly allocated buffer without any data.
      */
     public Buffer() {
-        this(gst.gst_buffer_new(), false);
+        this(initializer(gst.ptr_gst_buffer_new()));
     }
     
     /**
@@ -108,31 +115,24 @@ public class Buffer extends MiniObject {
      * @param size
      */
     public Buffer(int size) {
-        this(initializer(allocBuffer(size), false, true));
+        this(initializer(allocBuffer(size)));
     }
     
     private static Pointer allocBuffer(int size) {
-        Pointer ptr = GstAPI.gst.gst_buffer_new_and_alloc(size);
+        Pointer ptr = gst.ptr_gst_buffer_new_and_alloc(size);
         if (ptr == null) {
             throw new OutOfMemoryError("Could not allocate Buffer of size "+ size);
         }
         return ptr;
     }
-    Buffer(Pointer ptr, boolean needRef) {
-        this(initializer(ptr, needRef, true));
-    }
     
-    protected void ref() {
-        super.ref();
-        if (struct != null) {
-            struct.read(); // sync up the refcnt
-        }
-    }
-    protected void unref() {
-        super.unref();
-        if (struct != null) {
-            struct.read(); // sync up the refcnt
-        }
+    /**
+     * Gets the native address of this Buffer
+     * 
+     * @return a pointer
+     */
+    public Pointer getAddress() {
+        return handle();
     }
     
     /**
@@ -153,6 +153,7 @@ public class Buffer extends MiniObject {
     public Buffer createSubBuffer(int offset, int size) {
         return gst.gst_buffer_create_sub(this, offset, size);
     }
+    
     /**
      * Tests if you can safely write data into a buffer's data array or validly
      * modify the caps and timestamp metadata. Metadata in a GstBuffer is always
@@ -174,25 +175,54 @@ public class Buffer extends MiniObject {
      * @return A writable Buffer referring to the same memory as this one.
      */
     public Buffer makeWritable() {
-        Pointer ptr = gst.gst_mini_object_make_writable(this);
-        if (ptr == null) {
+        Buffer buf = (Buffer) gst.gst_mini_object_make_writable(this);
+        if (buf == null) {
             throw new NullPointerException("Could not make Buffer writable");
         }
-        // If it returned the same pointer, can safely return this - else create a new Proxy
-        return ptr.equals(handle()) ? this : new Buffer(ptr, false);
+        return buf;
     }
     public boolean isMetadataWritable() {
         return false;
     }
     
+    /**
+     * Gets the size of the buffer data
+     * 
+     * @return the size of the buffer data in bytes.
+     */
     public int getSize() {
-        return struct.size;
+        return (Integer) struct.readField("size");
     }
-    public long getDuration() {
-        return struct.duration;
+    /**
+     * Gets the duration in time of the buffer data, can be {@link ClockTime#NONE}
+     * when the duration is not known or relevant.
+     * 
+     * @return a ClockTime representing the duration.
+     */
+    public ClockTime getDuration() {
+        return (ClockTime) struct.readField("duration");
     }
-    public long getTimestamp() {
-        return struct.timestamp;
+    public void setDuration(ClockTime dur) {
+        struct.duration = dur;
+        struct.writeField("duration");
+    }
+    /**
+     * Gets the timestamp in time of the buffer data, can be {@link ClockTime#NONE}
+     * when the timestamp is not known or relevant.
+     * 
+     * @return a ClockTime representing the timestamp.
+     */
+    public ClockTime getTimestamp() {
+        return (ClockTime) struct.readField("timestamp");
+    }
+    
+    /**
+     * Sets the timestamp in time of the buffer data, can be {@link ClockTime#NONE}
+     * when the timestamp is not known or relevant.
+     */
+    public void setTimestamp(ClockTime timestamp) {
+        struct.timestamp = timestamp;
+        struct.writeField("timestamp");
     }
     
     /**
@@ -214,31 +244,68 @@ public class Buffer extends MiniObject {
     }
     
     /**
-     * Get a {@link java.nio.ByteBuffer} that can access the native memory
+     * Gets a {@link java.nio.ByteBuffer} that can access the native memory
      * associated with this Buffer.
+     * 
      * @return A {@link java.nio.ByteBuffer} that can access this Buffer's data.
      */
     public synchronized ByteBuffer getByteBuffer() {
-        if (byteBuffer == null && struct.data != null && struct.size > 0) {
-            byteBuffer = struct.data.getByteBuffer(0, struct.size);
+        if (byteBuffer == null) {
+            int size = getSize();
+            Pointer data = (Pointer) struct.readField("data");
+            if (data != null && size > 0) {
+                byteBuffer = data.getByteBuffer(0, size);
+            }
         }
         return byteBuffer;
     }
+    
+    /**
+     * Gets the offset for the buffer data in the stream.
+     * 
+     * <p> The offset is a media specific offset for the buffer data. 
+     * For video frames, this is the frame number of this buffer.
+     * For audio samples, this is the offset of the first sample in this buffer.
+     * For file data or compressed data this is the byte offset of the first
+     *       byte in this buffer.
+     * 
+     * @return the offset
+     */
     public long getOffset() {
-        return struct.offset;
+        return (Long) struct.readField("offset");
     }
+    
+    /**
+     * Sets the offset of the buffer in the media stream.
+     * 
+     * @param offset
+     * @see #getOffset
+     */
     public void setOffset(long offset) {
         struct.offset = offset;
+        struct.writeField("offset");
     }
+    
+    /**
+     * Gets the last offset contained in this buffer. 
+     * <p>It has the same format as {@link #getOffset getOffset}
+     * 
+     * @return the last offset
+     */
     public long getLastOffset() {
-        return struct.offset_end;
+        return (Long) struct.readField("offset_end");
     }
+    
+    /**
+     * Sets the last offset contained in this buffer. 
+     * <p> It has the same format as {@link #getOffset getOffset}
+     * 
+     */
     public void setLastOffset(long offset) {
         struct.offset_end = offset;
+        struct.writeField("offset_end");
     }
-    public static Buffer objectFor(Pointer ptr, boolean needRef) {
-        return MiniObject.objectFor(ptr, Buffer.class, needRef);
-    }
-    public final BufferStruct struct;
+    
+    private final BufferStruct struct;
     private ByteBuffer byteBuffer;
 }

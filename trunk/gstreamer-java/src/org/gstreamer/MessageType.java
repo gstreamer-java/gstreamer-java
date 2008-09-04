@@ -4,22 +4,26 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.gstreamer.lowlevel.EnumMapper;
+import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.IntegerEnum;
 
 /**
@@ -92,8 +96,8 @@ public enum MessageType implements IntegerEnum {
     SEGMENT_START(1 << 16),
     /**
      * Pipeline completed playback of a segment. This message is forwarded to the 
-     * application after all elements that posted {@link SEGMENT_START}
-     * have posted a GST_MESSAGE_SEGMENT_DONE message.
+     * application after all elements that posted {@link #SEGMENT_START}
+     * have posted a SEGMENT_DONE message.
      */
     SEGMENT_DONE(1 << 17),
     /**
@@ -120,9 +124,55 @@ public enum MessageType implements IntegerEnum {
     ANY(~0);
     MessageType(int type) {
         this.type = type;
+        this.name = GstMessageAPI.INSTANCE.gst_message_type_get_name(this);
     }
+    
+    /**
+     * Gets the native integer value for this type.
+     * 
+     * @return the native gstreamer value.
+     */
     public int intValue() {
         return type;
     }
+    
+    /**
+     * Gets the name of this message type.
+     * 
+     * @return the name of the message type.
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
+     * Gets a MessageType that corresponds to the native integer value.
+     * 
+     * @param type the native value of the type.
+     * @return a MessageType.
+     */
+    public static final MessageType valueOf(int type) {
+        return EnumMapper.getInstance().valueOf(type, MessageType.class);
+    }
+    
+    /**
+     * Gets a MessageType that corresponds to the name
+     * 
+     * @param name the gstreamer name of the type.
+     * @return a MessageType.
+     */
+    public static final MessageType forName(String name) {
+        MessageType type = MapHolder.typeMap.get(name);
+        return type != null ? type : UNKNOWN;
+    }
     private final int type;
+    private final String name;
+    private static final class MapHolder {
+        private static final Map<String, MessageType> typeMap = new HashMap<String, MessageType>();
+        static {
+            for (MessageType t : MessageType.values()) {
+                typeMap.put(t.getName(), t);
+            }
+        }
+    }
 }

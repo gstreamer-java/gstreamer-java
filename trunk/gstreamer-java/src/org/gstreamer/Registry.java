@@ -6,31 +6,33 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GstAPI.gst;
-
-import com.sun.jna.Pointer;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPluginAPI;
+import org.gstreamer.lowlevel.GstRegistryAPI;
 import org.gstreamer.lowlevel.GlibAPI.GList;
-import org.gstreamer.lowlevel.GstAPI;
+
+import com.sun.jna.Pointer;
 
 /**
  * Abstract base class for management of {@link Plugin} objects.
@@ -96,6 +98,21 @@ import org.gstreamer.lowlevel.GstAPI;
  * removed at the end of intitialization.
  */
 public class Registry extends GstObject {
+    private static interface API extends GstPluginAPI, GstRegistryAPI {
+        void gst_plugin_feature_list_free(GList list);
+        GList gst_registry_get_plugin_list(Registry registry);
+        GList gst_registry_plugin_filter(Registry registry, PluginFilter filter, boolean first, Pointer user_data);
+        GList gst_registry_feature_filter(Registry registry, PluginFeatureFilter filter,
+                                         boolean first, Pointer user_data);
+        GList gst_registry_get_feature_list(Registry registry, GType type);
+        GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
+        GList gst_registry_get_path_list(Registry registry);
+        void gst_plugin_list_free(GList list);
+    }
+    
+    private static final API gst = GstNative.load(API.class);
+    
+    @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(Registry.class.getName());
     
     public static interface PluginFilter {
@@ -193,16 +210,12 @@ public class Registry extends GstObject {
      * @return A List of {@link Plugin} objects that match the filter.
      */
     public List<Plugin> getPluginList(final PluginFilter filter, boolean onlyReturnFirstMatch) {
-
-        GList glist = gst.gst_registry_plugin_filter(this, new GstAPI.PluginFilter() {
-
-            public boolean callback(Plugin plugin) {
-                return filter.accept(plugin);
+        List<Plugin> list = new LinkedList<Plugin>();
+        for (Plugin plugin : getPluginList()) {
+            if (filter.accept(plugin)) {
+                list.add(plugin);
             }
-            
-        }, onlyReturnFirstMatch, null);      
-        List<Plugin> list = objectList(glist, Plugin.class);
-        gst.gst_plugin_list_free(glist);
+        }
         return list;
     }
     

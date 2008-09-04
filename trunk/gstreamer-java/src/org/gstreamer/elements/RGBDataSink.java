@@ -3,37 +3,40 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.elements;
 
-import org.gstreamer.Element;
 import java.nio.IntBuffer;
+
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.Structure;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 
 public class RGBDataSink extends Bin {
+    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
     private final Listener listener;
+    private final BaseSink videosink;
     
     public static interface Listener {
         void rgbFrame(int width, int height, IntBuffer rgb);
@@ -45,9 +48,9 @@ public class RGBDataSink extends Bin {
      * @param name The name used to identify this pipeline.
      */
     public RGBDataSink(String name, Listener listener) {
-        super(initializer(gst.gst_bin_new(name)));
+        super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-        Element videosink = ElementFactory.make("fakesink", "VideoSink");
+        videosink = (BaseSink) ElementFactory.make("fakesink", "VideoSink");
         videosink.set("signal-handoffs", true);
         videosink.set("sync", true);
         videosink.connect(new VideoHandoffListener());
@@ -64,8 +67,7 @@ public class RGBDataSink extends Bin {
         //
         // Link the ghost pads on the bin to the sink pad on the convertor
         //
-        Pad pad = conv.getStaticPad("sink");
-        addPad(new GhostPad("ghostsink", pad));
+        addPad(new GhostPad("sink", conv.getStaticPad("sink")));
     }
     /**
      * Indicate whether the {@link RGBDataSink} should pass the native {@link java.nio.IntBuffer}
@@ -77,6 +79,16 @@ public class RGBDataSink extends Bin {
     public void setPassDirectBuffer(boolean passThru) {
         this.passDirectBuffer = passThru;
     }
+    
+    /**
+     * Gets the actual gstreamer sink element.
+     * 
+     * @return a BaseSink
+     */
+    public BaseSink getSinkElement() {
+        return videosink;
+    }
+    
     class VideoHandoffListener implements Element.HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad) {
             

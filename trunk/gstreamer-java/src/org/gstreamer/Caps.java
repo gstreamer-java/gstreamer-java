@@ -4,24 +4,25 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
-import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.GstCapsAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.RefCountedObject;
+
 import com.sun.jna.Pointer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  * Structure describing sets of media formats
@@ -55,7 +56,8 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  *
  * @see Structure
  */
-public class Caps extends NativeObject {
+public class Caps extends RefCountedObject {
+    private static final GstCapsAPI gst = GstNative.load(GstCapsAPI.class);
     
     /**
      * Creates a new Caps that is empty.  
@@ -64,7 +66,7 @@ public class Caps extends NativeObject {
      * @return The new Caps.
      */
     public static Caps emptyCaps() {
-        return new Caps(initializer(gst.gst_caps_new_empty()));
+        return new Caps(initializer(gst.ptr_gst_caps_new_empty()));
     }
     
     /**
@@ -74,7 +76,7 @@ public class Caps extends NativeObject {
      * @return The new Caps.
      */
     public static Caps anyCaps() {
-        return new Caps(initializer(gst.gst_caps_new_any()));
+        return new Caps(initializer(gst.ptr_gst_caps_new_any()));
     }
     /**
      * Construct a new Caps from a string representation.
@@ -87,7 +89,7 @@ public class Caps extends NativeObject {
      * @return The new Caps.
      */
     public static Caps fromString(String caps) {
-        return new Caps(initializer(gst.gst_caps_from_string(caps)));
+        return new Caps(initializer(gst.ptr_gst_caps_from_string(caps)));
     }
     
     /**
@@ -96,7 +98,7 @@ public class Caps extends NativeObject {
      * @see #emptyCaps
      */
     public Caps() {
-        this(initializer(gst.gst_caps_new_any()));
+        this(initializer(gst.ptr_gst_caps_new_empty()));
     }
     
     /**
@@ -106,7 +108,7 @@ public class Caps extends NativeObject {
      * @see #fromString
      */
     public Caps(String caps) {
-        this(initializer(gst.gst_caps_from_string(caps)));
+        this(initializer(gst.ptr_gst_caps_from_string(caps)));
     }
     /**
      * Create a caps that is a copy of another caps.
@@ -115,7 +117,7 @@ public class Caps extends NativeObject {
      * @see #copy
      */
     public Caps(Caps caps) {
-        this(initializer(gst.gst_caps_copy(caps)));
+        this(initializer(gst.ptr_gst_caps_copy(caps)));
     }
     
     protected static Initializer initializer(Pointer ptr) {
@@ -144,7 +146,7 @@ public class Caps extends NativeObject {
      * @return The new Caps.
      */
     public Caps copy() {
-        return new Caps(initializer(gst.gst_caps_copy(this)));
+        return gst.gst_caps_copy(this);
     }
     
     /**
@@ -309,6 +311,14 @@ public class Caps extends NativeObject {
         // The above means we return a Structure proxy which does not own the pointer.
         // gst_caps_get_structure is not marked as CallerOwnsReturn, so it should work
         return gst.gst_caps_get_structure(this, index);
+    }
+    /**
+     * Destructively discard all but the first structure from this caps.
+     * 
+     * Useful when fixating. This caps must be writable.
+     */
+    public void truncate() {
+        gst.gst_caps_truncate(this);
     }
     
     @Override

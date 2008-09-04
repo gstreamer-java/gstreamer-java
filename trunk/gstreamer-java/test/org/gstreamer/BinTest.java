@@ -1,26 +1,41 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007 Wayne Meissner
+ * 
+ * This file is part of gstreamer-java.
  *
- * This program is distributed in the hope that it will be useful,
+ * gstreamer-java is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gstreamer-java is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.ref.WeakReference;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstPipelineAPI;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -134,5 +149,97 @@ public class BinTest {
         bin.addMany(e1, e2);
         
         assertEquals("Callback not called", 2, removed.get());
+    }
+    @Test 
+    public void addLinked() {
+        /* adding an element with linked pads to a bin unlinks the pads */
+        Pipeline pipeline = new Pipeline((String) null);
+        assertNotNull("Could not create pipeline", pipeline);
+
+        Element src = ElementFactory.make("fakesrc", null);
+        assertNotNull("Could not create fakesrc", src);
+        Element sink = ElementFactory.make("fakesink", null);
+        assertNotNull("Could not create fakesink", sink);
+
+        Pad srcpad = src.getStaticPad("src");
+        assertNotNull("Could not get src pad", srcpad);
+        Pad sinkpad = sink.getStaticPad("sink");
+        assertNotNull("Could not get sink pad", sinkpad);
+        
+        assertEquals("Could not link src and sink pads", PadLinkReturn.OK, srcpad.link(sinkpad));
+
+        /* pads are linked now */
+        assertTrue("srcpad not linked", srcpad.isLinked());
+        assertTrue("sinkpad not linked", sinkpad.isLinked());
+        
+        /* adding element to bin voids hierarchy so pads are unlinked */
+        pipeline.add(src);
+
+        /* check if pads really are unlinked */
+        assertFalse("srcpad is still linked after being added to bin", srcpad.isLinked());
+        assertFalse("sinkpad is still linked after being added to bin", sinkpad.isLinked());
+        
+        /* cannot link pads in wrong hierarchy */
+        assertEquals("Should not be able to link pads in different hierarchy", 
+                PadLinkReturn.WRONG_HIERARCHY, srcpad.link(sinkpad));
+
+        /* adding other element to bin as well */
+        pipeline.add(sink);
+
+        /* now we can link again */
+        assertEquals("Could not link src and sink pads when in same bin", PadLinkReturn.OK, srcpad.link(sinkpad));
+
+        /* check if pads really are linked */
+        assertTrue("srcpad not linked", srcpad.isLinked());
+        assertTrue("sinkpad not linked", sinkpad.isLinked());
+        
+        // Force disposal to flush out any refcounting bugs.
+        pipeline.dispose(); src.dispose(); sink.dispose(); srcpad.dispose(); sinkpad.dispose();
+    }
+    @Test
+    public void addSelf() {
+        Bin bin = new Bin("");
+        // Enable the line below once we know how to avoid gstreamer spitting out warnings
+        //assertFalse("Should not be able to add bin to itself", bin.add(bin));
+        bin.dispose();
+    }
+    // This test doesn't work correctly on older gstreamer?
+    //@Test 
+    public void iterateSorted() {
+
+        Pipeline pipeline = GstPipelineAPI.INSTANCE.gst_pipeline_new(null);
+        assertNotNull("Failed to create Pipeline", pipeline);
+        Bin bin = GstBinAPI.INSTANCE.gst_bin_new(null);
+        assertNotNull("Failed to create bin", bin);
+
+        Element src = ElementFactory.make("fakesrc", null);
+        assertNotNull("Failed to create fakesrc", src);
+
+        Element tee = ElementFactory.make("tee", null);
+        assertNotNull("Failed to create tee", tee);
+
+        Element sink1 = ElementFactory.make("fakesink", null);
+        assertNotNull("Failed to create fakesink", sink1);
+
+        bin.addMany(src, tee, sink1);
+        assertTrue("Could not link fakesrc to tee", src.link(tee));
+        assertTrue("Could not link tee to fakesink", tee.link(sink1));
+
+        Element identity = ElementFactory.make("identity", null);
+        assertNotNull("Failed to create identity", identity);
+        
+
+        Element sink2 = ElementFactory.make("fakesink", null);
+        assertNotNull("Failed to create fakesink", sink2);
+        pipeline.addMany(bin, identity, sink2);
+//  gst_bin_add_many (GST_BIN (pipeline), bin, identity, sink2, NULL);
+        assertTrue("Could not link tee to identity", tee.link(identity));
+        assertTrue("Could not link identity to second fakesink", identity.link(sink2));
+        Iterator<Element> it = pipeline.getElementsSorted().iterator();
+        
+        assertEquals("First sorted element should be sink2", sink2, it.next());
+        assertEquals("Second sorted element should be identity", identity, it.next());
+        assertEquals("Third sorted element should be bin", bin, it.next());
+        pipeline.dispose();
     }
 }

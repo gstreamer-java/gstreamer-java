@@ -7,43 +7,46 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstGhostPadAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 /**
- * Pseudo link pads
- *
+ * Pseudo link pads.
+ * 
+ * <p>
  * GhostPads are useful when organizing pipelines with {@link Bin} like elements.
  * The idea here is to create hierarchical element graphs. The bin element
  * contains a sub-graph. Now one would like to treat the bin-element like any other
  * {@link Element}. This is where GhostPads come into play. A GhostPad acts as a
  * proxy for another pad. Thus the bin can have sink and source ghost-pads that
  * are associated with sink and source pads of the child elements.
- *
+ * 
+ * <p>
  * If the target pad is known at creation time, {@link #GhostPad(String, Pad)} is the
  * function to use to get a ghost-pad. Otherwise one can use {@link #GhostPad(String, PadDirection)}
  * to create the ghost-pad and use {@link #setTarget} to establish the association later on.
  *
- * Note that GhostPads add overhead to the data processing of a pipeline.
+ * <p>Note that GhostPads add overhead to the data processing of a pipeline.
  * 
  * @see Pad
  */
 public class GhostPad extends Pad {
-
+    private static interface API extends GstGhostPadAPI {}
+    private static final API gst = GstNative.load(API.class);
     /**
      * Creates a new instance of GhostPad
      */
@@ -59,7 +62,7 @@ public class GhostPad extends Pad {
      * @param target The {@link Pad} to ghost.
      */
     public GhostPad(String name, Pad target) {
-        this(initializer(gst.gst_ghost_pad_new(name, target)));
+        this(initializer(gst.ptr_gst_ghost_pad_new(name, target)));
     }
     
     /**
@@ -71,7 +74,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, Pad target, PadTemplate template) {
-        this(initializer(gst.gst_ghost_pad_new_from_template(name, target, template)));
+        this(initializer(gst.ptr_gst_ghost_pad_new_from_template(name, target, template)));
     }
     
     /**
@@ -84,7 +87,7 @@ public class GhostPad extends Pad {
      * @param direction The direction of the ghostpad.
      */
     public GhostPad(String name, PadDirection direction) {
-        this(initializer(gst.gst_ghost_pad_new_no_target(name, direction.ordinal())));
+        this(initializer(gst.ptr_gst_ghost_pad_new_no_target(name, direction.ordinal())));
     }
     
     /**
@@ -95,7 +98,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, PadTemplate template) {
-        this(initializer(gst.gst_ghost_pad_new_no_target_from_template(name, template)));
+        this(initializer(gst.ptr_gst_ghost_pad_new_no_target_from_template(name, template)));
     }
     
     /**

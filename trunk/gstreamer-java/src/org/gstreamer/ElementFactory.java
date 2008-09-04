@@ -3,23 +3,20 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
-import org.gstreamer.elements.PlayBin;
-import com.sun.jna.Pointer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -28,10 +25,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.FakeSink;
+import org.gstreamer.elements.FakeSrc;
+import org.gstreamer.elements.FileSrc;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.TypeFind;
+import org.gstreamer.lowlevel.GstCapsAPI;
+import org.gstreamer.lowlevel.GstElementFactoryAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
+import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.GlibAPI.GList;
-import org.gstreamer.lowlevel.GstAPI.GstStaticPadTemplate;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstPadTemplateAPI.GstStaticPadTemplate;
+
+import com.sun.jna.Pointer;
 
 /**
  * ElementFactory is used to create instances of elements.
@@ -42,10 +49,13 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  */
 public class ElementFactory extends PluginFeature {
     private static Logger logger = Logger.getLogger(ElementFactory.class.getName());
+    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI {}
+    private static final API gst = GstNative.load(API.class);
     static Level DEBUG = Level.FINE;
     
     /**
      * Creates a new instance of ElementFactory
+     * @param init internal initialization data.
      */
     public ElementFactory(Initializer init) {
         super(init); 
@@ -60,7 +70,7 @@ public class ElementFactory extends PluginFeature {
      */
     public Element create(String name) {
         logger.entering("ElementFactory", "create", name);
-        Pointer elem = gst.gst_element_factory_create(this, name);
+        Pointer elem = gst.ptr_gst_element_factory_create(this, name);
         logger.log(DEBUG, "gst_element_factory_create returned: " + elem);
         if (elem == null) {
             throw new IllegalArgumentException("Cannot create GstElement");
@@ -156,7 +166,7 @@ public class ElementFactory extends PluginFeature {
 
     static Pointer makeRawElement(String factoryName, String name) {
         logger.entering("ElementFactory", "makeRawElement", new Object[] { factoryName, name});
-        Pointer elem = gst.gst_element_factory_make(factoryName, name);
+        Pointer elem = gst.ptr_gst_element_factory_make(factoryName, name);
         logger.log(DEBUG, "Return from gst_element_factory_make=" + elem);
         if (elem == null) {
             throw new IllegalArgumentException("No such Gstreamer factory: "
@@ -165,16 +175,21 @@ public class ElementFactory extends PluginFeature {
         return elem;
     }
     
-    private static Map<String, Class<? extends Element>> typeMap;
-    static {
-        typeMap = new HashMap<String, Class<? extends Element>>();
-        typeMap.put("playbin", PlayBin.class);
-        typeMap.put("decodebin", DecodeBin.class);
-        typeMap.put("typefind", TypeFind.class);
-    }
+    @SuppressWarnings("serial")
+    private static final Map<String, Class<? extends Element>> typeMap
+        = new HashMap<String, Class<? extends Element>>() {{
+        put("playbin", PlayBin.class);
+        put("decodebin", DecodeBin.class);
+        put("typefind", TypeFind.class);
+        put("fakesrc", FakeSrc.class);
+        put("fakesink", FakeSink.class);
+        put("filesrc", FileSrc.class);
+    }};
+    @SuppressWarnings("unchecked")
     private static Element elementFor(Pointer ptr, String factoryName) {
         Class<? extends Element> cls = typeMap.get(factoryName);
-        cls = (cls == null) ? Element.class : cls;
+        cls = (cls == null) ? (Class<Element>)GstTypes.classFor(ptr) : cls;
+        cls = (cls == null || !Element.class.isAssignableFrom(cls)) ? Element.class : cls;
         return GstObject.objectFor(ptr, cls);
     }
 }

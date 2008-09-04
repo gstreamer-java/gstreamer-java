@@ -5,26 +5,28 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.IntegerEnum;
+import org.gstreamer.lowlevel.annotations.DefaultEnumValue;
+
 /**
  * A set of buffer flags used to describe properties of a {@link Buffer}.
  */
-public enum BufferFlag {
+public enum BufferFlag implements IntegerEnum {
     /** 
      * The {@link Buffer} is read-only.
      * This means the data of the buffer should not be modified. The metadata 
@@ -58,6 +60,9 @@ public enum BufferFlag {
     
     /* padding */
     LAST(MiniObjectFlags.LAST.intValue() << 8),
+    
+    /** The value used for unknown native values */
+    @DefaultEnumValue
     UNKNOWN(~0);
     
     private BufferFlag(int value) {
@@ -71,19 +76,5 @@ public enum BufferFlag {
         return value;
     }
     
-    /**
-     * Returns the enum constant of this type with the specified integer value.
-     * @param type integer value.
-     * @return Enum constant.
-     */
-    public final static BufferFlag valueOf(int type) {
-        for (BufferFlag t : values()) {
-            if (t.intValue() == type) {
-                return t;
-            }
-        }
-        return UNKNOWN;
-    }
     private final int value;
-    
 }

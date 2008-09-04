@@ -1,24 +1,38 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007 Wayne Meissner
+ * 
+ * This file is part of gstreamer-java.
  *
- * This program is distributed in the hope that it will be useful,
+ * gstreamer-java is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gstreamer-java is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.ref.WeakReference;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.gstreamer.event.TagEvent;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -80,5 +94,31 @@ public class PadTest {
         Pad sinkPad = sink.getStaticPad("sink");
         assertEquals("Could not link pads", PadLinkReturn.OK, srcPad.link(sinkPad));
     }
-    
+
+    @Test
+    public void addEventProbe() {
+        Element elem = ElementFactory.make("identity", "src");
+        Event ev = new TagEvent(new TagList());
+
+        Pad sink = elem.getStaticPad("sink");
+
+        final AtomicReference<Event> e = new AtomicReference<Event>();
+
+        Pad.EVENT_PROBE event_probe = new Pad.EVENT_PROBE() {
+
+            public void eventReceived(Pad pad, Event event) {
+                e.set(event);
+            }
+        };
+
+        sink.addEventProbe(event_probe);
+        sink.sendEvent(ev);
+        assertEquals("event_prober.probeEvent() was not called", ev, e.get());
+
+        sink.removeEventProbe(event_probe);
+
+        Event ev2 = new TagEvent(new TagList());
+        sink.sendEvent(ev2);
+        assertNotSame("event_prober.probeEvent() should not have been called", ev2, e.get());
+    }
 }

@@ -1,13 +1,23 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007, 2008 Wayne Meissner
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package org.gstreamer.example;
@@ -15,20 +25,21 @@ package org.gstreamer.example;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.Arrays;
+
 import javax.swing.JFrame;
-import org.gstreamer.MainLoop;
-import org.gstreamer.Gst;
+import javax.swing.SwingUtilities;
+
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.Closure;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Gst;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.TagList;
-import org.gstreamer.event.HandoffEvent;
-import org.gstreamer.event.HandoffListener;
-import org.gstreamer.swing.GstVideoComponent;
+import org.gstreamer.swing.VideoComponent;
 
 /**
  *
@@ -38,45 +49,67 @@ public class FakeSrcTest {
     /** Creates a new instance of FakeSrcTest */
     public FakeSrcTest() {
     }
+    private static Pipeline pipeline;
     static TagList tags;
     public static void main(String[] args) {
-        JFrame frame = new JFrame("FakeSrcTest");
+
         args = Gst.init("FakeSrcTest", args);
         final int width = 320, height = 200;
-        MainLoop loop = new MainLoop();
-        Element fakesrc, flt, conv, videosink;
         /* setup pipeline */
-        Pipeline pipeline = new Pipeline("pipeline");
-        fakesrc = ElementFactory.make("fakesrc", "source");
+        pipeline = new Pipeline("pipeline");
+        final Element fakesrc = ElementFactory.make("fakesrc", "source");
         //fakesrc = ElementFactory.make("videotestsrc", "source");
-        flt = ElementFactory.make("capsfilter", "flt");
-        conv = ElementFactory.make("ffmpegcolorspace", "conv");
+        final Element srcfilter = ElementFactory.make("capsfilter", "srcfilter");
        
-        Caps fltcaps = new Caps("video/x-raw-rgb, width=" + width + ", height=" + height + ", bpp=16, depth=16, framerate=25/1");
-        flt.setCaps(fltcaps);
-        
-        GstVideoComponent panel = new GstVideoComponent();
-        panel.setPreferredSize(new Dimension(width, height));
-        frame.add(panel, BorderLayout.CENTER);
-        videosink = panel.getElement();
-        pipeline.addMany(fakesrc, flt, conv, videosink);
-        fakesrc.link(flt, conv, videosink);
-        fakesrc.set("signal-handoffs", true);
-        fakesrc.set("sizemax", width * height * 2);
-        fakesrc.set("sizetype", 2);
-        fakesrc.connect(new Element.HANDOFF() {
-            byte color = 0;
-            byte[] data = new byte[width * height * 2];
-            public void handoff(Element element, Buffer buffer, Pad pad) {
-                Arrays.fill(data, color++);
-                buffer.getByteBuffer().put(data, 0, data.length);
+        Caps fltcaps = new Caps("video/x-raw-rgb, framerate=2/1"
+                + ", width=" + width + ", height=" + height 
+                + ", bpp=16, depth=16");
+        srcfilter.setCaps(fltcaps);
+        final Element videorate = ElementFactory.make("videorate", "videorate");
+        final Element ratefilter = ElementFactory.make("capsfilter", "RateFilter");
+        ratefilter.setCaps(Caps.fromString("video/x-raw-rgb, framerate=2/1"));
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                JFrame frame = new JFrame("FakeSrcTest");
+                VideoComponent panel = new VideoComponent();
+                panel.setPreferredSize(new Dimension(width, height));
+                frame.add(panel, BorderLayout.CENTER);
+                Element videosink = panel.getElement();
+                pipeline.addMany(fakesrc, srcfilter, videorate, ratefilter, videosink);
+                Element.linkMany(fakesrc, srcfilter, videorate, ratefilter, videosink);
+                fakesrc.set("signal-handoffs", true);
+                fakesrc.set("sizemax", width * height * 2);
+                fakesrc.set("sizetype", 2);
+                fakesrc.set("sync", true);
+                fakesrc.set("is-live", true);
+                fakesrc.set("filltype", 1); // Don't fill the buffer before handoff
+                fakesrc.connect(new Element.HANDOFF() {
+                    byte color = 0;
+                    byte[] data = new byte[width * height * 2];
+                    public void handoff(Element element, Buffer buffer, Pad pad) {
+                        System.out.println("HANDOFF: Element=" + element.getNativeAddress()
+                                + " buffer=" + buffer.getNativeAddress()
+                                + " pad=" + pad.getNativeAddress());
+                        Arrays.fill(data, color++);
+                        buffer.getByteBuffer().put(data, 0, data.length);
+                    }
+                });
+                fakesrc.connect("handoff", new Closure() {
+                    @SuppressWarnings("unused")
+                    public void invoke(Element element, Buffer buffer, Pad pad) {
+                        System.out.println("Closure: Element=" + element.getNativeAddress()
+                                + " buffer=" + buffer.getNativeAddress()
+                                + " pad=" + pad.getNativeAddress());
+                    }
+                });
+                frame.setSize(640, 480);
+                frame.pack();
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setVisible(true);
+                pipeline.setState(State.PLAYING);
             }
         });
-        frame.setSize(640, 480);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-        pipeline.setState(State.PLAYING);
-        loop.startInBackground();
+        
     }
 }

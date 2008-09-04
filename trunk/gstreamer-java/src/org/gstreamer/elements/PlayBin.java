@@ -3,27 +3,31 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.elements;
-import org.gstreamer.*;
-import com.sun.jna.ptr.DoubleByReference;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+
 import java.io.File;
 import java.net.URI;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import org.gstreamer.Bin;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
+import org.gstreamer.GhostPad;
+import org.gstreamer.Pipeline;
 
 /**
  * Playbin provides a stand-alone everything-in-one abstraction for an audio 
@@ -59,7 +63,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * 
  * <p>
  * Playback can be initiated by setting the PlayBin to PLAYING state using
- * {@link #setState} or {@link #play}. Note that the state change will take place in
+ * {@link #setState setState} or {@link #play play}. Note that the state change will take place in
  * the background in a separate thread, when the function returns playback
  * is probably not happening yet and any errors might not have occured yet.
  * Applications using playbin should ideally be written to deal with things
@@ -75,7 +79,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * </p>
  * 
  * <p>
- * Seeking can be done using {@link #setPosition} on the playbin element. 
+ * Seeking can be done using {@link #seek seek} on the playbin element. 
  * Again, the seek will not be executed instantaneously, but will be done in a
  * background thread. When the seek call returns the seek will most likely still
  * be in process. An application may wait for the seek to finish (or fail) using 
@@ -84,7 +88,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * 
  * <p>
  * Applications may query the current position and duration of the stream
- * via {@link #getPosition} and {@link #getDuration} and
+ * via {@link #queryPosition} and {@link #queryDuration} and
  * setting the format passed to {@link Format#TIME}. If the query was successful,
  * the duration or position will have been returned in units of nanoseconds.
  * </p>
@@ -237,7 +241,7 @@ public class PlayBin extends Pipeline {
      * @param name The name used to identify this pipeline.
      */
     public PlayBin(String name) {
-        this(initializer(gst.gst_element_factory_make("playbin", name)));
+        this(makeRawElement("playbin", name));
     }
     
     /**
@@ -262,7 +266,7 @@ public class PlayBin extends Pipeline {
     }
     
     /**
-     * Set the media file to play.
+     * Sets the media file to play.
      * 
      * @param file The {@link java.io.File} to play.
      */
@@ -271,26 +275,17 @@ public class PlayBin extends Pipeline {
     }
     
     /**
-     * Set the media URI to play.
+     * Sets the media URI to play.
      * 
      * @param uri The {@link java.net.URI} to play.
      */
     public void setURI(URI uri) {
-        String uriString = uri.toString();
-        
-        // Need to fixup file:/ to be file:/// for gstreamer
-        if ("file".equals(uri.getScheme())) {
-            if (com.sun.jna.Platform.isWindows()) {
-                uriString = "file:/" + uri.getRawPath();
-            } else {
-                uriString = "file://" + uri.getRawPath();
-            }
-        }
-        set("uri", uriString);
+        set("uri", uri);
     }
     
     /**
-     * Set the audio output Element.
+     * Sets the audio output Element.
+     * <p> To disable audio output, call this method with a <tt>null</tt> argument.
      * 
      * @param element The element to use for audio output.
      */
@@ -299,7 +294,8 @@ public class PlayBin extends Pipeline {
     }
     
     /**
-     * Set the video output Element.
+     * Sets the video output Element.
+     * <p> To disable video output, call this method with a <tt>null</tt> argument.
      * 
      * @param element The element to use for video output.
      */
@@ -308,7 +304,7 @@ public class PlayBin extends Pipeline {
     }
     
     /**
-     * Set the visualization output Element.
+     * Sets the visualization output Element.
      * 
      * @param element The element to use for visualization.
      */
@@ -317,11 +313,15 @@ public class PlayBin extends Pipeline {
     }
     
     /**
-     * Set an output {@link Element} on the PlayBin.
+     * Sets an output {@link Element} on the PlayBin.
+     * 
      * @param key The name of the output to change.
      * @param element The Element to set as the output.
      */
     private void setElement(String key, Element element) {
+        if (element == null) {
+            element = ElementFactory.make("fakesink", "fake-" + key);
+        }
         set(key, element);
     }
     
@@ -330,19 +330,34 @@ public class PlayBin extends Pipeline {
      * 
      * @param percent Percentage (between 0 and 100) to set the volume to.
      */
-    public void setVolume(int percent) {
-        double volume = Math.max(Math.min((double) percent, 100d), 0d) / 100.0d;
-        gobj.g_object_set(this, "volume", volume);
+    public void setVolumePercent(int percent) {
+        setVolume(Math.max(Math.min((double) percent, 100d), 0d) / 100d);
     }
     
     /**
      * Get the current volume.
      * @return The current volume as a percentage between 0 and 100 of the max volume.
      */
-    public int getVolume() {
-        DoubleByReference ref = new DoubleByReference();
-        gobj.g_object_get(this, "volume", ref);
-        return (int) ((ref.getValue() * 100.0) + 0.5);
+    public int getVolumePercent() {
+        return (int) ((getVolume() * 100d) + 0.5);
+    }
+    /**
+     * Sets the audio playback volume.
+     * 
+     * @param volume value between 0.0 and 1.0 with 1.0 being full volume.
+     */
+    public void setVolume(double volume) {
+        gobj.g_object_set(this, "volume", volume);
+    }
+    
+    /**
+     * Gets the current volume.
+     * @return The current volume as a percentage between 0 and 100 of the max volume.
+     */
+    public double getVolume() {
+        double[] volume = { 0d };
+        gobj.g_object_get(this, "volume", volume);
+        return volume[0];
     }
     
 }

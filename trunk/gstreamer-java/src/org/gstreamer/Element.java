@@ -5,40 +5,33 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import java.util.Collections;
-import java.util.EventListener;
-import java.util.EventListenerProxy;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import org.gstreamer.event.ElementEvent;
-import org.gstreamer.event.ElementListener;
-import org.gstreamer.event.HandoffEvent;
-import org.gstreamer.event.HandoffListener;
-import org.gstreamer.lowlevel.EnumMapper;
-import org.gstreamer.lowlevel.GstAPI;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
+
+import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GstElementAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
+
+import com.sun.jna.Pointer;
 
 
 /**
@@ -74,12 +67,29 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  *
  */
 public class Element extends GstObject {
+
+    @SuppressWarnings("unused")    
     private static Logger logger = Logger.getLogger(Element.class.getName());
+    private static interface API extends GstElementAPI {}
+    private static final API gst = GstNative.load(API.class);
     
-    /** Creates a new instance of Element */
+    /** 
+     * Creates a new instance of Element.  This constructor is used internally.
+     * 
+     * @param init internal initialization data.
+     */
     public Element(Initializer init) { 
         super(init);
     }
+    
+    /**
+     * Creates an instance of the required element type, but does not wrap it in 
+     * a proxy.
+     * 
+     * @param factoryName The name of the factory to use to produce the Element
+     * @param elementName The name to assign to the created Element
+     * @return a raw element.
+     */
     protected static Initializer makeRawElement(String factoryName, String elementName) {
         return initializer(ElementFactory.makeRawElement(factoryName, elementName));
     }
@@ -132,12 +142,35 @@ public class Element extends GstObject {
         gst.gst_element_unlink(this, dest);
     }
     
+    /**
+     * Sets the state of the element. 
+     * <p>
+     * This method will try to set the requested state by going through all the 
+     * intermediary states.
+     * <p>
+     * This function can return {@link StateChangeReturn#ASYNC}, in which case the
+     * element will perform the remainder of the state change asynchronously in
+     * another thread.
+     * <p>
+     * An application can use {@link #getState} to wait for the completion
+     * of the state change or it can wait for a state change message on the bus.
+     *
+     * @param state the element's new {@link State}.
+     * @return the status of the element's state change.
+     */
     public StateChangeReturn setState(State state) {
         return gst.gst_element_set_state(this, state);
     }
+    
+    /**
+     * Sets the {@link Caps} on this Element.
+     * 
+     * @param caps the new Caps to set.
+     */
     public void setCaps(Caps caps) {
         gobj.g_object_set(this, "caps", caps);
     }
+    
     /**
      * @deprecated Use {@link #getStaticPad}
      */
@@ -203,12 +236,33 @@ public class Element extends GstObject {
     }
     
     /**
+     * Retrieves a pad from the element by name. This version only retrieves
+     * request pads. The pad must be released with {@link #releaseRequestPad}.
+     * 
+     * @param name the name of the request {@link Pad} to retrieve.
+     * @return the requested Pad if found, otherwise <tt>null</tt>. 
+     * Release using {@link #releaseRequestPad} after usage.
+     */
+    public Pad getRequestPad(String name) {
+        return gst.gst_element_get_request_pad(this, name);
+    }
+    
+    /**
+     * Frees the previously requested pad obtained via {@link #getRequestPad}.
+     * 
+     * @param pad the pad to release.
+     */
+    public void releaseRequestPad(Pad pad) {
+        gst.gst_element_release_request_pad(this, pad);
+    }
+    
+    /**
      * Remove a {@link Pad} from the element.
      * <p>
      * This method is used by plugin developers and should not be used
      * by applications. Pads that were dynamically requested from elements
-     * with gst_element_get_request_pad() should be released with the
-     * gst_element_release_request_pad() function instead.
+     * with {@link #getRequestPad} should be released with the
+     * {@link #releaseRequestPad} function instead.
      *<p>
      * Pads are not automatically deactivated so elements should perform the needed
      * steps to deactivate the pad in case this pad is removed in the PAUSED or
@@ -225,13 +279,38 @@ public class Element extends GstObject {
         return gst.gst_element_remove_pad(this, pad);
     }
     
+    /**
+     * Gets the state of the element.
+     * <p>
+     * This method will wait until any async state change has completed.
+     * 
+     * @return The {@link State} the Element is currently in.
+     */
     public State getState() {
         return getState(-1);
     }
     
     /**
      * Gets the state of the element.
-     *<p>
+     * <p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @param timeout the amount of time to wait.
+     * @param units the units of the <tt>timeout</tt>.
+     * @return The {@link State} the Element is currently in.
+     *
+     */
+    public State getState(long timeout, TimeUnit units) {
+        State[] state = new State[1];
+        gst.gst_element_get_state(this, state, null, units.toNanos(timeout));
+        return state[0];
+    }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
      * For elements that performed an ASYNC state change, as reported by
      * {@link #setState}, this function will block up to the
      * specified timeout value for the state change to complete.
@@ -241,19 +320,29 @@ public class Element extends GstObject {
      *
      */
     public State getState(long timeout) {
-        IntByReference state = new IntByReference();
-        IntByReference pending = new IntByReference();
-
-        gst.gst_element_get_state(this, state, pending, timeout);
-        return EnumMapper.getInstance().valueOf(state.getValue(), State.class);
+        State[] state = new State[1];
+        gst.gst_element_get_state(this, state, null, timeout);
+        return state[0];
     }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @param timeout The amount of time in nanoseconds to wait.
+     * @param states an array to store the states in.  Must be of sufficient size
+     * to hold two elements.
+     *
+     */
     public void getState(long timeout, State[] states) {
-        IntByReference state = new IntByReference();
-        IntByReference pending = new IntByReference();
-        
+        State[] state = new State[1];
+        State[] pending = new State[1];
         gst.gst_element_get_state(this, state, pending, timeout);
-        states[0] = EnumMapper.getInstance().valueOf(state.getValue(), State.class);
-        states[1] = EnumMapper.getInstance().valueOf(pending.getValue(), State.class);
+        states[0] = state[0];
+        states[1] = pending[0];
     }
     
     /**
@@ -287,48 +376,68 @@ public class Element extends GstObject {
     public boolean sendEvent(Event ev) {
         return gst.gst_element_send_event(this, ev);
     }
-    /**
-     * 
-     * @param listener
-     */
-    public void addElementListener(ElementListener listener) {
-        addListenerProxy(ElementListener.class, listener, new ElementListenerProxy(listener));
-    }
     
     /**
-     * 
-     * @param listener
-     */
-    public void removeElementListener(ElementListener listener) {
-        ElementListenerProxy proxy = (ElementListenerProxy) removeListenerProxy(ElementListener.class, listener);
-        if (proxy != null) {
-            proxy.disconnect();
-        }
-    }
-    /**
      * Signal emitted when an {@link Pad} is added to this {@link Element}
+     * 
+     * @see #connect(PAD_ADDED)
+     * @see #disconnect(PAD_ADDED)
      */
     public static interface PAD_ADDED {
+        /**
+         * Called when a new {@link Pad} is added to an Element.
+         * 
+         * @param element the element the pad was added to.
+         * @param pad the pad which was added.
+         */
         public void padAdded(Element element, Pad pad);
     }
     
     /**
      * Signal emitted when an {@link Pad} is removed from this {@link Element}
+     * 
+     * @see #connect(PAD_REMOVED)
+     * @see #disconnect(PAD_REMOVED)
      */
     public static interface PAD_REMOVED {
+        /**
+         * Called when a new {@link Pad} is removed from an Element.
+         * 
+         * @param element the element the pad was removed from.
+         * @param pad the pad which was removed.
+         */
         public void padRemoved(Element element, Pad pad);
     }
     
     /**
      * Signal emitted when this {@link Element} ceases to generated dynamic pads.
+     * 
+     * @see #connect(NO_MORE_PADS)
+     * @see #disconnect(NO_MORE_PADS)
      */
     public static interface NO_MORE_PADS {
+        /**
+         * Called when an {@link Element} ceases to generated dynamic pads.
+         * 
+         * @param element the element which posted this message.
+         */
         public void noMorePads(Element element);
     }
+    
     /**
      * Signal emitted when this {@link Element} has a {@link Buffer} ready.
+     * 
+     * @see #connect(HANDOFF)
+     * @see #disconnect(HANDOFF)
      */
     public static interface HANDOFF {
+        /**
+         * Called when an {@link Element} has a {@link Buffer} ready.
+         * 
+         * @param element the element which has a buffer ready.
+         * @param buffer the buffer for the data.
+         * @param pad the pad on the element.
+         */
         public void handoff(Element element, Buffer buffer, Pad pad);
     }
     
@@ -407,10 +516,10 @@ public class Element extends GstObject {
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final HANDOFF listener) {
-        connect(HANDOFF.class, listener, new GstAPI.HandoffCallback() {
-            public void callback(Element src, Buffer buffer, Pad pad, Pointer user_data) {
-                buffer.struct.read();
-                listener.handoff(src, buffer, pad);
+        connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Pointer src, Buffer buffer, Pad pad, Pointer user_data) {
+                listener.handoff(Element.this, buffer, pad);
             }            
         });
     }
@@ -421,55 +530,6 @@ public class Element extends GstObject {
      */
     public void disconnect(HANDOFF listener) {
         disconnect(HANDOFF.class, listener);
-    }
-    
-    public void addHandoffListener(final HandoffListener listener) {
-        HandoffListenerProxy proxy = new HandoffListenerProxy(listener);
-        addListenerProxy(HandoffListener.class, listener, proxy);
-        connect(proxy);
-    }
-    public void removeHandoffListener(HandoffListener listener) {
-        EventListenerProxy proxy = removeListenerProxy(HandoffListener.class, listener);
-        if (proxy != null) {
-            disconnect((HANDOFF) proxy);
-        }
-    }
-    private class HandoffListenerProxy extends java.util.EventListenerProxy implements HANDOFF {
-        public HandoffListenerProxy(final HandoffListener listener) {
-            super(listener);
-        }
-
-        public void handoff(Element element, Buffer buffer, Pad pad) {
-            ((HandoffListener) getListener()).handoff(new HandoffEvent(element, buffer, pad));
-        }
-    }
-    private class ElementListenerProxy extends java.util.EventListenerProxy {
-        public ElementListenerProxy(final ElementListener listener) {
-            super(listener);
-            Element.this.connect(added = new PAD_ADDED() {
-                public void padAdded(Element elem, Pad pad) {
-                    listener.padAdded(new ElementEvent(elem, pad));
-                }
-            });
-            Element.this.connect(removed = new PAD_REMOVED() {
-                public void padRemoved(Element elem, Pad pad) {
-                    listener.padRemoved(new ElementEvent(elem, pad));
-                }
-            });
-            Element.this.connect(nomorepads = new NO_MORE_PADS() {
-                public void noMorePads(Element elem) {
-                    listener.noMorePads(new ElementEvent(elem, null));
-                }
-            });
-        }
-        public void disconnect() {
-            Element.this.disconnect(nomorepads);
-            Element.this.disconnect(removed);
-            Element.this.disconnect(added);
-        }
-        private PAD_ADDED added;
-        private PAD_REMOVED removed;
-        private NO_MORE_PADS nomorepads;
     }
     
     /**
@@ -545,8 +605,36 @@ public class Element extends GstObject {
         gst.gst_element_unlink_pads(src, srcPadName, dest, destPadName);
     }
     
-    static Element objectFor(Pointer ptr, boolean needRef) {
-        return GstObject.objectFor(ptr, Element.class, needRef);
+    /**
+     * Posts a {@link Message} on the element's {@link Bus}. 
+     *
+     * @param message the Message to post.
+     * @return <tt>true</tt> if the message was posted, <tt>false</tt> if the 
+     * element does not have a {@link Bus}.
+     */
+    public boolean postMessage(Message message) {
+        return gst.gst_element_post_message(this, message);
+    }
+    
+    /**
+     * Gets the currently configured clock of the element. 
+     * 
+     * @return the clock of the element.
+     */
+    public Clock getClock() {
+        return gst.gst_element_get_clock(this);
+    }
+    
+    /**
+     * Returns the base time of the element. The base time is the
+     * absolute time of the clock when this element was last put to
+     * PLAYING. Subtracting the base time from the clock time gives
+     * the stream time of the element.
+     * 
+     * @return the base time of the element
+     */
+    public ClockTime getBaseTime() {
+        return gst.gst_element_get_base_time(this);
     }
 }
 

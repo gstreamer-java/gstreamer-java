@@ -1,13 +1,23 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007, 2008 Wayne Meissner
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 package org.gstreamer.example;
@@ -20,13 +30,17 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.SwingUtilities;
-import org.gstreamer.MainLoop;
+
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
-import org.gstreamer.swing.GstVideoPlayer;
+import org.gstreamer.Pipeline;
+import org.gstreamer.elements.PlayBin;
+import org.gstreamer.swing.VideoPlayer;
 
 /**
  *
@@ -38,9 +52,7 @@ public class SwingMultiPlayerAlpha {
     }
     public static void main(String[] args) {
         //System.setProperty("sun.java2d.opengl", "True");
-        // Quartz is abysmally slow at scaling video for some reason, so turn it off.
-        System.setProperty("apple.awt.graphics.UseQuartz", "false");
-        
+       
         args = Gst.init("Swing Player", args);
         if (args.length < 1) {
             System.err.println("Usage: SwingPlayer <filename>");
@@ -67,7 +79,10 @@ public class SwingMultiPlayerAlpha {
                     
                     frame.setLocation(i * 100, i * 100);
                     final float alpha = 0.6f;
-                    final GstVideoPlayer player = new GstVideoPlayer(file) {
+                    final VideoPlayer player = new VideoPlayer(file) {
+
+                        private static final long serialVersionUID = 4925431893247320169L;
+
                         protected void paintComponent(Graphics g) {
                             Graphics2D g2d = (Graphics2D) g.create();
                             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
@@ -76,10 +91,14 @@ public class SwingMultiPlayerAlpha {
                             g2d.dispose();
                         }
                     };
-                    player.setPreferredSize(new Dimension(640, 480));
+                    player.setPreferredSize(new Dimension(400, 250));
                     player.setControlsVisible(true);
                     player.setOpaque(false);
-                    player.setAlpha(alpha);
+                    player.setOpacity(alpha);
+                    Pipeline pipe = player.getMediaPlayer().getPipeline();
+                    if (pipe instanceof PlayBin) {
+                        ((PlayBin) pipe).setAudioSink(ElementFactory.make("fakesink", "audio"));
+                    }
                     
                     frame.setOpaque(false);
                     frame.setContentPane(player);
@@ -100,7 +119,6 @@ public class SwingMultiPlayerAlpha {
                 window.setVisible(true);
             }
         });
-        new MainLoop().run();
     }
   
 }
