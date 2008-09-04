@@ -19,118 +19,31 @@
 package org.gstreamer.media;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import org.gstreamer.Bus;
-import org.gstreamer.ClockTime;
+import java.util.concurrent.Executors;
 import org.gstreamer.Element;
-import org.gstreamer.Format;
-import org.gstreamer.Gst;
-import org.gstreamer.GstObject;
-import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.elements.PlayBin;
-import org.gstreamer.media.event.DurationChangedEvent;
-import org.gstreamer.media.event.EndOfMediaEvent;
-import org.gstreamer.media.event.MediaListener;
-import org.gstreamer.media.event.PauseEvent;
-import org.gstreamer.media.event.PositionChangedEvent;
-import org.gstreamer.media.event.StartEvent;
-import org.gstreamer.media.event.StopEvent;
 
 /**
  * Basic implementation of a MediaPlayer
  */
-abstract public class PlayBinMediaPlayer implements MediaPlayer {
-    private PlayBin playbin;
-    private Executor eventExecutor;
-    private volatile ScheduledFuture<?> positionTimer = null;
-    private Queue<URI> playList = new ConcurrentLinkedQueue<URI>();
-    private State currentState = State.NULL;
-    private final MediaPlayer mediaPlayer = PlayBinMediaPlayer.this;
-    private final Map<MediaListener, MediaListener> mediaListeners = new HashMap<MediaListener, MediaListener>();
-    private final List<MediaListener> listeners = new CopyOnWriteArrayList<MediaListener>();
-    
-    protected PlayBinMediaPlayer(Executor eventExecutor) {
-        playbin = new PlayBin(getClass().getSimpleName());
-        this.eventExecutor = eventExecutor;
-        playbin.getBus().connect(eosSignal);
-        playbin.getBus().connect(stateChanged);
-    }
-    
-    /*
-     * Handle EOS signals.  We wrap all gst signals so they are executed on a separate thread.
-     */
-    private Bus.EOS eosSignal = new Bus.EOS() {
-        public void endOfStream(GstObject source) {
-            URI next = playList.poll();
-            if (next != null) {
-                setURI(next);
-            } else {
-                final EndOfMediaEvent evt = new EndOfMediaEvent(mediaPlayer, 
-                            State.PLAYING, State.NULL, State.VOID_PENDING);
+public class PlayBinMediaPlayer extends PipelineMediaPlayer {
+    private static final Executor defaultExec = Executors.newSingleThreadExecutor();
+    private final PlayBin playbin;
 
-                // Notify any listeners that the last media file is finished
-                for (MediaListener l : getMediaListeners()) {
-                    l.endOfMedia(evt);
-                }
-            }
-            
-        }
-    };
-    
-    private final Bus.STATE_CHANGED stateChanged = new Bus.STATE_CHANGED() {
-        public void stateChanged(GstObject source, State old, State newState, State pending) {
-          if (false) System.out.println("stateEvent: new=" + newState 
-                    + " old=" + old
-                    + " pending=" + pending);
-            final ClockTime position = playbin.queryPosition();
-            switch (newState) {
-            case PLAYING:
-                if (currentState == State.NULL || currentState == State.PAUSED) {
-                    for (MediaListener listener : getMediaListeners()) {
-                        listener.start(new StartEvent(mediaPlayer, 
-                            currentState, newState, State.VOID_PENDING, position));
-                    }
-                    currentState = State.PLAYING;
-                }
-                break;
-            case PAUSED:
-                if (currentState == State.PLAYING) {
-                    for (MediaListener listener : getMediaListeners()) {
-                        listener.pause(new PauseEvent(mediaPlayer, 
-                                currentState, newState, State.VOID_PENDING, position));
-                    }
-                    currentState = State.PAUSED;
-                }
-                break;
-            case NULL:
-            case READY:
-                if (currentState == State.PLAYING) {
-                    for (MediaListener listener : getMediaListeners()) {
-                        listener.stop(new StopEvent(mediaPlayer, 
-                                currentState, newState, State.VOID_PENDING, position));
-                    }
-                    currentState = State.NULL;
-                }
-                break;
-            }
-        }
-    };
+    public PlayBinMediaPlayer(String name, Executor eventExecutor) {
+        super(new PlayBin(name), eventExecutor);
+        playbin = (PlayBin) getPipeline();
+        
+    }
+
+    public PlayBinMediaPlayer() {
+        this("VideoPlayer", defaultExec);
+    } 
     
     /**
      * Sets the sink element to use for audio output.
@@ -148,16 +61,7 @@ abstract public class PlayBinMediaPlayer implements MediaPlayer {
      */
     public void setVideoSink(Element sink) {
         playbin.setVideoSink(sink);
-    }
-    
-    /**
-     * Gets the {@link Pipeline} that the MediaPlayer uses to play media.
-     * 
-     * @return A Pipeline
-     */
-    public Pipeline getPipeline() {
-        return playbin;
-    }
+    }    
     
     /**
      * Tests if this media player is currently playing a media file.
@@ -206,43 +110,6 @@ abstract public class PlayBinMediaPlayer implements MediaPlayer {
     }
     
     /**
-     * Adds a uri to the playlist
-     * 
-     * @param uri The uri to add to the playlist.
-     */
-    public void enqueue(URI uri) {
-        playList.add(uri);
-    }
-    
-    /**
-     * Adds a list of media files to the playlist.
-     * 
-     * @param playlist The list of media files to add.
-     */
-    public void enqueue(Collection<URI> playlist) {
-        this.playList.addAll(playlist);
-    }
-    
-    /**
-     * Replaces the current play list with a new play list.
-     * 
-     * @param playlist The new playlist.
-     */
-    public void setPlaylist(Collection<URI> playlist) {
-        this.playList.clear();
-        this.playList.addAll(playlist);
-    }
-    
-    /**
-     * Removes a file from the play list.
-     * 
-     * @param uri The uri to remove.
-     */
-    public void remove(URI uri) {
-        this.playList.remove(uri);
-    }
-    
-    /**
      * Sets the current file to play.
      * 
      * @param file the {@link java.io.File} to play.
@@ -270,73 +137,6 @@ abstract public class PlayBinMediaPlayer implements MediaPlayer {
         return playbin.getVolume();
     }
     
-    /**
-     * Adds a {@link MediaListener} that will be notified of media events.
-     * 
-     * @param listener the MediaListener to add.
-     */
-    public synchronized void addMediaListener(MediaListener listener) {
-        // Only run the timer when needed
-        if (mediaListeners.isEmpty()) {
-            positionTimer = Gst.getScheduledExecutorService().scheduleAtFixedRate(positionUpdater, 1, 1, TimeUnit.SECONDS);
-        }
-        // Wrap the listener in a swing EDT safe version
-        MediaListener proxy = wrapListener(MediaListener.class, listener, eventExecutor);
-        mediaListeners.put(listener, proxy);
-        listeners.add(proxy);
-    }
-    
-    /**
-     * Adds a {@link MediaListener} that will be notified of media events.
-     * 
-     * @param listener the MediaListener to add.
-     */
-    public synchronized void removeMediaListener(MediaListener listener) {
-        MediaListener proxy = mediaListeners.remove(listener);
-        listeners.remove(proxy);
-        // Only run the timer when needed
-        
-        if (mediaListeners.isEmpty() && positionTimer != null) {
-            positionTimer.cancel(true);
-            positionTimer = null;
-        }
-    }
-    
-    /**
-     * Gets the current list of media listeners
-     * @return a list of {@link MediaListener}
-     */
-    private List<MediaListener> getMediaListeners() {
-        return listeners;
-    }
-    
-    private Runnable positionUpdater = new Runnable() {
-        private long lastPosition = 0;
-        private ClockTime lastDuration = ClockTime.ZERO;
-        public void run() {
-            final long position = playbin.queryPosition(Format.TIME);
-            final long percent = playbin.queryPosition(Format.PERCENT);
-            final ClockTime duration = playbin.queryDuration();
-            final boolean durationChanged = !duration.equals(lastDuration) 
-                    && !duration.equals(ClockTime.ZERO)
-                    && !duration.equals(ClockTime.NONE);
-            lastDuration = duration;
-            final boolean positionChanged = position != lastPosition && position >= 0;
-            lastPosition = position;
-            final PositionChangedEvent pue = new PositionChangedEvent(PlayBinMediaPlayer.this,
-                    ClockTime.valueOf(position, TimeUnit.NANOSECONDS), (int) percent);
-            final DurationChangedEvent due = new DurationChangedEvent(PlayBinMediaPlayer.this,
-                    duration);
-            for (MediaListener l : getMediaListeners()) {
-                if (durationChanged) {
-                    l.durationChanged(due);
-                }
-                if (positionChanged) {
-                    l.positionChanged(pue);
-                }
-            }
-        }
-    };
     
     /**
      * Parses the URI in the String.
@@ -361,39 +161,4 @@ abstract public class PlayBinMediaPlayer implements MediaPlayer {
             return f.toURI();
         }
     }
-    private static <T> T wrapListener(Class<T> interfaceClass, T instance, Executor executor) {
-        return interfaceClass.cast(Proxy.newProxyInstance(interfaceClass.getClassLoader(), 
-                new Class[]{ interfaceClass }, 
-                new ExecutorInvocationProxy(instance, executor)));
-    }
-    
-    /**
-     * Provides a way of automagically executing methods on an interface on a 
-     * different thread.
-     */
-    private static class ExecutorInvocationProxy implements InvocationHandler {
-
-        private final Executor executor;
-        private final Object object;
-
-        public ExecutorInvocationProxy(Object object, Executor executor) {
-            this.object = object;
-            this.executor = executor;
-        }
-
-        public Object invoke(Object self, final Method method, final Object[] argArray) throws Throwable {
-            if (method.getName().equals("hashCode")) {
-                return object.hashCode();
-            }
-            executor.execute(new Runnable() {
-                public void run() {
-                    try {
-                        method.invoke(object, argArray);
-                    } catch (Throwable t) {}
-                }
-            });
-            return null;
-        }
-    }
-
 }

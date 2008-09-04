@@ -133,7 +133,7 @@ public class VideoPlayer extends javax.swing.JPanel {
         this(parseURI(uri));
     }
     public VideoPlayer(URI uri) {
-        this(new SwingMediaPlayer());
+        this(new PlayBinMediaPlayer("swing player", swingExec));
         mediaPlayer.setURI(uri);
     }
     private static URI parseURI(String uri) {
@@ -312,12 +312,6 @@ public class VideoPlayer extends javax.swing.JPanel {
             return new ImageIcon(url);
         } else {
             throw new RuntimeException("Cannot locate icon for " + name);
-        }
-    }
-    
-    private static class SwingMediaPlayer extends PlayBinMediaPlayer {
-        public SwingMediaPlayer() {
-            super(swingExec);
         }
     }
     
