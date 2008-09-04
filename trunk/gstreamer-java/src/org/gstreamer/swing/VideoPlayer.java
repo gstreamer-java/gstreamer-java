@@ -63,7 +63,7 @@ public class VideoPlayer extends javax.swing.JPanel {
     private static final long serialVersionUID = 1964694975227372646L;
     private static final SwingExecutorService swingExec = new SwingExecutorService();
 
-    public VideoPlayer(AbstractMediaPlayer player) {
+    public VideoPlayer(MediaPlayer player) {
         mediaPlayer = player;
         videoComponent = new VideoComponent();
         mediaPlayer.setVideoSink(videoComponent.getElement());
@@ -348,7 +348,7 @@ public class VideoPlayer extends javax.swing.JPanel {
         
     };
     PipelinePositionModel positionModel;
-    private AbstractMediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
     private JComponent controls;
     private JLabel positionLabel;
     private VideoComponent videoComponent;    

@@ -133,6 +133,15 @@ abstract public class AbstractMediaPlayer implements MediaPlayer {
     };
     
     /**
+     * Sets the sink element to use for audio output.
+     * 
+     * @param sink The sink to use for audio output.
+     */
+    public void setAudioSink(Element sink) {
+        playbin.setAudioSink(sink);
+    }
+    
+    /**
      * Sets the sink element to use for video output.
      * 
      * @param sink The sink to use for video output.
