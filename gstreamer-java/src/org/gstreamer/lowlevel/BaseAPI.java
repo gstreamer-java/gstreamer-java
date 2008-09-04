@@ -3,40 +3,44 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Callback;
-import com.sun.jna.Library;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.LongByReference;
 import java.util.HashMap;
+
 import org.gstreamer.ActivateMode;
-import org.gstreamer.elements.BaseSink;
-import org.gstreamer.elements.BaseSrc;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.Event;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.Pad;
-import org.gstreamer.lowlevel.GstAPI.*;
+import org.gstreamer.elements.BaseSink;
+import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
+import org.gstreamer.lowlevel.GstElementAPI.GstElementClass;
+import org.gstreamer.lowlevel.GstElementAPI.GstElementStruct;
 
+import com.sun.jna.Callback;
+import com.sun.jna.Library;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.LongByReference;
+
+@SuppressWarnings("serial")
 public interface BaseAPI extends Library {
-    static BaseAPI INSTANCE = (BaseAPI) GNative.loadLibrary("gstbase-0.10", 
+    static BaseAPI INSTANCE = GNative.loadLibrary("gstbase-0.10", 
             BaseAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
@@ -45,6 +49,7 @@ public interface BaseAPI extends Library {
     
     GType gst_base_src_get_type();
     GType gst_base_sink_get_type();
+    GType gst_base_transform_get_type();
     public final static class GstBaseSrcStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
 
@@ -108,7 +113,7 @@ public interface BaseAPI extends Library {
 
     public static interface GetTimes extends Callback {
         public void callback(Element src, Buffer buffer, 
-                LongByReference start, LongByReference end);
+                Pointer start, Pointer end);
     }
     public static interface GetSize extends Callback {
         boolean callback(BaseSrc element, LongByReference size);
@@ -316,4 +321,18 @@ public interface BaseAPI extends Library {
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-3)];
     }
+    /* synchronizing against the clock */
+    void gst_base_sink_set_sync(BaseSink sink, boolean sync);
+    boolean gst_base_sink_get_sync(BaseSink sink);
+
+    /* dropping late buffers */
+    void gst_base_sink_set_max_lateness (BaseSink sink, long max_lateness);
+    long gst_base_sink_get_max_lateness(BaseSink sink);
+
+    /* performing QoS */
+    void gst_base_sink_set_qos_enabled(BaseSink sink, boolean enabled);
+    boolean gst_base_sink_is_qos_enabled(BaseSink sink);
+    /* doing async state changes */
+    void gst_base_sink_set_async_enabled(BaseSink sink, boolean enabled);
+    boolean gst_base_sink_is_async_enabled(BaseSink sink);
 }

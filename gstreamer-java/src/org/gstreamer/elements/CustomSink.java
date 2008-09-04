@@ -3,24 +3,23 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.elements;
 
-import org.gstreamer.*;
-import com.sun.jna.Pointer;
+import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,20 +29,30 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+
+import org.gstreamer.Buffer;
+import org.gstreamer.Caps;
+import org.gstreamer.Element;
+import org.gstreamer.FlowReturn;
+import org.gstreamer.PadDirection;
+import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseAPI;
+import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
-import org.gstreamer.lowlevel.GType;
 
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import com.sun.jna.Pointer;
+
 /**
  *
  * @author wayne
  */
 abstract public class CustomSink extends BaseSink {
-    
+    private static interface API extends GstPadTemplateAPI {}
+    private static final API gst = GstNative.load(API.class);
     private final static Logger logger = Logger.getLogger(CustomSink.class.getName());
     private static class CustomSinkInfo {
         GType type;

@@ -3,25 +3,27 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstMiniObjectAPI;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.RefCountedObject;
+
 import com.sun.jna.Pointer;
-import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  * Lightweight base class for the GStreamer object hierarchy
@@ -31,8 +33,8 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * It offers sub-classing and ref-counting in the same way as GObject does.
  * It has no properties and no signal-support though.
  */
-public class MiniObject extends NativeObject {
-
+public class MiniObject extends RefCountedObject {
+    private static final GstMiniObjectAPI gst = GstNative.load(GstMiniObjectAPI.class);
     /**
      * Creates a new instance of MiniObject
      */
@@ -42,7 +44,7 @@ public class MiniObject extends NativeObject {
     
     /**
      * Checks if a mini-object is writable.  A mini-object is writable
-     * if the reference count is one and the {@link MiniObjectFlags.READONLY}
+     * if the reference count is one and the {@link MiniObjectFlags#READONLY}
      * flag is not set.  Modification of a mini-object should only be
      * done after verifying that it is writable.
      *
@@ -52,6 +54,21 @@ public class MiniObject extends NativeObject {
         return gst.gst_mini_object_is_writable(this);
     }
     
+    /**
+     * Makes a writable instance of this MiniObject.
+     * <p> The result is cast to <tt>subclass</tt>.
+     * 
+     * @param subclass the subclass to cast the result to.
+     * @return a writable version of this MiniObject.
+     */
+    protected <T extends MiniObject> T makeWritable(Class<T> subclass) {
+        MiniObject result = gst.gst_mini_object_make_writable(this);
+        if (result == null) {
+            throw new NullPointerException("Could not make " + subclass.getSimpleName() 
+                    + " writable");
+        }
+        return subclass.cast(result);
+    }
     /*
      * FIXME: this one returns a new MiniObject, so we need to replace the Pointer
      * with the new one.  Messy.
@@ -70,7 +87,6 @@ public class MiniObject extends NativeObject {
         gst.gst_mini_object_unref(ptr);
     }
     
-    @SuppressWarnings("unchecked")
     public static <T extends MiniObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {        
         return NativeObject.objectFor(ptr, defaultClass, needRef);        
     }

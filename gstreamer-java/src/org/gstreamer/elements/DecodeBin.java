@@ -3,49 +3,60 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.elements;
 
-import com.sun.jna.Pointer;
 import org.gstreamer.Bin;
 import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import com.sun.jna.Pointer;
 
 /**
  * Utility {@link Element} to automatically identify media stream types and hook
  * up elements.
  */
 public class DecodeBin extends Bin {
+    /**
+     * Creates a new DecodeBin.
+     * 
+     * @param name The name used to identify this DecodeBin.
+     */
     public DecodeBin(String name) {
-        this(initializer(gst.gst_element_factory_make("decodebin", name)));
+        this(makeRawElement("decodebin", name));
     }
     public DecodeBin(Initializer init) {
         super(init);
     }
+    
     /**
      * Signal emitted when this {@link DecodeBin} decodes a new pad.
      */
     public static interface NEW_DECODED_PAD {
+        /**
+         * 
+         * @param element The element which has the new Pad.
+         * @param pad the new Pad.
+         * @param last (unknown)
+         */
         public void newDecodedPad(Element element, Pad pad, boolean last);
     }
     
     /**
-     * Add a listener for the <code>new-decoded-pad</code> signal
+     * Adds a listener for the <code>new-decoded-pad</code> signal
      * 
      * @param listener Listener to be called when a new {@link Pad} is encountered
      * on the {@link Element}
@@ -60,7 +71,7 @@ public class DecodeBin extends Bin {
     }
     
     /**
-     * Remove a listener for the <code>new-decoded-pad</code> signal
+     * Removes a listener for the <code>new-decoded-pad</code> signal
      * 
      * @param listener The listener that was previously added.
      */

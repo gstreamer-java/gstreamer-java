@@ -5,26 +5,28 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPadAPI;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
-import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  * Object contained by elements that allows links to other elements.
@@ -39,7 +41,7 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * Pads are typically created from a {@link PadTemplate} with {@link #Pad(PadTemplate, String)}.
  * <p>
  * Pads have {@link Caps} attached to it to describe the media type they are
- * capable of dealing with.  {@link #getCaps} and {@link setCaps} are
+ * capable of dealing with.  {@link #getCaps} and {@link #setCaps} are
  * used to manipulate the caps of the pads.
  * Pads created from a pad template cannot set capabilities that are
  * incompatible with the pad template capabilities.
@@ -64,7 +66,12 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * @see Event
  */
 public class Pad extends GstObject {
-
+    private static interface API extends GstPadAPI {
+        @CallerOwnsReturn Pointer ptr_gst_pad_new(String name, PadDirection direction);
+        @CallerOwnsReturn Pointer ptr_gst_pad_new_from_template(PadTemplate templ, String name);
+    }
+    private static final API gst = GstNative.load(API.class);
+    
     /**
      * Creates a new instance of Pad
      */
@@ -80,7 +87,7 @@ public class Pad extends GstObject {
      * @param direction The direction of the new pad.
      */
     public Pad(String name, PadDirection direction) {
-        this(initializer(gst.gst_pad_new(name, direction)));
+        this(initializer(gst.ptr_gst_pad_new(name, direction)));
     }
     
     /**
@@ -93,7 +100,7 @@ public class Pad extends GstObject {
      * @param name The name of the new pad.
      */
     public Pad(PadTemplate template, String name) {
-        this(initializer(gst.gst_pad_new_from_template(template, name)));
+        this(initializer(gst.ptr_gst_pad_new_from_template(template, name)));
     }
     
     /**
@@ -308,30 +315,75 @@ public class Pad extends GstObject {
     
     /**
      * Signal emitted when new data is available on the {@link Pad}
+     * 
+     * @see #connect(HAVE_DATA)
+     * @see #disconnect(HAVE_DATA)
      */
     public static interface HAVE_DATA {
-        public boolean haveData(Pad pad, Buffer buffer);
+        /**
+         * Called when a {@link Pad} has data available.
+         * 
+         * @param pad the pad which emitted the signal.
+         * @param data the new data.
+         */
+        public void haveData(Pad pad, MiniObject data);
     }
-    
+
     /**
      * Signal emitted when new this {@link Pad} is linked to another {@link Pad}
+     * 
+     * @see #connect(LINKED)
+     * @see #disconnect(LINKED)
      */
     public static interface LINKED {
+        /**
+         * Called when a {@link Pad} is linked to another Pad.
+         * 
+         * @param pad the pad that emitted the signal.
+         * @param peer the peer pad that has been connected.
+         */
         public void linked(Pad pad, Pad peer);
     }
     
     /**
      * Signal emitted when new this {@link Pad} is disconnected from a peer {@link Pad}
+     * 
+     * @see #connect(UNLINKED)
+     * @see #disconnect(UNLINKED)
      */
     public static interface UNLINKED {
+        /**
+         * Called when a {@link Pad} is unlinked from another Pad.
+         * 
+         * @param pad the pad that emitted the signal.
+         * @param peer the peer pad that has been connected.
+         */
         public void unlinked(Pad pad, Pad peer);
     }
     
     /**
      * Signal emitted when a connection to a peer {@link Pad} is requested.
+     * 
+     * @see #connect(REQUEST_LINK)
+     * @see #disconnect(REQUEST_LINK)
      */
     public static interface REQUEST_LINK {
+        /**
+         * Called when a pad connection has been requested.
+         * @param pad the pad that emitted the signal.
+         * @param peer the peer pad for which a connection is requested.
+         */
         public void requestLink(Pad pad, Pad peer);
+    }
+    
+    /**
+     * Signal emitted when an event passes through this <tt>Pad</tt>.
+     * 
+     * @see #addEventProbe(EVENT_PROBE)
+     * @see #removeEventProbe(EVENT_PROBE)
+     */
+    public static interface EVENT_PROBE {
+        public void eventReceived(Pad pad, Event event);
     }
     
     /**
@@ -342,10 +394,20 @@ public class Pad extends GstObject {
     public void connect(final HAVE_DATA listener) {
         connect(HAVE_DATA.class, listener, new Callback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pad pad, Pointer buffer) {
-                return listener.haveData(pad, new Buffer(buffer, true));
+            public boolean callback(Pad pad, Buffer buffer) {
+                listener.haveData(pad, buffer);
+                return true;
             }
         });
+    }
+    
+    /**
+     * Remove a listener for the <code>have-data</code> signal on this {@link Pad}
+     * 
+     * @param listener The listener previously added for this signal.
+     */
+    public void disconnect(HAVE_DATA listener) {
+        disconnect(HAVE_DATA.class, listener);
     }
     
     /**
@@ -356,8 +418,9 @@ public class Pad extends GstObject {
     public void connect(final LINKED listener) {
         connect(LINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pad pad, Pad peer, Pointer user_data) {
+            public boolean callback(Pad pad, Pad peer, Pointer user_data) {
                 listener.linked(pad, peer);
+                return true;
             }
         });
     }
@@ -379,8 +442,9 @@ public class Pad extends GstObject {
     public void connect(final UNLINKED listener) {
         connect(UNLINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pad pad, Pad peer, Pointer user_data) {
+            public boolean callback(Pad pad, Pad peer, Pointer user_data) {
                 listener.unlinked(pad, peer);
+                return true;
             }
         });
     }
@@ -402,8 +466,9 @@ public class Pad extends GstObject {
     public void connect(final REQUEST_LINK listener) {
         connect(REQUEST_LINK.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Pad pad, Pad peer, Pointer user_daa) {
+            public boolean callback(Pad pad, Pad peer, Pointer user_daa) {
                 listener.requestLink(pad, peer);
+                return true;
             }
         });
     }
@@ -415,5 +480,57 @@ public class Pad extends GstObject {
      */
     public void disconnect(REQUEST_LINK listener) {
         disconnect(REQUEST_LINK.class, listener);
+    }
+
+    public void addEventProbe(final EVENT_PROBE listener) {
+        final GstPadAPI.PadEventProbe probe = new GstPadAPI.PadEventProbe() {
+            public void callback(Pad pad, Event ev, Pointer unused) {
+                listener.eventReceived(pad, ev);
+            }
+        };
+        GCallback cb = new GCallback(gst.gst_pad_add_event_probe(this, probe, null), probe) {
+            @Override
+            protected void disconnect() {
+                gst.gst_pad_remove_event_probe(Pad.this, id);
+            }
+        };
+        addCallback(EVENT_PROBE.class, listener, cb);
+    }
+
+    public void removeEventProbe(EVENT_PROBE listener) {
+        removeCallback(EVENT_PROBE.class, listener);
+    }
+
+    /**
+     * Sends the event to this pad. 
+     * <p> This function can be used by applications to send events in the pipeline.
+     *
+     * <p>If this pad is a source pad, <tt>event</tt> should be an upstream event. 
+     * If this pad is a sink pad, <tt>event<tt> should be a downstream event. 
+     * <p>For example, you would not send a {@link EventType#EOS} on a src pad; 
+     * EOS events only propagate downstream.
+     * 
+     * <p>Furthermore, some downstream events have to be serialized with data flow,
+     * like EOS, while some can travel out-of-band, like {@link EventType#FLUSH_START}. If
+     * the event needs to be serialized with data flow, this function will take the
+     * pad's stream lock while calling its event function.
+     *
+     * @param event the event to send.
+     * @return <tt>true</tt> if the event was handled.
+     */
+    public boolean sendEvent(Event event) {
+        return gst.gst_pad_send_event(this, event);
+    }
+    
+    /**
+     * Sends the event to the peer of this pad. 
+     * 
+     * <p>This function is mainly used by elements to send events to their peer elements.
+     * 
+     * @param event the event to send
+     * @return true if the event was handled
+     */
+    public boolean pushEvent(Event event) {
+        return gst.gst_pad_push_event(this, event);
     }
 }

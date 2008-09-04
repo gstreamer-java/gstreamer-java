@@ -3,21 +3,34 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.concurrent.TimeUnit;
+
+import org.gstreamer.ClockTime;
+import org.gstreamer.QueryType;
+import org.gstreamer.glib.GQuark;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+import org.gstreamer.lowlevel.annotations.ConstField;
+import org.gstreamer.lowlevel.annotations.FreeReturnValue;
+import org.gstreamer.lowlevel.annotations.IncRef;
+import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.CallbackParameterContext;
 import com.sun.jna.FromNativeContext;
@@ -29,22 +42,17 @@ import com.sun.jna.StructureReadContext;
 import com.sun.jna.ToNativeContext;
 import com.sun.jna.ToNativeConverter;
 import com.sun.jna.TypeConverter;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import org.gstreamer.lowlevel.annotations.FreeReturnValue;
-import org.gstreamer.glib.GQuark;
-import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
-import org.gstreamer.lowlevel.annotations.IncRef;
-import org.gstreamer.lowlevel.annotations.Invalidate;
-import org.gstreamer.lowlevel.annotations.ConstField;
 
 /**
  *
  * @author wayne
  */
-public class GTypeMapper implements com.sun.jna.TypeMapper {
+public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
 
     public GTypeMapper() {
+        addTypeConverter(QueryType.class, querytypeConverter);
+        addToNativeConverter(URI.class, uriConverter);
+        addTypeConverter(ClockTime.class, clocktimeConverter);
     }
     private static ToNativeConverter nativeValueArgumentConverter = new ToNativeConverter() {
 
@@ -57,12 +65,26 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         }        
     };
     
+    private static TypeConverter clocktimeConverter = new TypeConverter() {
+
+        public Object fromNative(Object arg, FromNativeContext arg1) {
+            return ClockTime.valueOf((Long) arg, TimeUnit.NANOSECONDS);
+        }
+
+        public Class nativeType() {
+            return long.class;
+        }
+
+        public Object toNative(Object arg, ToNativeContext arg1) {
+            return arg != null ? ((ClockTime) arg).convertTo(TimeUnit.NANOSECONDS) : 0L;
+        }
+    };
     private static TypeConverter nativeObjectConverter = new TypeConverter() {
         public Object toNative(Object arg, ToNativeContext context) {
             if (arg == null) {
                 return null;
             }
-            Pointer ptr = (Pointer)((NativeValue) arg).nativeValue();
+            Pointer ptr = ((NativeObject) arg).handle();
             
             //
             // Deal with any adjustments to the proxy neccessitated by gstreamer
@@ -80,7 +102,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                             ((Handle) arg).invalidate();
                             break;
                         } else if (annotations[i] instanceof IncRef) {
-                            ((Handle) arg).ref();
+                            ((RefCountedObject) arg).ref();
                             break;
                         }
                     }
@@ -149,7 +171,8 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
                 Method method = functionContext.getMethod();
                 Pointer ptr = (Pointer) result;
                 String s = ptr.getString(0);
-                if (method.isAnnotationPresent(FreeReturnValue.class)) {
+                if (method.isAnnotationPresent(FreeReturnValue.class)
+                    || method.isAnnotationPresent(CallerOwnsReturn.class)) {
                     GlibAPI.glib.g_free(ptr);
                 }
                 return s;
@@ -210,7 +233,41 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
             return Pointer.SIZE == 8 ? Long.class : Integer.class;
         }
     };
-  
+    private TypeConverter querytypeConverter = new TypeConverter() {
+        
+        public Object toNative(Object arg, ToNativeContext context) {
+            return ((QueryType)arg).intValue();
+        }
+
+        public Object fromNative(Object arg0, FromNativeContext arg1) {
+            return QueryType.valueOf(((Number) arg0).intValue());            
+        }
+
+        public Class<?> nativeType() {
+            return Integer.class;
+        }
+    };
+    private static ToNativeConverter uriConverter = new ToNativeConverter() {
+
+        public Object toNative(Object arg0, ToNativeContext arg1) {
+            URI uri = (URI) arg0;
+            String uriString = uri.toString();
+            // Need to fixup file:/ to be file:/// for gstreamer
+            if ("file".equals(uri.getScheme()) && uri.getHost() == null) {
+                final String path = uri.getRawPath();
+                if (com.sun.jna.Platform.isWindows()) {
+                    uriString = "file:/" + path;
+                } else {
+                    uriString = "file://" + path;
+                }
+            }
+            return uriString;
+        }
+
+        public Class nativeType() {
+            return String.class;
+        }
+    };
     @SuppressWarnings("unchecked")
 	public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
@@ -226,7 +283,7 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         } else if (GQuark.class == type) {
             return gquarkConverter;
         }
-        return null;
+        return super.getFromNativeConverter(type);
     }
 
     @SuppressWarnings("unchecked")
@@ -246,6 +303,6 @@ public class GTypeMapper implements com.sun.jna.TypeMapper {
         } else if (GQuark.class == type) {
             return gquarkConverter;
         }
-        return null;
+        return super.getToNativeConverter(type);
     }
 }

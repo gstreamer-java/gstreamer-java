@@ -3,39 +3,43 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.NativeObject;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.gstreamer.lowlevel.GstAPI.gst;
+import org.gstreamer.lowlevel.GstIteratorAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.NativeObject;
+
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
+
 
 /**
  *
  */
 class GstIterator<T extends NativeObject> extends NativeObject implements java.lang.Iterable<T> {
+    private static final GstIteratorAPI gst = GstNative.load(GstIteratorAPI.class);
+    
     private Class<T> objectType;
     GstIterator(Pointer ptr, Class<T> cls) {
-        super(initializer(ptr, false, true));
+        super(initializer(ptr));
         objectType = cls;
     }
 
@@ -46,7 +50,6 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
     protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_iterator_free(ptr);
     }
-    @SuppressWarnings("unchecked")
     public List<T> asList() {
         List<T> list = new LinkedList<T>();
         for (java.util.Iterator<T> it = iterator(); it.hasNext(); ) {
@@ -54,14 +57,12 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         }
         return Collections.unmodifiableList(list);
     }
-    protected void ref() {}
-    protected void unref() { }
+    
     class IteratorImpl implements java.util.Iterator<T> {
         T next;        
         IteratorImpl() {
             next = getNext();
         }
-        @SuppressWarnings("unchecked")
         private T getNext() {
             PointerByReference nextRef = new PointerByReference();
             if (gst.gst_iterator_next(handle(), nextRef) == 1) {                

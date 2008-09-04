@@ -1,43 +1,56 @@
 /* 
  * Copyright (c) 2007, 2008 Wayne Meissner
+ * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
+ *                    2000 Wim Taymans <wtay@chello.be>
+ *                    2005 Wim Taymans <wim@fluendo.com>
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
-import org.gstreamer.lowlevel.NativeObject;
-import com.sun.jna.Pointer;
 import java.util.EventListener;
 import java.util.EventListenerProxy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstObjectAPI;
+import org.gstreamer.lowlevel.NativeObject;
+
+import com.sun.jna.Pointer;
 
 /**
+ * Base class for the GStreamer object hierarchy
+ * 
+ * GstObject provides a root for the object hierarchy tree filed in by the
+ * GStreamer library.  It is currently a thin wrapper on top of
+ * {@link GObject}. It is an abstract class that is not very usable on its own.
  *
  */
 public class GstObject extends GObject {
     private static Logger logger = Logger.getLogger(GstObject.class.getName());
+    private static final GstObjectAPI gst = GstNative.load(GstObjectAPI.class);
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
+    
     /**
      * Wraps an underlying C GstObject with a Java proxy
-     * @param init C initialization data
+     * 
+     * @param init Initialization data
      */
     public GstObject(Initializer init) {
         super(init);
@@ -60,23 +73,49 @@ public class GstObject extends GObject {
      * and any attempt to use it will throw an exception.
      * 
      * @param victim The GstObject to takeover.
-     * @return An Initializer that can be passed to {@link #GstObject(Initializer)}
+     * @return An Initializer that can be passed to {@link #GstObject}
      */
     protected static Initializer steal(GstObject victim) {
         Initializer init = new Initializer(victim.handle(), false, true);
         victim.invalidate();
         return init;
     }
-    
-    public void setName(String name) {
+    /**
+     * Sets the name of this object, or gives this object a guaranteed unique
+     * name (if name is null).
+     * 
+     * Returns: TRUE if the name could be set. Since Objects that have
+     * a parent cannot be renamed, this function returns FALSE in those
+     * cases.
+     *
+     * MT safe.
+     * 
+     * @param name new name of object
+     * @return true if the name was set.  Since Objects that have
+     * a parent cannot be renamed, this function returns false in those
+     * cases.
+     */
+    public boolean setName(String name) {
         logger.entering("GstObject", "setName", name);
-        gst.gst_object_set_name(this, name);
+        return gst.gst_object_set_name(this, name);
     }
+    
+    /**
+     * Returns a copy of the name of this object.
+     * 
+     * For a nameless object, this returns null.
+     *
+     * @return the name of this object.
+     */
     public String getName() {
         logger.entering("GstObject", "getName");
         return gst.gst_object_get_name(this);
     }
     
+    @Override
+    public String toString() {
+        return String.format("%s: [%s]", getClass().getSimpleName(), getName());
+    }
     protected void ref() {
         gst.gst_object_ref(this);
     }

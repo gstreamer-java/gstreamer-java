@@ -1,20 +1,19 @@
 /* 
- * Copyright (c) 2007 Wayne Meissner
+ * Copyright (c) 2007,2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.media;
@@ -25,23 +24,26 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import org.gstreamer.Bus;
+import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.Format;
+import org.gstreamer.Gst;
+import org.gstreamer.GstObject;
 import org.gstreamer.Pipeline;
-import org.gstreamer.elements.PlayBin;
 import org.gstreamer.State;
-import org.gstreamer.Time;
-import org.gstreamer.Timeout;
-import org.gstreamer.event.BusAdapter;
-import org.gstreamer.event.BusListener;
-import org.gstreamer.event.ErrorEvent;
-import org.gstreamer.event.StateEvent;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.media.event.DurationChangedEvent;
 import org.gstreamer.media.event.EndOfMediaEvent;
 import org.gstreamer.media.event.MediaListener;
@@ -51,183 +53,290 @@ import org.gstreamer.media.event.StartEvent;
 import org.gstreamer.media.event.StopEvent;
 
 /**
- *
- * @author wayne
+ * Basic implementation of a MediaPlayer
  */
 abstract public class AbstractMediaPlayer implements MediaPlayer {
     private PlayBin playbin;
     private Executor eventExecutor;
-    private Timeout positionTimer;
+    private volatile ScheduledFuture<?> positionTimer = null;
+    private Queue<URI> playList = new ConcurrentLinkedQueue<URI>();
+    private State currentState = State.NULL;
+    private final MediaPlayer mediaPlayer = AbstractMediaPlayer.this;
+    private final Map<MediaListener, MediaListener> mediaListeners = new HashMap<MediaListener, MediaListener>();
+    private final List<MediaListener> listeners = new CopyOnWriteArrayList<MediaListener>();
+    
     protected AbstractMediaPlayer(Executor eventExecutor) {
         playbin = new PlayBin(getClass().getSimpleName());
         this.eventExecutor = eventExecutor;
-        positionTimer = new Timeout(1000, positionUpdater);
-    }
-    public void setVideoSink(Element sink) {
-        playbin.setVideoSink(sink);
-    }
-    public Pipeline getPipeline() {
-        return getPlayBin();
-    }
-    public PlayBin getPlayBin() {
-        return playbin;
-    }
-    public boolean isPlaying() {
-        return playbin.isPlaying();
-    }
-    public void pause() {
-        if (playbin.isPlaying()) {
-            playbin.pause();
-        }
-    }
-    public void play() {
-        if (!playbin.isPlaying()) {
-            playbin.play();
-        }
-    }
-    public void stop() {
-        playbin.stop();
+        playbin.getBus().connect(eosSignal);
+        playbin.getBus().connect(stateChanged);
     }
     
-    public void setURI(URI uri) {
-        State old = playbin.getState();
-        playbin.setState(State.READY);
-        playbin.setURI(uri);
-        playbin.setState(old);
-    }
-    public void setInputFile(File file) {
-        setURI(file.toURI());
-    }
-    private class PlayerBusListener extends BusAdapter {
-        private MediaListener listener;
-        private State currentState = State.NULL;
-        private State prevState = State.NULL;
-        private final MediaPlayer mediaPlayer = AbstractMediaPlayer.this;
-        
-        PlayerBusListener(MediaListener listener) {
-            this.listener = listener;
-        }
+    /*
+     * Handle EOS signals.  We wrap all gst signals so they are executed on a separate thread.
+     */
+    private Bus.EOS eosSignal = new Bus.EOS() {
+        public void endOfStream(GstObject source) {
+            URI next = playList.poll();
+            if (next != null) {
+                setURI(next);
+            } else {
+                final EndOfMediaEvent evt = new EndOfMediaEvent(mediaPlayer, 
+                            State.PLAYING, State.NULL, State.VOID_PENDING);
 
-        @Override
-        public void bufferingEvent(int percent) {
-            System.out.println("Buffering");
-        }
-
-        @Override
-        public void durationEvent(Format format, long percent) {
-            System.out.println("duration = " + percent);
-        }
-
-        @Override
-        public void segmentDone(Format format, long position) {
-            System.out.println("segment done=" + position);
-        }
-
-        @Override
-        public void segmentStart(Format format, long position) {
-            System.out.println("segment start=" + position);
-        }
-
-        @Override
-        public void infoEvent(ErrorEvent e) {
-            System.out.println("info event");
-        }
-
-        @Override
-        public void stateEvent(StateEvent e) {
+                // Notify any listeners that the last media file is finished
+                for (MediaListener l : getMediaListeners()) {
+                    l.endOfMedia(evt);
+                }
+            }
             
-            if (false) System.out.println("stateEvent: new=" + e.newState 
-                    + " old=" + e.oldState
-                    + " pending=" + e.pendingState);
-            final Time position = new Time(playbin.getPosition(Format.TIME));
-            switch (e.newState) {
+        }
+    };
+    
+    private final Bus.STATE_CHANGED stateChanged = new Bus.STATE_CHANGED() {
+        public void stateChanged(GstObject source, State old, State newState, State pending) {
+          if (false) System.out.println("stateEvent: new=" + newState 
+                    + " old=" + old
+                    + " pending=" + pending);
+            final ClockTime position = playbin.queryPosition();
+            switch (newState) {
             case PLAYING:
                 if (currentState == State.NULL || currentState == State.PAUSED) {
-                    listener.start(new StartEvent(mediaPlayer, 
-                            currentState, e.newState, State.VOID_PENDING, position));
-                    prevState = currentState;
+                    for (MediaListener listener : getMediaListeners()) {
+                        listener.start(new StartEvent(mediaPlayer, 
+                            currentState, newState, State.VOID_PENDING, position));
+                    }
                     currentState = State.PLAYING;
                 }
                 break;
             case PAUSED:
                 if (currentState == State.PLAYING) {
-                    listener.pause(new PauseEvent(mediaPlayer, 
-                            currentState, e.newState, State.VOID_PENDING, position));
-                    prevState = currentState;
+                    for (MediaListener listener : getMediaListeners()) {
+                        listener.pause(new PauseEvent(mediaPlayer, 
+                                currentState, newState, State.VOID_PENDING, position));
+                    }
                     currentState = State.PAUSED;
                 }
                 break;
             case NULL:
             case READY:
                 if (currentState == State.PLAYING) {
-                    listener.stop(new StopEvent(mediaPlayer, 
-                            currentState, e.newState, State.VOID_PENDING, position));
-                    prevState = State.PLAYING;
+                    for (MediaListener listener : getMediaListeners()) {
+                        listener.stop(new StopEvent(mediaPlayer, 
+                                currentState, newState, State.VOID_PENDING, position));
+                    }
                     currentState = State.NULL;
                 }
                 break;
             }
         }
+    };
+    
+    /**
+     * Sets the sink element to use for video output.
+     * 
+     * @param sink The sink to use for video output.
+     */
+    public void setVideoSink(Element sink) {
+        playbin.setVideoSink(sink);
+    }
+    
+    /**
+     * Gets the {@link Pipeline} that the MediaPlayer uses to play media.
+     * 
+     * @return A Pipeline
+     */
+    public Pipeline getPipeline() {
+        return playbin;
+    }
+    
+    /**
+     * Tests if this media player is currently playing a media file.
+     * 
+     * @return true if a media file is being played.
+     */
+    public boolean isPlaying() {
+        return playbin.isPlaying();
+    }
+    
+    /**
+     * Pauses playback of a media file.
+     */
+    public void pause() {
+        if (playbin.isPlaying()) {
+            playbin.pause();
+        }
+    }
+    
+    /**
+     * Starts or resumes playback of a media file.
+     */
+    public void play() {
+        if (!playbin.isPlaying()) {
+            playbin.play();
+        }
+    }
+    
+    /**
+     * Stops playback of a media file.
+     */
+    public void stop() {
+        playbin.stop();
+    }
+    
+    /**
+     * Sets the media file to play.
+     * 
+     * @param uri The URI that describes the location of the media file.
+     */
+    public void setURI(URI uri) {
+        State old = playbin.getState();
+        playbin.setState(State.READY);
+        playbin.setURI(uri);
+        playbin.setState(old);
+    }
+    
+    /**
+     * Adds a uri to the playlist
+     * 
+     * @param uri The uri to add to the playlist.
+     */
+    public void enqueue(URI uri) {
+        playList.add(uri);
+    }
+    
+    /**
+     * Adds a list of media files to the playlist.
+     * 
+     * @param playlist The list of media files to add.
+     */
+    public void enqueue(Collection<URI> playlist) {
+        this.playList.addAll(playlist);
+    }
+    
+    /**
+     * Replaces the current play list with a new play list.
+     * 
+     * @param playlist The new playlist.
+     */
+    public void setPlaylist(Collection<URI> playlist) {
+        this.playList.clear();
+        this.playList.addAll(playlist);
+    }
+    
+    /**
+     * Removes a file from the play list.
+     * 
+     * @param uri The uri to remove.
+     */
+    public void remove(URI uri) {
+        this.playList.remove(uri);
+    }
+    
+    /**
+     * Sets the current file to play.
+     * 
+     * @param file the {@link java.io.File} to play.
+     */
+    public void setInputFile(File file) {
+        setURI(file.toURI());
+    }
+    /**
+     * Sets the audio output volume.
+     * 
+     * @param volume a number between 0.0 and 1.0 representing the percentage of 
+     * the maximum volume.
+     */
+    public void setVolume(double volume) {
+        playbin.setVolume(volume);
+    }
+    
+    /**
+     * Gets the current audio output volume.
+     * 
+     * @return a number between 0.0 and 1.0 representing the percentage of 
+     * the maximum volume.
+     */
+    public double getVolume() {
+        return playbin.getVolume();
+    }
+    
+    /**
+     * Adds a {@link MediaListener} that will be notified of media events.
+     * 
+     * @param listener the MediaListener to add.
+     */
+    public synchronized void addMediaListener(MediaListener listener) {
+        // Only run the timer when needed
+        if (mediaListeners.isEmpty()) {
+            positionTimer = Gst.getScheduledExecutorService().scheduleAtFixedRate(positionUpdater, 1, 1, TimeUnit.SECONDS);
+        }
+        // Wrap the listener in a swing EDT safe version
+        MediaListener proxy = wrapListener(MediaListener.class, listener, eventExecutor);
+        mediaListeners.put(listener, proxy);
+        listeners.add(proxy);
+    }
+    
+    /**
+     * Adds a {@link MediaListener} that will be notified of media events.
+     * 
+     * @param listener the MediaListener to add.
+     */
+    public synchronized void removeMediaListener(MediaListener listener) {
+        MediaListener proxy = mediaListeners.remove(listener);
+        listeners.remove(proxy);
+        // Only run the timer when needed
         
-        @Override
-        public void eosEvent() {
-            listener.endOfMedia(new EndOfMediaEvent(mediaPlayer, currentState, State.NULL, State.VOID_PENDING));
-        }
-
-    }
-    private List<MediaListener> mediaListeners = Collections.synchronizedList(new ArrayList<MediaListener>());
-    private Map<MediaListener, BusListener> mediaBusListeners = new HashMap<MediaListener, BusListener>();
-    public void addMediaListener(MediaListener listener) {
-        // Only run the timer when needed
-        if (mediaListeners.isEmpty()) {
-            positionTimer.start();
-        }
-        mediaListeners.add(listener);
-        BusListener busListener = new PlayerBusListener(wrapListener(MediaListener.class, listener, eventExecutor));
-        mediaBusListeners.put(listener, busListener);
-        playbin.getBus().addBusListener(busListener);
-    }
-    public void removeMediaListener(MediaListener listener) {
-        mediaListeners.remove(listener);
-        mediaBusListeners.remove(listener);
-        // Only run the timer when needed
-        if (mediaListeners.isEmpty()) {
-            positionTimer.stop();
+        if (mediaListeners.isEmpty() && positionTimer != null) {
+            positionTimer.cancel(true);
+            positionTimer = null;
         }
     }
+    
+    /**
+     * Gets the current list of media listeners
+     * @return a list of {@link MediaListener}
+     */
+    private List<MediaListener> getMediaListeners() {
+        return listeners;
+    }
+    
     private Runnable positionUpdater = new Runnable() {
         private long lastPosition = 0;
-        private Time lastDuration = new Time(0);
+        private ClockTime lastDuration = ClockTime.ZERO;
         public void run() {
-            final long position = playbin.getPosition(Format.TIME);
-            final long percent = playbin.getPosition(Format.PERCENT);
-            final Time duration = playbin.getDuration();
+            final long position = playbin.queryPosition(Format.TIME);
+            final long percent = playbin.queryPosition(Format.PERCENT);
+            final ClockTime duration = playbin.queryDuration();
             final boolean durationChanged = !duration.equals(lastDuration) 
-                    && !duration.equals(Time.ZERO)
-                    && !duration.equals(Time.NONE);
+                    && !duration.equals(ClockTime.ZERO)
+                    && !duration.equals(ClockTime.NONE);
             lastDuration = duration;
             final boolean positionChanged = position != lastPosition && position >= 0;
             lastPosition = position;
-            eventExecutor.execute(new Runnable() {
-                public void run() {
-                    PositionChangedEvent pue = new PositionChangedEvent(AbstractMediaPlayer.this, 
-                            new Time(position), (int) percent);
-                    DurationChangedEvent due = new DurationChangedEvent(AbstractMediaPlayer.this, 
-                            duration);
-                    MediaListener[] listeners = mediaListeners.toArray(new MediaListener[mediaListeners.size()]);
-                    for (MediaListener l : listeners) {
-                        if (durationChanged) {
-                            l.durationChanged(due);
-                        }
-                        if (positionChanged) {
-                            l.positionChanged(pue);
-                        }
-                    }
-
+            final PositionChangedEvent pue = new PositionChangedEvent(AbstractMediaPlayer.this, 
+                    ClockTime.valueOf(position, TimeUnit.NANOSECONDS), (int) percent);
+            final DurationChangedEvent due = new DurationChangedEvent(AbstractMediaPlayer.this, 
+                    duration);
+            for (MediaListener l : getMediaListeners()) {
+                if (durationChanged) {
+                    l.durationChanged(due);
                 }
-            });
+                if (positionChanged) {
+                    l.positionChanged(pue);
+                }
+            }
         }
     };
+    
+    /**
+     * Parses the URI in the String.
+     * <p>
+     * This method will check if the uri is a file and return a valid URI for that file.
+     * 
+     * @param uri the string representation of the URI.
+     * @return a {@link java.net.URI}
+     */
     protected static URI parseURI(String uri) {
         try {
             URI u = new URI(uri);
@@ -264,6 +373,9 @@ abstract public class AbstractMediaPlayer implements MediaPlayer {
         }
 
         public Object invoke(Object self, final Method method, final Object[] argArray) throws Throwable {
+            if (method.getName().equals("hashCode")) {
+                return object.hashCode();
+            }
             executor.execute(new Runnable() {
                 public void run() {
                     try {

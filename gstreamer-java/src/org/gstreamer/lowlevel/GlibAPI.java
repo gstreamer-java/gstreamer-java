@@ -3,37 +3,42 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
-import com.sun.jna.*;
-import com.sun.jna.ptr.PointerByReference;
 import java.util.HashMap;
-import org.gstreamer.MainLoop;
-import org.gstreamer.glib.GDate;
+
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+
+import com.sun.jna.Callback;
+import com.sun.jna.Library;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 
 /**
  *
  */
+@SuppressWarnings("serial")
 public interface GlibAPI extends Library {
-    static GlibAPI glib = (GlibAPI) GNative.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
+    static GlibAPI glib = GNative.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     Pointer g_main_loop_new(GMainContext context, boolean running);
     void g_main_loop_run(MainLoop loop);
     boolean g_main_loop_is_running(MainLoop loop);
+    @CallerOwnsReturn GMainContext g_main_loop_get_context(MainLoop loop);
     void g_main_loop_quit(MainLoop loop);
     void g_main_loop_ref(MainLoop ptr);
     void g_main_loop_unref(MainLoop ptr);
@@ -44,6 +49,8 @@ public interface GlibAPI extends Library {
      */
     
     Pointer g_main_context_new();
+    void g_main_context_ref(Pointer context);
+    void g_main_context_unref(Pointer context);
     Pointer g_main_context_default();
     boolean g_main_context_pending(GMainContext ctx);
     boolean g_main_context_acquire(GMainContext ctx);
@@ -51,15 +58,17 @@ public interface GlibAPI extends Library {
     boolean g_main_context_is_owner(GMainContext ctx);
     boolean g_main_context_wait(GMainContext ctx);
     
-    Pointer g_idle_source_new();
-    Pointer g_timeout_source_new(int interval);
-    Pointer g_timeout_source_new_seconds(int interval);
-    int g_source_attach(Pointer source, GMainContext context);
+    @CallerOwnsReturn GSource g_idle_source_new();
+    @CallerOwnsReturn GSource g_timeout_source_new(int interval);
+    @CallerOwnsReturn GSource g_timeout_source_new_seconds(int interval);
+    int g_source_attach(GSource source, GMainContext context);
     void g_source_destroy(Pointer source);
+    void g_source_destroy(GSource source);
     Pointer g_source_ref(Pointer source);
     void g_source_unref(Pointer source);
-    void g_source_set_callback(Pointer source, GSourceFunc callback, Pointer data, GDestroyNotify destroy);
+    void g_source_set_callback(GSource source, GSourceFunc callback, Object data, GDestroyNotify destroy);
     boolean g_source_is_destroyed(Pointer source);
+    boolean g_source_is_destroyed(GSource source);
     /*
      * GThread functions
      */
@@ -88,6 +97,7 @@ public interface GlibAPI extends Library {
             Pointer data, GDestroyNotify notify);
     int g_timeout_add_seconds(int interval, GSourceFunc function, Pointer data);
     void g_error_free(Pointer error);
+    void g_error_free(GstAPI.GErrorStruct error);
     
     void g_source_remove(int id);
     void g_free(Pointer ptr);

@@ -3,73 +3,64 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Pointer;
-import java.util.concurrent.atomic.AtomicReference;
+import static org.gstreamer.lowlevel.GlibAPI.glib;
 
+import java.util.concurrent.Callable;
+
+import com.sun.jna.Pointer;
 /**
  *
  */
-public class GSource extends Handle {
-    private static GlibAPI glib = GlibAPI.glib;
+public class GSource extends RefCountedObject {
     
-    public GSource(final Pointer ptr, final GlibAPI.GSourceFunc callback, final Pointer data) {
-        this.handle = new AtomicReference<Pointer>(ptr);
+    public GSource(Initializer init) {
+        super(init);
+    }
+    public int attach(GMainContext context) {
+        return glib.g_source_attach(this, context);
+    }
+    public void setCallback(final Callable<Boolean> call) {
         this.callback = new GlibAPI.GSourceFunc() {
             public boolean callback(Pointer data) {
-                if (glib.g_source_is_destroyed(ptr)) {
+                if (glib.g_source_is_destroyed(handle())) {
                     return false;
                 }
-                return callback.callback(data);
+                try {
+                    return call.call().booleanValue();
+                } catch (Exception ex) {
+                    return false;
+                }
             }
         };
-        
-        glib.g_source_set_callback(ptr, this.callback, data, null);
-    }
-   
-    public int attach(GMainContext context) {
-        return glib.g_source_attach(handle(), context);
-    }
-    public void destroy() {
-        final Pointer ptr = handle.getAndSet(null);
-        if (ptr != null) {
-            glib.g_source_destroy(ptr);
-            glib.g_source_unref(ptr);
-        }
-    }
-    protected void finalize() throws Throwable {
-        try {
-//            System.out.println("destroying GSource");
-            destroy();
-        } finally {
-            super.finalize();
-        }
-    }
-    public Pointer handle() {
-        return handle.get();
+        glib.g_source_set_callback(this, callback, null, null);
     }
     private GlibAPI.GSourceFunc callback;
-    private AtomicReference<Pointer> handle;
-
-    protected Object nativeValue() {
-        return handle;
+    
+    protected void ref() {
+        glib.g_source_ref(handle());
     }
-    protected void invalidate() {}
-    protected void ref() {}
-    protected void unref() {}
+    protected void unref() {
+        glib.g_source_unref(handle());
+    }
+
+    @Override
+    protected void disposeNativeHandle(Pointer ptr) {
+        glib.g_source_destroy(ptr);
+        glib.g_source_unref(ptr);
+    }
 }

@@ -3,23 +3,25 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
 
+import java.lang.reflect.Field;
 import java.util.EnumSet;
+
+import org.gstreamer.lowlevel.annotations.DefaultEnumValue;
 
 /**
  * Maps to and from native int and an Enum value.
@@ -59,12 +61,18 @@ public class EnumMapper {
         // don't want to throw an Exception for an unknown value.
         //
         try {
-            return Enum.valueOf(enumClass, "__UNKNOWN_NATIVE_VALUE");
+            for (Field f : enumClass.getDeclaredFields()) {
+                if (f.getAnnotation(DefaultEnumValue.class) != null) {
+                    return Enum.valueOf(enumClass, f.getName());
+                }
+            }
+            throw new IllegalArgumentException();
         } catch (IllegalArgumentException ex) {      
             //
             // No default, so just give up and throw an exception
             //
-            throw new IllegalArgumentException("No known Enum mapping for " + enumClass.getName());
+            throw new IllegalArgumentException("No known Enum mapping for "
+                    + enumClass.getName() + " value=" + value);
         }
     }
 }

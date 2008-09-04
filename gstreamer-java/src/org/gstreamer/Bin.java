@@ -5,31 +5,28 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
-import org.gstreamer.event.BinEvent;
-import static org.gstreamer.lowlevel.GstAPI.gst;
-import com.sun.jna.Pointer;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.gstreamer.event.BinListener;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
+
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTypes;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
+
+import com.sun.jna.Pointer;
 
 /**
  * Base class and element that can contain other elements.
@@ -58,9 +55,16 @@ import org.gstreamer.lowlevel.GstTypes;
  *
  */
 public class Bin extends Element {
-    
+    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     public Bin(Initializer init) { 
         super(init);
+    }
+    
+    /**
+     * Creates a new Bin with a unique name.
+     */
+    public Bin() {
+        this(initializer(gst.ptr_gst_bin_new(null)));
     }
     
     /**
@@ -68,7 +72,7 @@ public class Bin extends Element {
      * @param name The Name to assign to the new Bin
      */
     public Bin(String name) {
-        this(initializer(gst.gst_bin_new(name)));
+        this(initializer(gst.ptr_gst_bin_new(name)));
     }
     
     /**
@@ -204,16 +208,34 @@ public class Bin extends Element {
     
     /**
      * Signal emitted when an {@link Element} is added to this Bin
+     * 
+     * @see #connect(ELEMENT_ADDED)
+     * @see #disconnect(ELEMENT_ADDED)
      */
     public static interface ELEMENT_ADDED {
-        public void elementAdded(Bin bin, Element elem);
+        /**
+         * Called when an {@link Element} is added to a {@link Bin}
+         * 
+         * @param bin the Bin the element was added to.
+         * @param element the {@link Element} that was added.
+         */
+        public void elementAdded(Bin bin, Element element);
     }
     
     /**
      * Signal emitted when an {@link Element} is removed from this Bin
+     * 
+     * @see #connect(ELEMENT_REMOVED)
+     * @see #disconnect(ELEMENT_REMOVED)
      */
     public static interface ELEMENT_REMOVED {
-        public void elementRemoved(Bin bin, Element elem);
+        /**
+         * Called when an {@link Element} is removed from a {@link Bin}
+         * 
+         * @param bin the Bin the element was removed from.
+         * @param element the {@link Element} that was removed.
+         */
+        public void elementRemoved(Bin bin, Element element);
     }
     
     /**
@@ -261,54 +283,4 @@ public class Bin extends Element {
     public void disconnect(ELEMENT_REMOVED listener) {
         disconnect(ELEMENT_REMOVED.class, listener);
     }
-    
-    /**
-     * Add a listener for Bin events.
-     * 
-     * This is an alternative interface for listening for {@link ELEMENT_ADDED} and 
-     * {@link ELEMENT_REMOVED} signals.
-     * 
-     * @param listener The listener to send events to.
-     */
-    public void addBinListener(BinListener listener) {
-        getListenerMap().put(listener, new BinListenerProxy(listener));
-    }
-    
-    /**
-     * Remove a listener for Bin events.
-     * 
-     * @param listener The {link BinListener} previously registered using 
-     * {@link #addBinListener(BinListener)}.
-     */
-    public void removeBinListener(BinListener listener) {
-        BinListenerProxy proxy = getListenerMap().remove(listener);
-        if (proxy != null) {
-            disconnect(proxy.added);
-            disconnect(proxy.removed);
-        }
-    }
-    class BinListenerProxy extends java.util.EventListenerProxy {
-        public BinListenerProxy(final BinListener listener) {
-            super(listener);
-            Bin.this.connect(added = new ELEMENT_ADDED() {
-                public void elementAdded(Bin bin, Element elem) {
-                    listener.elementAdded(new BinEvent(bin, elem));
-                }
-            });
-            Bin.this.connect(removed = new ELEMENT_REMOVED() {
-                public void elementRemoved(Bin bin, Element elem) {
-                    listener.elementRemoved(new BinEvent(bin, elem));
-                }
-            });
-        }
-        ELEMENT_ADDED added;
-        ELEMENT_REMOVED removed;
-    }
-    private synchronized final Map<BinListener, BinListenerProxy> getListenerMap() {
-        if (listenerMap == null) {
-            listenerMap = Collections.synchronizedMap(new HashMap<BinListener, BinListenerProxy>());
-        }
-        return listenerMap;
-    }
-    private Map<BinListener, BinListenerProxy> listenerMap;
 }

@@ -3,18 +3,17 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.swing;
@@ -23,9 +22,12 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.net.URL;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -38,33 +40,32 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
 import org.gstreamer.elements.PlayBin;
 
 /**
  *
  */
 public class PopupVolumeButton extends JToggleButton {
-    private PlayBin playbin;
+
+    private static final long serialVersionUID = 3957280083515502726L;
+
     private JPanel volumePanel;
     private JSlider volumeSlider;
     private ImageIcon lowVolumeIcon = loadIcon("status/audio-volume-low");
     private ImageIcon medVolumeIcon = loadIcon("status/audio-volume-medium");
     private ImageIcon highVolumeIcon = loadIcon("status/audio-volume-high");
     
-    public PopupVolumeButton(PlayBin playbin) {
-        
-        this.playbin = playbin;
+    public PopupVolumeButton(BoundedRangeModel model) {
         /*
          * Construct the popup for the volume slider
          */
         volumePanel = new JPanel();
         volumePanel.setLayout(new BoxLayout(volumePanel, BoxLayout.Y_AXIS));
         
-        volumeSlider = new JSlider();
+        volumeSlider = new JSlider(model);
         volumeSlider.addChangeListener(volumeChanged);
         volumeSlider.setOrientation(SwingConstants.VERTICAL);
-        volumeSlider.setValue(playbin.getVolume());
-        volumeSlider.setMaximum(100);
         volumePanel.add(new JLabel(highVolumeIcon));
         volumeSlider.setAlignmentX(0.25f);
         volumePanel.add(volumeSlider);
@@ -72,11 +73,36 @@ public class PopupVolumeButton extends JToggleButton {
         volumePanel.validate();
         setAction(volumeAction);
     }
+    public PopupVolumeButton(final PlayBin playbin) {
+        this(new DefaultBoundedRangeModel() {
+
+            private static final long serialVersionUID = 1462054216375236024L;
+
+            @Override
+            public int getMaximum() {
+                return 100;
+            }
+
+            @Override
+            public int getMinimum() {
+                return 0;
+            }
+
+            @Override
+            public int getValue() {
+                return (int) ((playbin.getVolume() * 100.0) + 0.5);
+            }
+
+            @Override
+            public void setValue(int percent) {
+                playbin.setVolume(Math.max(Math.min((double) percent, 100d), 0d) / 100.0d);
+            }
+        });
+    }
     
     private ChangeListener volumeChanged = new ChangeListener() {
         public void stateChanged(ChangeEvent e) {
             JSlider s = (JSlider) e.getSource();
-            playbin.setVolume(s.getValue());
             if (s.getValue() < 33) {
                 volumeAction.putValue(Action.SMALL_ICON, lowVolumeIcon);
             } else if (s.getValue() < 66) {
@@ -88,6 +114,9 @@ public class PopupVolumeButton extends JToggleButton {
     };
     Popup volumePopup;
     private AbstractAction volumeAction = new AbstractAction("", loadIcon("status/audio-volume-medium")) {
+
+        private static final long serialVersionUID = 3977109421439093963L;
+
         public void actionPerformed(ActionEvent e) {
             JToggleButton b = (JToggleButton) e.getSource();
             if (!b.isSelected() && volumePopup != null) {
@@ -99,7 +128,6 @@ public class PopupVolumeButton extends JToggleButton {
                 Point location = new Point(0 - panelSize.width + getPreferredSize().width,
                         0 - panelSize.height);
                 SwingUtilities.convertPointToScreen(location, PopupVolumeButton.this);
-                volumeSlider.setValue(playbin.getVolume());
                 volumePopup = PopupFactory.getSharedInstance().getPopup(PopupVolumeButton.this,
                         volumePanel, location.x, location.y);
                 // Remove the slider value from the top of the slider

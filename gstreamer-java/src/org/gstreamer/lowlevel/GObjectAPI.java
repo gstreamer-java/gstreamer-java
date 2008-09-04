@@ -3,40 +3,45 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer.lowlevel;
+
+import java.util.HashMap;
+
+import org.gstreamer.GObject;
+import org.gstreamer.glib.GQuark;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import java.util.HashMap;
-import org.gstreamer.GObject;
-import org.gstreamer.glib.GQuark;
 
 /**
  *
  */
+@SuppressWarnings("serial")
 public interface GObjectAPI extends Library {
-    static GObjectAPI gobj = (GObjectAPI) GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
+    static GObjectAPI gobj = GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     
+    
     GType g_object_get_type();
-    void g_object_set_property(GObject obj, String property, Object data);
+    void g_object_set_property(GObject obj, String property, GValue data);
+    void g_object_get_property(GObject obj, String property, GValue data);
     void g_object_set(GObject obj, String propertyName, Object... data);
     void g_object_get(GObject obj, String propertyName, Object... data);
     Pointer g_object_new(GType object_type, Object... args);
@@ -60,7 +65,11 @@ public interface GObjectAPI extends Library {
     }
     void g_object_weak_ref(GObject object, GWeakNotify notify, IntPtr data);
     void g_object_weak_unref(GObject object, GWeakNotify notify, IntPtr data);
-    
+    Pointer g_object_ref(GObject object);
+    void g_object_unref(GObject object);
+
+    GParamSpec g_object_class_find_property(GObjectClass oclass, String property_name);
+    GParamSpec g_object_class_find_property(Pointer oclass, String property_name);
     GQuark g_quark_try_string(String string);
     GQuark g_quark_from_static_string(String string);
     GQuark g_quark_from_string(String string);
@@ -103,21 +112,7 @@ public interface GObjectAPI extends Library {
         /*< private >*/
         public volatile Pointer g_class;
     }                  
-    static class GValue extends com.sun.jna.Structure {
-        /*< private >*/
-        public volatile GType g_type;
-
-        /* public for GTypeValueTable methods */
-        public static class GValueData extends com.sun.jna.Union {
-            int v_int;
-            long v_long;
-            long v_int64;            
-            float v_float;
-            double v_double;
-            Pointer v_pointer;
-        }
-        public GValueData data[] = new GValueData[2];
-    }
+    
     static class GObjectStruct extends com.sun.jna.Structure {
         public volatile GTypeInstance g_type_instance;
         public volatile int ref_count;
@@ -162,6 +157,12 @@ public interface GObjectAPI extends Library {
         }
         public static interface Notify extends Callback {
             public void callback(GObject object, Pointer spec);
+        }
+
+        public GObjectClass() {}
+        public GObjectClass(Pointer ptr) {
+            useMemory(ptr);
+            read();
         }
     }
     
@@ -208,5 +209,21 @@ public interface GObjectAPI extends Library {
 
         /* value handling */
         public volatile /* GTypeValueTable */ Pointer value_table;                
+    }
+    
+    static class GParamSpec extends com.sun.jna.Structure {
+        public volatile GTypeInstance g_type_instance;
+        public volatile String g_name;
+        public volatile /* GParamFlags */ int g_flags;
+        public volatile GType value_type;
+        public volatile GType owner_type;
+        /*< private >*/
+        public volatile Pointer _nick;
+        public volatile Pointer _blurb;
+        public volatile Pointer qdata;
+        public volatile int ref_count;
+        public volatile int param_id;      /* sort-criteria */
+        
+        public GParamSpec() {}
     }
 }

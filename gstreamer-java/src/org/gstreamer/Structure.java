@@ -2,29 +2,30 @@
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 2003 David A. Schleef <ds@schleef.org>
  * 
- * This file is part of gstreamer-java.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstStructureAPI;
+import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-import org.gstreamer.lowlevel.GType;
-import static org.gstreamer.lowlevel.GstAPI.gst;
 
 /**
  * Generic structure containing fields of names and values.
@@ -52,6 +53,14 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * @see Event
  */
 public class Structure extends NativeObject {
+    private static interface API extends GstStructureAPI {
+        @CallerOwnsReturn Pointer ptr_gst_structure_from_string(String data, PointerByReference end);
+        @CallerOwnsReturn Pointer ptr_gst_structure_empty_new(String name);
+        //Pointer gst_structure_id_empty_new(GQuark                   quark);
+        @CallerOwnsReturn Pointer ptr_gst_structure_new(String name, String firstField, Object... args);
+        void gst_structure_free(Pointer ptr);
+    }
+    private static final API gst = GstNative.load(API.class);
     
     /**
      * Creates a new instance of Structure
@@ -60,7 +69,7 @@ public class Structure extends NativeObject {
         super(init);
     }
     private Structure(Pointer ptr) {
-        this(initializer(ptr, false, true));
+        this(initializer(ptr));
     }
     
     /**
@@ -69,7 +78,7 @@ public class Structure extends NativeObject {
      * @param name The name of new structure.
      */
     public Structure(String name) {
-        this(gst.gst_structure_empty_new(name));
+        this(gst.ptr_gst_structure_empty_new(name));
     }
     /**
      * Creates a new Structure with the given name.  Parses the
@@ -82,7 +91,7 @@ public class Structure extends NativeObject {
      * @param data Additional arguments.
      */
     public Structure(String name, String firstFieldName, Object... data) {
-        this(gst.gst_structure_new(name, firstFieldName, data));
+        this(gst.ptr_gst_structure_new(name, firstFieldName, data));
     }
     /**
      * Creates a Structure from a string representation.
@@ -91,7 +100,7 @@ public class Structure extends NativeObject {
      * @return A new Structure or null when the string could not be parsed.
      */
     public static Structure fromString(String data) {
-        return new Structure(gst.gst_structure_from_string(data, new PointerByReference()));
+        return new Structure(gst.ptr_gst_structure_from_string(data, new PointerByReference()));
     }
     public Structure copy() {
         return gst.gst_structure_copy(this);
@@ -99,6 +108,9 @@ public class Structure extends NativeObject {
     
      
     public class InvalidFieldException extends RuntimeException {
+
+        private static final long serialVersionUID = 864118748304334069L;
+
         public InvalidFieldException(String type, String fieldName) {
             super(String.format("Structure does not contain %s field '%s'", type, fieldName));
         }
@@ -110,7 +122,38 @@ public class Structure extends NativeObject {
         }
         return val[0];
     }
-    public boolean setInteger(String field, Integer value) {
+    public double getDouble(String fieldName) {
+        double[] val = { 0d };
+        if (!gst.gst_structure_get_double(this, fieldName, val)) {
+            throw new InvalidFieldException("double", fieldName);
+        }
+        return val[0];
+    }
+    public String getString(String fieldName) {
+        return gst.gst_structure_get_string(this, fieldName);
+    }
+    /**
+     * Sets an integer field in the structure.
+     * 
+     * @param field the name of the field to set.
+     * @param value the value to set for the field.
+     */
+    public void setInteger(String field, Integer value) {
+        gst.gst_structure_set(this, field, GType.INT, value);
+    }
+    public void setDouble(String field, Double value) {
+        gst.gst_structure_set(this, field, GType.DOUBLE, value);
+    }
+    public void setIntegerRange(String field, Integer min, Integer max) {
+        gst.gst_structure_set(this, field, 
+                GstValueAPI.INSTANCE.gst_int_range_get_type(), min, max);
+    }
+    public void setDoubleRange(String field, Double min, Double max) {
+        gst.gst_structure_set(this, field, 
+                GstValueAPI.INSTANCE.gst_double_range_get_type(), min, max);
+    }
+    
+    public boolean fixateNearestInteger(String field, Integer value) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, value);
     }
     /**
@@ -246,8 +289,6 @@ public class Structure extends NativeObject {
         return NativeObject.objectFor(ptr, Structure.class, needRef, ownsHandle);
     }
     //--------------------------------------------------------------------------
-    protected void ref() {}
-    protected void unref() {}
     protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_structure_free(ptr);
     }

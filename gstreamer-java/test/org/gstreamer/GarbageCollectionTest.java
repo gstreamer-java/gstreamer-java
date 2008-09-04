@@ -1,31 +1,34 @@
-/*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+/* 
+ * Copyright (c) 2007 Wayne Meissner
+ * 
+ * This file is part of gstreamer-java.
  *
- * This program is distributed in the hope that it will be useful,
+ * gstreamer-java is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gstreamer-java is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
-import com.sun.jna.Pointer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.ref.WeakReference;
-import java.util.concurrent.atomic.AtomicBoolean;
-import org.gstreamer.Bus;
-import org.gstreamer.event.EOSEvent;
-import org.gstreamer.event.EOSListener;
-import org.gstreamer.lowlevel.GObjectAPI;
-import org.gstreamer.lowlevel.IntPtr;
-import org.junit.Test;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -63,32 +66,6 @@ public class GarbageCollectionTest {
             System.gc();
         }
         return ref.get() == null;
-    }
-    
-    private static class Tracker {
-        public Tracker(GObject obj) {
-            GObjectAPI.gobj.g_object_weak_ref(obj, notify, new IntPtr(System.identityHashCode(this)));
-            ref = new WeakReference<GObject>(obj);
-        }
-        WeakReference<GObject> ref;
-        private final AtomicBoolean destroyed = new AtomicBoolean(false);
-        GObjectAPI.GWeakNotify notify = new GObjectAPI.GWeakNotify() {
-            public void callback(IntPtr id, Pointer obj) {
-                destroyed.set(true);
-            }
-        };
-        public boolean waitGC() {
-            return GarbageCollectionTest.waitGC(ref);
-        }
-        public boolean waitDestroyed() {
-            for (int i = 0; !destroyed.get() && i < 10; ++i) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ex) {
-                }
-            }
-            return destroyed.get();
-        }
     }
     @Test
     public void testElement() throws Exception {
@@ -167,14 +144,10 @@ public class GarbageCollectionTest {
         Bus bus = pipe.getBus();
         bus.connect(new Bus.EOS() {
 
-            public void eosMessage(GstObject source) {
+            public void endOfStream(GstObject source) {
             }
         });
-        bus.addEOSListener(new EOSListener() {
-
-            public void endOfStream(EOSEvent evt) {
-            }
-        });
+        
         Tracker busTracker = new Tracker(bus);
         Tracker pipeTracker = new Tracker(pipe);
         bus = null;

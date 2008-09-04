@@ -1,0 +1,68 @@
+/*
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
+
+package org.gstreamer.example;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+import org.gstreamer.Gst;
+import org.gstreamer.Caps;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.Pipeline;
+import org.gstreamer.State;
+import org.gstreamer.swing.VideoComponent;
+
+/**
+ * A Simple videotest example.
+ */
+public class VideoTest {
+    public VideoTest() {
+    }
+    private static Pipeline pipe;
+    public static void main(String[] args) {
+        // Quartz is abysmally slow at scaling video for some reason, so turn it off.
+        System.setProperty("apple.awt.graphics.UseQuartz", "false");
+        
+        args = Gst.init("SwingVideoTest", args);
+        
+        pipe = new Pipeline("pipeline");
+        final Element videosrc = ElementFactory.make("videotestsrc", "source");
+        videosrc.set("pattern", 1);
+        final Element videofilter = ElementFactory.make("capsfilter", "flt");
+        videofilter.setCaps(Caps.fromString("video/x-raw-yuv, width=720, height=576"
+                + ", bpp=32, depth=32, framerate=25/1"));
+        SwingUtilities.invokeLater(new Runnable() {
+
+            public void run() {
+                // Create the video component and link it in
+                VideoComponent videoComponent = new VideoComponent();
+                Element videosink = videoComponent.getElement();
+                pipe.addMany(videosrc, videofilter, videosink);
+                Element.linkMany(videosrc, videofilter, videosink);
+                
+                // Now create a JFrame to display the video output
+                JFrame frame = new JFrame("Swing Video Test");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.add(videoComponent, BorderLayout.CENTER);
+                videoComponent.setPreferredSize(new Dimension(720, 576));
+                frame.pack();
+                frame.setVisible(true);
+                
+                // Start the pipeline processing
+                pipe.setState(State.PLAYING);
+            }
+        });
+    }
+}

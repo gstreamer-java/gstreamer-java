@@ -1,17 +1,36 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Copyright (c) 2007 Wayne Meissner
+ * 
+ * This file is part of gstreamer-java.
+ *
+ * gstreamer-java is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * gstreamer-java is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.gstreamer.message.TagMessage;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -76,7 +95,28 @@ public class ElementTest {
         // This should exercise EnumMapper.intValue()
         element.setState(State.PLAYING);
         State state = element.getState(-1);
-        assertEquals("Element state not set correctly", State.PLAYING, element.getState(-1));
+        assertEquals("Element state not set correctly", State.PLAYING, state);
         element.setState(State.NULL);
+    }
+    @Test public void postMessage() {
+        final TestPipe pipe = new TestPipe();
+        final AtomicBoolean signalFired = new AtomicBoolean(false);
+        //
+        // Use a TagMessage, since it is the only type that doesn't get intercepted 
+        // by the pipeline
+        //
+        final Message message = new TagMessage(pipe.src, new TagList());
+        pipe.getBus().connect(new Bus.MESSAGE() {
+
+            public void busMessage(Bus bus, Message msg) {
+                if (msg.equals(message)) {
+                    signalFired.set(true);
+                    pipe.quit();
+                }
+            }
+        });
+        pipe.sink.postMessage(message);
+        pipe.run();
+        assertTrue("Message not posted", signalFired.get());
     }
 }

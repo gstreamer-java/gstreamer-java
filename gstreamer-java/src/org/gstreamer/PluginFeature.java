@@ -5,24 +5,25 @@
  * 
  * This file is part of gstreamer-java.
  *
- * gstreamer-java is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This code is free software: you can redistribute it and/or modify it under 
+ * the terms of the GNU Lesser General Public License version 3 only, as
+ * published by the Free Software Foundation.
  *
- * gstreamer-java is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
+ * This code is distributed in the hope that it will be useful, but WITHOUT 
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License 
+ * version 3 for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with gstreamer-java.  If not, see <http://www.gnu.org/licenses/>.
+ * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.gstreamer;
 
 import java.util.logging.Logger;
-import static org.gstreamer.lowlevel.GstAPI.gst;
+
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPluginFeatureAPI;
 
 /**
  * Base class for contents of a {@link Plugin}
@@ -31,6 +32,8 @@ import static org.gstreamer.lowlevel.GstAPI.gst;
  * @see Plugin
  */
 public class PluginFeature extends GstObject {
+    private static final GstPluginFeatureAPI gst = GstNative.load(GstPluginFeatureAPI.class);
+    @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(PluginFeature.class.getName());
     
     /** Creates a new instance of PluginFeature */
@@ -60,8 +63,9 @@ public class PluginFeature extends GstObject {
      * @param name The name to set.
      */
     @Override
-    public void setName(String name) {
+    public boolean setName(String name) {
         gst.gst_plugin_feature_set_name(this, name);
+        return true;
     }
     
     /**
