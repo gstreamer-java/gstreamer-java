@@ -82,5 +82,7 @@ public interface GstAPI extends Library {
         }
     }
     // Do nothing, but provide a base Callback class that gets automatic type conversion
-    public static interface GstCallback extends com.sun.jna.Callback {}
+    public static interface GstCallback extends com.sun.jna.Callback {
+        static final com.sun.jna.TypeMapper TYPE_MAPPER = new GTypeMapper();
+    }
 }

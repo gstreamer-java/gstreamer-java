@@ -25,7 +25,6 @@ import org.gstreamer.lowlevel.GstPadAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
-import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 
 /**
@@ -392,7 +391,7 @@ public class Pad extends GstObject {
      * @param listener The listener to be called when data is available.
      */
     public void connect(final HAVE_DATA listener) {
-        connect(HAVE_DATA.class, listener, new Callback() {
+        connect(HAVE_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public boolean callback(Pad pad, Buffer buffer) {
                 listener.haveData(pad, buffer);
