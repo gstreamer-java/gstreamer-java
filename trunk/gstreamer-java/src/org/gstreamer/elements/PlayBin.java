@@ -347,7 +347,7 @@ public class PlayBin extends Pipeline {
      * @param volume value between 0.0 and 1.0 with 1.0 being full volume.
      */
     public void setVolume(double volume) {
-        gobj.g_object_set(this, "volume", volume);
+        set("volume", volume);
     }
     
     /**
@@ -355,9 +355,7 @@ public class PlayBin extends Pipeline {
      * @return The current volume as a percentage between 0 and 100 of the max volume.
      */
     public double getVolume() {
-        double[] volume = { 0d };
-        gobj.g_object_get(this, "volume", volume);
-        return volume[0];
+        return ((Number) get("volume")).doubleValue();
     }
     
 }
