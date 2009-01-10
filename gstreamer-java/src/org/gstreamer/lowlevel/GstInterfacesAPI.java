@@ -1,4 +1,5 @@
-/* 
+/*
+ * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -18,25 +19,27 @@
 
 package org.gstreamer.lowlevel;
 
-import java.util.HashMap;
-
 import org.gstreamer.Element;
-
 import com.sun.jna.Library;
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 @SuppressWarnings("serial")
 public interface GstInterfacesAPI extends Library {
+    /*
     GstInterfacesAPI INSTANCE = GNative.loadLibrary("gstinterfaces-0.10", GstInterfacesAPI.class, 
             new HashMap<String, Object>() {{
                 put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
             }}
     );
+    */
+    GstInterfacesAPI INSTANCE = GstNative.load(GstInterfacesAPI.class);
+
+    GType  gst_implements_interface_get_type();
     boolean gst_element_implements_interface(Element element, GType iface_type);
     Pointer gst_implements_interface_cast(NativeObject from, GType type);
     Pointer gst_implements_interface_check(NativeObject from, GType type);
-    
+
+    /*
     void gst_x_overlay_set_xwindow_id(Element overlay, NativeLong xwindow_id);
     void gst_x_overlay_set_xwindow_id(Element overlay, Pointer xwindow_id);
     void  gst_x_overlay_expose(Element overlay);
@@ -46,4 +49,5 @@ public interface GstInterfacesAPI extends Library {
     GType gst_mixer_options_get_type();
     GType gst_tuner_channel_get_type();
     GType gst_tuner_norm_get_type();
+     * */
 }

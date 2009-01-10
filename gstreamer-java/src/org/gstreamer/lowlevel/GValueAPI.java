@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  *
  * This file is part of gstreamer-java.
@@ -52,7 +53,80 @@ public interface GValueAPI extends Library {
             public volatile Pointer v_pointer;
         }
         public volatile GValueData data[] = new GValueData[2];
+
+        public GValue()
+        {
+            super();
+        }
+        public GValue(Pointer ptr)
+        {
+            useMemory(ptr);
+            read();
+        }
     }
+
+    static class GValueArray extends com.sun.jna.Structure {
+        public volatile int n_values;
+        public volatile GValue[] values;
+        //public volatile Pointer values;
+        //< private >
+        public volatile int n_prealloced;
+
+        public GValueArray() {
+            clear();
+        }
+        public GValueArray(Pointer pointer) {
+            // pointer points to a structure with three integer fields: n_values (an integer),
+            // values (an array of GValues, therefore also a pointer, i.e.: an integer
+            // memory address) and n_prealloced (an integer). Then this structure
+            // occupies 12 bytes (4 for n_values, 4 for the array pointer and 4 for
+            // n_prealloced.
+
+            // Viewing the data pointed by the pointer as an array of three integers.
+            int[] intArray = pointer.getIntArray(0, 3);
+            n_values = intArray[0];     // the first element of the array is n_values.
+            n_prealloced = intArray[2]; // the third element of the array n_prealloced.
+
+            // By constructing a new pointer taking the original and offsetting it by
+            // 4 bytes, we get the pointer to the GValues array.
+            Pointer pointerToArray = pointer.getPointer(4);
+
+            // This is how to construct an array of structures from a given pointer.
+            // First, a single instance of GValue is created from the pointer data.
+            GValue val = new GValue(pointerToArray);
+            // The structure is converted into an array with the appropriate number
+            // of elements.
+            values = (GValue[])val.toArray(n_values);
+        }
+        
+        private static GValueArray valueOf(Pointer ptr) {
+            return ptr != null ? new GValueArray(ptr) : null;
+        }
+
+        public int getNValues() {
+            return n_values;
+        }
+        
+        public Object getValue(int i) {
+           GType valType = values[i].g_type;
+           if (valType.equals(GType.INT)) { return new Integer(gvalue.g_value_get_int(values[i]));
+           } else if (valType.equals(GType.UINT)) { return new Integer(gvalue.g_value_get_uint(values[i]));
+           } else if (valType.equals(GType.CHAR)) { return new Byte(gvalue.g_value_get_char(values[i]));
+           } else if (valType.equals(GType.UCHAR)) { return new Byte(gvalue.g_value_get_uchar(values[i]));
+           } else if (valType.equals(GType.LONG)) { return new Long(gvalue.g_value_get_long(values[i]).longValue());
+           } else if (valType.equals(GType.ULONG)) { return new Long(gvalue.g_value_get_ulong(values[i]).longValue());
+           } else if (valType.equals(GType.INT64)) { return new Long(gvalue.g_value_get_int64(values[i]));
+           } else if (valType.equals(GType.UINT64)) { return new Long(gvalue.g_value_get_uint64(values[i]));
+           } else if (valType.equals(GType.BOOLEAN)) { return new Boolean(gvalue.g_value_get_boolean(values[i]));
+           } else if (valType.equals(GType.FLOAT)) { return new Float(gvalue.g_value_get_float(values[i]));
+           } else if (valType.equals(GType.DOUBLE)) { return new Double(gvalue.g_value_get_double(values[i]));
+           } else if (valType.equals(GType.STRING)) { return gvalue.g_value_get_string(values[i]);
+           } else if (valType.equals(GType.OBJECT)) { return gvalue.g_value_get_object(values[i]);
+           }
+           return null;
+        }
+    }
+    
     GValue g_value_init(GValue value, GType g_type);
     GValue g_value_reset(GValue value);
     void g_value_unset(GValue value);
@@ -91,4 +165,20 @@ public interface GValueAPI extends Library {
     void g_value_take_object(GValue value, @Invalidate GObject v_object);
     GObject g_value_get_object(GValue value);
     @CallerOwnsReturn GObject g_value_dup_object(GValue value);
+   
+    GValue g_value_array_get_nth(GValueArray value_array, int index);
+    Pointer g_value_array_new(int n_prealloced);
+    void g_value_array_free (GValueArray value_array);
+
+    Pointer g_value_array_copy(GValueArray value_array);
+    Pointer g_value_array_prepend(GValueArray value_array, GValue value);
+    Pointer g_value_array_append(GValueArray value_array, GValue value);
+    Pointer g_value_array_insert(GValueArray value_array, int index_, GValue value);
+    Pointer g_value_array_remove(GValueArray value_array, int index);
+/*
+ * GCompareDataFunc needs to be implemented.
+Pointer g_value_array_sort(GValueArray value_array, GCompareFunc compare_func);
+Pointer g_value_array_sort_with_data (GValueArray value_array,
+        GCompareDataFunc compare_func, Pointer user_data);
+ */
 }

@@ -1,4 +1,5 @@
-/* 
+/*
+ * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -223,6 +224,30 @@ public interface GObjectAPI extends Library {
         public volatile int ref_count;
         public volatile int param_id;      /* sort-criteria */
         
-        public GParamSpec() {}
+        public GParamSpec() {
+            clear();
+        }
+        public GParamSpec(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+/*
+        public String getName() {
+            return (String) readField("g_name");
+        }
+        public int getFlags() {
+            return (Integer) readField("g_flags");
+        }
+        public GType getValueType() {
+            return (GType) readField("value_type");
+        }
+        public GType getOwnerType() {
+            return (GType) readField("owner_type");
+        }
+
+        public void read() {}
+        public void write() {}
+                 */
     }
-}
+ }
+
