@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  *
  * This file is part of gstreamer-java.
@@ -29,6 +30,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Library;
+import com.sun.jna.ptr.LongByReference;
+
 
 /**
  *
@@ -40,18 +43,30 @@ public interface AppAPI extends com.sun.jna.Library {
             AppAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
+
+    // AppSink functions
     GType gst_app_src_get_type();
-    GType gst_app_sink_get_type();
-    FlowReturn gst_app_src_push_buffer(AppSrc appsrc, @Invalidate Buffer buffer);
-    @CallerOwnsReturn Caps gst_app_src_get_caps(AppSrc appsrc);
+
     void gst_app_src_set_caps(AppSrc appsrc, Caps caps);
-    void gst_app_src_set_size(AppSrc appsrc, /*gint64*/ long size);
-    /*gint64*/ long gst_app_src_get_size(AppSrc appsrc);
+    @CallerOwnsReturn Caps gst_app_src_get_caps(AppSrc appsrc);
+
+    void gst_app_src_set_size(AppSrc appsrc, long size);
+    long gst_app_src_get_size(AppSrc appsrc);
+
     void gst_app_src_set_stream_type(AppSrc appsrc, AppSrc.Type type);
     AppSrc.Type gst_app_src_get_stream_type(AppSrc appsrc);
-    
-    void gst_app_src_flush(AppSrc appsrc);
-    void gst_app_src_end_of_stream(AppSrc appsrc);
+
+    void gst_app_src_set_max_bytes(AppSrc appsrc, long max);
+    long gst_app_src_get_max_bytes(AppSrc appsrc);
+
+    void gst_app_src_set_latency(AppSrc appsrc, long min, long max);
+    void gst_app_src_get_latency(AppSrc appsrc, LongByReference min, LongByReference max);
+
+    FlowReturn gst_app_src_push_buffer(AppSrc appsrc, @Invalidate Buffer buffer);
+    FlowReturn gst_app_src_end_of_stream(AppSrc appsrc);
+
+    // AppSink functions
+    GType gst_app_sink_get_type();
 
     void gst_app_sink_set_caps(AppSink appsink, Caps caps);
     @CallerOwnsReturn Caps gst_app_sink_get_caps(AppSink appsink);
