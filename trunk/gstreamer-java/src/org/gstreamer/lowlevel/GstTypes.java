@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -149,8 +150,8 @@ public class GstTypes {
                 = new HashMap<GType, Class<? extends NativeObject>>() {{
 
             // GObject types
-            put(GstInterfacesAPI.INSTANCE.gst_mixer_track_get_type(), MixerTrack.class);
-            put(GstInterfacesAPI.INSTANCE.gst_tuner_norm_get_type(), TunerNorm.class);
+            put(GstMixerAPI.INSTANCE.gst_mixer_track_get_type(), MixerTrack.class);
+            put(GstTunerAPI.INSTANCE.gst_tuner_norm_get_type(), TunerNorm.class);
             // GstObject types
             put(gst.gst_element_get_type(), Element.class);
             put(gst.gst_element_factory_get_type(), ElementFactory.class);
