@@ -39,6 +39,8 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstPadTemplateAPI.GstStaticPadTemplate;
 
 import com.sun.jna.Pointer;
+import org.gstreamer.elements.AppSink;
+import org.gstreamer.elements.AppSrc;
 
 /**
  * ElementFactory is used to create instances of elements.
@@ -184,6 +186,8 @@ public class ElementFactory extends PluginFeature {
         put("fakesrc", FakeSrc.class);
         put("fakesink", FakeSink.class);
         put("filesrc", FileSrc.class);
+        put("appsrc", AppSrc.class);
+        put("appsink", AppSink.class);
     }};
     @SuppressWarnings("unchecked")
     private static Element elementFor(Pointer ptr, String factoryName) {
