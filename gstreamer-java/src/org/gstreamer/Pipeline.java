@@ -226,9 +226,10 @@ public class Pipeline extends Bin {
      * Sets the position in the media stream to time.
      * 
      * @param time The time to change the position to.
+     * @return true if seek is successful
      */
-    public void seek(ClockTime time) {
-        seek(time.convertTo(TimeUnit.NANOSECONDS), TimeUnit.NANOSECONDS);
+    public boolean seek(ClockTime time) {
+        return seek(time.convertTo(TimeUnit.NANOSECONDS), TimeUnit.NANOSECONDS);
     }
     
     /**
@@ -236,9 +237,10 @@ public class Pipeline extends Bin {
      * 
      * @param time the time to change the position to.
      * @param unit the {@code TimeUnit} the <tt>time</tt> is expressed in.
+     * @return true if seek is successful
      */
-    public void seek(long time, TimeUnit unit) {
-        seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.KEY_UNIT, 
+    public boolean seek(long time, TimeUnit unit) {
+        return seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.KEY_UNIT, 
             SeekType.SET, TimeUnit.NANOSECONDS.convert(time, unit), 
             SeekType.NONE, -1);
     }
@@ -282,11 +284,12 @@ public class Pipeline extends Bin {
      * @param start the value of the new start position
      * @param stopType the type and flags for the new stop position
      * @param stop the value of the new stop position
+     * @return true if seek is successful
      */
-    public void seek(double rate, Format format, int flags,
+    public boolean seek(double rate, Format format, int flags,
             SeekType startType, long start, SeekType stopType, long stop) {
         
-        gst.gst_element_seek(this, rate, format, flags, 
+        return gst.gst_element_seek(this, rate, format, flags, 
             startType, start, stopType, stop);
     }
     
