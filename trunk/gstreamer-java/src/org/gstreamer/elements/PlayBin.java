@@ -19,6 +19,8 @@
 package org.gstreamer.elements;
 import static org.gstreamer.lowlevel.GObjectAPI.gobj;
 
+import java.net.URISyntaxException;
+
 import java.io.File;
 import java.net.URI;
 
@@ -264,7 +266,20 @@ public class PlayBin extends Pipeline {
     public PlayBin(Initializer init) {
         super(init);
     }
-    
+
+
+    private static String slashify(String path, boolean isDirectory) {
+	String p = path;
+	if (File.separatorChar != '/')
+	    p = p.replace(File.separatorChar, '/');
+	if (!p.startsWith("/"))
+	    p = "/" + p;
+	if (!p.endsWith("/") && isDirectory)
+	    p = p + "/";
+	return p;
+    }
+
+
     /**
      * Sets the media file to play.
      * 

@@ -69,7 +69,8 @@ public class PropertyProbe extends GstInterface {
         if (ptr == null) {
             return null;
         }
-        return new Property(this, ptr, false, true);
+        Property p = new Property(this, ptr, false, false);
+        return p;
     }
 
     public void probeProperty(Property property) {
