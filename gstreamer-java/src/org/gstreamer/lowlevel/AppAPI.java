@@ -44,7 +44,7 @@ public interface AppAPI extends com.sun.jna.Library {
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
 
-    // AppSink functions
+    // AppSrc functions
     GType gst_app_src_get_type();
 
     void gst_app_src_set_caps(AppSrc appsrc, Caps caps);
@@ -62,6 +62,8 @@ public interface AppAPI extends com.sun.jna.Library {
     void gst_app_src_set_latency(AppSrc appsrc, long min, long max);
     void gst_app_src_get_latency(AppSrc appsrc, LongByReference min, LongByReference max);
 
+    void gst_app_src_flush_queued(AppSrc appsrc);
+    
     FlowReturn gst_app_src_push_buffer(AppSrc appsrc, @Invalidate Buffer buffer);
     FlowReturn gst_app_src_end_of_stream(AppSrc appsrc);
 

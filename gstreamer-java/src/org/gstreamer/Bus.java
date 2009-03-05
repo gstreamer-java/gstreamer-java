@@ -616,7 +616,7 @@ public class Bus extends GstObject {
     public void disconnect(ASYNC_DONE listener) {
         super.disconnect(ASYNC_DONE.class, listener);
     }
-    
+
     /**
      * Add a listener for all messages posted on the Bus.
      * 

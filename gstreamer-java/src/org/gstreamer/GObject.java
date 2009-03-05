@@ -60,7 +60,6 @@ public abstract class GObject extends RefCountedObject {
     public GObject(Initializer init) { 
         super(init.needRef ? initializer(init.ptr, false, init.ownsHandle) : init);
         logger.entering("GObject", "<init>", new Object[] { init });
-
         if (init.ownsHandle) {
             strongReferences.put(this, Boolean.TRUE);
             gobj.g_object_add_toggle_ref(init.ptr, toggle, objectID);
@@ -119,11 +118,7 @@ public abstract class GObject extends RefCountedObject {
                 // Need to fixup file:/ to be file:/// for gstreamer
                 if ("file".equals(uri.getScheme()) && uri.getHost() == null) {
                     final String path = uri.getRawPath();
-                    if (com.sun.jna.Platform.isWindows()) {
-                        uriString = "file:/" + path;
-                    } else {
-                        uriString = "file://" + path;
-                    }
+                    uriString = "file://" + path;
                 }
                 gvalue.g_value_set_string(propValue, uriString);
             } else {
