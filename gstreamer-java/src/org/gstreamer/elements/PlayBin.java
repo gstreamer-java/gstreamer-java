@@ -17,9 +17,6 @@
  */
 
 package org.gstreamer.elements;
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
-
-import java.net.URISyntaxException;
 
 import java.io.File;
 import java.net.URI;

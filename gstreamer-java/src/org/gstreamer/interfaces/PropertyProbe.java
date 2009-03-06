@@ -74,7 +74,10 @@ public class PropertyProbe extends GstInterface {
     }
 
     public void probeProperty(Property property) {
-        gst.gst_property_probe_probe_property(this, property.getSpec());
+        if (property != null)
+        {
+            gst.gst_property_probe_probe_property(this, property.getSpec());
+        }
     }
    
     public void probeProperty(String name) {
@@ -82,7 +85,11 @@ public class PropertyProbe extends GstInterface {
     }
 
     public boolean needsProbe(Property property) {
-        return gst.gst_property_probe_needs_probe(this, property.getSpec());
+        if (property != null)
+        {
+            return gst.gst_property_probe_needs_probe(this, property.getSpec());
+        }
+        else return false;
     }
 
     public boolean needsProbe(String name) {
@@ -90,7 +97,11 @@ public class PropertyProbe extends GstInterface {
     }
 
     public Object[] getValues(Property property) {
-        return valuesArray(gst.gst_property_probe_get_values(this, property.getSpec()));
+        if (property != null)
+        {
+            return valuesArray(gst.gst_property_probe_get_values(this, property.getSpec()));
+        }
+        else return null;
     }
 
     public Object[] getValues(String name) {
@@ -98,7 +109,11 @@ public class PropertyProbe extends GstInterface {
     }
 
     public Object[] probeAndGetValues(Property property) {
-        return valuesArray(gst.gst_property_probe_probe_and_get_values(this, property.getSpec()));
+        if (property != null)
+        {
+            return valuesArray(gst.gst_property_probe_probe_and_get_values(this, property.getSpec()));
+        }
+        else return null;
     }
 
     public Object[] probeAndGetValues(String name) {
@@ -124,12 +139,27 @@ public class PropertyProbe extends GstInterface {
     }
 
     private Object[] valuesArray(Pointer ptr) {
-        GValueArray valueArray = new GValueArray(ptr);
-        Object[] objectArray = new Object[valueArray.n_values];
-        for (int i = 0; i < valueArray.n_values; i++)
+        if (ptr == null) return null;
+        GValueArray valueArray = null;
+        try
         {
-            objectArray[i] = valueArray.getValue(i);
+            valueArray = new GValueArray(ptr);
         }
-        return objectArray;
+        catch (NullPointerException ex)
+        {
+            // This probably means that there are not values available for the
+            // specified property.
+            return null;
+        }
+        if (valueArray != null)
+        {
+            Object[] objectArray = new Object[valueArray.n_values];
+            for (int i = 0; i < valueArray.n_values; i++)
+            {
+                objectArray[i] = valueArray.getValue(i);
+            }
+            return objectArray;
+        }
+        else return null;
     }
 }
