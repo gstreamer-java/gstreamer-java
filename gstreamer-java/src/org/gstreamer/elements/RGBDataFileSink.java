@@ -49,14 +49,22 @@ public class RGBDataFileSink extends Bin {
     private final PushBuffer pushBuffer;
     private final int FPS;
     private final int NANOS_PER_FRAME;
+    private final int sourceWidth;
+    private final int sourceHeight;
+
     private int sourceID;
     private int frameCount;
+    private int QUEUED_FRAMES;
 
     public RGBDataFileSink(String name, int width, int height, int fps, String encoderStr, String[] encoderPropertyNames, Object[] encoderPropertyData, String muxerStr, File file) {
         super(initializer(gst.ptr_gst_bin_new(name)));
 
         bufferList = new LinkedList();
 
+        QUEUED_FRAMES = 30;
+
+        sourceWidth = width;
+        sourceHeight = height;
         FPS = fps;
         NANOS_PER_FRAME = (int)(1e9 / FPS);
 
@@ -72,6 +80,7 @@ public class RGBDataFileSink extends Bin {
         source = (AppSrc)ElementFactory.make("appsrc", "source");
         source.set("is-live", true);
         source.setCaps(videoCaps);
+        source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
 
         source.connect(startFeed);
         source.connect(stopFeed);
@@ -128,6 +137,17 @@ public class RGBDataFileSink extends Bin {
         source.endOfStream();
     }
 
+    public void setQueueSize(int nFrames)
+    {
+        QUEUED_FRAMES = nFrames;
+        source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
+    }
+
+    public int getQueueSize()
+    {
+        return QUEUED_FRAMES;
+    }
+
     class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
         public void startFeed(Element elem, int size, Pointer userData)
         {
@@ -157,6 +177,8 @@ public class RGBDataFileSink extends Bin {
         {
             if (0 < bufferList.size())
             {
+                // There are buffers available in the fifo list to be sent to the
+                // appsrc queue.
                 Buffer buf = bufferList.remove(0);
                 frameCount++;
 
@@ -165,10 +187,8 @@ public class RGBDataFileSink extends Bin {
                 buf.setTimestamp(ClockTime.fromNanos(f));
                 source.pushBuffer(buf);
                 buf.dispose();
-                
-                return true;
             }
-            else return false;
+            return true;
         }
     }
 }
