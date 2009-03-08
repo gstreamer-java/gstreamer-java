@@ -23,8 +23,11 @@ package org.gstreamer.elements;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.Element;
 import org.gstreamer.lowlevel.AppAPI;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
+import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
 
 /**
@@ -88,5 +91,74 @@ public class AppSrc extends BaseSrc {
     }
     public void endOfStream() {
         AppAPI.INSTANCE.gst_app_src_end_of_stream(this);
+    }
+
+    /**
+     * Signal emitted when this {@link AppSrc} needs data.
+     */
+    public static interface NEED_DATA {
+        /**
+         *
+         * @param pipeline
+         * @param size
+         * @param userData
+         */
+        public void startFeed(Element elem, int size, Pointer userData);
+    }
+
+    /**
+     * Adds a listener for the <code>need-data</code> signal
+     *
+     * @param listener Listener to be called when a appsrc needs data.
+     */
+    public void connect(final NEED_DATA listener) {
+        connect("need-data", NEED_DATA.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Element elem, int size, Pointer userData) {
+                listener.startFeed(elem, size, userData);
+            }
+        });
+    }
+
+    /**
+     * Removes a listener for the <code>need-data</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(NEED_DATA listener) {
+        disconnect(NEED_DATA.class, listener);
+    }
+
+    public static interface ENOUGH_DATA {
+        /**
+         *
+         * @param pipeline
+         * @param size
+         * @param userData
+         */
+        public void stopFeed(Element elem, Pointer userData);
+    }
+
+    /**
+     * Adds a listener for the <code>enough-data</code> signal
+     *
+     * @param listener Listener to be called this AppSrc filled its queue.
+     */
+    public void connect(final ENOUGH_DATA listener) {
+        connect("enough-data", ENOUGH_DATA.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Element elem, Pointer userData) {
+                listener.stopFeed(elem, userData);
+            }
+        });
+    }
+
+    /**
+     * Removes a listener for the <code>enough-data</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(ENOUGH_DATA listener) {
+        disconnect(ENOUGH_DATA.class, listener);
     }
 }
