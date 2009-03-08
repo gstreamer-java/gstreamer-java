@@ -18,63 +18,124 @@
 
 package org.gstreamer.elements;
 
+import com.sun.jna.Pointer;
+import java.io.File;
 import java.nio.IntBuffer;
 import java.util.LinkedList;
 
-import org.gstreamer.*;
-import org.gstreamer.elements.*;
+import org.gstreamer.Bin;
+import org.gstreamer.Caps;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.lowlevel.GlibAPI;
+import org.gstreamer.lowlevel.GlibAPI.GSourceFunc;
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstNative;
 
-
-public class RGBDataFileSink extends Pipeline {
-}
-
-//"video/x-raw-rgb,width=80,height=60,bpp=32,endianness=4321,depth=24,red_mask=65280,green_mask=16711680,blue_mask=-16777216,framerate=30/1";
-/*
-public class RGBDataFileSink extends Pipeline {
+public class RGBDataFileSink extends Bin {
+    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
+    private static final GlibAPI glib = GlibAPI.glib;
+    
     private final LinkedList<IntBuffer> bufferList;
+    private final AppSrc source;
+    private final Caps videoCaps;
 
-    public RGBDataFileSink(Caps caps, String encoder, String encoderParams, String muxer, String filename) {
-        this(makeRawElement("playbin", "test"));
+    private final AppSrcNeedDataListener startFeed;
+    private final AppSrcEnoughDataListener stopFeed;
+    private final PushBuffer pushBuffer;
+    private final int sourceID;
 
-
-        // "appsrc is-live=true name=source caps=\"%s\" ! ffmpegcolorspace ! video/x-raw-yuv,format=(fourcc)I420,width=80,height=60 ! queue ! videorate ! video/x-raw-yuv,framerate=30/1 ! h264enc ! queue ! avimux ! queue ! filesink location=test.avi"
+    public RGBDataFileSink(String name, int width, int height, int fps, String encoderStr, String[] encoderPropertyNames, Object[] encoderPropertyData, String muxerStr, File file) {
+        super(initializer(gst.ptr_gst_bin_new(name)));
 
         bufferList = new LinkedList();
-    }
-
-
-
-
-    public static Pipeline launch(String pipelineDecription) {
-        Pointer[] err = { null };
-        Pipeline pipeline = gst.gst_parse_launch(pipelineDecription, err);
-        if (pipeline == null) {
-            throw new GstException(new GError(new GErrorStruct(err[0])));
-        }
-        pipeline.initBus();
-        return pipeline;
-    }
-
- 
-
-    public void pushRGBFrame(IntBuffer rgb)
-    {
-        //bufferList.add(rgb);
         
+        videoCaps = Caps.fromString("video/x-raw-rgb,width=" + width + ",height=" + height + "," +
+                                    "bpp=32,endianness=4321,depth=24,red_mask=65280,green_mask=16711680,blue_mask=-16777216," +
+                                    "framerate=" + fps + "/1");
+
+        pushBuffer = new PushBuffer();
+        startFeed = new AppSrcNeedDataListener();
+        stopFeed = new AppSrcEnoughDataListener();
+
+        // Building pipeline.
+        source = (AppSrc)ElementFactory.make("appsrc", "source");
+        source.set("is-live", true);
+        source.setCaps(videoCaps);
+
+        source.connect(startFeed);
+        source.connect(stopFeed);
+
+        Element formatConverter = ElementFactory.make("ffmpegcolorspace", "formatConverter");
+        Element formatFilter = ElementFactory.make("capsfilter", "formatFilter");
+        Caps capsFormat = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=" + width + ",height=" + height);
+        formatFilter.setCaps(capsFormat);
+
+        Element queue0 = ElementFactory.make("queue", "queue0");
+        Element fpsAdjuster = ElementFactory.make("videorate", "fpsAdjuster");
+        Element fpsFilter = ElementFactory.make("capsfilter", "fpsFilter");
+        Caps capsFPS = Caps.fromString("video/x-raw-yuv,framerate=" + fps + "/1");
+        fpsFilter.setCaps(capsFPS);
+
+        Element encoder = ElementFactory.make(encoderStr, "encoder");
+        if (encoderPropertyNames != null && encoderPropertyData != null)
+        {
+            // Setting encoder properties.
+            int n0 = encoderPropertyNames.length;
+            int n1 = encoderPropertyData.length;
+            int n = n0 < n1 ? n0 : n1;
+            for (int i = 0; i < n; i++) encoder.set(encoderPropertyNames[i], encoderPropertyData[i]);
+        }
+        
+        Element queue1 = ElementFactory.make("queue", "queue1");
+        Element muxer = ElementFactory.make(muxerStr, "muxer");
+        Element queue2 = ElementFactory.make("queue", "queue2");
+
+        Element sink = ElementFactory.make("filesink", "sink");
+        sink.set("location", file.toString());
+
+        addMany(source, formatConverter, formatFilter, queue0, fpsAdjuster, fpsFilter, encoder, queue1, muxer, queue2, sink);
+        Element.linkMany(source, formatConverter, formatFilter, queue0, fpsAdjuster, fpsFilter, encoder, queue1, muxer, queue2, sink);
+
+        sourceID = 0;
     }
 
-    public void start()
+    public void pushRGBFrame(IntBuffer frame)
     {
+        bufferList.add(frame);
     }
 
-    @Override public void stop()
-    {
+    class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
+        public void startFeed(Element elem, int size, Pointer userData)
+        {
+            System.out.println("AppSrc needs data");
+/*
+  if (app->source_id == 0) {
+	g_print ("start feeding at frame %i\n", app->num_frame);
+    app->source_id = g_idle_add ((GSourceFunc) push_buffer, app);
+  }
+  */
+        }
     }
 
+    class AppSrcEnoughDataListener implements AppSrc.ENOUGH_DATA {
+        public void stopFeed(Element elem, Pointer userData)
+        {
+            System.out.println("AppSrc has enough data");
+/*
+  if (app->source_id != 0) {
+	g_print ("stop feeding at frame %i\n", app->num_frame);
+    g_source_remove (app->source_id);
+    app->source_id = 0;
+  }
+*/
+        }
+    }
 
-static gboolean
-push_buffer (AppData * app)
-{
+    class PushBuffer implements GSourceFunc {
+        public boolean callback(Pointer data)
+        {
+/*
   gpointer raw_buffer;
   GstBuffer *app_buffer;
   GstFlowReturn ret;
@@ -111,127 +172,9 @@ push_buffer (AppData * app)
   }
 
   return TRUE;
+
+ */
+            return true;
+        }
+    }
 }
-
-// This signal callback is called when appsrc needs data, we add an idle handler
-// to the mainloop to start pushing data into the appsrc
-static void
-start_feed (GstElement * pipeline, guint size, AppData * app)
-{
-  if (app->source_id == 0) {
-	g_print ("start feeding at frame %i\n", app->num_frame);
-    app->source_id = g_idle_add ((GSourceFunc) push_buffer, app);
-  }
-}
-
-// This callback is called when appsrc has enough data and we can stop sending.
-// We remove the idle handler from the mainloop
-static void
-stop_feed (GstElement * pipeline, AppData * app)
-{
-  if (app->source_id != 0) {
-	g_print ("stop feeding at frame %i\n", app->num_frame);
-    g_source_remove (app->source_id);
-    app->source_id = 0;
-  }
-}
-
-// called when we get a GstMessage from the pipeline when we get EOS, we
-// exit the mainloop and this testapp.
-static gboolean
-on_pipeline_message (GstBus * bus, GstMessage * message, AppData * app)
-{
-  GstState state, pending;
-
-  switch (GST_MESSAGE_TYPE (message)) {
-    case GST_MESSAGE_EOS:
-      g_print ("Received End of Stream message\n");
-      g_main_loop_quit (app->loop);
-      break;
-    case GST_MESSAGE_ERROR:
-      g_print ("Received error\n");
-      g_main_loop_quit (app->loop);
-      break;
-    case GST_MESSAGE_STATE_CHANGED:
-	  gst_element_get_state(app->source, &state, &pending, GST_CLOCK_TIME_NONE);
-      // g_print ("State changed from %i to %i\n", state, pending);
-      break;
-	default:
-      break;
-  }
-  return TRUE;
-}
-
-
-
-int
-main (int argc, char *argv[])
-{
-  AppData *app = NULL;
-  gchar *string = NULL;
-  GstBus *bus = NULL;
-  GstElement *appsrc = NULL;
-
-  gst_init (&argc, &argv);
-
-  app = g_new0 (AppData, 1);
-
-  app->loop = g_main_loop_new (NULL, FALSE);
-
-  // setting up pipeline, we push video data into this pipeline that will
-  // then be recorded to an avi file, encoded with the h.264 codec
-  string =
-      g_strdup_printf ("appsrc is-live=true name=source caps=\"%s\" ! ffmpegcolorspace ! video/x-raw-yuv,format=(fourcc)I420,width=80,height=60 ! queue ! videorate ! video/x-raw-yuv,framerate=30/1 ! h264enc ! queue ! avimux ! queue ! filesink location=test.avi",
-      video_caps);
-  app->pipeline = gst_parse_launch (string, NULL);
-  g_free (string);
-
-  if (app->pipeline == NULL) {
-    g_print ("Bad pipeline\n");
-    return -1;
-  }
-
-  appsrc = gst_bin_get_by_name (GST_BIN (app->pipeline), "source");
-  // configure for time-based format
-  g_object_set (appsrc, "format", GST_FORMAT_TIME, NULL);
-  // setting maximum of bytes queued. default is 200000
-  gst_app_src_set_max_bytes((GstAppSrc *)appsrc, QUEUED_FRAMES * BUFFER_SIZE);
-  // uncomment the next line to block when appsrc has buffered enough
-  // g_object_set (appsrc, "block", TRUE, NULL);
-  app->source = appsrc;
-
-  // add watch for messages
-  bus = gst_element_get_bus (app->pipeline);
-  gst_bus_add_watch (bus, (GstBusFunc) on_pipeline_message, app);
-  gst_object_unref (bus);
-
-  // configure the appsrc, we will push data into the appsrc from the
-  // mainloop
-  g_signal_connect (app->source, "need-data", G_CALLBACK (start_feed), app);
-  g_signal_connect (app->source, "enough-data", G_CALLBACK (stop_feed), app);
-
-  // go to playing and wait in a mainloop
-  gst_element_set_state (app->pipeline, GST_STATE_PLAYING);
-
-  // this mainloop is stopped when we receive an error or EOS
-  g_print ("Creating movie...\n");
-  g_main_loop_run (app->loop);
-  g_print ("Done.\n");
-
-  gst_app_src_end_of_stream (GST_APP_SRC (app->source));
-
-  gst_element_set_state (app->pipeline, GST_STATE_NULL);
-
-  // Cleaning up
-  gst_object_unref (app->source);
-  gst_object_unref (app->pipeline);
-  g_main_loop_unref (app->loop);
-  g_free (app);
-
-  return 0;
-}
-    
-     
-
-}
-*/
