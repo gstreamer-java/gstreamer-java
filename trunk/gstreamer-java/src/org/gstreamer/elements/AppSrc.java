@@ -103,7 +103,7 @@ public class AppSrc extends BaseSrc {
          * @param size
          * @param userData
          */
-        public void startFeed(Element elem, int size, Pointer userData);
+        public void startSendingData(Element elem, int size, Pointer userData);
     }
 
     /**
@@ -115,7 +115,7 @@ public class AppSrc extends BaseSrc {
         connect("need-data", NEED_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, int size, Pointer userData) {
-                listener.startFeed(elem, size, userData);
+                listener.startSendingData(elem, size, userData);
             }
         });
     }
@@ -133,10 +133,9 @@ public class AppSrc extends BaseSrc {
         /**
          *
          * @param pipeline
-         * @param size
          * @param userData
          */
-        public void stopFeed(Element elem, Pointer userData);
+        public void stopSendingData(Element elem, Pointer userData);
     }
 
     /**
@@ -148,7 +147,7 @@ public class AppSrc extends BaseSrc {
         connect("enough-data", ENOUGH_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pointer userData) {
-                listener.stopFeed(elem, userData);
+                listener.stopSendingData(elem, userData);
             }
         });
     }
@@ -161,4 +160,24 @@ public class AppSrc extends BaseSrc {
     public void disconnect(ENOUGH_DATA listener) {
         disconnect(ENOUGH_DATA.class, listener);
     }
+
+/*
+    public static interface SEEK_DATA {
+        public void seekData(Element elem, Pointer userData); // Check what arguments are needed.
+    }
+
+    public void connect(final SEEK_DATA listener) {
+        connect("seek-data", SEEK_DATA.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Element elem, Pointer userData) {
+                listener.seekData(elem, userData);
+            }
+        });
+    }
+
+    public void disconnect(SEEK_DATA listener) {
+        disconnect(SEEK_DATA.class, listener);
+    }
+*/
+
 }
