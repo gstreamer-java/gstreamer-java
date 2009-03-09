@@ -115,4 +115,45 @@ public class AppSink extends BaseSink {
     public Buffer pullBuffer() {
         return AppAPI.INSTANCE.gst_app_sink_pull_buffer(this);
     }
+
+
+
+/*
+    public static interface NEW_BUFFER {
+        public void newBuffer(Element elem, Pointer userData); // Check what arguments are needed.
+    }
+
+    public void connect(final NEW_BUFFER listener) {
+        connect("seek-data", NEW_BUFFER.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Element elem, Pointer userData) {
+                listener.newBuffer(elem, userData);
+            }
+        });
+    }
+
+    public void disconnect(NEW_BUFFER listener) {
+        disconnect(NEW_BUFFER.class, listener);
+    }
+*/
+
+
+/*
+    public static interface NEW_PREROLL {
+        public void newPreroll(Element elem, Pointer userData); // Check what arguments are needed.
+    }
+
+    public void connect(final NEW_PREROLL listener) {
+        connect("new-preroll", NEW_PREROLL.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Element elem, Pointer userData) {
+                listener.newPreroll(elem, userData);
+            }
+        });
+    }
+
+    public void disconnect(NEW_PREROLL listener) {
+        disconnect(NEW_BUFFER.class, listener);
+    }
+*/
 }

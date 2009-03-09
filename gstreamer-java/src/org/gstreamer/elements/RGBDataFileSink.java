@@ -20,7 +20,10 @@ package org.gstreamer.elements;
 
 import java.io.File;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
 
+import org.gstreamer.Gst;
+import org.gstreamer.ClockTime;
 import org.gstreamer.Buffer;
 import org.gstreamer.State;
 import org.gstreamer.Bin;
@@ -28,38 +31,35 @@ import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.lowlevel.GlibAPI;
-import org.gstreamer.lowlevel.GlibAPI.GSourceFunc;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import org.gstreamer.ClockTime;
 
 public class RGBDataFileSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private static final GlibAPI glib = GlibAPI.glib;
-    
+
     private final LinkedList<Buffer> bufferList;
     private final AppSrc source;
     private final Caps videoCaps;
 
-    private final AppSrcNeedDataListener startFeed;
-    private final AppSrcEnoughDataListener stopFeed;
-    private final PushBuffer pushBuffer;
+    private final AppSrcNeedDataListener needDataListener;
+    private final AppSrcEnoughDataListener enoughDataListener;
+    private final BufferDispatcher bufferDispatcher;
     private final int FPS;
     private final int NANOS_PER_FRAME;
     private final int sourceWidth;
     private final int sourceHeight;
 
-    private int sourceID;
+    private boolean sendingData;
     private int frameCount;
     private int QUEUED_FRAMES;
 
     public RGBDataFileSink(String name, int width, int height, int fps, String encoderStr, String[] encoderPropertyNames, Object[] encoderPropertyData, String muxerStr, File file) {
         super(initializer(gst.ptr_gst_bin_new(name)));
 
-        bufferList = new LinkedList();
+        bufferList = new LinkedList<Buffer>();
 
         QUEUED_FRAMES = 30;
 
@@ -72,29 +72,26 @@ public class RGBDataFileSink extends Bin {
                                     "bpp=32,endianness=4321,depth=24,red_mask=65280,green_mask=16711680,blue_mask=-16777216," +
                                     "framerate=" + fps + "/1");
 
-        pushBuffer = new PushBuffer();
-        startFeed = new AppSrcNeedDataListener();
-        stopFeed = new AppSrcEnoughDataListener();
-
         // Building pipeline.
         source = (AppSrc)ElementFactory.make("appsrc", "source");
         source.set("is-live", true);
+        source.set("format", 3); // GST_FORMAT_TIME = 3
         source.setCaps(videoCaps);
         source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
 
-        source.connect(startFeed);
-        source.connect(stopFeed);
+        needDataListener = new AppSrcNeedDataListener();
+        enoughDataListener = new AppSrcEnoughDataListener();
+        source.connect(needDataListener);
+        source.connect(enoughDataListener);
+
+        bufferDispatcher = new BufferDispatcher();
+        ExecutorService exec = Gst.getExecutorService();
+        exec.submit(bufferDispatcher);
 
         Element formatConverter = ElementFactory.make("ffmpegcolorspace", "formatConverter");
         Element formatFilter = ElementFactory.make("capsfilter", "formatFilter");
         Caps capsFormat = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=" + width + ",height=" + height);
         formatFilter.setCaps(capsFormat);
-
-        Element queue0 = ElementFactory.make("queue", "queue0");
-        Element fpsAdjuster = ElementFactory.make("videorate", "fpsAdjuster");
-        Element fpsFilter = ElementFactory.make("capsfilter", "fpsFilter");
-        Caps capsFPS = Caps.fromString("video/x-raw-yuv,framerate=" + fps + "/1");
-        fpsFilter.setCaps(capsFPS);
 
         Element encoder = ElementFactory.make(encoderStr, "encoder");
         if (encoderPropertyNames != null && encoderPropertyData != null)
@@ -105,24 +102,21 @@ public class RGBDataFileSink extends Bin {
             int n = n0 < n1 ? n0 : n1;
             for (int i = 0; i < n; i++) encoder.set(encoderPropertyNames[i], encoderPropertyData[i]);
         }
-        
-        Element queue1 = ElementFactory.make("queue", "queue1");
+
         Element muxer = ElementFactory.make(muxerStr, "muxer");
-        Element queue2 = ElementFactory.make("queue", "queue2");
 
         Element sink = ElementFactory.make("filesink", "sink");
         sink.set("location", file.toString());
 
-        addMany(source, formatConverter, formatFilter, queue0, fpsAdjuster, fpsFilter, encoder, queue1, muxer, queue2, sink);
-        Element.linkMany(source, formatConverter, formatFilter, queue0, fpsAdjuster, fpsFilter, encoder, queue1, muxer, queue2, sink);
+        addMany(source, formatConverter, formatFilter, encoder, muxer, sink);
+        Element.linkMany(source, formatConverter, formatFilter, encoder, muxer, sink);
 
-        sourceID = 0;
-        frameCount = 0;
+        sendingData = false;
     }
 
     public void pushRGBFrame(Buffer buf)
     {
-        bufferList.add(buf);
+        addBuffer(buf);
     }
 
     public void start()
@@ -148,33 +142,48 @@ public class RGBDataFileSink extends Bin {
         return QUEUED_FRAMES;
     }
 
+    public int getNumQueuedFrames()
+    {
+        return bufferList.size();
+    }
+
     class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
-        public void startFeed(Element elem, int size, Pointer userData)
+        public void startSendingData(Element elem, int size, Pointer userData)
         {
-            System.out.println("AppSrc needs data");
-            if (sourceID == 0)
+            if (!sendingData)
             {
-                NativeLong val = glib.g_idle_add(pushBuffer, userData);
-                sourceID = val.intValue();
+                sendingData = true;
+
+                // If needDataListener is not disconnected, then it keeps triggering
+                // "need-data" signals... This shouldn't happen. Bug in the signal
+                // handling in Gstreamer-java?
+                // Same thing in stopSendingData below.
+                source.disconnect(needDataListener);
+                source.connect(enoughDataListener);
             }
         }
     }
 
     class AppSrcEnoughDataListener implements AppSrc.ENOUGH_DATA {
-        public void stopFeed(Element elem, Pointer userData)
+        public void stopSendingData(Element elem, Pointer userData)
         {
-            System.out.println("AppSrc has enough data");
-            if (sourceID != 0)
+            if (sendingData)
             {
-                glib.g_source_remove(sourceID);
-                sourceID = 0;
+                sendingData = false;
+                source.connect(needDataListener);
+                source.disconnect(enoughDataListener);
             }
         }
     }
 
-    class PushBuffer implements GSourceFunc {
-        public boolean callback(Pointer data)
-        {
+    private void addBuffer(Buffer buf)
+    {
+        bufferList.add(buf);
+    }
+
+    private void pushBuffer()
+    {
+        if (sendingData)
             if (0 < bufferList.size())
             {
                 // There are buffers available in the fifo list to be sent to the
@@ -185,10 +194,23 @@ public class RGBDataFileSink extends Bin {
                 long f = frameCount * NANOS_PER_FRAME;
                 buf.setCaps(videoCaps);
                 buf.setTimestamp(ClockTime.fromNanos(f));
+                buf.setDuration(ClockTime.fromNanos(NANOS_PER_FRAME));
                 source.pushBuffer(buf);
                 buf.dispose();
             }
-            return true;
+    }
+
+    class BufferDispatcher implements Runnable {
+        public void run()
+        {
+            while (true) {
+                pushBuffer();
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
