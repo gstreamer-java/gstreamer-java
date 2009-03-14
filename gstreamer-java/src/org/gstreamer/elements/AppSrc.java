@@ -99,23 +99,23 @@ public class AppSrc extends BaseSrc {
     public static interface NEED_DATA {
         /**
          *
-         * @param pipeline
+         * @param elem
          * @param size
          * @param userData
          */
-        public void startSendingData(Element elem, int size, Pointer userData);
+        public void needData(Element elem, int size, Pointer userData);
     }
 
     /**
      * Adds a listener for the <code>need-data</code> signal
      *
-     * @param listener Listener to be called when a appsrc needs data.
+     * @param listener Listener to be called when appsrc needs data.
      */
     public void connect(final NEED_DATA listener) {
         connect("need-data", NEED_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, int size, Pointer userData) {
-                listener.startSendingData(elem, size, userData);
+                listener.needData(elem, size, userData);
             }
         });
     }
@@ -129,25 +129,28 @@ public class AppSrc extends BaseSrc {
         disconnect(NEED_DATA.class, listener);
     }
 
+    /**
+     * Signal emitted when this {@link AppSrc} has enough data in the queue.
+     */
     public static interface ENOUGH_DATA {
         /**
          *
-         * @param pipeline
+         * @param elem
          * @param userData
          */
-        public void stopSendingData(Element elem, Pointer userData);
+        public void enoughData(Element elem, Pointer userData);
     }
 
     /**
      * Adds a listener for the <code>enough-data</code> signal
      *
-     * @param listener Listener to be called this AppSrc filled its queue.
+     * @param listener Listener to be called this when appsrc fills its queue.
      */
     public void connect(final ENOUGH_DATA listener) {
         connect("enough-data", ENOUGH_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pointer userData) {
-                listener.stopSendingData(elem, userData);
+                listener.enoughData(elem, userData);
             }
         });
     }
@@ -161,23 +164,44 @@ public class AppSrc extends BaseSrc {
         disconnect(ENOUGH_DATA.class, listener);
     }
 
-/*
+    /**
+     * Signal emitted when this {@link AppSrc} when it requires the application
+     * to push buffers from a specific location in the input stream.
+     */
     public static interface SEEK_DATA {
-        public void seekData(Element elem, Pointer userData); // Check what arguments are needed.
+        /**
+         *
+         * @param elem
+         * @param position
+         * @param userData
+         */
+        public void seekData(Element elem, long position, Pointer userData);
     }
 
+    /**
+     * Adds a listener for the <code>seek-data</code> signal
+     *
+     * @param listener Listener to be called when appsrc when its "stream-mode"
+     * property is set to "seekable" or "random-access". The signal argument
+     * will contain the new desired position in the stream expressed in the unit
+     * set with the "format" property. After receiving the seek-data signal,
+     * the application should push-buffers from the new position.
+     */
     public void connect(final SEEK_DATA listener) {
         connect("seek-data", SEEK_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pointer userData) {
-                listener.seekData(elem, userData);
+            public void callback(Element elem, long position, Pointer userData) {
+                listener.seekData(elem, position, userData);
             }
         });
     }
 
+    /**
+     * Removes a listener for the <code>seek-data</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
     public void disconnect(SEEK_DATA listener) {
         disconnect(SEEK_DATA.class, listener);
     }
-*/
-
 }

@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Wayne Meissner
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2007 David Schleef <ds@schleef.org>
  *           (C) 2008 Wim Taymans <wim.taymans@gmail.com>
@@ -20,9 +21,12 @@
 
 package org.gstreamer.elements;
 
+import com.sun.jna.Pointer;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.Element;
 import org.gstreamer.lowlevel.AppAPI;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 /**
  * A sink {@link org.gstreamer.Element} that enables an application to pull data
@@ -116,15 +120,28 @@ public class AppSink extends BaseSink {
         return AppAPI.INSTANCE.gst_app_sink_pull_buffer(this);
     }
 
-
-
-/*
+    /**
+     * Signal emitted when this {@link AppSink} when a new buffer is ready.
+     */
     public static interface NEW_BUFFER {
-        public void newBuffer(Element elem, Pointer userData); // Check what arguments are needed.
+        /**
+         *
+         * @param elem
+         * @param userData
+         */
+        public void newBuffer(Element elem, Pointer userData);
     }
 
+    /**
+     * Adds a listener for the <code>new-buffer</code> signal. If a blocking
+     * behaviour is not desirable, setting the "emit-signals" property to TRUE
+     * will make appsink emit the "new-buffer" and "new-preroll" signals when a
+     * buffer can be pulled without blocking.
+     *
+     * @param listener
+     */
     public void connect(final NEW_BUFFER listener) {
-        connect("seek-data", NEW_BUFFER.class, listener, new GstCallback() {
+        connect("new-buffer", NEW_BUFFER.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Element elem, Pointer userData) {
                 listener.newBuffer(elem, userData);
@@ -132,16 +149,36 @@ public class AppSink extends BaseSink {
         });
     }
 
+    /**
+     * Removes a listener for the <code>new-buffer</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
     public void disconnect(NEW_BUFFER listener) {
         disconnect(NEW_BUFFER.class, listener);
     }
-*/
 
+    /**
+     * Signal emitted when this {@link AppSink} when a new buffer is ready.
+     */
 
-/*
     public static interface NEW_PREROLL {
-        public void newPreroll(Element elem, Pointer userData); // Check what arguments are needed.
+        /**
+         *
+         * @param elem
+         * @param userData
+         */
+        public void newPreroll(Element elem, Pointer userData);
     }
+
+    /**
+     * Adds a listener for the <code>new-preroll</code> signal. If a blocking
+     * behaviour is not desirable, setting the "emit-signals" property to TRUE
+     * will make appsink emit the "new-buffer" and "new-preroll" signals when a
+     * buffer can be pulled without blocking.
+     *
+     * @param listener
+     */
 
     public void connect(final NEW_PREROLL listener) {
         connect("new-preroll", NEW_PREROLL.class, listener, new GstCallback() {
@@ -152,8 +189,12 @@ public class AppSink extends BaseSink {
         });
     }
 
+    /**
+     * Removes a listener for the <code>new-buffer</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
     public void disconnect(NEW_PREROLL listener) {
-        disconnect(NEW_BUFFER.class, listener);
+        disconnect(NEW_PREROLL.class, listener);
     }
-*/
 }
