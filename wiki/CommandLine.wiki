@@ -11,15 +11,15 @@ To use gstreamer-java, you need to download the latest versions of both gstreame
 
 e.g.
 
-Download [http://gstreamer-java.googlecode.com/files/jna-3.0.4.jar jna-3.0.4.jar] and [http://gstreamer-java.googlecode.com/files/gstreamer-java-1.0.jar gstreamer-java-1.0.jar]. 
+Download [http://gstreamer-java.googlecode.com/files/jna-3.0.4.jar jna-3.0.4.jar] and [http://gstreamer-java.googlecode.com/files/gstreamer-java-bin-1.0.jar gstreamer-java-bin-1.0.jar]. 
 
  * To invoke the SwingVideoTest example program on linux:
   {{{
-    java -Djna.library.path=/usr/lib -cp jna-3.0.4.jar:gstreamer-java-1.0.jar   org.gstreamer.example.SwingVideoTest
+    java -Djna.library.path=/usr/lib -cp jna-3.0.4.jar:gstreamer-java-bin-1.0.jar   org.gstreamer.example.SwingVideoTest
   }}}
  * Launching a command-line pipeline using the *gst-launch* syntax (currently only available from the latest subversion tree):
   {{{
-    java -Djna.library.path=/usr/lib -cp jna-3.0.4.jar:gstreamer-java-1.0.jar   org.gstreamer.example.PipelineLauncher videotestsrc ! autovideosink
+    java -Djna.library.path=/usr/lib -cp jna-3.0.4.jar:gstreamer-java-bin-1.0.jar   org.gstreamer.example.PipelineLauncher videotestsrc ! autovideosink
   }}}
 
 Note: On windows, separate the jar files with a semi-colon ';' instead of a colon ':', and you should not need to set the jna.library.path
