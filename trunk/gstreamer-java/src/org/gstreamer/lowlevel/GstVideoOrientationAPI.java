@@ -23,33 +23,24 @@ import org.gstreamer.interfaces.VideoOrientation;
 import com.sun.jna.Library;
 
 public interface GstVideoOrientationAPI extends Library {
-	GstVideoOrientationAPI INSTANCE = GstNative.load("gstinterfaces",
-			GstVideoOrientationAPI.class);
+	GstVideoOrientationAPI INSTANCE = GstNative.load("gstinterfaces", GstVideoOrientationAPI.class);
 
 	GType gst_video_orientation_get_type();
 
 	/* vitrual class functions */
-	boolean gst_video_orientation_get_hflip(VideoOrientation video_orientation,
-			boolean flip);
+	boolean gst_video_orientation_get_hflip(VideoOrientation video_orientation, boolean flip);
 
-	boolean gst_video_orientation_get_vflip(VideoOrientation video_orientation,
-			boolean flip);
+	boolean gst_video_orientation_get_vflip(VideoOrientation video_orientation, boolean flip);
 
-	boolean gst_video_orientation_get_hcenter(
-			VideoOrientation video_orientation, int center);
+	boolean gst_video_orientation_get_hcenter(VideoOrientation video_orientation, int center);
 
-	boolean gst_video_orientation_get_vcenter(
-			VideoOrientation video_orientation, int center);
+	boolean gst_video_orientation_get_vcenter(VideoOrientation video_orientation, int center);
 
-	boolean gst_video_orientation_set_hflip(VideoOrientation video_orientation,
-			boolean flip);
+	boolean gst_video_orientation_set_hflip(VideoOrientation video_orientation, boolean flip);
 
-	boolean gst_video_orientation_set_vflip(VideoOrientation video_orientation,
-			boolean flip);
+	boolean gst_video_orientation_set_vflip(VideoOrientation video_orientation, boolean flip);
 
-	boolean gst_video_orientation_set_hcenter(
-			VideoOrientation video_orientation, int center);
+	boolean gst_video_orientation_set_hcenter(VideoOrientation video_orientation, int center);
 
-	boolean gst_video_orientation_set_vcenter(
-			VideoOrientation video_orientation, int center);
+	boolean gst_video_orientation_set_vcenter(VideoOrientation video_orientation, int center);
 }
