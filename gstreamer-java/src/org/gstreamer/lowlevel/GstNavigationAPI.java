@@ -24,17 +24,15 @@ import org.gstreamer.interfaces.Navigation;
 import com.sun.jna.Library;
 
 public interface GstNavigationAPI extends Library {
-	GstNavigationAPI INSTANCE = GstNative.load("gstinterfaces",
-			GstNavigationAPI.class);
+	GstNavigationAPI INSTANCE = GstNative.load("gstinterfaces", GstNavigationAPI.class);
 
 	GType gst_color_balance_get_type();
 
 	/* vitrual class functions */
 	void gst_navigation_send_event(Navigation navigation, Structure structure);
 
-	void gst_navigation_send_key_event(Navigation navigation, String event,
-			String key);
+	void gst_navigation_send_key_event(Navigation navigation, String event, String key);
 
-	void gst_navigation_send_mouse_event(Navigation navigation, String event,
-			int button, double x, double y);
+	void gst_navigation_send_mouse_event(Navigation navigation, String event, 
+						int button, double x, double y);
 }

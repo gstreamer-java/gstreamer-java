@@ -26,22 +26,18 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface GstColorBalanceAPI extends Library {
-	GstColorBalanceAPI INSTANCE = GstNative.load("gstinterfaces",
-			GstColorBalanceAPI.class);
+	GstColorBalanceAPI INSTANCE = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
 
 	GType gst_color_balance_get_type();
 
 	/* vitrual class functions */
 	GList gst_color_balance_list_channels(ColorBalance balance);
 
-	void gst_color_balance_set_value(ColorBalance balance,
-			ColorBalanceChannel channel, int value);
+	void gst_color_balance_set_value(ColorBalance balance, ColorBalanceChannel channel, int value);
 
-	int gst_color_balance_get_value(ColorBalance balance,
-			ColorBalanceChannel channel);
+	int gst_color_balance_get_value(ColorBalance balance, ColorBalanceChannel channel);
 
-	public static final class ColorBalanceChannelStruct extends
-			com.sun.jna.Structure {
+	public static final class ColorBalanceChannelStruct extends com.sun.jna.Structure {
 		public volatile GObjectAPI.GObjectStruct parent;
 		public volatile String label;
 		public volatile int min_value;
@@ -59,11 +55,9 @@ public interface GstColorBalanceAPI extends Library {
 			return max_value;
 		}
 
-		public void read() {
-		}
+		public void read() {}
 
-		public void write() {
-		}
+		public void write() {}
 
 		public ColorBalanceChannelStruct(Pointer ptr) {
 			useMemory(ptr);
