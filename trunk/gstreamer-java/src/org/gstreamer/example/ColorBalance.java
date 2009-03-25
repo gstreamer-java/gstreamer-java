@@ -33,7 +33,7 @@ import org.gstreamer.interfaces.ColorBalance;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.interfaces.VideoOrientation;
 
-public class ColorBalanceExample {
+public class ColorBalance {
 	public static void main(String[] args) {
 		args = Gst.init("ColorBalance video test", args);
 
