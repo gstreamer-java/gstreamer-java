@@ -36,12 +36,16 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.elements.RGBDataSink;
+import org.gstreamer.interfaces.XOverlay;
+
+import com.sun.jna.Platform;
 
 public class VideoComponent extends Canvas {
 
 	private BufferedImage currentImage = null;
-	private final RGBDataSink videosink;
+	private final Element videosink;
 	private final Lock bufferLock = new ReentrantLock();
 	private boolean updatePending = false;
 	private int alpha = 255;
@@ -51,12 +55,41 @@ public class VideoComponent extends Canvas {
 	private boolean showOverlay = false;
 	private boolean showFPS = false;
 	private Color bgColor;
+	private boolean overlay;
 
+	/**
+	 * Creates a video component object
+	 * 
+	 * @param parent
+	 * @param style
+	 */
 	public VideoComponent(final Composite parent, int style) {
-		super(parent, style);
+		this(parent, style, false);
+	}
 
-		videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
-		videosink.setPassDirectBuffer(true);
+	/**
+	 * Creates a video component object
+	 * 
+	 * @param parent
+	 * @param style
+	 * @param overlay
+	 *            set true if you would like to use XOverlay output
+	 */
+	public VideoComponent(final Composite parent, int style, boolean overlay) {
+		super(parent, overlay ? style | SWT.EMBEDDED : style);
+		this.overlay = overlay;
+
+		if (overlay) {
+			videosink = ElementFactory.make(
+					Platform.isWindows() ? "directdrawsink" : "xvimagesink",
+					"OverlayVideoComponent");
+			XOverlay.wrap(videosink).setWindowID(this);
+			return;
+		}
+
+		RGBDataSink sink = new RGBDataSink("VideoComponent", new RGBListener());
+		sink.setPassDirectBuffer(true);
+		videosink = sink;
 
 		final Font font = new Font(getDisplay(), "Arial", 13, SWT.NORMAL);
 
@@ -72,7 +105,7 @@ public class VideoComponent extends Canvas {
 					int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
 					ImageData imgdata
 						= new ImageData(currentImage.getWidth(), currentImage.getHeight(), 24,
-										new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+								new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
 					imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
 
 					if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
@@ -125,30 +158,71 @@ public class VideoComponent extends Canvas {
 		});
 	}
 
+	/**
+	 * Retrieves the Gstreamer element, representing the video component
+	 * 
+	 * @return element
+	 */
 	public Element getElement() {
 		return videosink;
 	}
 
+	/**
+	 * Set to keep aspect ratio
+	 * 
+	 * @param keepAspect
+	 */
 	public void setKeepAspect(boolean keepAspect) {
-		this.keepAspect = keepAspect;
+		if (overlay)
+			videosink.set("force-aspect-ratio", true);
+		else
+			this.keepAspect = keepAspect;
 	}
 
+	/**
+	 * Set the aplpha value of the video component. It works fine when overlay
+	 * is turned off.
+	 * 
+	 * @param alpha
+	 */
 	public void setAlpha(int alpha) {
 		this.alpha = alpha;
 	}
 
+	/**
+	 * Set the overlay text of the video component. It works fine when overlay
+	 * is turned off.
+	 * 
+	 * @param text
+	 */
 	public void setOverlay(String text) {
 		this.ovText = text;
 	}
 
+	/**
+	 * Set show FPS of the video component. It works fine when overlay is turned
+	 * off.
+	 * 
+	 * @param bn
+	 */
 	public void showFPS(boolean bn) {
 		this.showFPS = bn;
 	}
 
+	/**
+	 * Set show overlay text. It works fine when overlay is turned off.
+	 * 
+	 * @param bn
+	 */
 	public void showOverlay(boolean bn) {
 		this.showOverlay = bn;
 	}
 
+	/**
+	 * Retrieves the alpha value of the video component
+	 * 
+	 * @return alpha value of the video component
+	 */
 	public int getAlpha() {
 		return alpha;
 	}
@@ -182,10 +256,20 @@ public class VideoComponent extends Canvas {
 		return currentImage;
 	}
 
+	/**
+	 * Sets the background color
+	 * 
+	 * @param bgColor
+	 */
 	public void setBackGroundColor(Color bgColor) {
 		this.bgColor = bgColor;
 	}
 
+	/**
+	 * Gets the background color
+	 * 
+	 * @param bgColor
+	 */
 	public Color getBackGroundColorColor() {
 		return bgColor;
 	}
@@ -203,7 +287,7 @@ public class VideoComponent extends Canvas {
 			try {
 				final BufferedImage renderImage = getBufferedImage(width,
 						height);
-				int[] pixels = ((DataBufferInt)renderImage.getRaster().getDataBuffer()).getData();
+				int[] pixels = ((DataBufferInt) renderImage.getRaster().getDataBuffer()).getData();
 				rgb.get(pixels, 0, width * height);
 				updatePending = true;
 			} finally {

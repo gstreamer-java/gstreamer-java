@@ -7,8 +7,7 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface GstXOverlayAPI extends Library {
-	GstXOverlayAPI INSTANCE = GstNative.load("gstinterfaces",
-			GstXOverlayAPI.class);
+	GstXOverlayAPI INSTANCE = GstNative.load("gstinterfaces", GstXOverlayAPI.class);
 
 	GType gst_x_overlay_get_type();
 

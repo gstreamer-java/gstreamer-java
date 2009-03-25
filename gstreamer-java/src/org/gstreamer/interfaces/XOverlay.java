@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2003 Ronald Bultje <rbultje@ronald.bitfreak.net>
  * 
@@ -19,29 +20,20 @@
 
 package org.gstreamer.interfaces;
 
+import org.eclipse.swt.SWT;
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstTunerAPI;
+import org.gstreamer.lowlevel.GstXOverlayAPI;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-import com.sun.jna.Pointer;
 
 /**
  * Interface for elements providing tuner operations
  */
 public class XOverlay extends GstInterface {
-    private static interface API extends GstTunerAPI {
-        void gst_x_overlay_set_xwindow_id(XOverlay overlay, NativeLong xwindow_id);
-        void gst_x_overlay_set_xwindow_id(XOverlay overlay, Pointer xwindow_id);
-
-        void gst_x_overlay_expose(XOverlay overlay);
-
-        GType gst_x_overlay_get_type();
-    }
-    private static final API gst = GstNative.load("gstinterfaces", API.class);
+    private static final GstXOverlayAPI gst = GstNative.load("gstinterfaces", GstXOverlayAPI.class);
     
     /**
      * Wraps the {@link Element} in a <tt>XOverlay</tt> interface
@@ -81,6 +73,22 @@ public class XOverlay extends GstInterface {
         } else {
             gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(Native.getComponentID(window)));
         }
+    }
+    
+    /**
+     * Sets the native window for the {@link Element} to use to display video.
+     *
+     * @param window A native window to use to display video, or <tt>null</tt> to
+     * stop using the previously set window.
+     */
+    public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
+    	//Composite style must be embedded
+        if (comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
+            gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
+            return;
+        }
+    	//TODO: Test on windows
+        gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(comp.embeddedHandle));
     }
     
     /**
