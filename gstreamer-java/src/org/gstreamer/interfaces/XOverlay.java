@@ -83,11 +83,11 @@ public class XOverlay extends GstInterface {
      */
     public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
     	//Composite style must be embedded
-        if (comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
+        if (!Platform.isLinux() || comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
             gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
             return;
         }
-    	//TODO: Test on windows
+    	//TODO: Test on windows and mac
         gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(comp.embeddedHandle));
     }
     

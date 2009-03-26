@@ -29,7 +29,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
-import org.gstreamer.interfaces.ColorBalance;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.interfaces.VideoOrientation;
 
@@ -57,7 +56,7 @@ public class ColorBalance {
 		vo.setHflip(false);
 		System.out.println("VideoOrientation: " + vo.getHflip(true));
 
-		ColorBalance cb = ColorBalance.wrap(videosrc);
+		org.gstreamer.interfaces.ColorBalance cb = org.gstreamer.interfaces.ColorBalance.wrap(videosrc);
 		List<ColorBalanceChannel> cbcList = cb.getChannelList();
 		for (ColorBalanceChannel cbc : cbcList) {
 			System.out.println("ColorBalance channels: " + cbc.getName() + " "
