@@ -36,6 +36,10 @@ import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Pointer;
 
+/**
+ * This bin encapsulates a pipeline that allows to encode RGB buffers into a video
+ * file. It uses the AppSrc element to inject the buffers into the gst pipeline.
+ */
 public class RGBDataFileSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private static final GlibAPI glib = GlibAPI.glib;
@@ -56,6 +60,20 @@ public class RGBDataFileSink extends Bin {
     private int frameCount;
     private int QUEUED_FRAMES;
 
+    /**
+     * Creates a new RGBDataFileSink.
+     *
+     * @param name The name used to identify this RGBDataFileSink.
+     * @param width The width of the buffers that will be sent.
+     * @param width The height of the buffers that will be sent.
+     * @param fps The framerate with which the buffers should be saved to file.
+     * @param encoderStr The name of the encoder to use.
+     * @param encoderStr The name of the encoder to use.
+     * @param encoderPropertyNames Array of property names for the encoder.
+     * @param encoderPropertyData Array of property values for the encoder.
+     * @param muxerStr The name of the muxer to use
+     * @param file Output file where the stream is saved to.
+     */
     public RGBDataFileSink(String name, int width, int height, int fps, String encoderStr, String[] encoderPropertyNames, Object[] encoderPropertyData, String muxerStr, File file) {
         super(initializer(gst.ptr_gst_bin_new(name)));
 
@@ -114,39 +132,73 @@ public class RGBDataFileSink extends Bin {
         sendingData = false;
     }
 
+    /**
+     * Pushes a buffer down the pipeline.
+     *
+     * @param buf The buffer to push. Actually, it is not immediatelly pushed into
+     * the gst pipeline, but it is added to a fifo linked list that holds the buffer
+     * temporarily until the AppSrc requests more data for its internal queue.
+     *
+     */
     public void pushRGBFrame(Buffer buf)
     {
         addBuffer(buf);
     }
 
+    /**
+     * Sets the state of the pipeline to PLAYING.
+     *
+     */
     public void start()
     {
         frameCount = 0;
         setState(State.PLAYING);
     }
 
+    /**
+     * Sets the state of the pipeline to PAUSED.
+     *
+     */
     public void stop()
     {
         setState(State.PAUSED);
         source.endOfStream();
     }
 
+    /**
+     * Sets the size of the AppSrc queue.
+     *
+     * @param nFrames Size of the queue expressed in number of frames.
+     */
     public void setQueueSize(int nFrames)
     {
         QUEUED_FRAMES = nFrames;
         source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
     }
 
+    /**
+     * Returns the current size of the AppSrc queue.
+     *
+     */
     public int getQueueSize()
     {
         return QUEUED_FRAMES;
     }
 
+    /**
+     * Returns the number of buffers currently stored in the fifo linked list (still
+     * not pushed down the pipeline).
+     *
+     */
     public int getNumQueuedFrames()
     {
         return bufferList.size();
     }
 
+    /**
+     * A listener class that handles the need-data signal from the AppSrc element.
+     *
+     */
     class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
         public void needData(Element elem, int size, Pointer userData)
         {
@@ -164,6 +216,10 @@ public class RGBDataFileSink extends Bin {
         }
     }
 
+    /**
+     * A listener class that handles the enough-data signal from the AppSrc element.
+     *
+     */
     class AppSrcEnoughDataListener implements AppSrc.ENOUGH_DATA {
         public void enoughData(Element elem, Pointer userData)
         {
@@ -176,11 +232,19 @@ public class RGBDataFileSink extends Bin {
         }
     }
 
+    /**
+     * Adds a buffer to the fifo linked list.
+     *
+     */
     private void addBuffer(Buffer buf)
     {
         bufferList.add(buf);
     }
 
+    /**
+     * It pushes a buffer into the gst pipeline.
+     *
+     */
     private void pushBuffer()
     {
         if (sendingData)
@@ -200,6 +264,10 @@ public class RGBDataFileSink extends Bin {
             }
     }
 
+    /**
+     * The runnable thread that keeps dispatching buffers to the gst pipeline.
+     *
+     */
     class BufferDispatcher implements Runnable {
         public void run()
         {
