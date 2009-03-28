@@ -7,11 +7,11 @@
   * Added return value for seek methods:
   http://code.google.com/p/gstreamer-java/source/detail?r=272
   * added unimplemented interfaces:
-    # ColorBalance and ColorBalanceChannel
+    # !ColorBalance and !ColorBalanceChannel
     # Navigation
-    # VideoOrientation
+    # !VideoOrientation
     http://code.google.com/p/gstreamer-java/source/detail?r=284
-    # PropertyProbe
+    # !PropertyProbe
     http://code.google.com/p/gstreamer-java/source/detail?r=269
   * Added xoverlay support for SWT's VideoComponent and enhance the XOverlay interface:
   http://code.google.com/p/gstreamer-java/source/detail?r=285
