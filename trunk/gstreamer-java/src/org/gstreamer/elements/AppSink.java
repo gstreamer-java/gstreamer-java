@@ -157,11 +157,10 @@ public class AppSink extends BaseSink {
     public void disconnect(NEW_BUFFER listener) {
         disconnect(NEW_BUFFER.class, listener);
     }
-
+    
     /**
      * Signal emitted when this {@link AppSink} when a new buffer is ready.
      */
-
     public static interface NEW_PREROLL {
         /**
          *
@@ -179,7 +178,6 @@ public class AppSink extends BaseSink {
      *
      * @param listener
      */
-
     public void connect(final NEW_PREROLL listener) {
         connect("new-preroll", NEW_PREROLL.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
