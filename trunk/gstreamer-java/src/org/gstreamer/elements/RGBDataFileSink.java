@@ -20,7 +20,8 @@ package org.gstreamer.elements;
 
 import java.io.File;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import com.sun.jna.Pointer;
 
 import org.gstreamer.Gst;
 import org.gstreamer.ClockTime;
@@ -34,7 +35,6 @@ import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
-import com.sun.jna.Pointer;
 
 /**
  * This bin encapsulates a pipeline that allows to encode RGB buffers into a video
@@ -59,6 +59,7 @@ public class RGBDataFileSink extends Bin {
     private boolean sendingData;
     private int frameCount;
     private int QUEUED_FRAMES;
+    private ScheduledExecutorService executor;
 
     /**
      * Creates a new RGBDataFileSink.
@@ -78,7 +79,7 @@ public class RGBDataFileSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
 
         bufferList = new LinkedList<Buffer>();
-
+ 
         QUEUED_FRAMES = 30;
 
         sourceWidth = width;
@@ -103,8 +104,7 @@ public class RGBDataFileSink extends Bin {
         source.connect(enoughDataListener);
 
         bufferDispatcher = new BufferDispatcher();
-        ExecutorService exec = Gst.getExecutorService();
-        exec.submit(bufferDispatcher);
+        executor = Gst.getScheduledExecutorService();
 
         Element formatConverter = ElementFactory.make("ffmpegcolorspace", "formatConverter");
         Element formatFilter = ElementFactory.make("capsfilter", "formatFilter");
@@ -143,6 +143,13 @@ public class RGBDataFileSink extends Bin {
     public void pushRGBFrame(Buffer buf)
     {
         addBuffer(buf);
+
+        // Find the way to set bufferDispatcher only once but gets executed periodically
+        // See the documentation of
+        // public static ScheduledExecutorService newSingleThreadScheduledExecutor(ThreadFactory threadFactory)
+        // "Creates a single-threaded executor that can schedule commands
+        // to run after a given delay, or to execute periodically..."
+        executor.execute(bufferDispatcher);
     }
 
     /**
@@ -265,20 +272,13 @@ public class RGBDataFileSink extends Bin {
     }
 
     /**
-     * The runnable thread that keeps dispatching buffers to the gst pipeline.
+     * The runnable that pushes one buffer down the gst pipeline.
      *
      */
     class BufferDispatcher implements Runnable {
         public void run()
         {
-            while (true) {
-                pushBuffer();
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            pushBuffer();
         }
     }
 }
