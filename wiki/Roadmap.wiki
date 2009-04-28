@@ -1,9 +1,0 @@
-#summary GStreamer-java roadmap/to-do list.
-
-= Roadmap =
-
-== Release 1.2 (late May 09) ==
-
-  * Add eclipse project (keep netbeans?)
-  * New element: !RGBDataAppSink.
-  * New element: !PlayBin2.
