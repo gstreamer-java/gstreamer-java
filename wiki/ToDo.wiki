@@ -1,0 +1,9 @@
+#summary GStreamer-java to-do list.
+
+= To do =
+
+== Release 1.2 () ==
+
+  * Add eclipse project (keep netbeans?)
+  * New element: !RGBDataAppSink.
+  * New element: !PlayBin2. 
