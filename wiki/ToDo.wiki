@@ -2,7 +2,7 @@
 
 = To do =
 
-== Release 1.2 () ==
+== Release 1.2 ==
 
   * Add eclipse project (keep netbeans?)
   * New element: !RGBDataAppSink.
