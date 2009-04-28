@@ -5,5 +5,5 @@
 == Release 1.2 (late May 09) ==
 
   * Add eclipse project (keep netbeans?)
-  * New element: RGBDataAppSink.
-  * New element: PlayBin2.
+  * New element: !RGBDataAppSink.
+  * New element: !PlayBin2.
