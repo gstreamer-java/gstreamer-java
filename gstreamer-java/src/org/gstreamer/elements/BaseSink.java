@@ -20,6 +20,7 @@ package org.gstreamer.elements;
 
 import java.util.concurrent.TimeUnit;
 
+import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.BaseAPI;
 

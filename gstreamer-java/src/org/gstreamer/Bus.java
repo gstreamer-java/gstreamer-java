@@ -315,7 +315,7 @@ public class Bus extends GstObject {
          */
         public void asyncDone(GstObject source);
     }
-    
+
     /**
      * Catch all signals emitted on the Bus.  
      * <p>
@@ -334,7 +334,7 @@ public class Bus extends GstObject {
          */
         public void busMessage(Bus bus, Message message);
     }
-    
+
     /**
      * Add a listener for end-of-stream messages.
      * 

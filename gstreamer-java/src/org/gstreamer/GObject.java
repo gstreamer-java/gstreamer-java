@@ -1,4 +1,5 @@
-/* 
+/*
+ * Copyright (c) 2009 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -43,6 +44,8 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
@@ -194,10 +197,37 @@ public abstract class GObject extends RefCountedObject {
             return gvalue.g_value_get_int(transform(propValue, GType.INT));
         } else if (gvalue.g_value_type_transformable(propType, GType.INT64)) {
             return gvalue.g_value_get_int64(transform(propValue, GType.INT64));
-        } else {
+        }
+        else {
             throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
         }
     }
+
+    public Pointer getPointer(String property) {
+        logger.entering("GObject", "getPointer", new Object[] { property });
+        GObjectAPI.GParamSpec propertySpec = findProperty(property);
+        if (propertySpec == null) {
+            throw new IllegalArgumentException("Unknown property: " + property);
+        }
+
+        PointerByReference refPtr = new PointerByReference();
+        gobj.g_object_get(this, property, refPtr, null);
+
+        if (refPtr != null) {
+
+            Pointer ptr = refPtr.getValue();
+
+            if (ptr == null) {
+                throw new IllegalArgumentException("Referenced value is NULL.");
+            }
+
+            return ptr;
+        }
+        else {
+            throw new IllegalArgumentException("Got NULL pointer for property="+property);
+        }
+    }
+    
     private static GValue transform(GValue src, GType dstType) {
         GValue dst = new GValue();
         gvalue.g_value_init(dst, dstType);
@@ -314,6 +344,11 @@ public abstract class GObject extends RefCountedObject {
         logger.entering("GObject", "g_signal_connect", new Object[] { signal, callback });
         return gobj.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
+
+    private GList objectFor(Pointer ptr) {
+        return GList.valueOf(ptr);
+    }
+
     abstract protected class GCallback {
         protected final Callback cb;
         protected final NativeLong id;

@@ -37,6 +37,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 @SuppressWarnings("serial")
 public interface BaseAPI extends Library {
@@ -50,6 +51,7 @@ public interface BaseAPI extends Library {
     GType gst_base_src_get_type();
     GType gst_base_sink_get_type();
     GType gst_base_transform_get_type();
+    
     public final static class GstBaseSrcStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
 
