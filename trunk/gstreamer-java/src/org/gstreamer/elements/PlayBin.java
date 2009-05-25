@@ -18,15 +18,20 @@
 
 package org.gstreamer.elements;
 
+import com.sun.jna.Pointer;
 import java.io.File;
 import java.net.URI;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.gstreamer.Bin;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.StreamInfo;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 
 /**
  * Playbin provides a stand-alone everything-in-one abstraction for an audio 
@@ -37,7 +42,7 @@ import org.gstreamer.Pipeline;
  * <li>
  * automatic file type recognition and based on that automatic
  * selection and usage of the right audio/video/subtitle demuxers/decoders
- * <li>visualisations for audio files
+ * <li> visualisations for audio files
  * <li> subtitle support for video files
  * <li> stream selection between different audio/subtitles streams
  * <li> meta info (tag) extraction
@@ -369,5 +374,33 @@ public class PlayBin extends Pipeline {
     public double getVolume() {
         return ((Number) get("volume")).doubleValue();
     }
-    
+
+    /**
+     * Returns a list with with specific meta information like width/height/framerate
+     * of video streams or samplerate/number of channels of audio streams.
+     * This stream information from the "stream-info" property is best queried
+     * once playbin has changed into PAUSED or PLAYING state (which can be detected
+     * via a state-changed message on the GstBus where old_state=READY and new_state=PAUSED),
+     * since before that the list might not be complete yet or not contain all
+     * available information (like language-codes).
+     */
+    public List<StreamInfo> getStreamInfo() {
+        Pointer ptr = getPointer("stream-info");
+        if (ptr != null) {
+            GList glist = GList.valueOf(ptr);
+            if (glist == null) {
+                return null;
+            }
+            List<StreamInfo> list = new ArrayList<StreamInfo>();
+            GList next = glist;
+            while (next != null) {
+                if (next.data != null) {
+                    list.add(new StreamInfo(next.data, true, true));
+                }
+                next = next.next();
+            }
+            return list;
+        }
+        else return null;
+    }
 }

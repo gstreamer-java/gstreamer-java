@@ -98,6 +98,15 @@ public class RGBDataAppSink extends Bin {
     }
 
     /**
+     * Gets the <tt>Caps</tt> configured on this <tt>data sink</tt>
+     *
+     * @return The caps configured on this <tt>sink</tt>
+     */
+    public Caps getCaps() {
+        return sink.getCaps();
+    }
+
+    /**
      * A listener class that handles the new-buffer signal from the AppSink element.
      *
      */

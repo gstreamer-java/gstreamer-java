@@ -106,20 +106,26 @@ public interface GlibAPI extends Library {
     Pointer g_date_new_dmy(int day, int month, int year);
     Pointer g_date_new_julian(int julian_day);
     void g_date_free(Pointer date);
-    
+
     public final static class GList extends com.sun.jna.Structure {
         public volatile Pointer data;
         public volatile Pointer _next;
         public volatile Pointer _prev;
-        public GList() {            
+        public GList() {
+            clear();
         }
-        private GList(Pointer pointer) {
-            useMemory(pointer);
+        public GList(Pointer ptr) {
+            //data = ptr.getPointer(0);
+            //_next = ptr.getPointer(4);
+            //_prev = ptr.getPointer(8);
+
+            useMemory(ptr);
             read();
         }
-        private static GList valueOf(Pointer ptr) {
+        public static GList valueOf(Pointer ptr) {
             return ptr != null ? new GList(ptr) : null;
         }
+
         public GList next() {
             return valueOf(_next);
         }

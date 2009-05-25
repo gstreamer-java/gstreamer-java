@@ -100,7 +100,7 @@ public class RGBDataSink extends Bin {
     public BaseSink getSinkElement() {
         return videosink;
     }
-    
+
     class VideoHandoffListener implements Element.HANDOFF {
         public void handoff(Element element, Buffer buffer, Pad pad) {
             Caps caps = buffer.getCaps();

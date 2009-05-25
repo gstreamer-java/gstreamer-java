@@ -312,7 +312,6 @@ public class Pipeline extends Bin {
         return unit.convert(queryPosition(Format.TIME), TimeUnit.NANOSECONDS);
     }
     
-    
     /**
      * Gets the current position in terms of the specified {@link Format}.
      * 
@@ -347,7 +346,20 @@ public class Pipeline extends Bin {
         gst.gst_element_query_duration(this, fmt, duration);
         return unit.convert(duration[0], TimeUnit.NANOSECONDS);
     }
-    
+
+    /**
+     * Gets the duration of the current media stream in terms of the specified {@link Format}.
+     * 
+     * @param format the {@code Format} to return the duration in.
+     * @return The total duration of the current media stream.
+     */
+    public long queryDuration(Format format) {
+        Format[] fmt = { format };
+        long[] duration = { 0 };
+        gst.gst_element_query_duration(this, fmt, duration);
+        return duration[0];
+    }
+
     /**
      * Tests if the Pipeline is currently playing.
      * 
