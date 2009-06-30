@@ -316,13 +316,12 @@ public class Pipeline extends Bin {
      * Gets the current position in terms of the specified {@link Format}.
      * 
      * @param format The {@link Format} to return the position in.
-     * @return The current position.
+     * @return The current position or -1 if the query failed. 
      */
     public long queryPosition(Format format) {
         Format[] fmt = { format };
         long[] pos = { 0 };
-        gst.gst_element_query_position(this, fmt, pos);
-        return pos[0];
+        return gst.gst_element_query_position(this, fmt, pos) ? pos[0] : -1L;
     }
     
     /**
