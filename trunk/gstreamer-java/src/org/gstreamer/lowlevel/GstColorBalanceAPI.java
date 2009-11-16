@@ -44,21 +44,19 @@ public interface GstColorBalanceAPI extends Library {
 		public volatile int max_value;
 
 		public String getLabel() {
-			return label;
+			return (String) readField("label");
 		}
 
 		public int getMinValue() {
-			return min_value;
+			return (Integer) readField("min_value");
 		}
 
 		public int getMaxValue() {
-			return max_value;
+			return (Integer) readField("max_value");
 		}
 
 		public void read() {}
-
 		public void write() {}
-
 		public ColorBalanceChannelStruct(Pointer ptr) {
 			useMemory(ptr);
 		}

@@ -36,16 +36,12 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.gstreamer.Element;
-import org.gstreamer.ElementFactory;
 import org.gstreamer.elements.RGBDataSink;
-import org.gstreamer.interfaces.XOverlay;
-
-import com.sun.jna.Platform;
 
 public class VideoComponent extends Canvas {
 
 	private BufferedImage currentImage = null;
-	private final Element videosink;
+	private final RGBDataSink videosink;
 	private final Lock bufferLock = new ReentrantLock();
 	private boolean updatePending = false;
 	private int alpha = 255;
@@ -55,41 +51,12 @@ public class VideoComponent extends Canvas {
 	private boolean showOverlay = false;
 	private boolean showFPS = false;
 	private Color bgColor;
-	private boolean overlay;
 
-	/**
-	 * Creates a video component object
-	 * 
-	 * @param parent
-	 * @param style
-	 */
 	public VideoComponent(final Composite parent, int style) {
-		this(parent, style, false);
-	}
+		super(parent, style);
 
-	/**
-	 * Creates a video component object
-	 * 
-	 * @param parent
-	 * @param style
-	 * @param overlay
-	 *            set true if you would like to use XOverlay output
-	 */
-	public VideoComponent(final Composite parent, int style, boolean overlay) {
-		super(parent, overlay ? style | SWT.EMBEDDED : style);
-		this.overlay = overlay;
-
-		if (overlay) {
-			videosink = ElementFactory.make(
-					Platform.isWindows() ? "directdrawsink" : "xvimagesink",
-					"OverlayVideoComponent");
-			XOverlay.wrap(videosink).setWindowID(this);
-			return;
-		}
-
-		RGBDataSink sink = new RGBDataSink("VideoComponent", new RGBListener());
-		sink.setPassDirectBuffer(true);
-		videosink = sink;
+		videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
+		videosink.setPassDirectBuffer(true);
 
 		final Font font = new Font(getDisplay(), "Arial", 13, SWT.NORMAL);
 
@@ -105,7 +72,7 @@ public class VideoComponent extends Canvas {
 					int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
 					ImageData imgdata
 						= new ImageData(currentImage.getWidth(), currentImage.getHeight(), 24,
-								new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+										new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
 					imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
 
 					if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
@@ -173,9 +140,6 @@ public class VideoComponent extends Canvas {
 	 * @param keepAspect
 	 */
 	public void setKeepAspect(boolean keepAspect) {
-		if (overlay)
-			videosink.set("force-aspect-ratio", true);
-		else
 			this.keepAspect = keepAspect;
 	}
 

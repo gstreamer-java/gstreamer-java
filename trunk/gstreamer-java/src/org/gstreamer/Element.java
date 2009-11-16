@@ -346,6 +346,15 @@ public class Element extends GstObject {
     }
     
     /**
+     * Tries to change the state of the element to the same as its parent.
+     * If this function returns false, the state of element is undefined.
+     * @return true, if the element's state could be synced to the parent's state. MT safe.
+     */
+    public boolean syncStateWithParent() {
+    	return gst.gst_element_sync_state_with_parent(this);
+    }
+    
+    /**
      * Retrieves the factory that was used to create this element.
      * @return the {@link ElementFactory} used for creating this element.
      */

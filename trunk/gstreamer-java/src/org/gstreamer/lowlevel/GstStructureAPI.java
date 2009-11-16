@@ -19,6 +19,7 @@
 package org.gstreamer.lowlevel;
 
 import org.gstreamer.Structure;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 
@@ -68,5 +69,6 @@ public interface GstStructureAPI extends com.sun.jna.Library {
     boolean gst_structure_get_fraction(Structure structure, String fieldname,
 							    int[] value_numerator,
 							    int[] value_denominator);
+    GValue gst_structure_get_value (Structure structure, String fieldname);
     void gst_structure_set(Structure structure, String fieldname, Object... args);
 }

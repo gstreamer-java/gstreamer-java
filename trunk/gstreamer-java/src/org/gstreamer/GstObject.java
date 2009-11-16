@@ -126,6 +126,10 @@ public class GstObject extends GObject {
         gst.gst_object_sink(this);
     }
     
+    public GstObject getParent() {
+    	return gst.gst_object_get_parent(this);
+    }
+    
     public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
         return GstObject.objectFor(ptr, defaultClass, true);
     }

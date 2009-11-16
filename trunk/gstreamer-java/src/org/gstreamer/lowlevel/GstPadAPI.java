@@ -69,6 +69,7 @@ public interface GstPadAPI extends com.sun.jna.Library {
     boolean gst_pad_is_blocking(Pad pad);
     /* get_pad_template returns a non-refcounted PadTemplate */
     PadTemplate gst_pad_get_pad_template(Pad pad);
+    boolean gst_pad_set_blocked_async(Pad pad, boolean blocked, PadBlockCallback callback, Pointer userData);
     
     /* capsnego function for connected/unconnected pads */
     @CallerOwnsReturn Caps gst_pad_get_caps(Pad  pad);
@@ -99,12 +100,16 @@ public interface GstPadAPI extends com.sun.jna.Library {
     }
     void gst_pad_set_fixatecaps_function(Pad pad, PadFixateCaps fixate);
     
+    public static interface PadBlockCallback extends GstCallback {
+        void callback(Pad pad, boolean blocked, Pointer unused);
+    }
+
     /* probes */
     public static interface PadDataProbe extends GstCallback {
         void callback(Pad pad, Buffer buffer, Pointer unused);
     }
     public static interface PadEventProbe extends GstCallback {
-        void callback(Pad pad, Event ev, Pointer unused);
+        boolean callback(Pad pad, Event ev, Pointer unused);
     }
 
     NativeLong /* gulong */ gst_pad_add_data_probe(Pad pad, PadDataProbe handler,

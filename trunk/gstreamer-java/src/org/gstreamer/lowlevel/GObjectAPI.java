@@ -72,7 +72,7 @@ public interface GObjectAPI extends Library {
     void g_object_unref(GObject object);
 
     GParamSpec g_object_class_find_property(GObjectClass oclass, String property_name);
-    GParamSpec g_object_class_find_property(Pointer oclass, String property_name);
+    Pointer g_object_class_find_property(Pointer oclass, String property_name);
     GQuark g_quark_try_string(String string);
     GQuark g_quark_from_static_string(String string);
     GQuark g_quark_from_string(String string);
@@ -212,6 +212,167 @@ public interface GObjectAPI extends Library {
 
         /* value handling */
         public volatile /* GTypeValueTable */ Pointer value_table;                
+    }
+
+    static abstract class GParamSpecTypeSpecific extends com.sun.jna.Structure {
+    	public abstract Object getMinimum();
+    	public abstract Object getMaximum();
+    	public abstract Object getDefault();
+    	
+        public GParamSpecTypeSpecific() { clear(); }
+    }
+    static class GParamSpecBoolean extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile boolean default_value;
+    	
+    	public Object getMinimum() { return null; }
+    	public Object getMaximum() { return null; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecBoolean(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecInt extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile int minimum;
+    	public volatile int maximum;
+    	public volatile int default_value;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecInt(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecUInt extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile int minimum;
+    	public volatile int maximum;
+    	public volatile int default_value;
+    	
+    	public Object getMinimum() { return ((long)minimum)&0xffffff; }
+    	public Object getMaximum() { return ((long)maximum)&0xffffff; }
+    	public Object getDefault() { return ((long)default_value)&0xffffff; }
+    	
+        public GParamSpecUInt(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecChar extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile byte minimum;
+    	public volatile byte maximum;
+    	public volatile byte default_value;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecChar(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecUChar extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile byte minimum;
+    	public volatile byte maximum;
+    	public volatile byte default_value;
+    	
+    	public Object getMinimum() { return ((short)minimum)&0xff; }
+    	public Object getMaximum() { return ((short)maximum)&0xff; }
+    	public Object getDefault() { return ((short)default_value)&0xff; }
+    	
+        public GParamSpecUChar(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecLong extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile NativeLong minimum;
+    	public volatile NativeLong maximum;
+    	public volatile NativeLong default_value;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecLong(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecInt64 extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile long minimum;
+    	public volatile long maximum;
+    	public volatile long default_value;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecInt64(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecFloat extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile float minimum;
+    	public volatile float maximum;
+    	public volatile float default_value;
+    	public volatile float epsilon;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecFloat(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecDouble extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile double minimum;
+    	public volatile double maximum;
+    	public volatile double default_value;
+    	public volatile double epsilon;
+    	
+    	public Object getMinimum() { return minimum; }
+    	public Object getMaximum() { return maximum; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecDouble(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+    }
+    static class GParamSpecString extends GParamSpecTypeSpecific {
+    	public volatile GParamSpec parent_instance;
+    	public volatile String default_value;
+    	public volatile String cset_first;
+    	public volatile String cset_nth;
+    	public volatile byte substitutor;
+    	public volatile int null_fold_if_empty_ensure_non_null;
+
+    	
+    	public Object getMinimum() { return null; }
+    	public Object getMaximum() { return null; }
+    	public Object getDefault() { return default_value; }
+    	
+        public GParamSpecString(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
     }
     
     static class GParamSpec extends com.sun.jna.Structure {

@@ -20,11 +20,12 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstColorBalanceAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Pointer;
 
 public class ColorBalanceChannel extends GObject {
-	private static final GstColorBalanceAPI gst = GstColorBalanceAPI.INSTANCE;
+	private static final GstColorBalanceAPI gst = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
 	private final GstColorBalanceAPI.ColorBalanceChannelStruct struct;
 	private final ColorBalance colorBalance;
 
@@ -46,7 +47,7 @@ public class ColorBalanceChannel extends GObject {
 	}
 
 	public String getName() {
-		return struct.label;
+		return struct.getLabel();
 	}
 
 	public int getMinValue() {
@@ -54,7 +55,7 @@ public class ColorBalanceChannel extends GObject {
 	}
 
 	public int getMaxValue() {
-		return struct.getMinValue();
+		return struct.getMaxValue();
 	}
 
 	public void setValue(int value) {

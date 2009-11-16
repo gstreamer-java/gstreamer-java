@@ -18,6 +18,8 @@
 
 package org.gstreamer.lowlevel;
 
+import org.gstreamer.lowlevel.GValueAPI.GValue;
+
 /**
  * GstStructure functions
  */
@@ -31,4 +33,14 @@ public interface GstValueAPI extends com.sun.jna.Library {
     GType gst_value_list_get_type();
     GType gst_fraction_get_type();
     GType gst_date_get_type();
+    
+    int gst_value_get_fraction_numerator(GValue  value);
+    int gst_value_get_fraction_denominator(GValue value);
+    GValue gst_value_get_fraction_range_min(GValue value);
+    GValue gst_value_get_fraction_range_max(GValue value);
+    double gst_value_get_double_range_min(GValue value);
+    double gst_value_get_double_range_max(GValue value);
+    int gst_value_get_int_range_min(GValue value);
+    int gst_value_get_int_range_max(GValue value);
+
 }
