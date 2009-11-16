@@ -19,57 +19,49 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
 package org.gstreamer.example;
 
-import java.io.File;
+import java.util.List;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
-import org.gstreamer.elements.PlayBin;
-import org.gstreamer.swt.VideoComponent;
+import org.gstreamer.Pipeline;
+import org.gstreamer.State;
+import org.gstreamer.interfaces.Tuner;
+import org.gstreamer.interfaces.TunerChannel;
 
-public class SWTOverlayPlayer {
+public class TunerTest {
 	public static void main(String[] args) {
-		args = Gst.init("SWT Player", args);
+		args = Gst.init("ColorBalance video test", args);
 
-		args = Gst.init("SWTOverlayPlayer", args);
-		if (args.length < 1) {
-			System.err.println("Usage: SwingPlayer <filename>");
-			System.exit(1);
+		Pipeline pipe = new Pipeline("pipeline");
+		final Element videosrc = ElementFactory.make("v4l2src", "source");
+		videosrc.set("device", "/dev/video0");
+		final Element videosink = ElementFactory.make("xvimagesink", "xv");
+
+		pipe.addMany(videosrc, videosink);
+		Element.linkMany(videosrc, videosink);
+						
+		pipe.setState(State.PLAYING);
+
+		Tuner tun = Tuner.wrap(videosrc);
+		
+		List<TunerChannel> chList = tun.getChannelList();
+		
+		for (TunerChannel ch: chList) {
+			System.out.println("Channel: "+ch.isTuningChannel());
 		}
-
-		PlayBin play = new PlayBin("swt player");
-		play.setInputFile(new File(args[0]));
-
-		try {
-			Display display = new Display();
-			Shell shell = new Shell(display);
-			shell.setSize(640, 480);
-			shell.setLayout(new GridLayout(1, false));
-
-			shell.setText("SWT Video Test");
-			final VideoComponent component = new VideoComponent(shell, SWT.NONE, true);
-			component.getElement().setName("video");
-			component.setKeepAspect(true);
-			component.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-			play.setVideoSink(component.getElement());
-			play.play();
-
-			shell.open();
-
-			while (!shell.isDisposed()) {
-				if (!display.readAndDispatch())
-					display.sleep();
-			}
-			display.dispose();
-
-		} catch (Exception e) {
+		
+		for (int i=0;;i++) {
+			tun.setChannel(chList.get(i%chList.size()));
+			try {
+				Thread.sleep(1000);
+			} catch (Exception e) {
+			}			
 		}
+		
+		
 	}
+
 }

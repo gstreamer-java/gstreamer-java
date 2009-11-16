@@ -1,4 +1,5 @@
 /* 
+ * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm> 
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2003 Ronald Bultje <rbultje@ronald.bitfreak.net>
  * 
@@ -25,7 +26,6 @@ import org.gstreamer.Element;
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTunerAPI;
-import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
@@ -34,14 +34,11 @@ import com.sun.jna.Pointer;
  * Interface for elements providing tuner operations
  */
 public class Tuner extends GstInterface {
-    private static interface API extends GstTunerAPI {
-        Pointer gst_tuner_get_channel(Tuner tuner);
-        GList gst_tuner_list_channels(Tuner tuner);
-        GList gst_tuner_list_norms(Tuner tuner);
-        Pointer gst_tuner_find_channel_by_name(Tuner tuner, String channel);
+    //private static final GstTunerAPI gst = GstNative.load("gstinterfaces", GstTunerAPI.class);
+	private static final GstTunerAPI gst;
+    static{
+    	gst = GstTunerAPI.INSTANCE;
     }
-    private static final API gst = GstNative.load("gstinterfaces", API.class);
-    
     /**
      * Wraps the {@link Element} in a <tt>Tuner</tt> interface
      * 

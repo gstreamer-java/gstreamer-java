@@ -56,6 +56,13 @@ import com.sun.jna.Pointer;
  */
 public class Bin extends Element {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
+    
+    public static final int DEBUG_GRAPH_SHOW_MEDIA_TYPE         = (1<<0);
+    public static final int DEBUG_GRAPH_SHOW_CAPS_DETAILS       = (1<<1);
+    public static final int DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS = (1<<2);
+    public static final int DEBUG_GRAPH_SHOW_STATES             = (1<<3);
+    public static final int DEBUG_GRAPH_SHOW_ALL                = ((1<<4)-1);
+    
     public Bin(Initializer init) { 
         super(init);
     }
@@ -204,6 +211,35 @@ public class Bin extends Element {
      */
     public <T extends Element> T getElementByInterface(Class<T> iface) {
         return iface.cast(gst.gst_bin_get_by_interface(this, GstTypes.typeFor(iface)));
+    }
+    
+    /**
+     * Calls {@link #debugToDotFile(int, String, boolean)} without timestamping
+     */
+    public void debugToDotFile(int details, String fileName) {
+    	debugToDotFile(details, fileName, false);
+    }
+    
+    /**
+     * To aid debugging applications one can use this method to write out the whole
+     * network of gstreamer elements that form the pipeline into an dot file.
+     * This file can be processed with graphviz to get an image.
+     * e.g. dot -Tpng -oimage.png graph_lowlevel.dot
+     * 
+     * The function is only active if gstreamer is configured with
+     * "--gst-enable-gst-debug" and the environment variable
+     * GST_DEBUG_DUMP_DOT_DIR is set to a basepath (e.g. /tmp).
+     *
+     * @param details to show in the graph, e.g. DEBUG_GRAPH_SHOW_ALL
+     * @param fileName output base filename (e.g. "myplayer")
+     * @param timestampFileName if true it adds the current timestamp
+     * 		  to the filename, so that it can be used to take multiple snapshots.
+     */
+    public void debugToDotFile(int details, String fileName, boolean timestampFileName) {
+    	if (timestampFileName)
+    		gst._gst_debug_bin_to_dot_file_with_ts(this, details, fileName);
+    	else 
+    		gst._gst_debug_bin_to_dot_file(this, details, fileName);	
     }
     
     /**

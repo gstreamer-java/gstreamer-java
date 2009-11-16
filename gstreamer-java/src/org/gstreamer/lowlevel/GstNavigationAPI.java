@@ -26,7 +26,7 @@ import com.sun.jna.Library;
 public interface GstNavigationAPI extends Library {
 	GstNavigationAPI INSTANCE = GstNative.load("gstinterfaces", GstNavigationAPI.class);
 
-	GType gst_color_balance_get_type();
+	GType gst_navigation_get_type();
 
 	/* vitrual class functions */
 	void gst_navigation_send_event(Navigation navigation, Structure structure);

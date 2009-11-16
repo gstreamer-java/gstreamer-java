@@ -106,8 +106,9 @@ public class PadTest {
 
         Pad.EVENT_PROBE event_probe = new Pad.EVENT_PROBE() {
 
-            public void eventReceived(Pad pad, Event event) {
+            public boolean eventReceived(Pad pad, Event event) {
                 e.set(event);
+                return false;
             }
         };
 

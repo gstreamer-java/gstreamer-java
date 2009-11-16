@@ -1,4 +1,5 @@
-/* 
+/*
+ * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm> 
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -19,6 +20,7 @@
 package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTunerAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
@@ -29,7 +31,9 @@ import com.sun.jna.Pointer;
  *
  */
 public class TunerChannel extends GObject {
-    private static final GstTunerAPI gst = GstTunerAPI.INSTANCE;
+	//private static final GstTunerAPI gst = GstNative.load("gstinterfaces", GstTunerAPI.class);
+	private static final GstTunerAPI gst = GstTunerAPI.INSTANCE;
+    
     private final GstTunerAPI.TunerChannelStruct struct;
     private final Tuner tuner;
     

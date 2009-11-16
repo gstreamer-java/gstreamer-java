@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm>
  * Copyright (c) 2009 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
@@ -40,12 +41,12 @@ import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-import org.gstreamer.lowlevel.GlibAPI.GList;
 
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
@@ -146,6 +147,48 @@ public abstract class GObject extends RefCountedObject {
         }
         gobj.g_object_set_property(this, property, propValue);
         gvalue.g_value_unset(propValue); // Release any memory
+    }
+
+    /**
+     * Gets the default value set to <tt>GObject</tt> property.
+     * @param property The name of the property.
+     * @return A java value representing the <tt>GObject</tt> property's default value.
+     */
+    public Object getPropertyDefaultValue(String property) {
+        GObjectAPI.GParamSpec propertySpec = findProperty(property);
+        if (propertySpec == null) {
+            throw new IllegalArgumentException("Unknown property: " + property);
+        }
+        final GType propType = propertySpec.value_type;
+        return findProperty(property, propType).getDefault();
+    }
+    
+    /**
+     * Gets the minimum value should be set to <tt>GObject</tt> property.
+     * @param property The name of the property.
+     * @return A java value representing the <tt>GObject</tt> property's minimum value.
+     */
+    public Object getPropertyMinimumValue(String property) {
+        GObjectAPI.GParamSpec propertySpec = findProperty(property);
+        if (propertySpec == null) {
+            throw new IllegalArgumentException("Unknown property: " + property);
+        }
+        final GType propType = propertySpec.value_type;
+        return findProperty(property, propType).getMinimum();
+    }
+    
+    /**
+     * Gets the maximum value should be set to <tt>GObject</tt> property.
+     * @param property The name of the property.
+     * @return A java value representing the <tt>GObject</tt> property's maximum value.
+     */
+    public Object getPropertyMaximumValue(String property) {
+        GObjectAPI.GParamSpec propertySpec = findProperty(property);
+        if (propertySpec == null) {
+            throw new IllegalArgumentException("Unknown property: " + property);
+        }
+        final GType propType = propertySpec.value_type;
+        return findProperty(property, propType).getMaximum();
     }
     
     /**
@@ -582,7 +625,32 @@ public abstract class GObject extends RefCountedObject {
     }
 
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
-        return gobj.g_object_class_find_property(handle().getPointer(0), propertyName);
+        return new GObjectAPI.GParamSpec(gobj.g_object_class_find_property(handle().getPointer(0), propertyName));
+    }
+    
+    private GObjectAPI.GParamSpecTypeSpecific findProperty(String propertyName, GType type) {
+    	Pointer ptr = gobj.g_object_class_find_property(handle().getPointer(0), propertyName);
+    	if (type.equals(GType.INT))
+    		return new GObjectAPI.GParamSpecInt(ptr);
+    	else if(type.equals(GType.UINT))
+    		return new GObjectAPI.GParamSpecUInt(ptr);
+    	else if(type.equals(GType.CHAR))
+    		return new GObjectAPI.GParamSpecChar(ptr);
+    	else if(type.equals(GType.UCHAR))
+    		return new GObjectAPI.GParamSpecUChar(ptr);
+    	else if(type.equals(GType.BOOLEAN))
+    		return new GObjectAPI.GParamSpecBoolean(ptr);
+    	else if(type.equals(GType.LONG))
+    		return new GObjectAPI.GParamSpecLong(ptr);
+    	else if(type.equals(GType.INT64))
+    		return new GObjectAPI.GParamSpecInt64(ptr);
+    	else if(type.equals(GType.FLOAT))
+    		return new GObjectAPI.GParamSpecFloat(ptr);
+    	else if(type.equals(GType.DOUBLE))
+    		return new GObjectAPI.GParamSpecDouble(ptr);
+    	else if(type.equals(GType.STRING))
+    		return new GObjectAPI.GParamSpecString(ptr);
+    	throw new IllegalArgumentException("Unknown conversion from GType=" + type);
     }
     /*
      * Hooks to/from native disposal

@@ -45,7 +45,7 @@ public class Navigation extends GstInterface {
 	 *            the element that implements the Navigation interface
 	 */
 	private Navigation(Element element) {
-		super(element, gst.gst_color_balance_get_type());
+		super(element, gst.gst_navigation_get_type());
 	}
 
 	public void sendEvent(Structure structure) {

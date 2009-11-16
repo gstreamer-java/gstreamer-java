@@ -21,6 +21,7 @@ package org.gstreamer.lowlevel;
 import org.gstreamer.interfaces.Tuner;
 import org.gstreamer.interfaces.TunerChannel;
 import org.gstreamer.interfaces.TunerNorm;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Library;
@@ -28,7 +29,7 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface GstTunerAPI extends Library {
-    GstTunerAPI INSTANCE = GstNative.load("gstinterfaces", GstTunerAPI.class);
+	GstTunerAPI INSTANCE = GstNative.load("gstinterfaces", GstTunerAPI.class);
     
     GType gst_tuner_get_type();
     GType gst_tuner_channel_get_type();
@@ -42,6 +43,11 @@ public interface GstTunerAPI extends Library {
     void gst_tuner_set_frequency(Tuner tuner, TunerChannel channel, NativeLong frequency);
     NativeLong gst_tuner_get_frequency(Tuner tuner, TunerChannel channel);
     int gst_tuner_signal_strength(Tuner tuner, TunerChannel channel);
+    
+    Pointer gst_tuner_get_channel(Tuner tuner);
+    GList gst_tuner_list_channels(Tuner tuner);
+    GList gst_tuner_list_norms(Tuner tuner);
+    Pointer gst_tuner_find_channel_by_name(Tuner tuner, String channel);
     
     /* helper functions */
     @CallerOwnsReturn TunerNorm gst_tuner_find_norm_by_name(Tuner tuner, String norm);

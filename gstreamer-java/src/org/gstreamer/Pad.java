@@ -1,4 +1,5 @@
 /* 
+ * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm>
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
  *                    2000 Wim Taymans <wtay@chello.be>
@@ -23,6 +24,7 @@ package org.gstreamer;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.GstPadAPI.PadBlockCallback;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -302,6 +304,10 @@ public class Pad extends GstObject {
         return gst.gst_pad_is_blocked(this);
     }
     
+    public boolean setBlockedAsync(boolean blocked, PadBlockCallback callback) {
+    	return gst.gst_pad_set_blocked_async(this, blocked, callback, null);
+    }
+    
     /**
      * Checks if the pad is blocking or not. This is a guaranteed state
      * of whether the pad is actually blocking on a {@link Buffer} or a {@link Event}.
@@ -382,7 +388,7 @@ public class Pad extends GstObject {
      * @see #removeEventProbe(EVENT_PROBE)
      */
     public static interface EVENT_PROBE {
-        public void eventReceived(Pad pad, Event event);
+        public boolean eventReceived(Pad pad, Event event);
     }
     
     /**
@@ -483,8 +489,9 @@ public class Pad extends GstObject {
 
     public void addEventProbe(final EVENT_PROBE listener) {
         final GstPadAPI.PadEventProbe probe = new GstPadAPI.PadEventProbe() {
-            public void callback(Pad pad, Event ev, Pointer unused) {
-                listener.eventReceived(pad, ev);
+            public boolean callback(Pad pad, Event ev, Pointer unused) {
+            	//XXX: We have to negate the return value to keep consistency with gstreamer's API
+                return !listener.eventReceived(pad, ev);
             }
         };
         GCallback cb = new GCallback(gst.gst_pad_add_event_probe(this, probe, null), probe) {

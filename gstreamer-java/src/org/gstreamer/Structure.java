@@ -1,4 +1,5 @@
-/* 
+/*
+ * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm> 
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 2003 David A. Schleef <ds@schleef.org>
  * 
@@ -22,6 +23,7 @@ import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstStructureAPI;
 import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -179,6 +181,39 @@ public class Structure extends NativeObject {
     public boolean fixateFieldNearestInteger(String field, Integer target) {
         return gst.gst_structure_fixate_field_nearest_int(this, field, target);
     } 
+    
+    /**
+     * Gets FOURCC field int representation
+     * @param fieldName The name of the field.
+     * @return FOURCC field as a 4 byte integer
+     */
+    public int getFourcc(String fieldName) {
+    	int[] val = { 0 };
+        if (!gst.gst_structure_get_fourcc(this, fieldName, val)) {
+            throw new InvalidFieldException("FOURCC", fieldName);
+        }
+        return val[0];    	
+    }
+    
+    /**
+     * Gets FOURCC field String representation
+     * @param fieldName The name of the field.
+     * @return FOURCC field as a String
+     */
+    public String getFourccString(String fieldName) {
+    	int f = getFourcc(fieldName);
+    	byte[] b = {(byte)((f>>0)&0xff),(byte)((f>>8)&0xff),
+    			    (byte)((f>>16)&0xff),(byte)((f>>24)&0xff)};
+    	return new String(b);
+    }
+    
+    public Range getRange(String fieldName) {
+    	GValue val = gst.gst_structure_get_value(this, fieldName);
+        if (val == null) {
+            throw new InvalidFieldException("Range", fieldName);        	
+        }
+        return new Range(val);
+    }
     
     /**
      * Get the name of @structure as a string.

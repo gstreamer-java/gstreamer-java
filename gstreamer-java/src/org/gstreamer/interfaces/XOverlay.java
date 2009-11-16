@@ -20,6 +20,8 @@
 
 package org.gstreamer.interfaces;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.swt.SWT;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstNative;
@@ -88,7 +90,21 @@ public class XOverlay extends GstInterface {
             return;
         }
     	//TODO: Test on windows and mac
-        gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(comp.embeddedHandle));
+        int handle;
+	try {
+		Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
+		Field embedHandleField = compClass.getField("embeddedHandle");
+		handle = embedHandleField.getInt(comp);
+		gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+	} catch (IllegalArgumentException e) {
+		e.printStackTrace();
+	} catch (IllegalAccessException e) {
+		e.printStackTrace();
+	} catch (SecurityException e) {
+		e.printStackTrace();
+	} catch (NoSuchFieldException e) {
+		e.printStackTrace();
+	}
     }
     
     /**

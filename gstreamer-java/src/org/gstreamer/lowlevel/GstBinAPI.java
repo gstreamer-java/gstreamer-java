@@ -46,5 +46,9 @@ public interface GstBinAPI extends com.sun.jna.Library {
     Pointer gst_bin_iterate_sinks(Bin bin);
     Pointer gst_bin_iterate_sources(Bin bin);
     Pointer gst_bin_iterate_all_by_interface(Bin bin, GType iface);
+
+    //Debugging
+    void _gst_debug_bin_to_dot_file (Bin bin, int details, String file_name);
+    void _gst_debug_bin_to_dot_file_with_ts (Bin bin, int details, String file_name);
     
 }
