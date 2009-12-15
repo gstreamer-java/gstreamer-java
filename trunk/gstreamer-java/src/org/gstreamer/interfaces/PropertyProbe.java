@@ -69,7 +69,7 @@ public class PropertyProbe extends GstInterface {
         if (ptr == null) {
             return null;
         }
-        Property p = new Property(this, ptr, false, false);
+        Property p = new Property(ptr, false, false);
         return p;
     }
 
@@ -131,7 +131,7 @@ public class PropertyProbe extends GstInterface {
         GList next = glist;
         while (next != null) {
             if (next.data != null) {
-                list.add(new Property(this, next.data, needRef, ownsHandle));
+                list.add(new Property(next.data, needRef, ownsHandle));
             }
             next = next.next();
         }
