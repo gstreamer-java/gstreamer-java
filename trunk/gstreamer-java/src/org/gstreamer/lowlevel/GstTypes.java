@@ -82,7 +82,7 @@ public class GstTypes {
                 gTypeInstanceMap.put(g_class, cls);
                 break;
             }
-            type = GObjectAPI.gobj.g_type_parent(type);
+            type = GObjectAPI.INSTANCE.g_type_parent(type);
         }
         return cls;
     }

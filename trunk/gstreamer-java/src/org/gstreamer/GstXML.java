@@ -32,7 +32,7 @@ import com.sun.jna.Pointer;
 public class GstXML {
     private static interface LibC extends com.sun.jna.Library {
         
-        public static final LibC INSTANCE = (LibC) Native.loadLibrary("c", LibC.class);
+        LibC INSTANCE = (LibC) Native.loadLibrary("c", LibC.class);
         
         Pointer fopen(String path, String mode);
         int fclose(Pointer fp);

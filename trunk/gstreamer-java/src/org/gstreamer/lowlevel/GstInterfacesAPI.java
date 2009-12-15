@@ -23,7 +23,6 @@ import org.gstreamer.Element;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
-@SuppressWarnings("serial")
 public interface GstInterfacesAPI extends Library {
     /*
     GstInterfacesAPI INSTANCE = GNative.loadLibrary("gstinterfaces-0.10", GstInterfacesAPI.class, 
@@ -32,7 +31,7 @@ public interface GstInterfacesAPI extends Library {
             }}
     );
     */
-    GstInterfacesAPI INSTANCE = GstNative.load(GstInterfacesAPI.class);
+    GstInterfacesAPI INSTANCE = GstNative.load("gstinterfaces", GstInterfacesAPI.class);
 
     GType  gst_implements_interface_get_type();
     boolean gst_element_implements_interface(Element element, GType iface_type);

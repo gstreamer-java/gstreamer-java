@@ -31,18 +31,14 @@ import org.gstreamer.Bin;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.GstBinAPI;
-import org.gstreamer.lowlevel.GstNative;
-
 
 /**
  * This bin encapsulates a pipeline that allows to encode RGB buffers into a video
  * file. It uses the AppSrc element to inject the buffers into the gst pipeline.
  */
 public class RGBDataFileSink extends Bin {
-    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
-    private static final GlibAPI glib = GlibAPI.glib;
+    private static final GstBinAPI gst = GstBinAPI.INSTANCE;
 
     private final LinkedList<Buffer> bufferList;
     private final AppSrc source;

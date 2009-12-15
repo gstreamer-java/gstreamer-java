@@ -28,7 +28,7 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
  * GstPipeline
  */
 public interface GstPipelineAPI extends com.sun.jna.Library {
-    static GstPipelineAPI INSTANCE = GstNative.load(GstPipelineAPI.class);
+    GstPipelineAPI INSTANCE = GstNative.load(GstPipelineAPI.class);
     
     @CallerOwnsReturn Pipeline gst_pipeline_new(String name);
     GType gst_pipeline_get_type();

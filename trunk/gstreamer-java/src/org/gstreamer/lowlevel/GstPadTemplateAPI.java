@@ -33,7 +33,7 @@ import com.sun.jna.Pointer;
  * GstPadTemplate functions
  */
 public interface GstPadTemplateAPI extends com.sun.jna.Library {
-    static GstPadTemplateAPI INSTANCE = GstNative.load(GstPadTemplateAPI.class);
+    GstPadTemplateAPI INSTANCE = GstNative.load(GstPadTemplateAPI.class);
     
     /* element class pad templates */
     void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);

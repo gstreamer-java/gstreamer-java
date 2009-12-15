@@ -30,7 +30,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstTagList functions
  */
 public interface GstTagListAPI extends com.sun.jna.Library {
-    static GstTagListAPI INSTANCE = GstNative.load(GstTagListAPI.class);
+    GstTagListAPI INSTANCE = GstNative.load(GstTagListAPI.class);
     
     interface TagForeachFunc extends GstCallback {
         void callback(Pointer list, String tag, Pointer user_data);

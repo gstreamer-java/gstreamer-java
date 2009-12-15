@@ -37,11 +37,11 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
-import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+//import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 @SuppressWarnings("serial")
 public interface BaseAPI extends Library {
-    static BaseAPI INSTANCE = GNative.loadLibrary("gstbase-0.10", 
+    BaseAPI INSTANCE = GNative.loadLibrary("gstbase-0.10", 
             BaseAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});

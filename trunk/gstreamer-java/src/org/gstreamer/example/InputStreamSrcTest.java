@@ -23,7 +23,6 @@
 package org.gstreamer.example;
 
 import java.io.FileInputStream;
-import java.io.RandomAccessFile;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Bus;
@@ -39,7 +38,6 @@ import org.gstreamer.Structure;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.DecodeBin;
 import org.gstreamer.io.InputStreamSrc;
-import org.gstreamer.io.ReadableByteChannelSrc;
 
 public class InputStreamSrcTest {
     static final String name = "InputStreamSrcTest";    
@@ -60,7 +58,7 @@ public class InputStreamSrcTest {
             ex.printStackTrace();
             throw new RuntimeException(ex);
         }
-        else if (true) {
+        /*else if (true) {
             try {
                 final RandomAccessFile f = new RandomAccessFile(args[0], "r");
             
@@ -73,7 +71,7 @@ public class InputStreamSrcTest {
         } else if (true) {
             src = ElementFactory.make("filesrc", "Input File");
             src.set("location", args[0]);
-        }
+        }*/
         DecodeBin decodeBin = (DecodeBin) ElementFactory.make("decodebin", "Decode Bin");
         Pipeline pipe = new Pipeline("main pipeline");
         pipe.addMany(src, decodeBin);

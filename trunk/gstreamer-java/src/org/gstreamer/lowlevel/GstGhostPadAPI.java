@@ -29,7 +29,7 @@ import com.sun.jna.Pointer;
  * GstGhostPad functions
  */
 public interface GstGhostPadAPI extends com.sun.jna.Library {
-    static GstGhostPadAPI INSTANCE = GstNative.load(GstGhostPadAPI.class);
+    GstGhostPadAPI INSTANCE = GstNative.load(GstGhostPadAPI.class);
     
     GType gst_ghost_pad_get_type();
     

@@ -29,7 +29,7 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface GstTunerAPI extends Library {
-	GstTunerAPI INSTANCE = GstNative.load("gstinterfaces", GstTunerAPI.class);
+    GstTunerAPI INSTANCE = GstNative.load("gstinterfaces", GstTunerAPI.class);
     
     GType gst_tuner_get_type();
     GType gst_tuner_channel_get_type();

@@ -20,7 +20,7 @@
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -168,7 +168,7 @@ public class Element extends GstObject {
      * @param caps the new Caps to set.
      */
     public void setCaps(Caps caps) {
-        gobj.g_object_set(this, "caps", caps);
+        INSTANCE.g_object_set(this, "caps", caps);
     }
     
     /**

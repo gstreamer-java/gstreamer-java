@@ -28,7 +28,7 @@ import com.sun.jna.Pointer;
  * GstBin functions
  */
 public interface GstBinAPI extends com.sun.jna.Library {
-    static GstBinAPI INSTANCE = GstNative.load(GstBinAPI.class);
+    GstBinAPI INSTANCE = GstNative.load(GstBinAPI.class);
     @CallerOwnsReturn Pointer ptr_gst_bin_new(String name);
     @CallerOwnsReturn Bin gst_bin_new(String name);
     GType gst_bin_get_type();

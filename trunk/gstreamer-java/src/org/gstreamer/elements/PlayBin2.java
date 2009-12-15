@@ -137,17 +137,16 @@ public class PlayBin2 extends Pipeline {
     }
 
 
-    private static String slashify(String path, boolean isDirectory) {
-	String p = path;
-	if (File.separatorChar != '/')
-	    p = p.replace(File.separatorChar, '/');
-	if (!p.startsWith("/"))
-	    p = "/" + p;
-	if (!p.endsWith("/") && isDirectory)
-	    p = p + "/";
-	return p;
-    }
-
+	/*private static String slashify(String path, boolean isDirectory) {
+		String p = path;
+		if (File.separatorChar != '/')
+			p = p.replace(File.separatorChar, '/');
+		if (!p.startsWith("/"))
+			p = "/" + p;
+		if (!p.endsWith("/") && isDirectory)
+			p = p + "/";
+		return p;
+	}*/
 
     /**
      * Sets the media file to play.

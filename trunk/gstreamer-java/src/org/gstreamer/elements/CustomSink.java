@@ -18,7 +18,7 @@
 
 package org.gstreamer.elements;
 
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -73,7 +73,7 @@ abstract public class CustomSink extends BaseSink {
     }
     private static final Map<Class<? extends CustomSink>, CustomSinkInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSink>, CustomSinkInfo>();
     protected CustomSink(Class<? extends CustomSink> subClass, String name) {
-        super(initializer(gobj.g_object_new(getSubclassType(subClass), "name", name)));
+        super(initializer(INSTANCE.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSinkInfo getSubclassInfo(Class<? extends CustomSink> subClass) {
        synchronized (subClass) {
@@ -254,7 +254,7 @@ abstract public class CustomSink extends BaseSink {
         ginfo.class_size = (short)new BaseAPI.GstBaseSinkClass().size();
         ginfo.instance_size = (short)new BaseAPI.GstBaseSinkStruct().size();
         
-        info.type = gobj.g_type_register_static(BaseAPI.INSTANCE.gst_base_sink_get_type(), 
+        info.type = INSTANCE.g_type_register_static(BaseAPI.INSTANCE.gst_base_sink_get_type(), 
                 sinkClass.getSimpleName(), ginfo, 0);
     }
 }

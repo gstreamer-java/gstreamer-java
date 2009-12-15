@@ -39,7 +39,7 @@ import com.sun.jna.ptr.LongByReference;
  */
 @SuppressWarnings("serial")
 public interface AppAPI extends com.sun.jna.Library {
-    static AppAPI INSTANCE = GNative.loadLibrary("gstapp-0.10", 
+    AppAPI INSTANCE = GNative.loadLibrary("gstapp-0.10", 
             AppAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});

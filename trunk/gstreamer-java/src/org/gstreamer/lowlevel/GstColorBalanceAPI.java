@@ -46,15 +46,12 @@ public interface GstColorBalanceAPI extends Library {
 		public String getLabel() {
 			return (String) readField("label");
 		}
-
 		public int getMinValue() {
 			return (Integer) readField("min_value");
 		}
-
 		public int getMaxValue() {
 			return (Integer) readField("max_value");
 		}
-
 		public void read() {}
 		public void write() {}
 		public ColorBalanceChannelStruct(Pointer ptr) {

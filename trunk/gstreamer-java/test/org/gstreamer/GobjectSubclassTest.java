@@ -66,7 +66,7 @@ public class GobjectSubclassTest {
     }
     @Test 
     public void registerNewGObjectClass() throws Exception {
-        final GObjectAPI gobj = GObjectAPI.gobj;
+        final GObjectAPI gobj = GObjectAPI.INSTANCE;
         final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
         
         final PadTemplate template = new PadTemplate("src", PadDirection.SRC, 

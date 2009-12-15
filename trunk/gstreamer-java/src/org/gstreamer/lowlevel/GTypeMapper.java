@@ -60,7 +60,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return arg != null ? ((NativeValue) arg).nativeValue() : null;
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return Void.class; // not really correct, but not used in this instance
         }        
     };
@@ -71,7 +71,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return ClockTime.valueOf((Long) arg, TimeUnit.NANOSECONDS);
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return long.class;
         }
 
@@ -264,7 +264,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return uriString;
         }
 
-        public Class nativeType() {
+        public Class<?> nativeType() {
             return String.class;
         }
     };

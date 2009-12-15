@@ -25,7 +25,6 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
-@SuppressWarnings("serial")
 public interface GstPropertyProbeAPI extends Library {
     /*
     GstPropertyProbeAPI INSTANCE = GNative.loadLibrary("gstinterfaces-0.10", GstPropertyProbeAPI.class,

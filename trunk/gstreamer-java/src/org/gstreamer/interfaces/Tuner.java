@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.GObject;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTunerAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
@@ -34,11 +33,7 @@ import com.sun.jna.Pointer;
  * Interface for elements providing tuner operations
  */
 public class Tuner extends GstInterface {
-    //private static final GstTunerAPI gst = GstNative.load("gstinterfaces", GstTunerAPI.class);
-	private static final GstTunerAPI gst;
-    static{
-    	gst = GstTunerAPI.INSTANCE;
-    }
+    private static final GstTunerAPI gst() { return GstTunerAPI.INSTANCE; }
     /**
      * Wraps the {@link Element} in a <tt>Tuner</tt> interface
      * 
@@ -55,7 +50,7 @@ public class Tuner extends GstInterface {
      * @param element the element that implements the tuner interface
      */
     private Tuner(Element element) {
-        super(element, gst.gst_tuner_get_type());
+        super(element, gst().gst_tuner_get_type());
     }
     
     /**
@@ -64,7 +59,7 @@ public class Tuner extends GstInterface {
      * @return a list of channels available on this tuner
      */
     public List<TunerChannel> getChannelList() {
-        return objectList(gst.gst_tuner_list_channels(this), new ListElementCreator<TunerChannel>() {
+        return objectList(gst().gst_tuner_list_channels(this), new ListElementCreator<TunerChannel>() {
             public TunerChannel create(Pointer pointer) {
                 return channelFor(pointer, true);
             } 
@@ -79,7 +74,7 @@ public class Tuner extends GstInterface {
      * @return a list of norms available on the current channel 
      */
     public List<TunerNorm> getNormList() {
-        return objectList(gst.gst_tuner_list_channels(this), new ListElementCreator<TunerNorm>() {
+        return objectList(gst().gst_tuner_list_channels(this), new ListElementCreator<TunerNorm>() {
             public TunerNorm create(Pointer pointer) {
                 return GObject.objectFor(pointer, TunerNorm.class, true);
             }
@@ -91,7 +86,7 @@ public class Tuner extends GstInterface {
      * @param channel the channel to tune to
      */
     public void setChannel(TunerChannel channel) {
-        gst.gst_tuner_set_channel(this, channel);
+        gst().gst_tuner_set_channel(this, channel);
     }
     
     /**
@@ -100,7 +95,7 @@ public class Tuner extends GstInterface {
      * @return the current channel of the tuner
      */
     public TunerChannel getChannel() {
-        Pointer ptr = gst.gst_tuner_get_channel(this);
+        Pointer ptr = gst().gst_tuner_get_channel(this);
         if (ptr == null) {
             return null;
         }
@@ -115,7 +110,7 @@ public class Tuner extends GstInterface {
      * @return the <tt>TunerChannel</tt> if found, else null
      */
     public TunerChannel getChannelByName(String name) {
-        Pointer ptr = gst.gst_tuner_find_channel_by_name(this, name);
+        Pointer ptr = gst().gst_tuner_find_channel_by_name(this, name);
         if (ptr == null) {
             return null;
         }
@@ -128,7 +123,7 @@ public class Tuner extends GstInterface {
      * @param norm the norm to use for the current channel
      */
     public void setNorm(TunerNorm norm) {
-        gst.gst_tuner_set_norm(this, norm);
+        gst().gst_tuner_set_norm(this, norm);
     }
     
     /**
@@ -138,7 +133,7 @@ public class Tuner extends GstInterface {
      * @return the current norm
      */
     public TunerNorm getNorm() {
-        return gst.gst_tuner_get_norm(this);
+        return gst().gst_tuner_get_norm(this);
     }
     
     /**
@@ -149,7 +144,7 @@ public class Tuner extends GstInterface {
      * @return the <tt>TunerNorm</tt> if found, else null
      */
     public TunerNorm getNormByName(String name) {
-        return gst.gst_tuner_find_norm_by_name(this, name);
+        return gst().gst_tuner_find_norm_by_name(this, name);
     }
     
     /**

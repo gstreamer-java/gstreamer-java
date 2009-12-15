@@ -126,9 +126,8 @@ public abstract class PipelineMediaPlayer extends AbstractMediaPlayer {
     
     private final Bus.STATE_CHANGED stateChanged = new Bus.STATE_CHANGED() {
         public void stateChanged(GstObject source, State old, State newState, State pending) {
-          if (false) System.out.println("stateEvent: new=" + newState 
-                    + " old=" + old
-                    + " pending=" + pending);
+            //if (false)
+            //	System.out.println("stateEvent: new=" + newState + " old=" + old + " pending=" + pending);
             final ClockTime position = getPipeline().queryPosition();
             switch (newState) {
             case PLAYING:

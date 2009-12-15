@@ -22,14 +22,12 @@ import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstColorBalanceAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
 
 public class ColorBalance extends GstInterface {
-	private static final GstColorBalanceAPI gst = GstNative.load(
-			"gstinterfaces", GstColorBalanceAPI.class);
+	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.INSTANCE; }
 
 	/**
 	 * Wraps the {@link Element} in a <tt>ColorBalance</tt> interface
@@ -49,7 +47,7 @@ public class ColorBalance extends GstInterface {
 	 *            the element that implements the ColorBalance interface
 	 */
 	private ColorBalance(Element element) {
-		super(element, gst.gst_color_balance_get_type());
+		super(element, gst().gst_color_balance_get_type());
 	}
 
 	/**
@@ -58,7 +56,7 @@ public class ColorBalance extends GstInterface {
 	 * @return a list of color balance channels available on this device
 	 */
 	public List<ColorBalanceChannel> getChannelList() {
-		return objectList(gst.gst_color_balance_list_channels(this),
+		return objectList(gst().gst_color_balance_list_channels(this),
 				new ListElementCreator<ColorBalanceChannel>() {
 					public ColorBalanceChannel create(Pointer pointer) {
 						return channelFor(pointer, true);
