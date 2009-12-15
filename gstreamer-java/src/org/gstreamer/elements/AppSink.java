@@ -33,6 +33,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * from a pipeline.
  */
 public class AppSink extends BaseSink {
+    private static final AppAPI gst() { return AppAPI.INSTANCE; }
     public AppSink(Initializer init) {
         super(init);
     }
@@ -48,7 +49,7 @@ public class AppSink extends BaseSink {
      */
     @Override
     public void setCaps(Caps caps) {
-        AppAPI.INSTANCE.gst_app_sink_set_caps(this, caps);
+        gst().gst_app_sink_set_caps(this, caps);
     }
 
     /**
@@ -57,7 +58,7 @@ public class AppSink extends BaseSink {
      * @return The caps configured on this <tt>AppSink</tt>
      */
     public Caps getCaps() {
-        return AppAPI.INSTANCE.gst_app_sink_get_caps(this);
+        return gst().gst_app_sink_get_caps(this);
     }
 
     /**
@@ -69,7 +70,7 @@ public class AppSink extends BaseSink {
      * <tt>AppSink</tt> is EOS.
      */
     public boolean isEOS() {
-        return AppAPI.INSTANCE.gst_app_sink_is_eos(this);
+        return gst().gst_app_sink_is_eos(this);
     }
 
     /**
@@ -95,7 +96,7 @@ public class AppSink extends BaseSink {
      * @return A {@link Buffer} or <tt>null</tt> when the appsink is stopped or EOS.
      */
     public Buffer pullPreroll() {
-        return AppAPI.INSTANCE.gst_app_sink_pull_preroll(this);
+        return gst().gst_app_sink_pull_preroll(this);
     }
 
     /**
@@ -117,7 +118,7 @@ public class AppSink extends BaseSink {
      * @return A {@link org.gstreamer.Buffer} or NULL when the appsink is stopped or EOS. 
      */
     public Buffer pullBuffer() {
-        return AppAPI.INSTANCE.gst_app_sink_pull_buffer(this);
+        return gst().gst_app_sink_pull_buffer(this);
     }
 
     /**

@@ -30,7 +30,7 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
  * Interface for elements that provide mixer operations
  */
 public class Mixer extends GstInterface {
-    private static final GstMixerAPI gst = GstMixerAPI.INSTANCE;
+    private static final GstMixerAPI gst() { return GstMixerAPI.INSTANCE; }
     
     /**
      * Wraps the {@link Element} in a <tt>Mixer</tt> interface
@@ -48,7 +48,7 @@ public class Mixer extends GstInterface {
      * @param element the element that implements the mixer interface
      */
     private Mixer(Element element) {
-        super(element, gst.gst_mixer_get_type());
+        super(element, gst().gst_mixer_get_type());
     }
     
     /**
@@ -62,7 +62,7 @@ public class Mixer extends GstInterface {
      * @return a list of MixerTrack instances
      */
     public List<MixerTrack> getTracks() {
-        return trackList(gst.gst_mixer_list_tracks(this), true, true);
+        return trackList(gst().gst_mixer_list_tracks(this), true, true);
     }
     
     /**

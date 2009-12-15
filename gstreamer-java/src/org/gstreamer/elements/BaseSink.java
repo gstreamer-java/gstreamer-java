@@ -20,33 +20,30 @@ package org.gstreamer.elements;
 
 import java.util.concurrent.TimeUnit;
 
-import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.BaseAPI;
 
 public class BaseSink extends Element {
+	private static final BaseAPI gst() { return BaseAPI.INSTANCE; }
     public BaseSink(Initializer init) {
         super(init);
     }
-    private static class API {
-        static BaseAPI base = BaseAPI.INSTANCE;
-    }
     public void setSync(boolean sync) {
-        API.base.gst_base_sink_set_sync(this, sync);
+        gst().gst_base_sink_set_sync(this, sync);
     }
     public boolean isSync() {
-        return API.base.gst_base_sink_get_sync(this);
+        return gst().gst_base_sink_get_sync(this);
     }
     public void setMaximumLateness(long lateness, TimeUnit units) {
-        API.base.gst_base_sink_set_max_lateness(this, units.toMillis(lateness));
+        gst().gst_base_sink_set_max_lateness(this, units.toMillis(lateness));
     }
     public long getMaximumLateness(TimeUnit units) {
-        return units.convert(API.base.gst_base_sink_get_max_lateness(this), TimeUnit.MILLISECONDS);
+        return units.convert(gst().gst_base_sink_get_max_lateness(this), TimeUnit.MILLISECONDS);
     }
     public void setQOSEnabled(boolean qos) {
-        API.base.gst_base_sink_set_qos_enabled(this, qos);
+        gst().gst_base_sink_set_qos_enabled(this, qos);
     }
     public boolean isQOSEnabled() {
-        return API.base.gst_base_sink_is_qos_enabled(this);
+        return gst().gst_base_sink_is_qos_enabled(this);
     }
 }

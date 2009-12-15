@@ -24,7 +24,6 @@ import java.lang.reflect.Field;
 
 import org.eclipse.swt.SWT;
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstXOverlayAPI;
 
 import com.sun.jna.Native;
@@ -35,7 +34,7 @@ import com.sun.jna.Platform;
  * Interface for elements providing tuner operations
  */
 public class XOverlay extends GstInterface {
-    private static final GstXOverlayAPI gst = GstNative.load("gstinterfaces", GstXOverlayAPI.class);
+    private static final GstXOverlayAPI gst() { return GstXOverlayAPI.INSTANCE; }
     
     /**
      * Wraps the {@link Element} in a <tt>XOverlay</tt> interface
@@ -53,7 +52,7 @@ public class XOverlay extends GstInterface {
      * @param element the element that implements the tuner interface
      */
     private XOverlay(Element element) {
-        super(element, gst.gst_x_overlay_get_type());
+        super(element, gst().gst_x_overlay_get_type());
     }
 
     /**
@@ -64,16 +63,16 @@ public class XOverlay extends GstInterface {
      */
     public void setWindowID(java.awt.Component window) {
         if (window == null) {
-            gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
+            gst().gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
             return;
         }
         if (window.isLightweight()) {
             throw new IllegalArgumentException("Component must be be a native window");
         }
         if (Platform.isWindows()) {
-            gst.gst_x_overlay_set_xwindow_id(this, Native.getComponentPointer(window));
+            gst().gst_x_overlay_set_xwindow_id(this, Native.getComponentPointer(window));
         } else {
-            gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(Native.getComponentID(window)));
+            gst().gst_x_overlay_set_xwindow_id(this, new NativeLong(Native.getComponentID(window)));
         }
     }
     
@@ -86,7 +85,7 @@ public class XOverlay extends GstInterface {
     public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
     	//Composite style must be embedded
         if (!Platform.isLinux() || comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
-            gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
+            gst().gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
             return;
         }
     	//TODO: Test on windows and mac
@@ -95,7 +94,7 @@ public class XOverlay extends GstInterface {
 		Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
 		Field embedHandleField = compClass.getField("embeddedHandle");
 		handle = embedHandleField.getInt(comp);
-		gst.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+		gst().gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
 	} catch (IllegalArgumentException e) {
 		e.printStackTrace();
 	} catch (IllegalAccessException e) {
@@ -112,6 +111,6 @@ public class XOverlay extends GstInterface {
      * in the drawable even if the pipeline is PAUSED.
      */
     public void expose() {
-        gst.gst_x_overlay_expose(this);
+        gst().gst_x_overlay_expose(this);
     }
 }

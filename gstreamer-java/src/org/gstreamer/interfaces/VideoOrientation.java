@@ -19,12 +19,10 @@
 package org.gstreamer.interfaces;
 
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstVideoOrientationAPI;
 
 public class VideoOrientation extends GstInterface {
-	private static final GstVideoOrientationAPI gst = GstNative.load(
-			"gstinterfaces", GstVideoOrientationAPI.class);
+	private static final GstVideoOrientationAPI gst() { return GstVideoOrientationAPI.INSTANCE; }
 
 	/**
 	 * Wraps the {@link Element} in a <tt>VideoOrientation</tt> interface
@@ -44,38 +42,38 @@ public class VideoOrientation extends GstInterface {
 	 *            the element that implements the VideoOrientation interface
 	 */
 	private VideoOrientation(Element element) {
-		super(element, gst.gst_video_orientation_get_type());
+		super(element, gst().gst_video_orientation_get_type());
 	}
 
 	public boolean getHflip(boolean flip) {
-		return gst.gst_video_orientation_get_hflip(this, flip);
+		return gst().gst_video_orientation_get_hflip(this, flip);
 	}
 
 	public boolean getVflip(boolean flip) {
-		return gst.gst_video_orientation_get_vflip(this, flip);
+		return gst().gst_video_orientation_get_vflip(this, flip);
 	}
 
 	public boolean getHcenter(int center) {
-		return gst.gst_video_orientation_get_hcenter(this, center);
+		return gst().gst_video_orientation_get_hcenter(this, center);
 	}
 
 	public boolean getVcenter(int center) {
-		return gst.gst_video_orientation_get_vcenter(this, center);
+		return gst().gst_video_orientation_get_vcenter(this, center);
 	}
 
 	public boolean setHflip(boolean flip) {
-		return gst.gst_video_orientation_set_hflip(this, flip);
+		return gst().gst_video_orientation_set_hflip(this, flip);
 	}
 
 	public boolean setVflip(boolean flip) {
-		return gst.gst_video_orientation_set_vflip(this, flip);
+		return gst().gst_video_orientation_set_vflip(this, flip);
 	}
 
 	public boolean setHcenter(int center) {
-		return gst.gst_video_orientation_set_hcenter(this, center);
+		return gst().gst_video_orientation_set_hcenter(this, center);
 	}
 
 	public boolean setVcenter(int center) {
-		return gst.gst_video_orientation_set_vcenter(this, center);
+		return gst().gst_video_orientation_set_vcenter(this, center);
 	}
 }

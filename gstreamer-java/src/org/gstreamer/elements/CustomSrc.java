@@ -18,7 +18,7 @@
 
 package org.gstreamer.elements;
 
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -81,7 +81,7 @@ abstract public class CustomSrc extends BaseSrc {
         BaseAPI.EventNotify event;
     }
     protected CustomSrc(Class<? extends CustomSrc> subClass, String name) {
-        super(initializer(gobj.g_object_new(getSubclassType(subClass), "name", name)));
+        super(initializer(INSTANCE.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSrcInfo getSubclassInfo(Class<? extends CustomSrc> subClass) {
        synchronized (subClass) {
@@ -349,8 +349,8 @@ abstract public class CustomSrc extends BaseSrc {
      * @param method
      * @return The method or null if not found.
      */
-    private static final Method findOverridingMethod(final Class cls, final Method method) {
-        for (Class next = cls; next != null; next = next.getSuperclass()) {
+    private static final Method findOverridingMethod(final Class<?> cls, final Method method) {
+        for (Class<?> next = cls; next != null; next = next.getSuperclass()) {
             for (Method m : next.getDeclaredMethods()) {
                 if (isOverridingMethod(method, m)) {
                     return m;
@@ -445,7 +445,7 @@ abstract public class CustomSrc extends BaseSrc {
         ginfo.class_size = (short)new BaseAPI.GstBaseSrcClass().size();
         ginfo.instance_size = (short)new BaseAPI.GstBaseSrcStruct().size();
         
-        GType type = gobj.g_type_register_static(BaseAPI.INSTANCE.gst_base_src_get_type(), 
+        GType type = INSTANCE.g_type_register_static(BaseAPI.INSTANCE.gst_base_src_get_type(), 
                 srcClass.getSimpleName(), ginfo, 0);
         info.type = type;
     }

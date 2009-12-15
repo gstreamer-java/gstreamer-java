@@ -33,7 +33,7 @@ public class EnumMapper {
         return mapper;
     }
     
-    public int intValue(Enum value) {
+    public int intValue(Enum<?> value) {
         return value instanceof IntegerEnum ? ((IntegerEnum) value).intValue() : value.ordinal();
     }
     public <E extends Enum<E>> E valueOf(int value, Class<E> enumClass) {

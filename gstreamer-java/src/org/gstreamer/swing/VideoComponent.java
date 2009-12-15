@@ -76,7 +76,7 @@ public class VideoComponent extends javax.swing.JComponent {
     private float alpha = 1.0f;
     private Timer resourceTimer;
     private VolatileImage volatileImage;
-    private Class graphicsConfigClass = null;
+    private Class<?> graphicsConfigClass = null;
     private boolean frameRendered = false;
     private volatile boolean updatePending = false;
     private final boolean useVolatile;

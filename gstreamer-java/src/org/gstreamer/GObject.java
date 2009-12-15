@@ -20,7 +20,7 @@
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GObjectAPI.gobj;
+import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
 import static org.gstreamer.lowlevel.GSignalAPI.gsignal;
 import static org.gstreamer.lowlevel.GValueAPI.gvalue;
 
@@ -41,7 +41,6 @@ import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
-import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
@@ -66,7 +65,7 @@ public abstract class GObject extends RefCountedObject {
         logger.entering("GObject", "<init>", new Object[] { init });
         if (init.ownsHandle) {
             strongReferences.put(this, Boolean.TRUE);
-            gobj.g_object_add_toggle_ref(init.ptr, toggle, objectID);
+            INSTANCE.g_object_add_toggle_ref(init.ptr, toggle, objectID);
             if (!init.needRef) {
                 unref();
             }
@@ -142,10 +141,10 @@ public abstract class GObject extends RefCountedObject {
             transform(data, GType.FLOAT, propValue);
         } else {
             // Old behaviour
-            gobj.g_object_set(this, property, data);
+            INSTANCE.g_object_set(this, property, data);
             return;
         }
-        gobj.g_object_set_property(this, property, propValue);
+        INSTANCE.g_object_set_property(this, property, propValue);
         gvalue.g_value_unset(propValue); // Release any memory
     }
 
@@ -207,7 +206,7 @@ public abstract class GObject extends RefCountedObject {
         final GType propType = propertySpec.value_type;
         GValue propValue = new GValue();
         gvalue.g_value_init(propValue, propType);
-        gobj.g_object_get_property(this, property, propValue);
+        INSTANCE.g_object_get_property(this, property, propValue);
         if (propType.equals(GType.INT)) {
             return gvalue.g_value_get_int(propValue);
         } else if (propType.equals(GType.UINT)) {
@@ -254,7 +253,7 @@ public abstract class GObject extends RefCountedObject {
         }
 
         PointerByReference refPtr = new PointerByReference();
-        gobj.g_object_get(this, property, refPtr, null);
+        INSTANCE.g_object_get(this, property, refPtr, null);
 
         if (refPtr != null) {
 
@@ -356,16 +355,16 @@ public abstract class GObject extends RefCountedObject {
     
     protected void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
-        gobj.g_object_remove_toggle_ref(ptr, toggle, objectID);
+        INSTANCE.g_object_remove_toggle_ref(ptr, toggle, objectID);
     }
     @Override
     protected void ref() {
-        gobj.g_object_ref(this);
+        INSTANCE.g_object_ref(this);
     }
 
     @Override
     protected void unref() {
-        gobj.g_object_unref(this);
+        INSTANCE.g_object_unref(this);
     }
     protected void invalidate() {
         try {
@@ -375,7 +374,7 @@ public abstract class GObject extends RefCountedObject {
                 ref();
 
                 // Disconnect the callback.
-                gobj.g_object_remove_toggle_ref(handle(), toggle, objectID);
+                INSTANCE.g_object_remove_toggle_ref(handle(), toggle, objectID);
             }
             strongReferences.remove(this);
         } finally { 
@@ -385,12 +384,12 @@ public abstract class GObject extends RefCountedObject {
     
     protected NativeLong g_signal_connect(String signal, Callback callback) {
         logger.entering("GObject", "g_signal_connect", new Object[] { signal, callback });
-        return gobj.g_signal_connect_data(this, signal, callback, null, null, 0);
+        return INSTANCE.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
 
-    private GList objectFor(Pointer ptr) {
+/*    private GList objectFor(Pointer ptr) {
         return GList.valueOf(ptr);
-    }
+    }*/
 
     abstract protected class GCallback {
         protected final Callback cb;
@@ -423,7 +422,7 @@ public abstract class GObject extends RefCountedObject {
             }
         }
         synchronized protected void disconnect() {
-            gobj.g_signal_handler_disconnect(GObject.this, id);
+            INSTANCE.g_signal_handler_disconnect(GObject.this, id);
         }
     }
     private synchronized final Map<Class<?>, Map<Object, GCallback>> getCallbackMap() {
@@ -480,7 +479,7 @@ public abstract class GObject extends RefCountedObject {
     private final class ClosureProxy implements GSignalAPI.GSignalCallbackProxy {
         private final Closure closure;
         private final Method method;
-        private final Class[] parameterTypes;
+        private final Class<?>[] parameterTypes;
         NativeLong id;
         
         protected ClosureProxy(String signal, Closure closure) {
@@ -530,7 +529,7 @@ public abstract class GObject extends RefCountedObject {
         }
         synchronized protected void disconnect() {
             if (id != null && id.intValue() != 0) {
-                gobj.g_signal_handler_disconnect(GObject.this, id);
+                INSTANCE.g_signal_handler_disconnect(GObject.this, id);
                 id = null;
             }
         }
@@ -578,11 +577,11 @@ public abstract class GObject extends RefCountedObject {
             }
         }
 
-        public Class[] getParameterTypes() {
+        public Class<?>[] getParameterTypes() {
             return parameterTypes;
         }
 
-        public Class getReturnType() {
+        public Class<?> getReturnType() {
             return method.getReturnType();
         }
     }
@@ -625,11 +624,11 @@ public abstract class GObject extends RefCountedObject {
     }
 
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
-        return new GObjectAPI.GParamSpec(gobj.g_object_class_find_property(handle().getPointer(0), propertyName));
+        return new GObjectAPI.GParamSpec(INSTANCE.g_object_class_find_property(handle().getPointer(0), propertyName));
     }
     
     private GObjectAPI.GParamSpecTypeSpecific findProperty(String propertyName, GType type) {
-    	Pointer ptr = gobj.g_object_class_find_property(handle().getPointer(0), propertyName);
+    	Pointer ptr = INSTANCE.g_object_class_find_property(handle().getPointer(0), propertyName);
     	if (type.equals(GType.INT))
     		return new GObjectAPI.GParamSpecInt(ptr);
     	else if(type.equals(GType.UINT))

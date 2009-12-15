@@ -33,7 +33,7 @@ import com.sun.jna.Pointer;
  * GstBus functions
  */
 public interface GstBusAPI extends com.sun.jna.Library {
-    static GstBusAPI INSTANCE = GstNative.load(GstBusAPI.class);
+    GstBusAPI INSTANCE = GstNative.load(GstBusAPI.class);
     
     GType gst_bus_get_type();
     Bus gst_bus_new();

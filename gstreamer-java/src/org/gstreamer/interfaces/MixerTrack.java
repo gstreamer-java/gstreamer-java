@@ -27,7 +27,7 @@ import com.sun.jna.Pointer;
  *
  */
 public class MixerTrack extends GObject {
-    private static final GstMixerAPI gst = GstMixerAPI.INSTANCE;
+    private static final GstMixerAPI gst() { return GstMixerAPI.INSTANCE; }
     private final GstMixerAPI.MixerTrackStruct struct;
     private final Mixer mixer;
     
@@ -124,7 +124,7 @@ public class MixerTrack extends GObject {
      *           this track.
      */
     public void setVolume(int[] volumes) {
-        gst.gst_mixer_set_volume(mixer, this, volumes);
+        gst().gst_mixer_set_volume(mixer, this, volumes);
     }
     
     /**
@@ -136,7 +136,7 @@ public class MixerTrack extends GObject {
      */
     public int[] getVolume() {
         int[] volume = new int[getChannelCount()];
-        gst.gst_mixer_get_volume(mixer, this, volume);
+        gst().gst_mixer_get_volume(mixer, this, volume);
         return volume;
     }
     
@@ -146,7 +146,7 @@ public class MixerTrack extends GObject {
      * @param mute true to mute, false to unmute the track
      */
     public void setMuted(boolean mute) {
-        gst.gst_mixer_set_mute(mixer, this, mute);
+        gst().gst_mixer_set_mute(mixer, this, mute);
     }
     
     /**
@@ -156,6 +156,6 @@ public class MixerTrack extends GObject {
      * @param record true to record, false to stop recording
      */
     public void setRecording(boolean record) {
-        gst.gst_mixer_set_record(mixer, this, record);
+        gst().gst_mixer_set_record(mixer, this, record);
     }
 }

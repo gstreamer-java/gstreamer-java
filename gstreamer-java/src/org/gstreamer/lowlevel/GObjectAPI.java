@@ -36,7 +36,7 @@ import com.sun.jna.ptr.PointerByReference;
  */
 @SuppressWarnings("serial")
 public interface GObjectAPI extends Library {
-    static GObjectAPI gobj = GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
+    GObjectAPI INSTANCE = GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     }});
     

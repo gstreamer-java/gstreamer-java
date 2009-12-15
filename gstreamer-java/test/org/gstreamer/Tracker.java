@@ -34,7 +34,7 @@ class Tracker {
 
     public Tracker(GObject obj) {
         super();
-        GObjectAPI.gobj.g_object_weak_ref(obj, notify, new IntPtr(System.identityHashCode(this)));
+        GObjectAPI.INSTANCE.g_object_weak_ref(obj, notify, new IntPtr(System.identityHashCode(this)));
         ref = new WeakReference<GObject>(obj);
     }
     WeakReference<GObject> ref;

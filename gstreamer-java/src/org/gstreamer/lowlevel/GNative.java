@@ -48,7 +48,7 @@ public final class GNative {
         T library = interfaceClass.cast(Native.loadLibrary(name, interfaceClass, options));
         boolean needCustom = false;
         for (Method m : interfaceClass.getMethods()) {
-            for (Class cls : m.getParameterTypes()) {
+            for (Class<?> cls : m.getParameterTypes()) {
                 if (cls.isArray() && getConverter(cls.getComponentType()) != null) {
                     needCustom = true;
                 }
@@ -116,7 +116,7 @@ public final class GNative {
         }
 
         public Object toNative(Object value) {
-            return value != null ? EnumMapper.getInstance().intValue((Enum) value) : 0;
+            return value != null ? EnumMapper.getInstance().intValue((Enum<?>) value) : 0;
         }
         @SuppressWarnings(value = "unchecked")
         public Object fromNative(Object value, Class javaType) {
@@ -184,7 +184,7 @@ public final class GNative {
                 if (args[i] == null) {
                     continue;
                 }
-                final Class cls = args[i].getClass();
+                final Class<?> cls = args[i].getClass();
                 if (!cls.isArray() || cls.getComponentType().isPrimitive() || cls.getComponentType() == String.class) {
                     continue;
                 }

@@ -20,7 +20,6 @@
 package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTunerAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
@@ -31,9 +30,7 @@ import com.sun.jna.Pointer;
  *
  */
 public class TunerChannel extends GObject {
-	//private static final GstTunerAPI gst = GstNative.load("gstinterfaces", GstTunerAPI.class);
-	private static final GstTunerAPI gst = GstTunerAPI.INSTANCE;
-    
+	private static final GstTunerAPI gst() { return GstTunerAPI.INSTANCE; }    
     private final GstTunerAPI.TunerChannelStruct struct;
     private final Tuner tuner;
     
@@ -74,7 +71,7 @@ public class TunerChannel extends GObject {
      * @return the current frequency
      */
     public long getFrequency() {
-        return gst.gst_tuner_get_frequency(tuner, this).longValue();
+        return gst().gst_tuner_get_frequency(tuner, this).longValue();
     }
     
     /**
@@ -83,7 +80,7 @@ public class TunerChannel extends GObject {
      * channel, which can be checked with {@link #isTuningChannel}
      */
     public void setFrequency(long frequency) {
-        gst.gst_tuner_set_frequency(tuner, this, new NativeLong(frequency));
+        gst().gst_tuner_set_frequency(tuner, this, new NativeLong(frequency));
     }
     
     /**
@@ -104,7 +101,7 @@ public class TunerChannel extends GObject {
      * @return the current signal strength
      */
     public int getSignalStrength() {
-        return gst.gst_tuner_signal_strength(tuner, this);
+        return gst().gst_tuner_signal_strength(tuner, this);
     }
     
     /**

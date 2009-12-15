@@ -20,12 +20,11 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstColorBalanceAPI;
-import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Pointer;
 
 public class ColorBalanceChannel extends GObject {
-	private static final GstColorBalanceAPI gst = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
+	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.INSTANCE; }
 	private final GstColorBalanceAPI.ColorBalanceChannelStruct struct;
 	private final ColorBalance colorBalance;
 
@@ -59,10 +58,10 @@ public class ColorBalanceChannel extends GObject {
 	}
 
 	public void setValue(int value) {
-		gst.gst_color_balance_set_value(colorBalance, this, value);
+		gst().gst_color_balance_set_value(colorBalance, this, value);
 	}
 
 	public int getValue(int value) {
-		return gst.gst_color_balance_get_value(colorBalance, this);
+		return gst().gst_color_balance_get_value(colorBalance, this);
 	}
 }

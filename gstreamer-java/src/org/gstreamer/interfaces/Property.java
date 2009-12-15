@@ -21,7 +21,6 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GObjectAPI;
-import org.gstreamer.lowlevel.GstPropertyProbeAPI;
 
 import com.sun.jna.Pointer;
 
@@ -29,7 +28,6 @@ import com.sun.jna.Pointer;
  *
  */
 public class Property extends GObject {
-    private static final GstPropertyProbeAPI gst = GstPropertyProbeAPI.INSTANCE;
     private final GObjectAPI.GParamSpec spec;
     private final PropertyProbe probe;
     

@@ -19,10 +19,9 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.GObjectAPI;
-
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GType;
+//import org.gstreamer.lowlevel.GObjectAPI;
+//import org.gstreamer.lowlevel.GType;
 
 /**
  * Object containing specific meta information such as width/height/framerate of
@@ -37,7 +36,7 @@ import org.gstreamer.lowlevel.GType;
  * "codec" (string) (format this stream was encoded in)
  */
 public class StreamInfo extends GObject {
-    private static final GObjectAPI gst = GObjectAPI.gobj;
+    //private static final GObjectAPI gst = GObjectAPI.INSTANCE;
 
     /**
      * For internal gstreamer-java use only
