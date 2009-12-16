@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -20,14 +21,14 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstMixerAPI;
-
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
 
 /**
  *
  */
 public class MixerTrack extends GObject {
-    private static final GstMixerAPI gst() { return GstMixerAPI.GSTMIXER_API; }
     private final GstMixerAPI.MixerTrackStruct struct;
     private final Mixer mixer;
     
@@ -124,7 +125,7 @@ public class MixerTrack extends GObject {
      *           this track.
      */
     public void setVolume(int[] volumes) {
-        gst().gst_mixer_set_volume(mixer, this, volumes);
+        GSTMIXER_API.gst_mixer_set_volume(mixer, this, volumes);
     }
     
     /**
@@ -136,7 +137,7 @@ public class MixerTrack extends GObject {
      */
     public int[] getVolume() {
         int[] volume = new int[getChannelCount()];
-        gst().gst_mixer_get_volume(mixer, this, volume);
+        GSTMIXER_API.gst_mixer_get_volume(mixer, this, volume);
         return volume;
     }
     
@@ -146,7 +147,7 @@ public class MixerTrack extends GObject {
      * @param mute true to mute, false to unmute the track
      */
     public void setMuted(boolean mute) {
-        gst().gst_mixer_set_mute(mixer, this, mute);
+        GSTMIXER_API.gst_mixer_set_mute(mixer, this, mute);
     }
     
     /**
@@ -156,6 +157,6 @@ public class MixerTrack extends GObject {
      * @param record true to record, false to stop recording
      */
     public void setRecording(boolean record) {
-        gst().gst_mixer_set_record(mixer, this, record);
+        GSTMIXER_API.gst_mixer_set_record(mixer, this, record);
     }
 }

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * 
  * This file is part of gstreamer-java.
@@ -23,8 +24,9 @@ import org.gstreamer.lowlevel.GstColorBalanceAPI;
 
 import com.sun.jna.Pointer;
 
+import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
+
 public class ColorBalanceChannel extends GObject {
-	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.GSTCOLORBALANCE_API; }
 	private final GstColorBalanceAPI.ColorBalanceChannelStruct struct;
 	private final ColorBalance colorBalance;
 
@@ -58,10 +60,10 @@ public class ColorBalanceChannel extends GObject {
 	}
 
 	public void setValue(int value) {
-		gst().gst_color_balance_set_value(colorBalance, this, value);
+		GSTCOLORBALANCE_API.gst_color_balance_set_value(colorBalance, this, value);
 	}
 
 	public int getValue(int value) {
-		return gst().gst_color_balance_get_value(colorBalance, this);
+		return GSTCOLORBALANCE_API.gst_color_balance_get_value(colorBalance, this);
 	}
 }

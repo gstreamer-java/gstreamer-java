@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2003 Ronald Bultje <rbultje@ronald.bitfreak.net>
  * 
@@ -23,15 +24,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GstMixerAPI;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
 
 /**
  * Interface for elements that provide mixer operations
  */
 public class Mixer extends GstInterface {
-    private static final GstMixerAPI gst() { return GstMixerAPI.GSTMIXER_API; }
-    
     /**
      * Wraps the {@link Element} in a <tt>Mixer</tt> interface
      * 
@@ -48,7 +48,7 @@ public class Mixer extends GstInterface {
      * @param element the element that implements the mixer interface
      */
     private Mixer(Element element) {
-        super(element, gst().gst_mixer_get_type());
+        super(element, GSTMIXER_API.gst_mixer_get_type());
     }
     
     /**
@@ -62,7 +62,7 @@ public class Mixer extends GstInterface {
      * @return a list of MixerTrack instances
      */
     public List<MixerTrack> getTracks() {
-        return trackList(gst().gst_mixer_list_tracks(this), true, true);
+        return trackList(GSTMIXER_API.gst_mixer_list_tracks(this), true, true);
     }
     
     /**

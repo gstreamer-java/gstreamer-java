@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm> 
  * Copyright (c) 2008 Wayne Meissner
  * 
@@ -20,17 +21,18 @@
 package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
-import org.gstreamer.lowlevel.GstTunerAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.GstTunerAPI;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
 
 /**
  *
  */
 public class TunerChannel extends GObject {
-	private static final GstTunerAPI gst() { return GstTunerAPI.GSTTUNER_API; }    
     private final GstTunerAPI.TunerChannelStruct struct;
     private final Tuner tuner;
     
@@ -71,7 +73,7 @@ public class TunerChannel extends GObject {
      * @return the current frequency
      */
     public long getFrequency() {
-        return gst().gst_tuner_get_frequency(tuner, this).longValue();
+        return GSTTUNER_API.gst_tuner_get_frequency(tuner, this).longValue();
     }
     
     /**
@@ -80,7 +82,7 @@ public class TunerChannel extends GObject {
      * channel, which can be checked with {@link #isTuningChannel}
      */
     public void setFrequency(long frequency) {
-        gst().gst_tuner_set_frequency(tuner, this, new NativeLong(frequency));
+        GSTTUNER_API.gst_tuner_set_frequency(tuner, this, new NativeLong(frequency));
     }
     
     /**
@@ -101,7 +103,7 @@ public class TunerChannel extends GObject {
      * @return the current signal strength
      */
     public int getSignalStrength() {
-        return gst().gst_tuner_signal_strength(tuner, this);
+        return GSTTUNER_API.gst_tuner_signal_strength(tuner, this);
     }
     
     /**
