@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -31,7 +32,7 @@ import com.sun.jna.Pointer;
  * GstClock functions
  */
 public interface GstClockAPI extends com.sun.jna.Library {
-    GstClockAPI INSTANCE = GstNative.load(GstClockAPI.class);
+    GstClockAPI GSTCLOCK_API = GstNative.load(GstClockAPI.class);
     
     GType gst_clock_get_type();
     ClockTime gst_clock_set_resolution(Clock clock, ClockTime resolution);

@@ -207,9 +207,9 @@ public class BinTest {
     //@Test 
     public void iterateSorted() {
 
-        Pipeline pipeline = GstPipelineAPI.INSTANCE.gst_pipeline_new(null);
+        Pipeline pipeline = GstPipelineAPI.GSTPIPELINE_API.gst_pipeline_new(null);
         assertNotNull("Failed to create Pipeline", pipeline);
-        Bin bin = GstBinAPI.INSTANCE.gst_bin_new(null);
+        Bin bin = GstBinAPI.GSTBIN_API.gst_bin_new(null);
         assertNotNull("Failed to create bin", bin);
 
         Element src = ElementFactory.make("fakesrc", null);

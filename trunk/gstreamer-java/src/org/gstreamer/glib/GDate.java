@@ -34,6 +34,6 @@ public class GDate extends NativeObject {
     
     @Override
     protected void disposeNativeHandle(Pointer ptr) {
-        GlibAPI.glib.g_date_free(ptr);
+        GlibAPI.GLIB_API.g_date_free(ptr);
     }
 }

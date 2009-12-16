@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2009 Levente Farkas
  * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm>
  * Copyright (c) 2009 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
@@ -19,10 +20,6 @@
  */
 
 package org.gstreamer;
-
-import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
-import static org.gstreamer.lowlevel.GSignalAPI.gsignal;
-import static org.gstreamer.lowlevel.GValueAPI.gvalue;
 
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -47,6 +44,10 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.gstreamer.lowlevel.GSignalAPI.GSIGNAL_API;
+import static org.gstreamer.lowlevel.GValueAPI.GVALUE_API;
+
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
  * base class.  Not intended for direct use.
@@ -65,7 +66,7 @@ public abstract class GObject extends RefCountedObject {
         logger.entering("GObject", "<init>", new Object[] { init });
         if (init.ownsHandle) {
             strongReferences.put(this, Boolean.TRUE);
-            INSTANCE.g_object_add_toggle_ref(init.ptr, toggle, objectID);
+            GOBJECT_API.g_object_add_toggle_ref(init.ptr, toggle, objectID);
             if (!init.needRef) {
                 unref();
             }
@@ -88,29 +89,29 @@ public abstract class GObject extends RefCountedObject {
         final GType propType = propertySpec.value_type;
         
         GValue propValue = new GValue();
-        gvalue.g_value_init(propValue, propType);
+        GVALUE_API.g_value_init(propValue, propType);
         if (propType.equals(GType.INT)) {
-            gvalue.g_value_set_int(propValue, intValue(data));
+            GVALUE_API.g_value_set_int(propValue, intValue(data));
         } else if (propType.equals(GType.UINT)) {
-            gvalue.g_value_set_uint(propValue, intValue(data));
+            GVALUE_API.g_value_set_uint(propValue, intValue(data));
         } else if (propType.equals(GType.CHAR)) {
-            gvalue.g_value_set_char(propValue, (byte) intValue(data));
+            GVALUE_API.g_value_set_char(propValue, (byte) intValue(data));
         } else if (propType.equals(GType.UCHAR)) {
-            gvalue.g_value_set_uchar(propValue, (byte) intValue(data));
+            GVALUE_API.g_value_set_uchar(propValue, (byte) intValue(data));
         } else if (propType.equals(GType.LONG)) {
-            gvalue.g_value_set_long(propValue, new NativeLong(longValue(data)));
+            GVALUE_API.g_value_set_long(propValue, new NativeLong(longValue(data)));
         } else if (propType.equals(GType.ULONG)) {
-            gvalue.g_value_set_ulong(propValue, new NativeLong(longValue(data)));
+            GVALUE_API.g_value_set_ulong(propValue, new NativeLong(longValue(data)));
         } else if (propType.equals(GType.INT64)) {
-            gvalue.g_value_set_int64(propValue, longValue(data));
+            GVALUE_API.g_value_set_int64(propValue, longValue(data));
         } else if (propType.equals(GType.UINT64)) {
-            gvalue.g_value_set_uint64(propValue, longValue(data));
+            GVALUE_API.g_value_set_uint64(propValue, longValue(data));
         } else if (propType.equals(GType.BOOLEAN)) {
-            gvalue.g_value_set_boolean(propValue, booleanValue(data));
+            GVALUE_API.g_value_set_boolean(propValue, booleanValue(data));
         } else if (propType.equals(GType.FLOAT)) {
-            gvalue.g_value_set_float(propValue, floatValue(data));
+            GVALUE_API.g_value_set_float(propValue, floatValue(data));
         } else if (propType.equals(GType.DOUBLE)) {
-            gvalue.g_value_set_double(propValue, doubleValue(data));
+            GVALUE_API.g_value_set_double(propValue, doubleValue(data));
         } else if (propType.equals(GType.STRING)) {
             //
             // Special conversion of java URI to gstreamer compatible uri
@@ -123,29 +124,29 @@ public abstract class GObject extends RefCountedObject {
                     final String path = uri.getRawPath();
                     uriString = "file://" + path;
                 }
-                gvalue.g_value_set_string(propValue, uriString);
+                GVALUE_API.g_value_set_string(propValue, uriString);
             } else {
-                gvalue.g_value_set_string(propValue, data.toString());
+                GVALUE_API.g_value_set_string(propValue, data.toString());
             }
         } else if (propType.equals(GType.OBJECT)) {
-            gvalue.g_value_set_object(propValue, (GObject) data);
-        } else if (gvalue.g_value_type_transformable(GType.INT64, propType)) {
+            GVALUE_API.g_value_set_object(propValue, (GObject) data);
+        } else if (GVALUE_API.g_value_type_transformable(GType.INT64, propType)) {
             transform(data, GType.INT64, propValue);
-        } else if (gvalue.g_value_type_transformable(GType.LONG, propType)) {
+        } else if (GVALUE_API.g_value_type_transformable(GType.LONG, propType)) {
             transform(data, GType.LONG, propValue);
-        } else if (gvalue.g_value_type_transformable(GType.INT, propType)) {
+        } else if (GVALUE_API.g_value_type_transformable(GType.INT, propType)) {
             transform(data, GType.INT, propValue);
-        } else if (gvalue.g_value_type_transformable(GType.DOUBLE, propType)) {
+        } else if (GVALUE_API.g_value_type_transformable(GType.DOUBLE, propType)) {
             transform(data, GType.DOUBLE, propValue);
-        } else if (gvalue.g_value_type_transformable(GType.FLOAT, propType)) {
+        } else if (GVALUE_API.g_value_type_transformable(GType.FLOAT, propType)) {
             transform(data, GType.FLOAT, propValue);
         } else {
             // Old behaviour
-            INSTANCE.g_object_set(this, property, data);
+            GOBJECT_API.g_object_set(this, property, data);
             return;
         }
-        INSTANCE.g_object_set_property(this, property, propValue);
-        gvalue.g_value_unset(propValue); // Release any memory
+        GOBJECT_API.g_object_set_property(this, property, propValue);
+        GVALUE_API.g_value_unset(propValue); // Release any memory
     }
 
     /**
@@ -205,40 +206,40 @@ public abstract class GObject extends RefCountedObject {
         }
         final GType propType = propertySpec.value_type;
         GValue propValue = new GValue();
-        gvalue.g_value_init(propValue, propType);
-        INSTANCE.g_object_get_property(this, property, propValue);
+        GVALUE_API.g_value_init(propValue, propType);
+        GOBJECT_API.g_object_get_property(this, property, propValue);
         if (propType.equals(GType.INT)) {
-            return gvalue.g_value_get_int(propValue);
+            return GVALUE_API.g_value_get_int(propValue);
         } else if (propType.equals(GType.UINT)) {
-            return gvalue.g_value_get_uint(propValue);
+            return GVALUE_API.g_value_get_uint(propValue);
         } else if (propType.equals(GType.CHAR)) {
-            return Integer.valueOf(gvalue.g_value_get_char(propValue));
+            return Integer.valueOf(GVALUE_API.g_value_get_char(propValue));
         } else if (propType.equals(GType.UCHAR)) {
-            return Integer.valueOf(gvalue.g_value_get_uchar(propValue));
+            return Integer.valueOf(GVALUE_API.g_value_get_uchar(propValue));
         } else if (propType.equals(GType.LONG)) {
-            return gvalue.g_value_get_long(propValue).longValue();
+            return GVALUE_API.g_value_get_long(propValue).longValue();
         } else if (propType.equals(GType.ULONG)) {
-            return gvalue.g_value_get_ulong(propValue).longValue();
+            return GVALUE_API.g_value_get_ulong(propValue).longValue();
         } else if (propType.equals(GType.INT64)) {
-            return gvalue.g_value_get_int64(propValue);
+            return GVALUE_API.g_value_get_int64(propValue);
         } else if (propType.equals(GType.UINT64)) {
-            return gvalue.g_value_get_uint64(propValue);
+            return GVALUE_API.g_value_get_uint64(propValue);
         } else if (propType.equals(GType.BOOLEAN)) {
-            return gvalue.g_value_get_boolean(propValue);
+            return GVALUE_API.g_value_get_boolean(propValue);
         } else if (propType.equals(GType.FLOAT)) {
-            return gvalue.g_value_get_float(propValue);
+            return GVALUE_API.g_value_get_float(propValue);
         } else if (propType.equals(GType.DOUBLE)) {
-            return gvalue.g_value_get_double(propValue);
+            return GVALUE_API.g_value_get_double(propValue);
         } else if (propType.equals(GType.STRING)) {
-            return gvalue.g_value_get_string(propValue);
+            return GVALUE_API.g_value_get_string(propValue);
         } else if (propType.equals(GType.OBJECT)) {
-            return gvalue.g_value_dup_object(propValue);
-        } else if (gvalue.g_value_type_transformable(propType, GType.OBJECT)) {
-            return gvalue.g_value_dup_object(transform(propValue, GType.OBJECT));
-        } else if (gvalue.g_value_type_transformable(propType, GType.INT)) {
-            return gvalue.g_value_get_int(transform(propValue, GType.INT));
-        } else if (gvalue.g_value_type_transformable(propType, GType.INT64)) {
-            return gvalue.g_value_get_int64(transform(propValue, GType.INT64));
+            return GVALUE_API.g_value_dup_object(propValue);
+        } else if (GVALUE_API.g_value_type_transformable(propType, GType.OBJECT)) {
+            return GVALUE_API.g_value_dup_object(transform(propValue, GType.OBJECT));
+        } else if (GVALUE_API.g_value_type_transformable(propType, GType.INT)) {
+            return GVALUE_API.g_value_get_int(transform(propValue, GType.INT));
+        } else if (GVALUE_API.g_value_type_transformable(propType, GType.INT64)) {
+            return GVALUE_API.g_value_get_int64(transform(propValue, GType.INT64));
         }
         else {
             throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
@@ -253,7 +254,7 @@ public abstract class GObject extends RefCountedObject {
         }
 
         PointerByReference refPtr = new PointerByReference();
-        INSTANCE.g_object_get(this, property, refPtr, null);
+        GOBJECT_API.g_object_get(this, property, refPtr, null);
 
         if (refPtr != null) {
 
@@ -272,39 +273,39 @@ public abstract class GObject extends RefCountedObject {
     
     private static GValue transform(GValue src, GType dstType) {
         GValue dst = new GValue();
-        gvalue.g_value_init(dst, dstType);
-        gvalue.g_value_transform(src, dst);
+        GVALUE_API.g_value_init(dst, dstType);
+        GVALUE_API.g_value_transform(src, dst);
         return dst;
     }
     private static void transform(Object data, GType type, GValue dst) {
         GValue src = new GValue();
-        gvalue.g_value_init(src, type);
+        GVALUE_API.g_value_init(src, type);
         setGValue(src, type, data);
-        gvalue.g_value_transform(src, dst);
+        GVALUE_API.g_value_transform(src, dst);
     }
     private static boolean setGValue(GValue value, GType type, Object data) {
         if (type.equals(GType.INT)) {
-            gvalue.g_value_set_int(value, intValue(data));
+            GVALUE_API.g_value_set_int(value, intValue(data));
         } else if (type.equals(GType.UINT)) {
-            gvalue.g_value_set_uint(value, intValue(data));
+            GVALUE_API.g_value_set_uint(value, intValue(data));
         } else if (type.equals(GType.CHAR)) {
-            gvalue.g_value_set_char(value, (byte) intValue(data));
+            GVALUE_API.g_value_set_char(value, (byte) intValue(data));
         } else if (type.equals(GType.UCHAR)) {
-            gvalue.g_value_set_uchar(value, (byte) intValue(data));
+            GVALUE_API.g_value_set_uchar(value, (byte) intValue(data));
         } else if (type.equals(GType.LONG)) {
-            gvalue.g_value_set_long(value, new NativeLong(longValue(data)));
+            GVALUE_API.g_value_set_long(value, new NativeLong(longValue(data)));
         } else if (type.equals(GType.ULONG)) {
-            gvalue.g_value_set_ulong(value, new NativeLong(longValue(data)));
+            GVALUE_API.g_value_set_ulong(value, new NativeLong(longValue(data)));
         } else if (type.equals(GType.INT64)) {
-            gvalue.g_value_set_int64(value, longValue(data));
+            GVALUE_API.g_value_set_int64(value, longValue(data));
         } else if (type.equals(GType.UINT64)) {
-            gvalue.g_value_set_uint64(value, longValue(data));
+            GVALUE_API.g_value_set_uint64(value, longValue(data));
         } else if (type.equals(GType.BOOLEAN)) {
-            gvalue.g_value_set_boolean(value, booleanValue(data));
+            GVALUE_API.g_value_set_boolean(value, booleanValue(data));
         } else if (type.equals(GType.FLOAT)) {
-            gvalue.g_value_set_float(value, floatValue(data));
+            GVALUE_API.g_value_set_float(value, floatValue(data));
         } else if (type.equals(GType.DOUBLE)) {
-            gvalue.g_value_set_double(value, doubleValue(data));
+            GVALUE_API.g_value_set_double(value, doubleValue(data));
         } else {
             return false;
         }
@@ -355,16 +356,16 @@ public abstract class GObject extends RefCountedObject {
     
     protected void disposeNativeHandle(Pointer ptr) {
         logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
-        INSTANCE.g_object_remove_toggle_ref(ptr, toggle, objectID);
+        GOBJECT_API.g_object_remove_toggle_ref(ptr, toggle, objectID);
     }
     @Override
     protected void ref() {
-        INSTANCE.g_object_ref(this);
+        GOBJECT_API.g_object_ref(this);
     }
 
     @Override
     protected void unref() {
-        INSTANCE.g_object_unref(this);
+        GOBJECT_API.g_object_unref(this);
     }
     protected void invalidate() {
         try {
@@ -374,7 +375,7 @@ public abstract class GObject extends RefCountedObject {
                 ref();
 
                 // Disconnect the callback.
-                INSTANCE.g_object_remove_toggle_ref(handle(), toggle, objectID);
+                GOBJECT_API.g_object_remove_toggle_ref(handle(), toggle, objectID);
             }
             strongReferences.remove(this);
         } finally { 
@@ -384,7 +385,7 @@ public abstract class GObject extends RefCountedObject {
     
     protected NativeLong g_signal_connect(String signal, Callback callback) {
         logger.entering("GObject", "g_signal_connect", new Object[] { signal, callback });
-        return INSTANCE.g_signal_connect_data(this, signal, callback, null, null, 0);
+        return GOBJECT_API.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
 
 /*    private GList objectFor(Pointer ptr) {
@@ -422,7 +423,7 @@ public abstract class GObject extends RefCountedObject {
             }
         }
         synchronized protected void disconnect() {
-            INSTANCE.g_signal_handler_disconnect(GObject.this, id);
+            GOBJECT_API.g_signal_handler_disconnect(GObject.this, id);
         }
     }
     private synchronized final Map<Class<?>, Map<Object, GCallback>> getCallbackMap() {
@@ -520,7 +521,7 @@ public abstract class GObject extends RefCountedObject {
                 }
                 parameterTypes[i] = nativeType;
             }
-            NativeLong connectID = gsignal.g_signal_connect_data(GObject.this, 
+            NativeLong connectID = GSIGNAL_API.g_signal_connect_data(GObject.this, 
                     signal, this, null, null, 0);
             if (connectID.intValue() == 0) {
                 throw new IllegalArgumentException(String.format("Failed to connect signal '%s'", signal));
@@ -529,7 +530,7 @@ public abstract class GObject extends RefCountedObject {
         }
         synchronized protected void disconnect() {
             if (id != null && id.intValue() != 0) {
-                INSTANCE.g_signal_handler_disconnect(GObject.this, id);
+                GOBJECT_API.g_signal_handler_disconnect(GObject.this, id);
                 id = null;
             }
         }
@@ -624,11 +625,11 @@ public abstract class GObject extends RefCountedObject {
     }
 
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
-        return new GObjectAPI.GParamSpec(INSTANCE.g_object_class_find_property(handle().getPointer(0), propertyName));
+        return new GObjectAPI.GParamSpec(GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName));
     }
     
     private GObjectAPI.GParamSpecTypeSpecific findProperty(String propertyName, GType type) {
-    	Pointer ptr = INSTANCE.g_object_class_find_property(handle().getPointer(0), propertyName);
+    	Pointer ptr = GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName);
     	if (type.equals(GType.INT))
     		return new GObjectAPI.GParamSpecInt(ptr);
     	else if(type.equals(GType.UINT))

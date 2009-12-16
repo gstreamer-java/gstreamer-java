@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  *
@@ -19,8 +20,6 @@
 
 package org.gstreamer.lowlevel;
 
-import java.util.HashMap;
-
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.FlowReturn;
@@ -29,20 +28,14 @@ import org.gstreamer.elements.AppSrc;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
-import com.sun.jna.Library;
 import com.sun.jna.ptr.LongByReference;
-
 
 /**
  *
  * @author wayne
  */
-@SuppressWarnings("serial")
 public interface AppAPI extends com.sun.jna.Library {
-    AppAPI INSTANCE = GNative.loadLibrary("gstapp-0.10", 
-            AppAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
+	AppAPI APP_API = GstNative.load("gstapp", AppAPI.class);
 
     // AppSrc functions
     GType gst_app_src_get_type();

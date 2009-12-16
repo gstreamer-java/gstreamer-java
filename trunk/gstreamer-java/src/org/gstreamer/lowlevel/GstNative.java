@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -35,7 +36,7 @@ public final class GstNative {
         put(Library.OPTION_FUNCTION_MAPPER, new GFunctionMapper());
     }};
     public static <T extends Library> T load(Class<T> interfaceClass) {
-        return GNative.loadLibrary("gstreamer-0.10", interfaceClass, options);
+        return load("gstreamer", interfaceClass);
     }
     public static <T extends Library> T load(String libraryName, Class<T> interfaceClass) {
         return GNative.loadLibrary(libraryName + "-0.10", interfaceClass, options);

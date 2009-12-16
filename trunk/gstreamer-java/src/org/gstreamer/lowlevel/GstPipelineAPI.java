@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -28,7 +29,7 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
  * GstPipeline
  */
 public interface GstPipelineAPI extends com.sun.jna.Library {
-    GstPipelineAPI INSTANCE = GstNative.load(GstPipelineAPI.class);
+    GstPipelineAPI GSTPIPELINE_API = GstNative.load(GstPipelineAPI.class);
     
     @CallerOwnsReturn Pipeline gst_pipeline_new(String name);
     GType gst_pipeline_get_type();

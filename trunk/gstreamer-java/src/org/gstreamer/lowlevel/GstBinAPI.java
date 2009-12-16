@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -28,7 +29,7 @@ import com.sun.jna.Pointer;
  * GstBin functions
  */
 public interface GstBinAPI extends com.sun.jna.Library {
-    GstBinAPI INSTANCE = GstNative.load(GstBinAPI.class);
+    GstBinAPI GSTBIN_API = GstNative.load(GstBinAPI.class);
     @CallerOwnsReturn Pointer ptr_gst_bin_new(String name);
     @CallerOwnsReturn Bin gst_bin_new(String name);
     GType gst_bin_get_type();

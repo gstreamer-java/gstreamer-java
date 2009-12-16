@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -34,10 +35,11 @@ import com.sun.jna.Pointer;
  */
 @SuppressWarnings("serial")
 public interface GSignalAPI extends Library {
-    static GSignalAPI gsignal = GNative.loadLibrary("gobject-2.0", GSignalAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
-    
+	GSignalAPI GSIGNAL_API = GNative.loadLibrary("gobject-2.0", GSignalAPI.class,
+			new HashMap<String, Object>() {{
+				put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+			}});
+
     public static int G_CONNECT_AFTER = 1 << 0;
     public static int G_CONNECT_SWAPPED = 1 << 1;
     

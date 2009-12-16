@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -18,8 +19,6 @@
 
 package org.gstreamer.lowlevel;
 
-import java.util.HashMap;
-
 import org.gstreamer.interfaces.Mixer;
 import org.gstreamer.interfaces.MixerTrack;
 import org.gstreamer.lowlevel.GlibAPI.GList;
@@ -27,13 +26,8 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
-@SuppressWarnings("serial")
 public interface GstMixerAPI extends Library {
-    GstMixerAPI INSTANCE = GNative.loadLibrary("gstinterfaces-0.10", GstMixerAPI.class, 
-            new HashMap<String, Object>() {{
-                put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-            }}
-    );
+	GstMixerAPI GSTMIXER_API = GstNative.load("gstinterfaces", GstMixerAPI.class);
     GType gst_mixer_get_type();
     GType gst_mixer_track_get_type();
 

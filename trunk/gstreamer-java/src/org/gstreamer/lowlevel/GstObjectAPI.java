@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -29,7 +30,7 @@ import com.sun.jna.Pointer;
  * GstObject functions
  */
 public interface GstObjectAPI extends com.sun.jna.Library {
-    GstObjectAPI INSTANCE = GstNative.load(GstObjectAPI.class);
+    GstObjectAPI GSTOBJECT_API = GstNative.load(GstObjectAPI.class);
     
     GType gst_object_get_type();
     void gst_object_ref(GstObject ptr);

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -27,7 +28,9 @@ import com.sun.jna.Pointer;
  * gstparse functions
  */
 public interface GstParseAPI extends com.sun.jna.Library {
-    @CallerOwnsReturn Pipeline gst_parse_launch(String pipeline_description, Pointer[] error);
+	GstParseAPI GSTPARSE_API = GstNative.load(GstParseAPI.class);
+
+	@CallerOwnsReturn Pipeline gst_parse_launch(String pipeline_description, Pointer[] error);
     @CallerOwnsReturn Pipeline gst_parse_launchv(String[] pipeline_description, Pointer[] error);
     @CallerOwnsReturn Pipeline gst_parse_launch(String pipeline_description, GstAPI.GErrorStruct[] error);
     @CallerOwnsReturn Pipeline gst_parse_launchv(String[] pipeline_description, GstAPI.GErrorStruct[] error);

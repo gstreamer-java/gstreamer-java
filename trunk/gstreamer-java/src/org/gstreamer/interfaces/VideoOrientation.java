@@ -22,7 +22,7 @@ import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstVideoOrientationAPI;
 
 public class VideoOrientation extends GstInterface {
-	private static final GstVideoOrientationAPI gst() { return GstVideoOrientationAPI.INSTANCE; }
+	private static final GstVideoOrientationAPI gst() { return GstVideoOrientationAPI.GSTVIDEOORIENTATION_API; }
 
 	/**
 	 * Wraps the {@link Element} in a <tt>VideoOrientation</tt> interface

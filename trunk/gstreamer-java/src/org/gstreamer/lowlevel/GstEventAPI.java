@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -35,7 +36,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstEvent functions
  */
 public interface GstEventAPI extends com.sun.jna.Library {
-    GstEventAPI INSTANCE = GstNative.load(GstEventAPI.class);
+    GstEventAPI GSTEVENT_API = GstNative.load(GstEventAPI.class);
     
     String gst_event_type_get_name(EventType type);
     int gst_event_type_get_flags(EventType type);

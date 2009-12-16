@@ -30,7 +30,7 @@ import com.sun.jna.Pointer;
  *
  */
 public class TunerChannel extends GObject {
-	private static final GstTunerAPI gst() { return GstTunerAPI.INSTANCE; }    
+	private static final GstTunerAPI gst() { return GstTunerAPI.GSTTUNER_API; }    
     private final GstTunerAPI.TunerChannelStruct struct;
     private final Tuner tuner;
     

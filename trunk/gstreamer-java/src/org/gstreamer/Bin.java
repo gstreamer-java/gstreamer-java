@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
  *                    2004 Wim Taymans <wim@fluendo.com>
@@ -21,12 +22,12 @@
 package org.gstreamer;
 import java.util.List;
 
-import org.gstreamer.lowlevel.GstBinAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstBinAPI.GSTBIN_API;
 
 /**
  * Base class and element that can contain other elements.
@@ -55,8 +56,6 @@ import com.sun.jna.Pointer;
  *
  */
 public class Bin extends Element {
-    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
-    
     public static final int DEBUG_GRAPH_SHOW_MEDIA_TYPE         = (1<<0);
     public static final int DEBUG_GRAPH_SHOW_CAPS_DETAILS       = (1<<1);
     public static final int DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS = (1<<2);
@@ -71,7 +70,7 @@ public class Bin extends Element {
      * Creates a new Bin with a unique name.
      */
     public Bin() {
-        this(initializer(gst.ptr_gst_bin_new(null)));
+        this(initializer(GSTBIN_API.ptr_gst_bin_new(null)));
     }
     
     /**
@@ -79,7 +78,7 @@ public class Bin extends Element {
      * @param name The Name to assign to the new Bin
      */
     public Bin(String name) {
-        this(initializer(gst.ptr_gst_bin_new(name)));
+        this(initializer(GSTBIN_API.ptr_gst_bin_new(name)));
     }
     
     /**
@@ -96,7 +95,7 @@ public class Bin extends Element {
      * will not accept the element.
      */
     public boolean add(Element element) {
-        return gst.gst_bin_add(this, element);
+        return GSTBIN_API.gst_bin_add(this, element);
     }
     
     /**
@@ -106,7 +105,7 @@ public class Bin extends Element {
      * @see Bin#add(Element)
      */
     public void addMany(Element... elements) {
-        gst.gst_bin_add_many(this, elements);
+        GSTBIN_API.gst_bin_add_many(this, elements);
     }
     
     /**
@@ -121,7 +120,7 @@ public class Bin extends Element {
      * @return true if the element was successfully removed
      */
     public boolean remove(Element element) {
-        return gst.gst_bin_remove(this, element);
+        return GSTBIN_API.gst_bin_remove(this, element);
     }
     
     /**
@@ -130,7 +129,7 @@ public class Bin extends Element {
      * @param elements The list {@link Element} to remove
      */
     public void removeMany(Element... elements) {
-        gst.gst_bin_remove_many(this, elements);
+        GSTBIN_API.gst_bin_remove_many(this, elements);
     }
     
     private List<Element> elementList(Pointer iter) {
@@ -142,7 +141,7 @@ public class Bin extends Element {
      * @return The List of {@link Element}s.
      */
     public List<Element> getElements() {
-        return elementList(gst.gst_bin_iterate_elements(this));
+        return elementList(GSTBIN_API.gst_bin_iterate_elements(this));
     }
     /**
      * Gets an a list of the elements in this bin in topologically
@@ -151,7 +150,7 @@ public class Bin extends Element {
      * @return The List of {@link Element}s.
      */
     public List<Element> getElementsSorted() {
-        return elementList(gst.gst_bin_iterate_sorted(this));
+        return elementList(GSTBIN_API.gst_bin_iterate_sorted(this));
     }
     
     /**
@@ -163,7 +162,7 @@ public class Bin extends Element {
      * @return The List of {@link Element}s.
      */
     public List<Element> getElementsRecursive() {
-        return elementList(gst.gst_bin_iterate_recurse(this));
+        return elementList(GSTBIN_API.gst_bin_iterate_recurse(this));
     }
     
     /**
@@ -171,7 +170,7 @@ public class Bin extends Element {
      * @return The List of sink {@link Element}s.
      */
     public List<Element> getSinks() {
-        return elementList(gst.gst_bin_iterate_sinks(this));
+        return elementList(GSTBIN_API.gst_bin_iterate_sinks(this));
     }
     
     /**
@@ -179,7 +178,7 @@ public class Bin extends Element {
      * @return The List of source {@link Element}s.
      */
     public List<Element> getSources() {
-        return elementList(gst.gst_bin_iterate_sources(this));
+        return elementList(GSTBIN_API.gst_bin_iterate_sources(this));
     }
     
     /**
@@ -190,7 +189,7 @@ public class Bin extends Element {
      * @return The {@link Element} if found, else null.
      */
     public Element getElementByName(String name) {
-        return gst.gst_bin_get_by_name(this, name);
+        return GSTBIN_API.gst_bin_get_by_name(this, name);
     }
     
     /**
@@ -200,7 +199,7 @@ public class Bin extends Element {
      * @return The {@link Element} if found, else null.
      */
     public Element getElementByNameRecurseUp(String name) {
-        return gst.gst_bin_get_by_name_recurse_up(this, name);
+        return GSTBIN_API.gst_bin_get_by_name_recurse_up(this, name);
     }
     
     /**
@@ -210,7 +209,7 @@ public class Bin extends Element {
      * @return The {@link Element} that implements the interface.
      */
     public <T extends Element> T getElementByInterface(Class<T> iface) {
-        return iface.cast(gst.gst_bin_get_by_interface(this, GstTypes.typeFor(iface)));
+        return iface.cast(GSTBIN_API.gst_bin_get_by_interface(this, GstTypes.typeFor(iface)));
     }
     
     /**
@@ -237,9 +236,9 @@ public class Bin extends Element {
      */
     public void debugToDotFile(int details, String fileName, boolean timestampFileName) {
     	if (timestampFileName)
-    		gst._gst_debug_bin_to_dot_file_with_ts(this, details, fileName);
+    		GSTBIN_API._gst_debug_bin_to_dot_file_with_ts(this, details, fileName);
     	else 
-    		gst._gst_debug_bin_to_dot_file(this, details, fileName);	
+    		GSTBIN_API._gst_debug_bin_to_dot_file(this, details, fileName);	
     }
     
     /**

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -31,7 +32,7 @@ import com.sun.jna.Pointer;
  * GstElementFactory methods
  */
 public interface GstElementFactoryAPI extends com.sun.jna.Library {
-    GstElementFactoryAPI INSTANCE = GstNative.load(GstElementFactoryAPI.class);
+    GstElementFactoryAPI GSTELEMENTFACTORY_API = GstNative.load(GstElementFactoryAPI.class);
     
     GType gst_element_factory_get_type();
     ElementFactory gst_element_factory_find(String factoryName);

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
@@ -46,6 +47,11 @@ import org.gstreamer.interfaces.TunerNorm;
 
 import com.sun.jna.Pointer;
 
+import static org.gstreamer.lowlevel.BaseAPI.BASE_API;
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
+import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+
 /**
  *
  */
@@ -82,7 +88,7 @@ public class GstTypes {
                 gTypeInstanceMap.put(g_class, cls);
                 break;
             }
-            type = GObjectAPI.INSTANCE.g_type_parent(type);
+            type = GOBJECT_API.g_type_parent(type);
         }
         return cls;
     }
@@ -146,12 +152,12 @@ public class GstTypes {
         }
         
         private static final API gst = GstNative.load(API.class);
-        private static final Map<GType, Class<? extends NativeObject>> typeMap 
-                = new HashMap<GType, Class<? extends NativeObject>>() {{
+        private static final Map<GType, Class<? extends NativeObject>> typeMap = 
+        	new HashMap<GType, Class<? extends NativeObject>>() {{
 
             // GObject types
-            put(GstMixerAPI.INSTANCE.gst_mixer_track_get_type(), MixerTrack.class);
-            put(GstTunerAPI.INSTANCE.gst_tuner_norm_get_type(), TunerNorm.class);
+            put(GSTMIXER_API.gst_mixer_track_get_type(), MixerTrack.class);
+            put(GSTTUNER_API.gst_tuner_norm_get_type(), TunerNorm.class);
             // GstObject types
             put(gst.gst_element_get_type(), Element.class);
             put(gst.gst_element_factory_get_type(), ElementFactory.class);
@@ -169,8 +175,8 @@ public class GstTypes {
             put(gst.gst_event_get_type(), Event.class);
             put(gst.gst_message_get_type(), Message.class);
             put(gst.gst_query_get_type(), Query.class);
-            put(BaseAPI.INSTANCE.gst_base_sink_get_type(), BaseSink.class);
-            put(BaseAPI.INSTANCE.gst_base_src_get_type(), BaseSrc.class);
+            put(BASE_API.gst_base_sink_get_type(), BaseSink.class);
+            put(BASE_API.gst_base_src_get_type(), BaseSrc.class);
             
         }};
     }

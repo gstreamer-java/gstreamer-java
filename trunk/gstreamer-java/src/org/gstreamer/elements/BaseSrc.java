@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -17,22 +18,16 @@
  */
 package org.gstreamer.elements;
 
-import java.util.HashMap;
-
 import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.Format;
 import org.gstreamer.lowlevel.BaseAPI;
-import org.gstreamer.lowlevel.GNative;
-import org.gstreamer.lowlevel.GTypeMapper;
-
-import com.sun.jna.Library;
+import org.gstreamer.lowlevel.GstNative;
 
 public class BaseSrc extends Element {
 
-    private static interface API extends BaseAPI {
-        
+    private static interface BaseSrcAPI extends BaseAPI {        
         FlowReturn gst_base_src_wait_playing(BaseSrc src);
 
         void gst_base_src_set_live(BaseSrc src, boolean live);
@@ -50,21 +45,17 @@ public class BaseSrc extends Element {
         boolean gst_base_src_get_do_timestamp(BaseSrc src);
     }
 
-    @SuppressWarnings("serial")
-    private static final API gst = GNative.loadLibrary("gstbase-0.10", 
-            API.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
+    private static final BaseSrcAPI gst = GstNative.load("gstbase", BaseSrcAPI.class);
 
     public BaseSrc(Initializer init) {
         super(init);
     }
 
     public void setFormat(Format format) {
-        gst.gst_base_src_set_format(this, format);
+    	gst.gst_base_src_set_format(this, format);
     }
     public void setLive(boolean live) {
-        gst.gst_base_src_set_live(this, live);
+    	gst.gst_base_src_set_live(this, live);
     }
     public boolean isLive() {
         return gst.gst_base_src_is_live(this);

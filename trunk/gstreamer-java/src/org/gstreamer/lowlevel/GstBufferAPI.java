@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -31,7 +32,7 @@ import com.sun.jna.Pointer;
  * GstBuffer functions
  */
 public interface GstBufferAPI extends com.sun.jna.Library {
-    GstBufferAPI INSTANCE = GstNative.load(GstBufferAPI.class);
+    GstBufferAPI GSTBUFFER_API = GstNative.load(GstBufferAPI.class);
     
     GType gst_buffer_get_type();
     @CallerOwnsReturn Buffer gst_buffer_new();

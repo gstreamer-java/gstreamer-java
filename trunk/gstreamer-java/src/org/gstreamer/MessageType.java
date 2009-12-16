@@ -23,8 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gstreamer.lowlevel.EnumMapper;
-import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.IntegerEnum;
+
+import static org.gstreamer.lowlevel.GstMessageAPI.GSTMESSAGE_API;
 
 /**
  * The different message types that are available.
@@ -124,7 +125,7 @@ public enum MessageType implements IntegerEnum {
     ANY(~0);
     MessageType(int type) {
         this.type = type;
-        this.name = GstMessageAPI.INSTANCE.gst_message_type_get_name(this);
+        this.name = GSTMESSAGE_API.gst_message_type_get_name(this);
     }
     
     /**

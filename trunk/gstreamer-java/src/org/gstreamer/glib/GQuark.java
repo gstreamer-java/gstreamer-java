@@ -30,11 +30,11 @@ public class GQuark {
     }
     
     public GQuark valueOf(String quark) {
-        return GObjectAPI.INSTANCE.g_quark_from_string(quark);
+        return GObjectAPI.GOBJECT_API.g_quark_from_string(quark);
     }
     
     @Override
     public String toString() {
-        return GObjectAPI.INSTANCE.g_quark_to_string(this);
+        return GObjectAPI.GOBJECT_API.g_quark_to_string(this);
     }
 }

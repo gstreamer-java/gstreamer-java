@@ -18,7 +18,7 @@
 
 package org.gstreamer.glib;
 
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -70,7 +70,7 @@ public class MainContextExecutorService extends AbstractExecutorService implemen
             // Only trigger the callback if there were no existing elements in the list
             // otherwise it is already triggered
             if (empty) {
-                idleSource = glib.g_idle_source_new();
+                idleSource = GLIB_API.g_idle_source_new();
                 idleSource.setCallback(idleCallback);
                 idleSource.attach(context);
             }
@@ -155,12 +155,12 @@ public class MainContextExecutorService extends AbstractExecutorService implemen
              */
             if ((milliseconds % 1000) == 0) {
                 try {
-                    source = glib.g_timeout_source_new_seconds(milliseconds / 1000);
+                    source = GLIB_API.g_timeout_source_new_seconds(milliseconds / 1000);
                 } catch (UnsatisfiedLinkError e) {
-                    source = glib.g_timeout_source_new(milliseconds);
+                    source = GLIB_API.g_timeout_source_new(milliseconds);
                 }
             } else {
-                source = glib.g_timeout_source_new(milliseconds);
+                source = GLIB_API.g_timeout_source_new(milliseconds);
             }
             source.setCallback(callback);
             source.attach(context);

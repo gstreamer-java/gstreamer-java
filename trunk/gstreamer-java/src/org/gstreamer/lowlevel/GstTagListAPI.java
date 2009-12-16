@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -30,7 +31,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstTagList functions
  */
 public interface GstTagListAPI extends com.sun.jna.Library {
-    GstTagListAPI INSTANCE = GstNative.load(GstTagListAPI.class);
+    GstTagListAPI GSTTAGLIST_API = GstNative.load(GstTagListAPI.class);
     
     interface TagForeachFunc extends GstCallback {
         void callback(Pointer list, String tag, Pointer user_data);

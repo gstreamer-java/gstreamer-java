@@ -18,8 +18,9 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
+
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 /**
  * Base gstreamer error type.
@@ -34,7 +35,7 @@ public class GError {
     GError(GErrorStruct error) {
         code = error.getCode();
         message = error.getMessage();
-        GlibAPI.glib.g_error_free(error);
+        GLIB_API.g_error_free(error);
     }
     
     /**

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -29,7 +30,7 @@ import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
 public interface GstTunerAPI extends Library {
-    GstTunerAPI INSTANCE = GstNative.load("gstinterfaces", GstTunerAPI.class);
+    GstTunerAPI GSTTUNER_API = GstNative.load("gstinterfaces", GstTunerAPI.class);
     
     GType gst_tuner_get_type();
     GType gst_tuner_channel_get_type();

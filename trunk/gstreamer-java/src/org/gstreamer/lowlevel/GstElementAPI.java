@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -46,7 +47,7 @@ import com.sun.jna.Pointer;
  * GstElement methods
  */
 public interface GstElementAPI extends com.sun.jna.Library {
-    GstElementAPI INSTANCE = GstNative.load(GstElementAPI.class);
+    GstElementAPI GSTELEMENT_API = GstNative.load(GstElementAPI.class);
     
     GType gst_element_get_type();
     StateChangeReturn gst_element_set_state(Element elem, State state);

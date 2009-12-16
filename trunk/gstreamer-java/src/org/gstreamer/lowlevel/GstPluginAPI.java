@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -25,7 +26,7 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
  * GstPlugin functions
  */
 public interface GstPluginAPI extends com.sun.jna.Library {
-    
+	GstPluginAPI GSTPLUGIN_API = GstNative.load(GstPluginAPI.class);    
     
     GType gst_plugin_get_type();
 

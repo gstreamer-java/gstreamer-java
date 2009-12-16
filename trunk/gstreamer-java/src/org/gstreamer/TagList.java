@@ -18,7 +18,7 @@
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 import java.util.AbstractList;
 import java.util.HashMap;
@@ -269,7 +269,7 @@ public class TagList extends Structure {
                         return null;
                     }
                     String ret = value[0].getString(0, false);
-                    glib.g_free(value[0]);
+                    GLIB_API.g_free(value[0]);
                     return ret;
                 }
             });

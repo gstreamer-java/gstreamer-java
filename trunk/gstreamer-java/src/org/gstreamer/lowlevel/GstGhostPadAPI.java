@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -29,7 +30,7 @@ import com.sun.jna.Pointer;
  * GstGhostPad functions
  */
 public interface GstGhostPadAPI extends com.sun.jna.Library {
-    GstGhostPadAPI INSTANCE = GstNative.load(GstGhostPadAPI.class);
+    GstGhostPadAPI GSTGHOSTPAD_API = GstNative.load(GstGhostPadAPI.class);
     
     GType gst_ghost_pad_get_type();
     

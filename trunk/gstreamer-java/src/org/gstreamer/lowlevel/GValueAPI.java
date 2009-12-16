@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  *
@@ -35,9 +36,10 @@ import com.sun.jna.Pointer;
  */
 @SuppressWarnings("serial")
 public interface GValueAPI extends Library {
-    static GValueAPI gvalue = GNative.loadLibrary("gobject-2.0", GValueAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
+    GValueAPI GVALUE_API = GNative.loadLibrary("gobject-2.0", GValueAPI.class,
+    		new HashMap<String, Object>() {{
+    			put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+    		}});
 
     static class GValue extends com.sun.jna.Structure {
         /*< private >*/
@@ -109,19 +111,19 @@ public interface GValueAPI extends Library {
         
         public Object getValue(int i) {
            GType valType = values[i].g_type;
-           if (valType.equals(GType.INT)) { return new Integer(gvalue.g_value_get_int(values[i]));
-           } else if (valType.equals(GType.UINT)) { return new Integer(gvalue.g_value_get_uint(values[i]));
-           } else if (valType.equals(GType.CHAR)) { return new Byte(gvalue.g_value_get_char(values[i]));
-           } else if (valType.equals(GType.UCHAR)) { return new Byte(gvalue.g_value_get_uchar(values[i]));
-           } else if (valType.equals(GType.LONG)) { return new Long(gvalue.g_value_get_long(values[i]).longValue());
-           } else if (valType.equals(GType.ULONG)) { return new Long(gvalue.g_value_get_ulong(values[i]).longValue());
-           } else if (valType.equals(GType.INT64)) { return new Long(gvalue.g_value_get_int64(values[i]));
-           } else if (valType.equals(GType.UINT64)) { return new Long(gvalue.g_value_get_uint64(values[i]));
-           } else if (valType.equals(GType.BOOLEAN)) { return new Boolean(gvalue.g_value_get_boolean(values[i]));
-           } else if (valType.equals(GType.FLOAT)) { return new Float(gvalue.g_value_get_float(values[i]));
-           } else if (valType.equals(GType.DOUBLE)) { return new Double(gvalue.g_value_get_double(values[i]));
-           } else if (valType.equals(GType.STRING)) { return gvalue.g_value_get_string(values[i]);
-           } else if (valType.equals(GType.OBJECT)) { return gvalue.g_value_get_object(values[i]);
+           if (valType.equals(GType.INT)) { return new Integer(GVALUE_API.g_value_get_int(values[i]));
+           } else if (valType.equals(GType.UINT)) { return new Integer(GVALUE_API.g_value_get_uint(values[i]));
+           } else if (valType.equals(GType.CHAR)) { return new Byte(GVALUE_API.g_value_get_char(values[i]));
+           } else if (valType.equals(GType.UCHAR)) { return new Byte(GVALUE_API.g_value_get_uchar(values[i]));
+           } else if (valType.equals(GType.LONG)) { return new Long(GVALUE_API.g_value_get_long(values[i]).longValue());
+           } else if (valType.equals(GType.ULONG)) { return new Long(GVALUE_API.g_value_get_ulong(values[i]).longValue());
+           } else if (valType.equals(GType.INT64)) { return new Long(GVALUE_API.g_value_get_int64(values[i]));
+           } else if (valType.equals(GType.UINT64)) { return new Long(GVALUE_API.g_value_get_uint64(values[i]));
+           } else if (valType.equals(GType.BOOLEAN)) { return new Boolean(GVALUE_API.g_value_get_boolean(values[i]));
+           } else if (valType.equals(GType.FLOAT)) { return new Float(GVALUE_API.g_value_get_float(values[i]));
+           } else if (valType.equals(GType.DOUBLE)) { return new Double(GVALUE_API.g_value_get_double(values[i]));
+           } else if (valType.equals(GType.STRING)) { return GVALUE_API.g_value_get_string(values[i]);
+           } else if (valType.equals(GType.OBJECT)) { return GVALUE_API.g_value_get_object(values[i]);
            }
            return null;
         }

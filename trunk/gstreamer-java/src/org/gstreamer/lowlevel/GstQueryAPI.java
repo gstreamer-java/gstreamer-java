@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -33,7 +34,7 @@ import com.sun.jna.Pointer;
  * GstQuery functions
  */
 public interface GstQueryAPI extends com.sun.jna.Library {
-    GstQueryAPI INSTANCE = GstNative.load(GstQueryAPI.class);
+    GstQueryAPI GSTQUERY_API = GstNative.load(GstQueryAPI.class);
     
     String gst_query_type_get_name(QueryType query);
     GQuark gst_query_type_to_quark(QueryType query);

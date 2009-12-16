@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -17,8 +18,6 @@
  */
 
 package org.gstreamer.lowlevel;
-
-import java.util.HashMap;
 
 import org.gstreamer.ActivateMode;
 import org.gstreamer.Buffer;
@@ -39,14 +38,10 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
 //import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
-@SuppressWarnings("serial")
 public interface BaseAPI extends Library {
-    BaseAPI INSTANCE = GNative.loadLibrary("gstbase-0.10", 
-            BaseAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
-    public static final int GST_PADDING = GstAPI.GST_PADDING;
-    public static final int GST_PADDING_LARGE = GstAPI.GST_PADDING_LARGE;
+	BaseAPI BASE_API = GstNative.load("gstbase", BaseAPI.class);
+    int GST_PADDING = GstAPI.GST_PADDING;
+    int GST_PADDING_LARGE = GstAPI.GST_PADDING_LARGE;
     
     GType gst_base_src_get_type();
     GType gst_base_sink_get_type();

@@ -18,7 +18,7 @@
 
 package org.gstreamer.lowlevel;
 
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -43,7 +43,7 @@ public class MainLoop extends RefCountedObject {
      * 
      */
     public MainLoop() {
-        super(initializer(glib.g_main_loop_new(Gst.getMainContext(), false)));
+        super(initializer(GLIB_API.g_main_loop_new(Gst.getMainContext(), false)));
     }
     
     /**
@@ -63,7 +63,7 @@ public class MainLoop extends RefCountedObject {
     public void quit() {
         invokeLater(new Runnable() {
             public void run() {
-                glib.g_main_loop_quit(MainLoop.this);
+                GLIB_API.g_main_loop_quit(MainLoop.this);
             }
         });
     }
@@ -74,7 +74,7 @@ public class MainLoop extends RefCountedObject {
      * called.
      */
     public void run() {
-        glib.g_main_loop_run(this);
+        GLIB_API.g_main_loop_run(this);
     }
     
     /**
@@ -83,7 +83,7 @@ public class MainLoop extends RefCountedObject {
      * @return <tt>true</tt> if the main loop is currently being run.
      */
     public boolean isRunning() {
-        return glib.g_main_loop_is_running(this);
+        return GLIB_API.g_main_loop_is_running(this);
     }
     
     /**
@@ -92,7 +92,7 @@ public class MainLoop extends RefCountedObject {
      * @return a main context.
      */
     public GMainContext getMainContext() {
-        return glib.g_main_loop_get_context(this);
+        return GLIB_API.g_main_loop_get_context(this);
     }
     
     /**
@@ -138,7 +138,7 @@ public class MainLoop extends RefCountedObject {
             for (Runnable r : tasks) {
                 r.run();
             }
-            glib.g_source_unref(source);
+            GLIB_API.g_source_unref(source);
             return false;
         }
     };
@@ -157,8 +157,8 @@ public class MainLoop extends RefCountedObject {
             // Only trigger the callback if there were no existing elements in the list
             // otherwise it is already triggered
             if (empty) {
-                GSource source = glib.g_idle_source_new();
-                glib.g_source_set_callback(source, bgCallback, source, null);
+                GSource source = GLIB_API.g_idle_source_new();
+                GLIB_API.g_source_set_callback(source, bgCallback, source, null);
                 source.attach(Gst.getMainContext());
                 source.disown(); // gets destroyed in the callback
             }
@@ -172,21 +172,21 @@ public class MainLoop extends RefCountedObject {
      * Increases the reference count on the native {@code GMainLoop}
      */
     protected void ref() {
-        glib.g_main_loop_ref(this);
+        GLIB_API.g_main_loop_ref(this);
     }
     
     /**
      * Decreases the reference count on the native {@code GMainLoop}
      */
     protected void unref() {
-        glib.g_main_loop_unref(this);
+        GLIB_API.g_main_loop_unref(this);
     }
     
     /**
      * Frees the native {@code GMainLoop}
      */
     protected void disposeNativeHandle(Pointer ptr) {
-        glib.g_main_loop_unref(ptr);
+        GLIB_API.g_main_loop_unref(ptr);
     }
     
     //--------------------------------------------------------------------------

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -30,18 +31,16 @@ import com.sun.jna.ptr.PointerByReference;
  *
  */
 public interface GstAPI extends Library {
-    static GstAPI gst = GstNative.load(GstAPI.class);
+    GstAPI GST_API = GstNative.load(GstAPI.class);
+    int GST_PADDING = 4;
+    int GST_PADDING_LARGE = 20;
+        
     @CallerOwnsReturn String gst_version_string();
     void gst_version(long[] major, long[] minor, long[] micro, long[] nano);
     boolean gst_init(IntByReference argc, PointerByReference argv);
     boolean gst_init_check(IntByReference argc, PointerByReference argv, Pointer[] err);
     boolean gst_init_check(IntByReference argc, PointerByReference argv, GErrorStruct[] err);
     void gst_deinit();
-    
-    
-    static final int GST_PADDING = 4;
-    static final int GST_PADDING_LARGE = 20;
-    
     
     public static final class GstSegmentStruct extends com.sun.jna.Structure {
         /*< public >*/

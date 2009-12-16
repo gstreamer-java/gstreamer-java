@@ -34,7 +34,7 @@ import com.sun.jna.Platform;
  * Interface for elements providing tuner operations
  */
 public class XOverlay extends GstInterface {
-    private static final GstXOverlayAPI gst() { return GstXOverlayAPI.INSTANCE; }
+    private static final GstXOverlayAPI gst() { return GstXOverlayAPI.GSTXOVERLAY_API; }
     
     /**
      * Wraps the {@link Element} in a <tt>XOverlay</tt> interface

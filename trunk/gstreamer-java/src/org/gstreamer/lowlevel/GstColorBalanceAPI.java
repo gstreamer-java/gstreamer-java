@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * 
  * This file is part of gstreamer-java.
@@ -26,7 +27,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface GstColorBalanceAPI extends Library {
-	GstColorBalanceAPI INSTANCE = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
+	GstColorBalanceAPI GSTCOLORBALANCE_API = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
 
 	GType gst_color_balance_get_type();
 

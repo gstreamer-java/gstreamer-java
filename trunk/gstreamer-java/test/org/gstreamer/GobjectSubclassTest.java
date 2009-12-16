@@ -19,13 +19,9 @@
 
 package org.gstreamer;
 
-import static org.junit.Assert.assertEquals;
-
 import org.gstreamer.lowlevel.BaseAPI;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GInstanceInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInstance;
@@ -36,6 +32,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.sun.jna.Pointer;
+
+import static org.junit.Assert.assertEquals;
+import static org.gstreamer.lowlevel.GstPadTemplateAPI.GSTPADTEMPLATE_API;
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 /**
  *
@@ -66,9 +66,6 @@ public class GobjectSubclassTest {
     }
     @Test 
     public void registerNewGObjectClass() throws Exception {
-        final GObjectAPI gobj = GObjectAPI.INSTANCE;
-        final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
-        
         final PadTemplate template = new PadTemplate("src", PadDirection.SRC, 
                 Caps.anyCaps());
         final boolean[] classInitCalled  = { false };
@@ -81,7 +78,7 @@ public class GobjectSubclassTest {
         final GObjectAPI.GBaseInitFunc baseInit = new GObjectAPI.GBaseInitFunc() {
 
             public void callback(Pointer g_class) {
-                gst.gst_element_class_add_pad_template(g_class, template);                    
+                GSTPADTEMPLATE_API.gst_element_class_add_pad_template(g_class, template);                    
             }
         };
         final boolean[] instanceInitCalled  = { false };
@@ -103,14 +100,14 @@ public class GobjectSubclassTest {
         info.base_init = baseInit;
         info.instance_size = 1024;        
         
-        GType type = gobj.g_type_register_static(BaseAPI.INSTANCE.gst_base_src_get_type(), 
+        GType type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_src_get_type(), 
                 name, info, 0);
         System.out.println("New type=" + type);
-        assertEquals("Name incorrect", name, gobj.g_type_name(type));
-        assertEquals("Cannot locate type by name", type, gobj.g_type_from_name(name));
+        assertEquals("Name incorrect", name, GOBJECT_API.g_type_name(type));
+        assertEquals("Cannot locate type by name", type, GOBJECT_API.g_type_from_name(name));
         
-        //Pointer instance = gobj.g_type_create_instance(type);
-        gobj.g_object_new(type, new Object[0]);
+        //Pointer instance = GOBJECT_API.g_type_create_instance(type);
+        GOBJECT_API.g_object_new(type, new Object[0]);
         
     }
 }

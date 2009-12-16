@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * 
  * This file is part of gstreamer-java.
@@ -24,7 +25,7 @@ import org.gstreamer.interfaces.Navigation;
 import com.sun.jna.Library;
 
 public interface GstNavigationAPI extends Library {
-	GstNavigationAPI INSTANCE = GstNative.load("gstinterfaces", GstNavigationAPI.class);
+	GstNavigationAPI GSTNAVIGATION_API = GstNative.load("gstinterfaces", GstNavigationAPI.class);
 
 	GType gst_navigation_get_type();
 

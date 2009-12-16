@@ -21,13 +21,14 @@ package org.gstreamer;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstStructureAPI;
-import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+
+import static org.gstreamer.lowlevel.GstValueAPI.GSTVALUE_API;
 
 /**
  * Generic structure containing fields of names and values.
@@ -148,11 +149,11 @@ public class Structure extends NativeObject {
     }
     public void setIntegerRange(String field, Integer min, Integer max) {
         gst.gst_structure_set(this, field, 
-                GstValueAPI.INSTANCE.gst_int_range_get_type(), min, max);
+                GSTVALUE_API.gst_int_range_get_type(), min, max);
     }
     public void setDoubleRange(String field, Double min, Double max) {
         gst.gst_structure_set(this, field, 
-                GstValueAPI.INSTANCE.gst_double_range_get_type(), min, max);
+                GSTVALUE_API.gst_double_range_get_type(), min, max);
     }
     
     public boolean fixateNearestInteger(String field, Integer value) {

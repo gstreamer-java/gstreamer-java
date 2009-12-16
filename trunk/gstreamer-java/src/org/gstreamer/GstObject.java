@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
  *                    2000 Wim Taymans <wtay@chello.be>
@@ -27,11 +28,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstObjectAPI;
 import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstObjectAPI.GSTOBJECT_API;
 
 /**
  * Base class for the GStreamer object hierarchy
@@ -43,7 +44,6 @@ import com.sun.jna.Pointer;
  */
 public class GstObject extends GObject {
     private static Logger logger = Logger.getLogger(GstObject.class.getName());
-    private static final GstObjectAPI gst = GstNative.load(GstObjectAPI.class);
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
     
@@ -97,7 +97,7 @@ public class GstObject extends GObject {
      */
     public boolean setName(String name) {
         logger.entering("GstObject", "setName", name);
-        return gst.gst_object_set_name(this, name);
+        return GSTOBJECT_API.gst_object_set_name(this, name);
     }
     
     /**
@@ -109,7 +109,7 @@ public class GstObject extends GObject {
      */
     public String getName() {
         logger.entering("GstObject", "getName");
-        return gst.gst_object_get_name(this);
+        return GSTOBJECT_API.gst_object_get_name(this);
     }
     
     @Override
@@ -117,17 +117,17 @@ public class GstObject extends GObject {
         return String.format("%s: [%s]", getClass().getSimpleName(), getName());
     }
     protected void ref() {
-        gst.gst_object_ref(this);
+        GSTOBJECT_API.gst_object_ref(this);
     }
     protected void unref() {
-        gst.gst_object_unref(this);
+        GSTOBJECT_API.gst_object_unref(this);
     }
     void sink() {
-        gst.gst_object_sink(this);
+        GSTOBJECT_API.gst_object_sink(this);
     }
     
     public GstObject getParent() {
-    	return gst.gst_object_get_parent(this);
+    	return GSTOBJECT_API.gst_object_get_parent(this);
     }
     
     public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
