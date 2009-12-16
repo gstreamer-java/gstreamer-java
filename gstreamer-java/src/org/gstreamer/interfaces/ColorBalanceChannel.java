@@ -24,7 +24,7 @@ import org.gstreamer.lowlevel.GstColorBalanceAPI;
 import com.sun.jna.Pointer;
 
 public class ColorBalanceChannel extends GObject {
-	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.INSTANCE; }
+	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.GSTCOLORBALANCE_API; }
 	private final GstColorBalanceAPI.ColorBalanceChannelStruct struct;
 	private final ColorBalance colorBalance;
 

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -39,7 +40,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstMessage functions
  */
 public interface GstMessageAPI extends com.sun.jna.Library {
-    GstMessageAPI INSTANCE = GstNative.load(GstMessageAPI.class);
+    GstMessageAPI GSTMESSAGE_API = GstNative.load(GstMessageAPI.class);
     
     public final class MessageStruct extends com.sun.jna.Structure {
         public volatile MiniObjectStruct mini_object;

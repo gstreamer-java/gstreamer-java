@@ -19,8 +19,6 @@
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GlibAPI.glib;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +40,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 /**
  * The {@link Bus} is an object responsible for delivering {@link Message}s in
@@ -370,7 +369,7 @@ public class Bus extends GstObject {
                 gst.gst_message_parse_error(msg, err, null);
                 GErrorStruct error = new GErrorStruct(err.getValue());
                 listener.errorMessage(msg.getSource(), error.getCode(), error.getMessage());
-                glib.g_error_free(err.getValue());
+                GLIB_API.g_error_free(err.getValue());
                 return true;
             }
         });
@@ -397,7 +396,7 @@ public class Bus extends GstObject {
                 gst.gst_message_parse_warning(msg, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
                 listener.warningMessage(msg.getSource(), error.getCode(), error.getMessage());
-                glib.g_error_free(err.getValue());
+                GLIB_API.g_error_free(err.getValue());
                 return true;
             }
         });
@@ -424,7 +423,7 @@ public class Bus extends GstObject {
                 gst.gst_message_parse_info(msg, err, null);                
                 GErrorStruct error = new GErrorStruct(err.getValue());
                 listener.infoMessage(msg.getSource(), error.getCode(), error.getMessage());
-                glib.g_error_free(err.getValue());
+                GLIB_API.g_error_free(err.getValue());
                 return true;
             }
         });

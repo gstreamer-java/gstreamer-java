@@ -23,7 +23,7 @@ import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstNavigationAPI;
 
 public class Navigation extends GstInterface {
-	private static final GstNavigationAPI gst() { return GstNavigationAPI.INSTANCE; }
+	private static final GstNavigationAPI gst() { return GstNavigationAPI.GSTNAVIGATION_API; }
 
 	/**
 	 * Wraps the {@link Element} in a <tt>Navigation</tt> interface

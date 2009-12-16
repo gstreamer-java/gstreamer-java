@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -17,8 +18,6 @@
  */
 
 package org.gstreamer.elements;
-
-import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
 
 import java.io.IOException;
 import java.lang.annotation.ElementType;
@@ -41,8 +40,6 @@ import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseAPI;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
@@ -51,9 +48,10 @@ import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.gstreamer.lowlevel.GstPadTemplateAPI.GSTPADTEMPLATE_API;
+
 abstract public class CustomSrc extends BaseSrc {
-    private static interface API extends GstPadTemplateAPI {}
-    private static final API gst = GstNative.load(API.class);
     private final static Logger logger = Logger.getLogger(CustomSrc.class.getName());
     private static final Map<Class<? extends CustomSrc>, CustomSrcInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSrc>, CustomSrcInfo>();
 
@@ -81,7 +79,7 @@ abstract public class CustomSrc extends BaseSrc {
         BaseAPI.EventNotify event;
     }
     protected CustomSrc(Class<? extends CustomSrc> subClass, String name) {
-        super(initializer(INSTANCE.g_object_new(getSubclassType(subClass), "name", name)));
+        super(initializer(GOBJECT_API.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSrcInfo getSubclassInfo(Class<? extends CustomSrc> subClass) {
        synchronized (subClass) {
@@ -431,7 +429,7 @@ abstract public class CustomSrc extends BaseSrc {
             public void callback(Pointer g_class) {
                 info.caps = Caps.anyCaps();
                 info.template = new PadTemplate("src", PadDirection.SRC, info.caps);
-                gst.gst_element_class_add_pad_template(g_class, info.template);
+                GSTPADTEMPLATE_API.gst_element_class_add_pad_template(g_class, info.template);
             }
         };
         
@@ -445,7 +443,7 @@ abstract public class CustomSrc extends BaseSrc {
         ginfo.class_size = (short)new BaseAPI.GstBaseSrcClass().size();
         ginfo.instance_size = (short)new BaseAPI.GstBaseSrcStruct().size();
         
-        GType type = INSTANCE.g_type_register_static(BaseAPI.INSTANCE.gst_base_src_get_type(), 
+        GType type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_src_get_type(), 
                 srcClass.getSimpleName(), ginfo, 0);
         info.type = type;
     }

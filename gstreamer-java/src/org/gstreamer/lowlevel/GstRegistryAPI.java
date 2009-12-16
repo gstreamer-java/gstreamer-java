@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -30,6 +31,7 @@ import com.sun.jna.Pointer;
  * GstRegistry functions
  */
 public interface GstRegistryAPI extends com.sun.jna.Library {
+	GstRegistryAPI GSTREGISTRY_API = GstNative.load(GstRegistryAPI.class);
     /* function for filters */
     static interface PluginFilter extends GstCallback {
         /**

@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -18,12 +19,12 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.GstMiniObjectAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
 
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstMiniObjectAPI.GSTMINIOBJECT_API;
 
 /**
  * Lightweight base class for the GStreamer object hierarchy
@@ -34,7 +35,6 @@ import com.sun.jna.Pointer;
  * It has no properties and no signal-support though.
  */
 public class MiniObject extends RefCountedObject {
-    private static final GstMiniObjectAPI gst = GstNative.load(GstMiniObjectAPI.class);
     /**
      * Creates a new instance of MiniObject
      */
@@ -51,7 +51,7 @@ public class MiniObject extends RefCountedObject {
      * @return true if the object is writable.
      */
     public boolean isWritable() {
-        return gst.gst_mini_object_is_writable(this);
+        return GSTMINIOBJECT_API.gst_mini_object_is_writable(this);
     }
     
     /**
@@ -62,7 +62,7 @@ public class MiniObject extends RefCountedObject {
      * @return a writable version of this MiniObject.
      */
     protected <T extends MiniObject> T makeWritable(Class<T> subclass) {
-        MiniObject result = gst.gst_mini_object_make_writable(this);
+        MiniObject result = GSTMINIOBJECT_API.gst_mini_object_make_writable(this);
         if (result == null) {
             throw new NullPointerException("Could not make " + subclass.getSimpleName() 
                     + " writable");
@@ -73,18 +73,18 @@ public class MiniObject extends RefCountedObject {
      * FIXME: this one returns a new MiniObject, so we need to replace the Pointer
      * with the new one.  Messy.
     public void makeWritable() {
-        gst.gst_mini_object_make_writable(this);
+        GSTMINIOBJECT_API.gst_mini_object_make_writable(this);
     }
     */
     protected void ref() {
-        gst.gst_mini_object_ref(this);
+        GSTMINIOBJECT_API.gst_mini_object_ref(this);
     }
     protected void unref() {
-        gst.gst_mini_object_unref(this);
+        GSTMINIOBJECT_API.gst_mini_object_unref(this);
     }
     
     protected void disposeNativeHandle(Pointer ptr) {
-        gst.gst_mini_object_unref(ptr);
+        GSTMINIOBJECT_API.gst_mini_object_unref(ptr);
     }
     
     public static <T extends MiniObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {        

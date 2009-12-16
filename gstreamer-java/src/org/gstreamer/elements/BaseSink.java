@@ -24,7 +24,7 @@ import org.gstreamer.Element;
 import org.gstreamer.lowlevel.BaseAPI;
 
 public class BaseSink extends Element {
-	private static final BaseAPI gst() { return BaseAPI.INSTANCE; }
+	private static final BaseAPI gst() { return BaseAPI.BASE_API; }
     public BaseSink(Initializer init) {
         super(init);
     }

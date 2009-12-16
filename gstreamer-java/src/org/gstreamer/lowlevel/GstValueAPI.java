@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -24,7 +25,7 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
  * GstStructure functions
  */
 public interface GstValueAPI extends com.sun.jna.Library {
-    static GstValueAPI INSTANCE = GstNative.load(GstValueAPI.class);
+    static GstValueAPI GSTVALUE_API = GstNative.load(GstValueAPI.class);
     
     GType gst_fourcc_get_type();
     GType gst_int_range_get_type();

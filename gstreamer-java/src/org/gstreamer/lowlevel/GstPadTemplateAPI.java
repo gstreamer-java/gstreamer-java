@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -33,7 +34,7 @@ import com.sun.jna.Pointer;
  * GstPadTemplate functions
  */
 public interface GstPadTemplateAPI extends com.sun.jna.Library {
-    GstPadTemplateAPI INSTANCE = GstNative.load(GstPadTemplateAPI.class);
+    GstPadTemplateAPI GSTPADTEMPLATE_API = GstNative.load(GstPadTemplateAPI.class);
     
     /* element class pad templates */
     void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);

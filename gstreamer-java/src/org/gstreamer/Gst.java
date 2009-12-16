@@ -19,8 +19,6 @@
 package org.gstreamer;
 
 
-import static org.gstreamer.lowlevel.GstAPI.gst;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +41,8 @@ import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+
+import static org.gstreamer.lowlevel.GstAPI.GST_API;
 
 /**
  * Media library supporting arbitrary formats and filter graphs.
@@ -69,7 +69,7 @@ public final class Gst {
      */
     public static Version getVersion() {
         long[] major = { 0 }, minor = { 0 }, micro = { 0 }, nano = { 0 };
-        gst.gst_version(major, minor, micro, nano);
+        GST_API.gst_version(major, minor, micro, nano);
         return new Version(major[0], minor[0], micro[0], nano[0]);
     }
     
@@ -79,7 +79,7 @@ public final class Gst {
      * @return a string representation of the version.
      */
     public static String getVersionString() {
-        return gst.gst_version_string();
+        return GST_API.gst_version_string();
     }
     
     /**
@@ -210,7 +210,7 @@ public final class Gst {
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         
         Pointer[] error = { null };
-        if (!gst.gst_init_check(argv.argcRef, argv.argvRef, error)) {
+        if (!GST_API.gst_init_check(argv.argcRef, argv.argvRef, error)) {
             initCount.decrementAndGet();
             throw new GstException(new GError(new GErrorStruct(error[0])));
         }
@@ -261,7 +261,7 @@ public final class Gst {
         
         mainContext = null;
         System.gc(); // Make sure any dangling objects are unreffed before calling deinit().
-        gst.gst_deinit();
+        GST_API.gst_deinit();
     }
     
     /**

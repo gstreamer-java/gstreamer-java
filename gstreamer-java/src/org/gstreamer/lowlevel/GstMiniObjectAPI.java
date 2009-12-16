@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -28,7 +29,7 @@ import com.sun.jna.Pointer;
  * GstMiniObject functions
  */
 public interface GstMiniObjectAPI extends com.sun.jna.Library {
-    GstMiniObjectAPI INSTANCE = GstNative.load(GstMiniObjectAPI.class);
+    GstMiniObjectAPI GSTMINIOBJECT_API = GstNative.load(GstMiniObjectAPI.class);
     
     void gst_mini_object_ref(MiniObject ptr);
     void gst_mini_object_unref(MiniObject ptr);

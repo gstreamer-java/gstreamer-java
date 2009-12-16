@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -30,7 +31,7 @@ import com.sun.jna.Pointer;
  * GstCaps functions
  */
 public interface GstCapsAPI extends com.sun.jna.Library {
-    GstCapsAPI INSTANCE = GstNative.load(GstCapsAPI.class);
+    GstCapsAPI GSTCAPS_API = GstNative.load(GstCapsAPI.class);
     
     GType gst_caps_get_type();
     @CallerOwnsReturn Pointer ptr_gst_caps_new_empty();

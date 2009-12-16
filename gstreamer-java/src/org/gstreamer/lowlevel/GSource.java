@@ -18,7 +18,7 @@
 
 package org.gstreamer.lowlevel;
 
-import static org.gstreamer.lowlevel.GlibAPI.glib;
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 import java.util.concurrent.Callable;
 
@@ -32,12 +32,12 @@ public class GSource extends RefCountedObject {
         super(init);
     }
     public int attach(GMainContext context) {
-        return glib.g_source_attach(this, context);
+        return GLIB_API.g_source_attach(this, context);
     }
     public void setCallback(final Callable<Boolean> call) {
         this.callback = new GlibAPI.GSourceFunc() {
             public boolean callback(Pointer data) {
-                if (glib.g_source_is_destroyed(handle())) {
+                if (GLIB_API.g_source_is_destroyed(handle())) {
                     return false;
                 }
                 try {
@@ -47,20 +47,20 @@ public class GSource extends RefCountedObject {
                 }
             }
         };
-        glib.g_source_set_callback(this, callback, null, null);
+        GLIB_API.g_source_set_callback(this, callback, null, null);
     }
     private GlibAPI.GSourceFunc callback;
     
     protected void ref() {
-        glib.g_source_ref(handle());
+        GLIB_API.g_source_ref(handle());
     }
     protected void unref() {
-        glib.g_source_unref(handle());
+        GLIB_API.g_source_unref(handle());
     }
 
     @Override
     protected void disposeNativeHandle(Pointer ptr) {
-        glib.g_source_destroy(ptr);
-        glib.g_source_unref(ptr);
+        GLIB_API.g_source_destroy(ptr);
+        GLIB_API.g_source_unref(ptr);
     }
 }

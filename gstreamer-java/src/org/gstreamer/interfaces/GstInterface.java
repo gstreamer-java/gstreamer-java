@@ -37,11 +37,11 @@ public abstract class GstInterface extends NativeValue {
     protected final Pointer handle;
     protected final Element element;
     protected GstInterface(Element element, GType type) {
-        if (!GstInterfacesAPI.INSTANCE.gst_element_implements_interface(element, type)) {
+        if (!GstInterfacesAPI.GSTINTERFACES_API.gst_element_implements_interface(element, type)) {
             throw new IllegalArgumentException("Element does not implement interface");
         }
         this.element = element;
-        handle = GstInterfacesAPI.INSTANCE.gst_implements_interface_cast(element, type);
+        handle = GstInterfacesAPI.GSTINTERFACES_API.gst_implements_interface_cast(element, type);
     }
     protected Object nativeValue() {
         return handle;

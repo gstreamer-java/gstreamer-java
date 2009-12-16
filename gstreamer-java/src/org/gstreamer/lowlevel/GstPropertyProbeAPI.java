@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  * 
@@ -26,14 +27,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface GstPropertyProbeAPI extends Library {
-    /*
-    GstPropertyProbeAPI INSTANCE = GNative.loadLibrary("gstinterfaces-0.10", GstPropertyProbeAPI.class,
-            new HashMap<String, Object>() {{
-                put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-            }}
-    );
-     */
-    GstPropertyProbeAPI INSTANCE = GstNative.load("gstinterfaces", GstPropertyProbeAPI.class);
+	GstPropertyProbeAPI GSTPROPERTYPROBE = GstNative.load("gstinterfaces", GstPropertyProbeAPI.class);
 
     GType gst_property_probe_get_type();
 

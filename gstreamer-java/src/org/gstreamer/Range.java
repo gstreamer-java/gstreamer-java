@@ -19,7 +19,7 @@
 package org.gstreamer;
 
 import org.gstreamer.lowlevel.GValueAPI;
-import org.gstreamer.lowlevel.GstValueAPI;
+import static org.gstreamer.lowlevel.GstValueAPI.GSTVALUE_API;
 
 /**
  * Represents a range of float, double, int, fraction types stored in a GValue 
@@ -27,8 +27,6 @@ import org.gstreamer.lowlevel.GstValueAPI;
  *
  */
 public class Range {
-	private static GstValueAPI gst = GstValueAPI.INSTANCE;
-	
 	private GValueAPI.GValue value; 
 	
 	Range(GValueAPI.GValue value) {
@@ -40,9 +38,9 @@ public class Range {
 	 * @return minimum fraction of the range
 	 */
 	public Fraction getMinFraction() {
-		GValueAPI.GValue frMin = gst.gst_value_get_fraction_range_min(value); 
-		int num = gst.gst_value_get_fraction_numerator(frMin);
-		int denom = gst.gst_value_get_fraction_denominator(frMin);
+		GValueAPI.GValue frMin = GSTVALUE_API.gst_value_get_fraction_range_min(value); 
+		int num = GSTVALUE_API.gst_value_get_fraction_numerator(frMin);
+		int denom = GSTVALUE_API.gst_value_get_fraction_denominator(frMin);
 		return new Fraction(num, denom);
 	}
 
@@ -51,9 +49,9 @@ public class Range {
 	 * @return maximum fraction of the range
 	 */
 	public Fraction getMaxFraction() {
-		GValueAPI.GValue frMax = gst.gst_value_get_fraction_range_max(value); 
-		int num = gst.gst_value_get_fraction_numerator(frMax);
-		int denom = gst.gst_value_get_fraction_denominator(frMax);
+		GValueAPI.GValue frMax = GSTVALUE_API.gst_value_get_fraction_range_max(value); 
+		int num = GSTVALUE_API.gst_value_get_fraction_numerator(frMax);
+		int denom = GSTVALUE_API.gst_value_get_fraction_denominator(frMax);
 		return new Fraction(num, denom);		
 	}
 
@@ -62,7 +60,7 @@ public class Range {
 	 * @return minimum double of the range
 	 */
 	public double getMinDouble() {
-		return gst.gst_value_get_double_range_min(value);
+		return GSTVALUE_API.gst_value_get_double_range_min(value);
 	}
 	
 	/**
@@ -70,7 +68,7 @@ public class Range {
 	 * @return maximum double of the range
 	 */
 	public double getMaxDouble() {
-		return gst.gst_value_get_double_range_max(value);
+		return GSTVALUE_API.gst_value_get_double_range_max(value);
 	}
 	
 	/**
@@ -78,7 +76,7 @@ public class Range {
 	 * @return minimum integer of the range
 	 */
 	public int getMinInt() {
-		return gst.gst_value_get_int_range_min(value);
+		return GSTVALUE_API.gst_value_get_int_range_min(value);
 	}
 	
 	/**
@@ -86,6 +84,6 @@ public class Range {
 	 * @return maximum integer of the range
 	 */
 	public int getMaxInt() {
-		return gst.gst_value_get_int_range_max(value);
+		return GSTVALUE_API.gst_value_get_int_range_max(value);
 	}
 }

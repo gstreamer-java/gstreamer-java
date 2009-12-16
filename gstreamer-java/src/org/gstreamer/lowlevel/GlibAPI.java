@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -32,9 +33,10 @@ import com.sun.jna.ptr.PointerByReference;
  */
 @SuppressWarnings("serial")
 public interface GlibAPI extends Library {
-    static GlibAPI glib = GNative.loadLibrary("glib-2.0", GlibAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
+	GlibAPI GLIB_API = GNative.loadLibrary("glib-2.0", GlibAPI.class,
+    		new HashMap<String, Object>() {{
+    			put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+    		}});
     Pointer g_main_loop_new(GMainContext context, boolean running);
     void g_main_loop_run(MainLoop loop);
     boolean g_main_loop_is_running(MainLoop loop);

@@ -38,7 +38,7 @@ import org.gstreamer.lowlevel.GstBinAPI;
  * file. It uses the AppSrc element to inject the buffers into the gst pipeline.
  */
 public class RGBDataFileSink extends Bin {
-    private static final GstBinAPI gst = GstBinAPI.INSTANCE;
+    private static final GstBinAPI gst = GstBinAPI.GSTBIN_API;
 
     private final LinkedList<Buffer> bufferList;
     private final AppSrc source;

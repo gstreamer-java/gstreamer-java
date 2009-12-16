@@ -27,7 +27,7 @@ import com.sun.jna.Pointer;
  *
  */
 public class MixerTrack extends GObject {
-    private static final GstMixerAPI gst() { return GstMixerAPI.INSTANCE; }
+    private static final GstMixerAPI gst() { return GstMixerAPI.GSTMIXER_API; }
     private final GstMixerAPI.MixerTrackStruct struct;
     private final Mixer mixer;
     

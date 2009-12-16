@@ -27,7 +27,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import com.sun.jna.Pointer;
 
 public class ColorBalance extends GstInterface {
-	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.INSTANCE; }
+	private static final GstColorBalanceAPI gst() { return GstColorBalanceAPI.GSTCOLORBALANCE_API; }
 
 	/**
 	 * Wraps the {@link Element} in a <tt>ColorBalance</tt> interface

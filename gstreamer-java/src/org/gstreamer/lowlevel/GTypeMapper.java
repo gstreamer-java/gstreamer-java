@@ -173,7 +173,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
                 String s = ptr.getString(0);
                 if (method.isAnnotationPresent(FreeReturnValue.class)
                     || method.isAnnotationPresent(CallerOwnsReturn.class)) {
-                    GlibAPI.glib.g_free(ptr);
+                    GlibAPI.GLIB_API.g_free(ptr);
                 }
                 return s;
             } else {

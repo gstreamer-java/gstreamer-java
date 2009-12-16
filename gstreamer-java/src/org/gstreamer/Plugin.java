@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
  *                    2000 Wim Taymans <wtay@chello.be>
@@ -22,8 +23,7 @@ package org.gstreamer;
 
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPluginAPI;
+import static org.gstreamer.lowlevel.GstPluginAPI.GSTPLUGIN_API;
 
 /**
  * Container for features loaded from a shared object module
@@ -57,8 +57,6 @@ import org.gstreamer.lowlevel.GstPluginAPI;
 public class Plugin extends GstObject {
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(Plugin.class.getName());
-    private static interface API extends GstPluginAPI {}
-    private static final API gst = GstNative.load(API.class);
     
     /** 
      * Creates a new instance of GstElement 
@@ -76,7 +74,7 @@ public class Plugin extends GstObject {
      * @return A new Plugin reference if the plugin was loaded, else null.
      */
     public Plugin load(String pluginName) {
-        return gst.gst_plugin_load_by_name(pluginName);
+        return GSTPLUGIN_API.gst_plugin_load_by_name(pluginName);
     }
     
     /**
@@ -86,7 +84,7 @@ public class Plugin extends GstObject {
      */
     @Override
     public String getName() {
-        return gst.gst_plugin_get_name(this);
+        return GSTPLUGIN_API.gst_plugin_get_name(this);
     }
     
     /**
@@ -95,7 +93,7 @@ public class Plugin extends GstObject {
      * @return The long name of the plugin.
      */
     public String getDescription() {
-        return gst.gst_plugin_get_description(this);
+        return GSTPLUGIN_API.gst_plugin_get_description(this);
     }
     
     /**
@@ -104,7 +102,7 @@ public class Plugin extends GstObject {
      * @return The filename of the plugin.
      */
     public String getFilename() {
-        return gst.gst_plugin_get_filename(this);
+        return GSTPLUGIN_API.gst_plugin_get_filename(this);
     }
     
     /**
@@ -113,7 +111,7 @@ public class Plugin extends GstObject {
      * @return The version of the plugin.
      */
     public String getVersion() {
-        return gst.gst_plugin_get_version(this);
+        return GSTPLUGIN_API.gst_plugin_get_version(this);
     }
     
     /**
@@ -122,7 +120,7 @@ public class Plugin extends GstObject {
      * @return The license of the plugin.
      */
     public String getLicense() {
-        return gst.gst_plugin_get_license(this);
+        return GSTPLUGIN_API.gst_plugin_get_license(this);
     }
     
     /**
@@ -131,7 +129,7 @@ public class Plugin extends GstObject {
      * @return The source of the plugin.
      */
     public String getSource() {
-        return gst.gst_plugin_get_source(this);
+        return GSTPLUGIN_API.gst_plugin_get_source(this);
     }
     
     /**
@@ -140,7 +138,7 @@ public class Plugin extends GstObject {
      * @return The package of the plugin.
      */
     public String getPackage() {
-        return gst.gst_plugin_get_package(this);
+        return GSTPLUGIN_API.gst_plugin_get_package(this);
     }
     
     /**
@@ -149,7 +147,7 @@ public class Plugin extends GstObject {
      * @return The origin of the plugin.
      */
     public String getOrigin() {
-        return gst.gst_plugin_get_origin(this);
+        return GSTPLUGIN_API.gst_plugin_get_origin(this);
     }
     
     /**
@@ -158,7 +156,7 @@ public class Plugin extends GstObject {
      * @return true if it is loaded, false otherwise.
      */
     public boolean isLoaded() {
-        return gst.gst_plugin_is_loaded(this);
+        return GSTPLUGIN_API.gst_plugin_is_loaded(this);
     }
     
     /**
@@ -167,6 +165,6 @@ public class Plugin extends GstObject {
      * @return a potentially new <tt>Plugin</tt> reference.
      */
     public Plugin load() {
-        return gst.gst_plugin_load(this);
+        return GSTPLUGIN_API.gst_plugin_load(this);
     }
 }

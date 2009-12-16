@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -33,7 +34,7 @@ import com.sun.jna.Pointer;
  * GstBus functions
  */
 public interface GstBusAPI extends com.sun.jna.Library {
-    GstBusAPI INSTANCE = GstNative.load(GstBusAPI.class);
+    GstBusAPI GSTBUS_API = GstNative.load(GstBusAPI.class);
     
     GType gst_bus_get_type();
     Bus gst_bus_new();

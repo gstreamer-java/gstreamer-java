@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -30,7 +31,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstStructure functions
  */
 public interface GstStructureAPI extends com.sun.jna.Library {
-    GstStructureAPI INSTANCE = GstNative.load(GstStructureAPI.class);
+    GstStructureAPI GSTSTRUCTURE_API = GstNative.load(GstStructureAPI.class);
     GType gst_structure_get_type();
 
     boolean gst_structure_get_int(Structure structure, String fieldname, IntByReference value);

@@ -33,7 +33,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * from a pipeline.
  */
 public class AppSink extends BaseSink {
-    private static final AppAPI gst() { return AppAPI.INSTANCE; }
+    private static final AppAPI gst() { return AppAPI.APP_API; }
     public AppSink(Initializer init) {
         super(init);
     }

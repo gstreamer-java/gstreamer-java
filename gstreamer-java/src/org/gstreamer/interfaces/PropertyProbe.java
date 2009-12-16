@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2003 Ronald Bultje <rbultje@ronald.bitfreak.net>
@@ -34,7 +35,7 @@ import com.sun.jna.Pointer;
  * Interface for elements that provide mixer operations
  */
 public class PropertyProbe extends GstInterface {
-    private static final GstPropertyProbeAPI gst() { return GstPropertyProbeAPI.INSTANCE; }
+    private static final GstPropertyProbeAPI gst() { return GstPropertyProbeAPI.GSTPROPERTYPROBE; }
 
     /**
      * Wraps the {@link Element} in a <tt>PropertyProbe</tt> interface

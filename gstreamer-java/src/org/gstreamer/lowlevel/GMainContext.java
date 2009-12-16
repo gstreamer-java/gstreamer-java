@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -19,35 +20,34 @@
 package org.gstreamer.lowlevel;
 
 import com.sun.jna.Pointer;
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 /**
  *
  */
 public class GMainContext extends RefCountedObject {
-    private static GlibAPI glib = GlibAPI.glib;
-    
     public GMainContext() {
-        this(initializer(glib.g_main_context_new()));
+        this(initializer(GLIB_API.g_main_context_new()));
     }
     private GMainContext(Initializer init) {
         super(init);
     }
     public int attach(GSource source) {
-        return glib.g_source_attach(source, this);
+        return GLIB_API.g_source_attach(source, this);
     }
     public static GMainContext getDefaultContext() {
-        return new GMainContext(initializer(glib.g_main_context_default(), false, false));
+        return new GMainContext(initializer(GLIB_API.g_main_context_default(), false, false));
     }
     
     protected void ref() {
-        glib.g_main_context_ref(handle());
+        GLIB_API.g_main_context_ref(handle());
     }
     protected void unref() {
-        glib.g_main_context_unref(handle());
+        GLIB_API.g_main_context_unref(handle());
     }
 
     @Override
     protected void disposeNativeHandle(Pointer ptr) {
-        glib.g_main_context_unref(ptr);
+        GLIB_API.g_main_context_unref(ptr);
     }
 }

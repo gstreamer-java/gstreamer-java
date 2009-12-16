@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Andres Colubri
  * Copyright (c) 2007 Wayne Meissner
  * 
@@ -36,11 +37,11 @@ import com.sun.jna.ptr.PointerByReference;
  */
 @SuppressWarnings("serial")
 public interface GObjectAPI extends Library {
-    GObjectAPI INSTANCE = GNative.loadLibrary("gobject-2.0", GObjectAPI.class, new HashMap<String, Object>() {{
-        put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-    }});
-    
-    
+	GObjectAPI GOBJECT_API = GNative.loadLibrary("gobject-2.0", GObjectAPI.class,
+			new HashMap<String, Object>() {{
+				put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+			}});
+
     GType g_object_get_type();
     void g_object_set_property(GObject obj, String property, GValue data);
     void g_object_get_property(GObject obj, String property, GValue data);

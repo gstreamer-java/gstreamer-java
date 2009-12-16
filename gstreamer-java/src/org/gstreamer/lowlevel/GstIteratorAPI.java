@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -25,6 +26,7 @@ import com.sun.jna.ptr.PointerByReference;
  * GstIterator functions
  */
 public interface GstIteratorAPI extends com.sun.jna.Library {
+	GstIteratorAPI GSTITERATOR_API = GstNative.load(GstIteratorAPI.class);
 
     void gst_iterator_free(Pointer iter);
     int gst_iterator_next(Pointer iter, PointerByReference next);

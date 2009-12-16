@@ -33,7 +33,7 @@ import com.sun.jna.Pointer;
  * Interface for elements providing tuner operations
  */
 public class Tuner extends GstInterface {
-    private static final GstTunerAPI gst() { return GstTunerAPI.INSTANCE; }
+    private static final GstTunerAPI gst() { return GstTunerAPI.GSTTUNER_API; }
     /**
      * Wraps the {@link Element} in a <tt>Tuner</tt> interface
      * 

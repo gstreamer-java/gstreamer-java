@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -23,19 +24,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.gstreamer.lowlevel.GstIteratorAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
+import static org.gstreamer.lowlevel.GstIteratorAPI.GSTITERATOR_API;
 
 /**
  *
  */
 class GstIterator<T extends NativeObject> extends NativeObject implements java.lang.Iterable<T> {
-    private static final GstIteratorAPI gst = GstNative.load(GstIteratorAPI.class);
     
     private Class<T> objectType;
     GstIterator(Pointer ptr, Class<T> cls) {
@@ -48,7 +47,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
     }
     
     protected void disposeNativeHandle(Pointer ptr) {
-        gst.gst_iterator_free(ptr);
+        GSTITERATOR_API.gst_iterator_free(ptr);
     }
     public List<T> asList() {
         List<T> list = new LinkedList<T>();
@@ -65,7 +64,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         }
         private T getNext() {
             PointerByReference nextRef = new PointerByReference();
-            if (gst.gst_iterator_next(handle(), nextRef) == 1) {                
+            if (GSTITERATOR_API.gst_iterator_next(handle(), nextRef) == 1) {                
                 return NativeObject.objectFor(nextRef.getValue(), objectType, false);                
             }
             return null;

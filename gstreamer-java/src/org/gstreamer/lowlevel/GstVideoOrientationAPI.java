@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * 
  * This file is part of gstreamer-java.
@@ -23,7 +24,7 @@ import org.gstreamer.interfaces.VideoOrientation;
 import com.sun.jna.Library;
 
 public interface GstVideoOrientationAPI extends Library {
-	GstVideoOrientationAPI INSTANCE = GstNative.load("gstinterfaces", GstVideoOrientationAPI.class);
+	GstVideoOrientationAPI GSTVIDEOORIENTATION_API = GstNative.load("gstinterfaces", GstVideoOrientationAPI.class);
 
 	GType gst_video_orientation_get_type();
 

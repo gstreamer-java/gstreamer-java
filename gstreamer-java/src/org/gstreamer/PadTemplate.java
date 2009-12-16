@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2007, 2008 Wayne Meissner
  * Copyright (C) 1999,2000 Erik Walthinsen <omega@cse.ogi.edu>
  *                    2000 Wim Taymans <wtay@chello.be>
@@ -22,8 +23,7 @@ package org.gstreamer;
 
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
+import static org.gstreamer.lowlevel.GstPadTemplateAPI.GSTPADTEMPLATE_API;
 
 /**
  * Padtemplates describe the possible media types a {@link Pad} or an 
@@ -38,7 +38,6 @@ import org.gstreamer.lowlevel.GstPadTemplateAPI;
  */
 public class PadTemplate extends GstObject {
     static Logger logger = Logger.getLogger(PadTemplate.class.getName());
-    private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
     
     /** 
      * Creates a new proxy for PadTemplate.
@@ -59,7 +58,7 @@ public class PadTemplate extends GstObject {
      * @param caps a {@code Caps} set for the template.
      */
     public PadTemplate(String nameTemplate, PadDirection direction, Caps caps) {
-        this(initializer(gst.ptr_gst_pad_template_new(nameTemplate, direction, PadPresence.ALWAYS, caps)));
+        this(initializer(GSTPADTEMPLATE_API.ptr_gst_pad_template_new(nameTemplate, direction, PadPresence.ALWAYS, caps)));
     }
     /**
      * Creates a new pad template with a name according to the given template
@@ -71,7 +70,7 @@ public class PadTemplate extends GstObject {
      * @param caps a {@code Caps} set for the template.
      */
     public PadTemplate(String nameTemplate, PadDirection direction, PadPresence presence, Caps caps) {
-        this(initializer(gst.ptr_gst_pad_template_new(nameTemplate, direction, presence, caps)));
+        this(initializer(GSTPADTEMPLATE_API.ptr_gst_pad_template_new(nameTemplate, direction, presence, caps)));
     }
     
     /**
@@ -80,6 +79,6 @@ public class PadTemplate extends GstObject {
      * @return the media type on this template.
      */
     public Caps getCaps() {
-        return gst.gst_pad_template_get_caps(this);
+        return GSTPADTEMPLATE_API.gst_pad_template_get_caps(this);
     }
 }

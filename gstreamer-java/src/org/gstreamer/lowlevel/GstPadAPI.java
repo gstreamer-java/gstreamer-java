@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007, 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -39,7 +40,7 @@ import com.sun.jna.Pointer;
  * GstPad functions
  */
 public interface GstPadAPI extends com.sun.jna.Library {
-    GstPadAPI INSTANCE = GstNative.load(GstPadAPI.class);
+    GstPadAPI GSTPAD_API = GstNative.load(GstPadAPI.class);
     
     GType gst_pad_get_type();
     @CallerOwnsReturn Pad gst_pad_new(String name, PadDirection direction);

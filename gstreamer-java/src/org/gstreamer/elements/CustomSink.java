@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2007 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -18,8 +19,6 @@
 
 package org.gstreamer.elements;
 
-import static org.gstreamer.lowlevel.GObjectAPI.INSTANCE;
-
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -38,21 +37,20 @@ import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseAPI;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
 
 import com.sun.jna.Pointer;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.gstreamer.lowlevel.GstPadTemplateAPI.GSTPADTEMPLATE_API;
+
 /**
  *
  * @author wayne
  */
 abstract public class CustomSink extends BaseSink {
-    private static interface API extends GstPadTemplateAPI {}
-    private static final API gst = GstNative.load(API.class);
     private final static Logger logger = Logger.getLogger(CustomSink.class.getName());
     private static class CustomSinkInfo {
         GType type;
@@ -73,7 +71,7 @@ abstract public class CustomSink extends BaseSink {
     }
     private static final Map<Class<? extends CustomSink>, CustomSinkInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSink>, CustomSinkInfo>();
     protected CustomSink(Class<? extends CustomSink> subClass, String name) {
-        super(initializer(INSTANCE.g_object_new(getSubclassType(subClass), "name", name)));
+        super(initializer(GOBJECT_API.g_object_new(getSubclassType(subClass), "name", name)));
     }
     private static CustomSinkInfo getSubclassInfo(Class<? extends CustomSink> subClass) {
        synchronized (subClass) {
@@ -240,7 +238,7 @@ abstract public class CustomSink extends BaseSink {
             public void callback(Pointer g_class) {
                 info.caps = Caps.anyCaps();
                 info.template = new PadTemplate("sink", PadDirection.SINK, info.caps);
-                gst.gst_element_class_add_pad_template(g_class, info.template);
+                GSTPADTEMPLATE_API.gst_element_class_add_pad_template(g_class, info.template);
             }
         };
         
@@ -254,7 +252,7 @@ abstract public class CustomSink extends BaseSink {
         ginfo.class_size = (short)new BaseAPI.GstBaseSinkClass().size();
         ginfo.instance_size = (short)new BaseAPI.GstBaseSinkStruct().size();
         
-        info.type = INSTANCE.g_type_register_static(BaseAPI.INSTANCE.gst_base_sink_get_type(), 
+        info.type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_sink_get_type(), 
                 sinkClass.getSimpleName(), ginfo, 0);
     }
 }

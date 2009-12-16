@@ -49,7 +49,7 @@ abstract public class GErrorMessage extends Message {
             throw new NullPointerException("Could not parse message");
         }
         int code = err.code;
-        GlibAPI.glib.g_error_free(err);
+        GlibAPI.GLIB_API.g_error_free(err);
         return code;
     }
     
@@ -64,7 +64,7 @@ abstract public class GErrorMessage extends Message {
             throw new NullPointerException("Could not parse message");
         }
         String message = err.getMessage();
-        GlibAPI.glib.g_error_free(err);
+        GlibAPI.GLIB_API.g_error_free(err);
         return message;
     }
 
