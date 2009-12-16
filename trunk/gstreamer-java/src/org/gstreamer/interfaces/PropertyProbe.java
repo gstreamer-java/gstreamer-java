@@ -25,18 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GstPropertyProbeAPI;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 
 import com.sun.jna.Pointer;
 
+import static org.gstreamer.lowlevel.GstPropertyProbeAPI.GSTPROPERTYPROBE_API;
+
 /**
  * Interface for elements that provide mixer operations
  */
 public class PropertyProbe extends GstInterface {
-    private static final GstPropertyProbeAPI gst() { return GstPropertyProbeAPI.GSTPROPERTYPROBE; }
-
     /**
      * Wraps the {@link Element} in a <tt>PropertyProbe</tt> interface
      *
@@ -53,7 +52,7 @@ public class PropertyProbe extends GstInterface {
      * @param element the element that implements the PropertyProbe interface
      */
     private PropertyProbe(Element element) {
-        super(element, gst().gst_property_probe_get_type());
+        super(element, GSTPROPERTYPROBE_API.gst_property_probe_get_type());
     }
 
     /**
@@ -62,11 +61,11 @@ public class PropertyProbe extends GstInterface {
      * @return a list of Property instances
      */
     public List<Property> getProperties() {
-        return propertiesList(gst().gst_property_probe_get_properties(this), true, true);
+        return propertiesList(GSTPROPERTYPROBE_API.gst_property_probe_get_properties(this), true, true);
     }
 
     public Property getProperty(String name) {
-        Pointer ptr = gst().gst_property_probe_get_property(this, name);
+        Pointer ptr = GSTPROPERTYPROBE_API.gst_property_probe_get_property(this, name);
         if (ptr == null) {
             return null;
         }
@@ -77,48 +76,48 @@ public class PropertyProbe extends GstInterface {
     public void probeProperty(Property property) {
         if (property != null)
         {
-            gst().gst_property_probe_probe_property(this, property.getSpec());
+            GSTPROPERTYPROBE_API.gst_property_probe_probe_property(this, property.getSpec());
         }
     }
    
     public void probeProperty(String name) {
-        gst().gst_property_probe_probe_property_name(this, name);
+        GSTPROPERTYPROBE_API.gst_property_probe_probe_property_name(this, name);
     }
 
     public boolean needsProbe(Property property) {
         if (property != null)
         {
-            return gst().gst_property_probe_needs_probe(this, property.getSpec());
+            return GSTPROPERTYPROBE_API.gst_property_probe_needs_probe(this, property.getSpec());
         }
         else return false;
     }
 
     public boolean needsProbe(String name) {
-        return gst().gst_property_probe_needs_probe_name(this, name);
+        return GSTPROPERTYPROBE_API.gst_property_probe_needs_probe_name(this, name);
     }
 
     public Object[] getValues(Property property) {
         if (property != null)
         {
-            return valuesArray(gst().gst_property_probe_get_values(this, property.getSpec()));
+            return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_get_values(this, property.getSpec()));
         }
         else return null;
     }
 
     public Object[] getValues(String name) {
-        return valuesArray(gst().gst_property_probe_get_values_name(this, name));
+        return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_get_values_name(this, name));
     }
 
     public Object[] probeAndGetValues(Property property) {
         if (property != null)
         {
-            return valuesArray(gst().gst_property_probe_probe_and_get_values(this, property.getSpec()));
+            return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_probe_and_get_values(this, property.getSpec()));
         }
         else return null;
     }
 
     public Object[] probeAndGetValues(String name) {
-        return valuesArray(gst().gst_property_probe_probe_and_get_values_name(this, name));
+        return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_probe_and_get_values_name(this, name));
     }
 
     /**

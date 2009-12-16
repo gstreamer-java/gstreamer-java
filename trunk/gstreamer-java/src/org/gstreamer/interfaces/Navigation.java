@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Tamas Korodi <kotyo@zamba.fm>
  * 
  * This file is part of gstreamer-java.
@@ -20,11 +21,10 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.Element;
 import org.gstreamer.Structure;
-import org.gstreamer.lowlevel.GstNavigationAPI;
+
+import static org.gstreamer.lowlevel.GstNavigationAPI.GSTNAVIGATION_API;
 
 public class Navigation extends GstInterface {
-	private static final GstNavigationAPI gst() { return GstNavigationAPI.GSTNAVIGATION_API; }
-
 	/**
 	 * Wraps the {@link Element} in a <tt>Navigation</tt> interface
 	 * 
@@ -43,18 +43,18 @@ public class Navigation extends GstInterface {
 	 *            the element that implements the Navigation interface
 	 */
 	private Navigation(Element element) {
-		super(element, gst().gst_navigation_get_type());
+		super(element, GSTNAVIGATION_API.gst_navigation_get_type());
 	}
 
 	public void sendEvent(Structure structure) {
-		gst().gst_navigation_send_event(this, structure);
+		GSTNAVIGATION_API.gst_navigation_send_event(this, structure);
 	}
 
 	public void sendKeyEvent(String event, String key) {
-		gst().gst_navigation_send_key_event(this, event, key);
+		GSTNAVIGATION_API.gst_navigation_send_key_event(this, event, key);
 	}
 
 	public void sendMouseEvent(String event, int button, double x, double y) {
-		gst().gst_navigation_send_mouse_event(this, event, button, x, y);
+		GSTNAVIGATION_API.gst_navigation_send_mouse_event(this, event, button, x, y);
 	}
 }

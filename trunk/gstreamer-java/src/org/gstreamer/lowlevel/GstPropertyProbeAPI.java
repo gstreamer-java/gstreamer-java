@@ -27,7 +27,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface GstPropertyProbeAPI extends Library {
-	GstPropertyProbeAPI GSTPROPERTYPROBE = GstNative.load("gstinterfaces", GstPropertyProbeAPI.class);
+	GstPropertyProbeAPI GSTPROPERTYPROBE_API = GstNative.load("gstinterfaces", GstPropertyProbeAPI.class);
 
     GType gst_property_probe_get_type();
 

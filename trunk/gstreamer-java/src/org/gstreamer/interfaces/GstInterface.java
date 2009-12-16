@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2008 Wayne Meissner
  * 
  * This file is part of gstreamer-java.
@@ -24,11 +25,12 @@ import java.util.List;
 import org.gstreamer.Element;
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GstInterfacesAPI;
 import org.gstreamer.lowlevel.NativeValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Pointer;
+
+import static org.gstreamer.lowlevel.GstInterfacesAPI.GSTINTERFACES_API;
 
 /**
  * Base type for all gstreamer interface proxies
@@ -37,11 +39,11 @@ public abstract class GstInterface extends NativeValue {
     protected final Pointer handle;
     protected final Element element;
     protected GstInterface(Element element, GType type) {
-        if (!GstInterfacesAPI.GSTINTERFACES_API.gst_element_implements_interface(element, type)) {
+        if (!GSTINTERFACES_API.gst_element_implements_interface(element, type)) {
             throw new IllegalArgumentException("Element does not implement interface");
         }
         this.element = element;
-        handle = GstInterfacesAPI.GSTINTERFACES_API.gst_implements_interface_cast(element, type);
+        handle = GSTINTERFACES_API.gst_implements_interface_cast(element, type);
     }
     protected Object nativeValue() {
         return handle;
