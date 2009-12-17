@@ -26,7 +26,7 @@ import org.gstreamer.lowlevel.ReferenceManager;
 import org.gstreamer.lowlevel.annotations.HasSubtype;
 
 /**
- * Lightweight objects to signal the ocurrence of pipeline events.
+ * Lightweight objects to signal the occurrence of pipeline events.
  * 
  * <p> Messages are implemented as a subclass of {@link MiniObject} with a generic
  * {@link Structure} as the content. This allows for writing custom messages without
@@ -50,10 +50,8 @@ import org.gstreamer.lowlevel.annotations.HasSubtype;
  */
 @HasSubtype
 public class Message extends MiniObject {
-    private static interface API extends GstMessageAPI, GstMiniObjectAPI {
-        
-    }
-    private static final API gst = GstNative.load(API.class);
+    static interface API extends GstMessageAPI, GstMiniObjectAPI {}
+    static final API gst = GstNative.load(API.class);
     protected GstMessageAPI.MessageStruct messageStruct;
     
     /**
@@ -72,7 +70,7 @@ public class Message extends MiniObject {
      * @return the element that posted the message.
      */
     public GstObject getSource() {
-        return (GstObject) messageStruct.readField("src");
+        return (GstObject)messageStruct.readField("src");
     }
     
     /**
@@ -90,7 +88,7 @@ public class Message extends MiniObject {
      * @return the message type.
      */
     public MessageType getType() {
-        return (MessageType) messageStruct.readField("type");
+        return (MessageType)messageStruct.readField("type");
     }
     
     /**
@@ -108,7 +106,7 @@ public class Message extends MiniObject {
      * @return a copy of this message.
      */
     public Message copy() {
-        return (Message) gst.gst_mini_object_copy(this);
+        return (Message)gst.gst_mini_object_copy(this);
     }
     
 }

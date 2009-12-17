@@ -28,11 +28,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.GstObjectAPI;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstObjectAPI.GSTOBJECT_API;
 
 /**
  * Base class for the GStreamer object hierarchy
@@ -43,6 +43,7 @@ import static org.gstreamer.lowlevel.GstObjectAPI.GSTOBJECT_API;
  *
  */
 public class GstObject extends GObject {
+    private static final GstObjectAPI gst = GstNative.load(GstObjectAPI.class);
     private static Logger logger = Logger.getLogger(GstObject.class.getName());
     static Level DEBUG = Level.FINE;
     static Level LIFECYCLE = NativeObject.LIFECYCLE;
@@ -97,7 +98,7 @@ public class GstObject extends GObject {
      */
     public boolean setName(String name) {
         logger.entering("GstObject", "setName", name);
-        return GSTOBJECT_API.gst_object_set_name(this, name);
+        return gst.gst_object_set_name(this, name);
     }
     
     /**
@@ -109,7 +110,7 @@ public class GstObject extends GObject {
      */
     public String getName() {
         logger.entering("GstObject", "getName");
-        return GSTOBJECT_API.gst_object_get_name(this);
+        return gst.gst_object_get_name(this);
     }
     
     @Override
@@ -117,17 +118,17 @@ public class GstObject extends GObject {
         return String.format("%s: [%s]", getClass().getSimpleName(), getName());
     }
     protected void ref() {
-        GSTOBJECT_API.gst_object_ref(this);
+        gst.gst_object_ref(this);
     }
     protected void unref() {
-        GSTOBJECT_API.gst_object_unref(this);
+        gst.gst_object_unref(this);
     }
     void sink() {
-        GSTOBJECT_API.gst_object_sink(this);
+        gst.gst_object_sink(this);
     }
     
     public GstObject getParent() {
-    	return GSTOBJECT_API.gst_object_get_parent(this);
+    	return gst.gst_object_get_parent(this);
     }
     
     public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass) {

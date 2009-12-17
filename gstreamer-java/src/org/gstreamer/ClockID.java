@@ -18,34 +18,35 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstClockAPI;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.RefCountedObject;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstClockAPI.GSTCLOCK_API;;
 
 /**
  * A datatype to hold the handle to an outstanding sync or async clock callback.
  */
 public class ClockID extends RefCountedObject implements Comparable<ClockID> {
-
+    private static final GstClockAPI gst = GstNative.load(GstClockAPI.class);
+	
 	public ClockID(Initializer init) {
         super(init);
     }
     
     @Override
     protected void disposeNativeHandle(Pointer ptr) {
-        GSTCLOCK_API.gst_clock_id_unref(ptr);
+        gst.gst_clock_id_unref(ptr);
     }
 
     @Override
     protected void ref() {
-        GSTCLOCK_API.gst_clock_id_ref(this);
+        gst.gst_clock_id_ref(this);
     }
 
     @Override
     protected void unref() {
-        GSTCLOCK_API.gst_clock_id_unref(this);
+        gst.gst_clock_id_unref(this);
     }
     
     /**
@@ -55,7 +56,7 @@ public class ClockID extends RefCountedObject implements Comparable<ClockID> {
      * async notifications, you need to create a new #GstClockID.
      */
     public void unschedule() {
-        GSTCLOCK_API.gst_clock_id_unschedule(this);
+        gst.gst_clock_id_unschedule(this);
     }
     
     /**
@@ -66,7 +67,7 @@ public class ClockID extends RefCountedObject implements Comparable<ClockID> {
      * @return The time of this clock id.
      */
     public ClockTime getTime() {
-        return GSTCLOCK_API.gst_clock_id_get_time(this);
+        return gst.gst_clock_id_get_time(this);
     }
     
     /**
@@ -76,6 +77,6 @@ public class ClockID extends RefCountedObject implements Comparable<ClockID> {
      * @return negative value if a < b; zero if a = b; positive value if a > b
      */
     public int compareTo(ClockID other) {
-        return GSTCLOCK_API.gst_clock_id_compare_func(this, other);
+        return gst.gst_clock_id_compare_func(this, other);
     }
 }

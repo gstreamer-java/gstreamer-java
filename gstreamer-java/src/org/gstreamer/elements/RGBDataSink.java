@@ -30,10 +30,11 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
-
-import static org.gstreamer.lowlevel.GstBinAPI.GSTBIN_API;
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 public class RGBDataSink extends Bin {
+    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
     private final Listener listener;
     private final BaseSink videosink;
@@ -48,7 +49,7 @@ public class RGBDataSink extends Bin {
      * @param name The name used to identify this pipeline.
      */
     public RGBDataSink(String name, Listener listener) {
-        super(initializer(GSTBIN_API.ptr_gst_bin_new(name)));
+        super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
         videosink = (BaseSink) ElementFactory.make("fakesink", "VideoSink");
         videosink.set("signal-handoffs", true);
@@ -71,7 +72,7 @@ public class RGBDataSink extends Bin {
     }
 
     public RGBDataSink(String name, Pipeline pipeline, Listener listener) {
-        super(initializer(GSTBIN_API.ptr_gst_bin_new(name)));
+        super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         videosink = (BaseSink) pipeline.getElementByName("VideoSink");

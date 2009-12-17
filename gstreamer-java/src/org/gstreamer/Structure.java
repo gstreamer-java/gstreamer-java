@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2009 Tamas Korodi <kotyo@zamba.fm> 
  * Copyright (C) 2007 Wayne Meissner
  * Copyright (C) 2003 David A. Schleef <ds@schleef.org>
@@ -21,14 +22,13 @@ package org.gstreamer;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstStructureAPI;
+import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-
-import static org.gstreamer.lowlevel.GstValueAPI.GSTVALUE_API;
 
 /**
  * Generic structure containing fields of names and values.
@@ -56,7 +56,7 @@ import static org.gstreamer.lowlevel.GstValueAPI.GSTVALUE_API;
  * @see Event
  */
 public class Structure extends NativeObject {
-    private static interface API extends GstStructureAPI {
+    private static interface API extends GstStructureAPI, GstValueAPI {
         @CallerOwnsReturn Pointer ptr_gst_structure_from_string(String data, PointerByReference end);
         @CallerOwnsReturn Pointer ptr_gst_structure_empty_new(String name);
         //Pointer gst_structure_id_empty_new(GQuark                   quark);
@@ -149,11 +149,11 @@ public class Structure extends NativeObject {
     }
     public void setIntegerRange(String field, Integer min, Integer max) {
         gst.gst_structure_set(this, field, 
-                GSTVALUE_API.gst_int_range_get_type(), min, max);
+                gst.gst_int_range_get_type(), min, max);
     }
     public void setDoubleRange(String field, Double min, Double max) {
         gst.gst_structure_set(this, field, 
-                GSTVALUE_API.gst_double_range_get_type(), min, max);
+                gst.gst_double_range_get_type(), min, max);
     }
     
     public boolean fixateNearestInteger(String field, Integer value) {

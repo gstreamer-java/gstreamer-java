@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.gstreamer.lowlevel.GstMiniObjectAPI;
+import org.gstreamer.lowlevel.GstQueryAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.query.ApplicationQuery;
 import org.gstreamer.query.DurationQuery;
@@ -43,13 +44,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.gstreamer.lowlevel.GstQueryAPI.GSTQUERY_API;
-
 /**
  *
  * @author wayne
  */
 public class QueryTest {
+    private static final GstQueryAPI gst = GstNative.load(GstQueryAPI.class);
     
     public QueryTest() {
     }
@@ -74,7 +74,7 @@ public class QueryTest {
     
     @Test
     public void gst_query_new_position() {
-        Query query = GSTQUERY_API.gst_query_new_position(Format.TIME);
+        Query query = gst.gst_query_new_position(Format.TIME);
         assertNotNull("Query.newPosition returned null", query);
         assertTrue("Returned query not instance of PositionQuery", query instanceof PositionQuery);
     }
@@ -108,7 +108,7 @@ public class QueryTest {
     }
     @Test
     public void gst_query_new_duration() {
-        Query query = GSTQUERY_API.gst_query_new_duration(Format.TIME);
+        Query query = gst.gst_query_new_duration(Format.TIME);
         assertNotNull("Query.newDuration returned null", query);
         assertTrue("Returned query not instance of DurationQuery", query instanceof DurationQuery);
     }
@@ -137,7 +137,7 @@ public class QueryTest {
     }
     @Test
     public void gst_query_new_latency() {
-        Query query = GSTQUERY_API.gst_query_new_latency();
+        Query query = gst.gst_query_new_latency();
         assertNotNull("gst_query_new_latency() returned null", query);
         assertTrue("Returned query not instance of LatencyQuery", query instanceof LatencyQuery);
     }
@@ -176,7 +176,7 @@ public class QueryTest {
         assertTrue("toString() did not return minLatency", s.contains("max=" + maxLatency));
     }
     @Test public void applicationQuery() {
-        QueryType type = GSTQUERY_API.gst_query_type_register("application_test", "An application query");
+        QueryType type = gst.gst_query_type_register("application_test", "An application query");
         Structure s = new Structure("test");
         ApplicationQuery query = new ApplicationQuery(type, s);
         s = query.getStructure();
@@ -200,7 +200,7 @@ public class QueryTest {
         assertEquals("End time not set", end.toNanos(), query.getEnd());
     }
     @Test public void formatsQuery() {
-        Query query = GSTQUERY_API.gst_query_new_formats();
+        Query query = gst.gst_query_new_formats();
         assertNotNull("gst_query_new_latency() returned null", query);
         assertTrue("Returned query not instance of LatencyQuery", query instanceof FormatsQuery);
     }
@@ -223,14 +223,14 @@ public class QueryTest {
         assertEquals("nick mismatch", qt, QueryType.fromNick(qt.getName()));
     }
     @Test public void customQueryType() {
-        QueryType qt = GSTQUERY_API.gst_query_type_register("test", "A test query type");
+        QueryType qt = gst.gst_query_type_register("test", "A test query type");
         assertEquals("nick mismatch", qt, QueryType.fromNick("test"));
     }
     @Test public void makeWriteable() {
         Query query = new SegmentQuery(Format.TIME);
         assertTrue("New query is not writable", query.isWritable());
         // Bumping the ref count makes this instance non writable
-        GstMiniObjectAPI.GSTMINIOBJECT_API.gst_mini_object_ref(query);
+        GstNative.load(GstMiniObjectAPI.class).gst_mini_object_ref(query);
         assertFalse("Query with multiple references should not be writable", query.isWritable());
         // Now get a new reference that is writable
         query = query.makeWritable();

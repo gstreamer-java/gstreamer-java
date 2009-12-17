@@ -20,10 +20,10 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.RefCountedObject;
+import org.gstreamer.lowlevel.GstCapsAPI;
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstCapsAPI.GSTCAPS_API;
 
 /**
  * Structure describing sets of media formats
@@ -58,6 +58,7 @@ import static org.gstreamer.lowlevel.GstCapsAPI.GSTCAPS_API;
  * @see Structure
  */
 public class Caps extends RefCountedObject {
+    private static final GstCapsAPI gst = GstNative.load(GstCapsAPI.class);
     /**
      * Creates a new Caps that is empty.  
      * That is, the returned Caps contains no media formats.
@@ -65,7 +66,7 @@ public class Caps extends RefCountedObject {
      * @return The new Caps.
      */
     public static Caps emptyCaps() {
-        return new Caps(initializer(GSTCAPS_API.ptr_gst_caps_new_empty()));
+        return new Caps(initializer(gst.ptr_gst_caps_new_empty()));
     }
     
     /**
@@ -75,7 +76,7 @@ public class Caps extends RefCountedObject {
      * @return The new Caps.
      */
     public static Caps anyCaps() {
-        return new Caps(initializer(GSTCAPS_API.ptr_gst_caps_new_any()));
+        return new Caps(initializer(gst.ptr_gst_caps_new_any()));
     }
     /**
      * Construct a new Caps from a string representation.
@@ -88,7 +89,7 @@ public class Caps extends RefCountedObject {
      * @return The new Caps.
      */
     public static Caps fromString(String caps) {
-        return new Caps(initializer(GSTCAPS_API.ptr_gst_caps_from_string(caps)));
+        return new Caps(initializer(gst.ptr_gst_caps_from_string(caps)));
     }
     
     /**
@@ -97,7 +98,7 @@ public class Caps extends RefCountedObject {
      * @see #emptyCaps
      */
     public Caps() {
-        this(initializer(GSTCAPS_API.ptr_gst_caps_new_empty()));
+        this(initializer(gst.ptr_gst_caps_new_empty()));
     }
     
     /**
@@ -107,7 +108,7 @@ public class Caps extends RefCountedObject {
      * @see #fromString
      */
     public Caps(String caps) {
-        this(initializer(GSTCAPS_API.ptr_gst_caps_from_string(caps)));
+        this(initializer(gst.ptr_gst_caps_from_string(caps)));
     }
     /**
      * Create a caps that is a copy of another caps.
@@ -116,7 +117,7 @@ public class Caps extends RefCountedObject {
      * @see #copy
      */
     public Caps(Caps caps) {
-        this(initializer(GSTCAPS_API.ptr_gst_caps_copy(caps)));
+        this(initializer(gst.ptr_gst_caps_copy(caps)));
     }
     
     protected static Initializer initializer(Pointer ptr) {
@@ -133,7 +134,7 @@ public class Caps extends RefCountedObject {
      * @return the number of structures that this caps contains
      */
     public int size() {
-        return GSTCAPS_API.gst_caps_get_size(this);
+        return gst.gst_caps_get_size(this);
     }
     
     /**
@@ -145,7 +146,7 @@ public class Caps extends RefCountedObject {
      * @return The new Caps.
      */
     public Caps copy() {
-        return GSTCAPS_API.gst_caps_copy(this);
+        return gst.gst_caps_copy(this);
     }
     
     /**
@@ -156,7 +157,7 @@ public class Caps extends RefCountedObject {
      * @return The new {@link Caps}
      */
     public Caps union(Caps other) {
-        return GSTCAPS_API.gst_caps_union(this, other);
+        return gst.gst_caps_union(this, other);
     }
     
     /**
@@ -168,7 +169,7 @@ public class Caps extends RefCountedObject {
      * @return The new {@link Caps}
      */
     public Caps intersect(Caps other) {
-        return GSTCAPS_API.gst_caps_intersect(this, other);
+        return gst.gst_caps_intersect(this, other);
     }
     
     /**
@@ -180,7 +181,7 @@ public class Caps extends RefCountedObject {
      * @return The resulting caps.
      */
     public Caps subtract(Caps subtrahend) {
-        return GSTCAPS_API.gst_caps_subtract(this, subtrahend);
+        return gst.gst_caps_subtract(this, subtrahend);
     }
 
     /**
@@ -194,7 +195,7 @@ public class Caps extends RefCountedObject {
      * @see Structure
      */
     public Caps normalize() {
-        return GSTCAPS_API.gst_caps_normalize(this);
+        return gst.gst_caps_normalize(this);
     }
     
     /**
@@ -206,7 +207,7 @@ public class Caps extends RefCountedObject {
      * @return true if the caps could be simplified
      */
     public boolean simplify() {
-        return GSTCAPS_API.gst_caps_do_simplify(this);
+        return gst.gst_caps_do_simplify(this);
     }
     
     /**
@@ -218,7 +219,7 @@ public class Caps extends RefCountedObject {
      * @param caps The Caps to append
      */
     public void append(Caps caps) {
-        GSTCAPS_API.gst_caps_append(this, caps);
+        gst.gst_caps_append(this, caps);
     }
     
     /**
@@ -229,7 +230,7 @@ public class Caps extends RefCountedObject {
      * @param struct The structure to append.
      */
     public void append(Structure struct) {
-        GSTCAPS_API.gst_caps_append_structure(this, struct);
+        gst.gst_caps_append_structure(this, struct);
     }
     
     /**
@@ -240,7 +241,7 @@ public class Caps extends RefCountedObject {
      * @param index Index of the structure to remove.
      */
     public void removeStructure(int index) {
-        GSTCAPS_API.gst_caps_remove_structure(this, index);
+        gst.gst_caps_remove_structure(this, index);
     }
     
     /**
@@ -258,7 +259,7 @@ public class Caps extends RefCountedObject {
      * @param other The other {@link Caps} to merge.
      */
     public void merge(Caps other) {
-        GSTCAPS_API.gst_caps_merge(this, other);
+        gst.gst_caps_merge(this, other);
     }
     
     /**
@@ -270,7 +271,7 @@ public class Caps extends RefCountedObject {
      * @param structure The structure to merge.
      */
     public void merge(Structure structure) {
-        GSTCAPS_API.gst_caps_merge_structure(this, structure);
+        gst.gst_caps_merge_structure(this, structure);
     }
     
     /**
@@ -284,11 +285,11 @@ public class Caps extends RefCountedObject {
      * @return A writable version of this caps object.
      */
     public Caps makeWritable() {
-        return GSTCAPS_API.gst_caps_make_writable(this);
+        return gst.gst_caps_make_writable(this);
     }
     
     public void setInteger(String field, Integer value) {
-        GSTCAPS_API.gst_caps_set_simple(this, field, value, null);
+        gst.gst_caps_set_simple(this, field, value, null);
     }
     
     /**
@@ -309,7 +310,7 @@ public class Caps extends RefCountedObject {
          */
         // The above means we return a Structure proxy which does not own the pointer.
         // gst_caps_get_structure is not marked as CallerOwnsReturn, so it should work
-        return GSTCAPS_API.gst_caps_get_structure(this, index);
+        return gst.gst_caps_get_structure(this, index);
     }
     /**
      * Destructively discard all but the first structure from this caps.
@@ -317,12 +318,12 @@ public class Caps extends RefCountedObject {
      * Useful when fixating. This caps must be writable.
      */
     public void truncate() {
-        GSTCAPS_API.gst_caps_truncate(this);
+        gst.gst_caps_truncate(this);
     }
     
     @Override
     public String toString() {
-        return GSTCAPS_API.gst_caps_to_string(this);
+        return gst.gst_caps_to_string(this);
     }
     
     /**
@@ -331,7 +332,7 @@ public class Caps extends RefCountedObject {
      * @return true if this caps represents any format.
      */
     public boolean isAny() {
-        return GSTCAPS_API.gst_caps_is_any(this);
+        return gst.gst_caps_is_any(this);
     }
     
     /**
@@ -340,7 +341,7 @@ public class Caps extends RefCountedObject {
      * @return true if this caps represents no formats.
      */
     public boolean isEmpty() {
-        return GSTCAPS_API.gst_caps_is_empty(this);
+        return gst.gst_caps_is_empty(this);
     }
     
     /**
@@ -353,7 +354,7 @@ public class Caps extends RefCountedObject {
      * @return true if this caps is fixed
      */
     public boolean isFixed() {
-        return GSTCAPS_API.gst_caps_is_fixed(this);
+        return gst.gst_caps_is_fixed(this);
     }
     
     /**
@@ -366,7 +367,7 @@ public class Caps extends RefCountedObject {
      * @return true if other caps equals this one.
      */
     public boolean isEqual(Caps other) {
-        return GSTCAPS_API.gst_caps_is_equal(this, other);
+        return gst.gst_caps_is_equal(this, other);
     }
     
     /**
@@ -376,7 +377,7 @@ public class Caps extends RefCountedObject {
      * @return true if the other caps is equal to this one.
      */
     public boolean isEqualFixed(Caps other) {
-        return GSTCAPS_API.gst_caps_is_equal_fixed(this, other);
+        return gst.gst_caps_is_equal_fixed(this, other);
     }
     
     /**
@@ -389,7 +390,7 @@ public class Caps extends RefCountedObject {
      * @return true if this caps is a subset of superset
      */
     public boolean isSubset(Caps superset) {
-        return GSTCAPS_API.gst_caps_is_subset(this, superset);
+        return gst.gst_caps_is_subset(this, superset);
     }
     
     /**
@@ -403,7 +404,7 @@ public class Caps extends RefCountedObject {
      * @return true if other is always compatible with this caps.
      */
     public boolean isAlwaysCompatible(Caps other) {
-        return GSTCAPS_API.gst_caps_is_always_compatible(this, other);
+        return gst.gst_caps_is_always_compatible(this, other);
     }
     @Override
     public boolean equals(Object other) {
@@ -413,13 +414,13 @@ public class Caps extends RefCountedObject {
         return other == this || isEqual((Caps) other);
     }
     protected void ref() {
-        GSTCAPS_API.gst_caps_ref(this);
+        gst.gst_caps_ref(this);
     }
     protected void unref() {
-        GSTCAPS_API.gst_caps_unref(this);
+        gst.gst_caps_unref(this);
     }
     protected void disposeNativeHandle(Pointer ptr) {
-        GSTCAPS_API.gst_caps_unref(ptr);
+        gst.gst_caps_unref(ptr);
     }
 
     

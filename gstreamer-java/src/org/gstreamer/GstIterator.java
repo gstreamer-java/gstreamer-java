@@ -24,18 +24,19 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.GstIteratorAPI;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-
-import static org.gstreamer.lowlevel.GstIteratorAPI.GSTITERATOR_API;
 
 /**
  *
  */
 class GstIterator<T extends NativeObject> extends NativeObject implements java.lang.Iterable<T> {
-    
+    private static final GstIteratorAPI gst = GstNative.load(GstIteratorAPI.class);
+
     private Class<T> objectType;
     GstIterator(Pointer ptr, Class<T> cls) {
         super(initializer(ptr));
@@ -47,7 +48,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
     }
     
     protected void disposeNativeHandle(Pointer ptr) {
-        GSTITERATOR_API.gst_iterator_free(ptr);
+        gst.gst_iterator_free(ptr);
     }
     public List<T> asList() {
         List<T> list = new LinkedList<T>();
@@ -64,7 +65,7 @@ class GstIterator<T extends NativeObject> extends NativeObject implements java.l
         }
         private T getNext() {
             PointerByReference nextRef = new PointerByReference();
-            if (GSTITERATOR_API.gst_iterator_next(handle(), nextRef) == 1) {                
+            if (gst.gst_iterator_next(handle(), nextRef) == 1) {                
                 return NativeObject.objectFor(nextRef.getValue(), objectType, false);                
             }
             return null;

@@ -34,15 +34,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.glib.MainContextExecutorService;
+import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GMainContext;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-
-import static org.gstreamer.lowlevel.GstAPI.GST_API;
 
 /**
  * Media library supporting arbitrary formats and filter graphs.
@@ -56,7 +56,7 @@ public final class Gst {
     private static boolean useDefaultContext = false;
     private static final AtomicInteger initCount = new AtomicInteger(0);
     private static List<Runnable> shutdownTasks = Collections.synchronizedList(new ArrayList<Runnable>());
-    
+    private static final GstAPI gst = GstNative.load(GstAPI.class);    
     
     /** Creates a new instance of Gst */
     private Gst() {
@@ -69,7 +69,7 @@ public final class Gst {
      */
     public static Version getVersion() {
         long[] major = { 0 }, minor = { 0 }, micro = { 0 }, nano = { 0 };
-        GST_API.gst_version(major, minor, micro, nano);
+        gst.gst_version(major, minor, micro, nano);
         return new Version(major[0], minor[0], micro[0], nano[0]);
     }
     
@@ -79,7 +79,7 @@ public final class Gst {
      * @return a string representation of the version.
      */
     public static String getVersionString() {
-        return GST_API.gst_version_string();
+        return gst.gst_version_string();
     }
     
     /**
@@ -210,7 +210,7 @@ public final class Gst {
         Logger.getLogger("org.gstreamer").setLevel(Level.WARNING);
         
         Pointer[] error = { null };
-        if (!GST_API.gst_init_check(argv.argcRef, argv.argvRef, error)) {
+        if (!gst.gst_init_check(argv.argcRef, argv.argvRef, error)) {
             initCount.decrementAndGet();
             throw new GstException(new GError(new GErrorStruct(error[0])));
         }
@@ -261,7 +261,7 @@ public final class Gst {
         
         mainContext = null;
         System.gc(); // Make sure any dangling objects are unreffed before calling deinit().
-        GST_API.gst_deinit();
+        gst.gst_deinit();
     }
     
     /**

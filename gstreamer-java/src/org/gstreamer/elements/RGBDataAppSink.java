@@ -29,10 +29,11 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
-
-import static org.gstreamer.lowlevel.GstBinAPI.GSTBIN_API;
+import org.gstreamer.lowlevel.GstBinAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 public class RGBDataAppSink extends Bin {
+    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
     private final Listener listener;
     private final AppSink sink;
@@ -42,7 +43,7 @@ public class RGBDataAppSink extends Bin {
     }
 
     public RGBDataAppSink(String name, Listener listener) {
-        super(initializer(GSTBIN_API.ptr_gst_bin_new(name)));
+        super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         sink = (AppSink) ElementFactory.make("appsink", "VideoSink");
@@ -66,7 +67,7 @@ public class RGBDataAppSink extends Bin {
     }
 
     public RGBDataAppSink(String name, Pipeline pipeline, Listener listener) {
-        super(initializer(GSTBIN_API.ptr_gst_bin_new(name)));
+        super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         // Doesn't work. getElementByName returns a BaseSink which cannot be casted
