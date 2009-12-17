@@ -23,7 +23,8 @@
 
 package org.gstreamer;
 
-import static org.gstreamer.lowlevel.GstGhostPadAPI.GSTGHOSTPAD_API;
+import org.gstreamer.lowlevel.GstGhostPadAPI;
+import org.gstreamer.lowlevel.GstNative;
 
 /**
  * Pseudo link pads.
@@ -46,6 +47,7 @@ import static org.gstreamer.lowlevel.GstGhostPadAPI.GSTGHOSTPAD_API;
  * @see Pad
  */
 public class GhostPad extends Pad {
+    private static final GstGhostPadAPI gst = GstNative.load(GstGhostPadAPI.class);
     /**
      * Creates a new instance of GhostPad
      */
@@ -61,7 +63,7 @@ public class GhostPad extends Pad {
      * @param target The {@link Pad} to ghost.
      */
     public GhostPad(String name, Pad target) {
-        this(initializer(GSTGHOSTPAD_API.ptr_gst_ghost_pad_new(name, target)));
+        this(initializer(gst.ptr_gst_ghost_pad_new(name, target)));
     }
     
     /**
@@ -73,7 +75,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, Pad target, PadTemplate template) {
-        this(initializer(GSTGHOSTPAD_API.ptr_gst_ghost_pad_new_from_template(name, target, template)));
+        this(initializer(gst.ptr_gst_ghost_pad_new_from_template(name, target, template)));
     }
     
     /**
@@ -86,7 +88,7 @@ public class GhostPad extends Pad {
      * @param direction The direction of the ghostpad.
      */
     public GhostPad(String name, PadDirection direction) {
-        this(initializer(GSTGHOSTPAD_API.ptr_gst_ghost_pad_new_no_target(name, direction.ordinal())));
+        this(initializer(gst.ptr_gst_ghost_pad_new_no_target(name, direction.ordinal())));
     }
     
     /**
@@ -97,7 +99,7 @@ public class GhostPad extends Pad {
      * @param template The {@link PadTemplate} to use on the ghostpad.
      */
     public GhostPad(String name, PadTemplate template) {
-        this(initializer(GSTGHOSTPAD_API.ptr_gst_ghost_pad_new_no_target_from_template(name, template)));
+        this(initializer(gst.ptr_gst_ghost_pad_new_no_target_from_template(name, template)));
     }
     
     /**
@@ -106,7 +108,7 @@ public class GhostPad extends Pad {
      * @return the target {@link Pad}, can be null if the ghostpad has no target set
      */
     public Pad getTarget() {
-        return GSTGHOSTPAD_API.gst_ghost_pad_get_target(this);
+        return gst.gst_ghost_pad_get_target(this);
     }
     
     /**
@@ -118,6 +120,6 @@ public class GhostPad extends Pad {
      * when the internal pads could not be linked.
      */
     public boolean setTarget(Pad pad) {
-        return GSTGHOSTPAD_API.gst_ghost_pad_set_target(this, pad);
+        return gst.gst_ghost_pad_set_target(this, pad);
     }
 }

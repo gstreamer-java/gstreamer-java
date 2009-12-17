@@ -1,4 +1,5 @@
 /* 
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (C) 2008 Wayne Meissner
  * Copyright (C) 2004 Wim Taymans <wim@fluendo.com>
  * 
@@ -23,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gstreamer.lowlevel.EnumMapper;
+import org.gstreamer.lowlevel.GstMessageAPI;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.IntegerEnum;
-
-import static org.gstreamer.lowlevel.GstMessageAPI.GSTMESSAGE_API;
 
 /**
  * The different message types that are available.
@@ -123,9 +124,18 @@ public enum MessageType implements IntegerEnum {
      */
     ASYNC_DONE(1 << 21),
     ANY(~0);
+    
+    private static final class GstMessageAPISingleton {
+        private static final GstMessageAPI INSTANCE = GstNative.load(GstMessageAPI.class);
+    }
+
+    private static final GstMessageAPI msgapi() {
+    	  return GstMessageAPISingleton.INSTANCE;
+    	}
+
     MessageType(int type) {
         this.type = type;
-        this.name = GSTMESSAGE_API.gst_message_type_get_name(this);
+        this.name = msgapi().gst_message_type_get_name(this);
     }
     
     /**

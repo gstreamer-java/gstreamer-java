@@ -26,12 +26,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstElementAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
 
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
-import static org.gstreamer.lowlevel.GstElementAPI.GSTELEMENT_API;
 
 /**
  * Abstract base class for all pipeline elements.
@@ -66,6 +67,7 @@ import static org.gstreamer.lowlevel.GstElementAPI.GSTELEMENT_API;
  *
  */
 public class Element extends GstObject {
+    private static final GstElementAPI gst = GstNative.load(GstElementAPI.class);
 
     @SuppressWarnings("unused")    
     private static Logger logger = Logger.getLogger(Element.class.getName());
@@ -107,7 +109,7 @@ public class Element extends GstObject {
      * @return true if the elements could be linked, false otherwise.
      */
     public boolean link(Element dest) {
-        return GSTELEMENT_API.gst_element_link(this, dest);
+        return gst.gst_element_link(this, dest);
     }
     
     /**
@@ -136,7 +138,7 @@ public class Element extends GstObject {
      * @param dest The sink Element to unlink.
      */
     public void unlink(Element dest) {
-        GSTELEMENT_API.gst_element_unlink(this, dest);
+        gst.gst_element_unlink(this, dest);
     }
     
     /**
@@ -156,7 +158,7 @@ public class Element extends GstObject {
      * @return the status of the element's state change.
      */
     public StateChangeReturn setState(State state) {
-        return GSTELEMENT_API.gst_element_set_state(this, state);
+        return gst.gst_element_set_state(this, state);
     }
     
     /**
@@ -173,7 +175,7 @@ public class Element extends GstObject {
      */
     @Deprecated
     public Pad getPad(String padname) {
-        return GSTELEMENT_API.gst_element_get_static_pad(this, padname);
+        return gst.gst_element_get_static_pad(this, padname);
     }
     
     /**
@@ -184,7 +186,7 @@ public class Element extends GstObject {
      * @return The requested {@link Pad} if found, otherwise null.
      */
     public Pad getStaticPad(String padname) {
-        return GSTELEMENT_API.gst_element_get_static_pad(this, padname);
+        return gst.gst_element_get_static_pad(this, padname);
     }
     
     /**
@@ -193,7 +195,7 @@ public class Element extends GstObject {
      * @return the List of {@link Pad}s.
      */
     public List<Pad> getPads() {
-        return new GstIterator<Pad>(GSTELEMENT_API.gst_element_iterate_pads(this), Pad.class).asList();
+        return new GstIterator<Pad>(gst.gst_element_iterate_pads(this), Pad.class).asList();
     }
     
     /**
@@ -202,7 +204,7 @@ public class Element extends GstObject {
      * @return the List of {@link Pad}s.
      */
     public List<Pad> getSrcPads() {
-        return new GstIterator<Pad>(GSTELEMENT_API.gst_element_iterate_src_pads(this), Pad.class).asList();
+        return new GstIterator<Pad>(gst.gst_element_iterate_src_pads(this), Pad.class).asList();
     }
     
     /**
@@ -211,7 +213,7 @@ public class Element extends GstObject {
      * @return the List of {@link Pad}s.
      */
     public List<Pad> getSinkPads() {
-        return new GstIterator<Pad>(GSTELEMENT_API.gst_element_iterate_sink_pads(this), Pad.class).asList();
+        return new GstIterator<Pad>(gst.gst_element_iterate_sink_pads(this), Pad.class).asList();
     }
     /**
      * Adds a {@link Pad} (link point) to the Element. 
@@ -229,7 +231,7 @@ public class Element extends GstObject {
      * parent. 
      */
     public boolean addPad(Pad pad) {
-        return GSTELEMENT_API.gst_element_add_pad(this, pad);
+        return gst.gst_element_add_pad(this, pad);
     }
     
     /**
@@ -241,7 +243,7 @@ public class Element extends GstObject {
      * Release using {@link #releaseRequestPad} after usage.
      */
     public Pad getRequestPad(String name) {
-        return GSTELEMENT_API.gst_element_get_request_pad(this, name);
+        return gst.gst_element_get_request_pad(this, name);
     }
     
     /**
@@ -250,7 +252,7 @@ public class Element extends GstObject {
      * @param pad the pad to release.
      */
     public void releaseRequestPad(Pad pad) {
-        GSTELEMENT_API.gst_element_release_request_pad(this, pad);
+        gst.gst_element_release_request_pad(this, pad);
     }
     
     /**
@@ -273,7 +275,7 @@ public class Element extends GstObject {
      * pad does not belong to the provided element.
      */
     public boolean removePad(Pad pad) {
-        return GSTELEMENT_API.gst_element_remove_pad(this, pad);
+        return gst.gst_element_remove_pad(this, pad);
     }
     
     /**
@@ -301,7 +303,7 @@ public class Element extends GstObject {
      */
     public State getState(long timeout, TimeUnit units) {
         State[] state = new State[1];
-        GSTELEMENT_API.gst_element_get_state(this, state, null, units.toNanos(timeout));
+        gst.gst_element_get_state(this, state, null, units.toNanos(timeout));
         return state[0];
     }
     
@@ -318,7 +320,7 @@ public class Element extends GstObject {
      */
     public State getState(long timeout) {
         State[] state = new State[1];
-        GSTELEMENT_API.gst_element_get_state(this, state, null, timeout);
+        gst.gst_element_get_state(this, state, null, timeout);
         return state[0];
     }
     
@@ -337,7 +339,7 @@ public class Element extends GstObject {
     public void getState(long timeout, State[] states) {
         State[] state = new State[1];
         State[] pending = new State[1];
-        GSTELEMENT_API.gst_element_get_state(this, state, pending, timeout);
+        gst.gst_element_get_state(this, state, pending, timeout);
         states[0] = state[0];
         states[1] = pending[0];
     }
@@ -348,7 +350,7 @@ public class Element extends GstObject {
      * @return true, if the element's state could be synced to the parent's state. MT safe.
      */
     public boolean syncStateWithParent() {
-    	return GSTELEMENT_API.gst_element_sync_state_with_parent(this);
+    	return gst.gst_element_sync_state_with_parent(this);
     }
     
     /**
@@ -356,7 +358,7 @@ public class Element extends GstObject {
      * @return the {@link ElementFactory} used for creating this element.
      */
     public ElementFactory getFactory() {
-        return GSTELEMENT_API.gst_element_get_factory(this);
+        return gst.gst_element_get_factory(this);
     }
     
     /**
@@ -366,7 +368,7 @@ public class Element extends GstObject {
      * @return the element's {@link Bus}
      */
     public Bus getBus() {
-        return GSTELEMENT_API.gst_element_get_bus(this);
+        return gst.gst_element_get_bus(this);
     }
     
     /**
@@ -380,7 +382,7 @@ public class Element extends GstObject {
      * @return true if the event was handled.
      */
     public boolean sendEvent(Event ev) {
-        return GSTELEMENT_API.gst_element_send_event(this, ev);
+        return gst.gst_element_send_event(this, ev);
     }
     
     /**
@@ -548,7 +550,7 @@ public class Element extends GstObject {
      * @return true if all elements successfully linked.
      */
     public static boolean linkMany(Element... elements) {
-        return GSTELEMENT_API.gst_element_link_many(elements);
+        return gst.gst_element_link_many(elements);
     }
     
     /**
@@ -558,7 +560,7 @@ public class Element extends GstObject {
      * 
      */
     public static void unlinkMany(Element... elements) {
-        GSTELEMENT_API.gst_element_unlink_many(elements);
+        gst.gst_element_unlink_many(elements);
     }
     
     /**
@@ -576,7 +578,7 @@ public class Element extends GstObject {
      * @return true if the pads were successfully linked.
      */
     public static boolean linkPads(Element src, String srcPadName, Element dest, String destPadName) {
-        return GSTELEMENT_API.gst_element_link_pads(src, srcPadName, dest, destPadName);
+        return gst.gst_element_link_pads(src, srcPadName, dest, destPadName);
     }
     
     /**
@@ -595,7 +597,7 @@ public class Element extends GstObject {
      */
     public static boolean linkPadsFiltered(Element src, String srcPadName, 
             Element dest, String destPadName, Caps caps) {
-        return GSTELEMENT_API.gst_element_link_pads_filtered(src, srcPadName, dest, destPadName, caps);
+        return gst.gst_element_link_pads_filtered(src, srcPadName, dest, destPadName, caps);
     }
     
     /**
@@ -608,7 +610,7 @@ public class Element extends GstObject {
      * 
      */
     public static void unlinkPads(Element src, String srcPadName, Element dest, String destPadName) {
-        GSTELEMENT_API.gst_element_unlink_pads(src, srcPadName, dest, destPadName);
+        gst.gst_element_unlink_pads(src, srcPadName, dest, destPadName);
     }
     
     /**
@@ -619,7 +621,7 @@ public class Element extends GstObject {
      * element does not have a {@link Bus}.
      */
     public boolean postMessage(Message message) {
-        return GSTELEMENT_API.gst_element_post_message(this, message);
+        return gst.gst_element_post_message(this, message);
     }
     
     /**
@@ -628,7 +630,7 @@ public class Element extends GstObject {
      * @return the clock of the element.
      */
     public Clock getClock() {
-        return GSTELEMENT_API.gst_element_get_clock(this);
+        return gst.gst_element_get_clock(this);
     }
     
     /**
@@ -640,7 +642,7 @@ public class Element extends GstObject {
      * @return the base time of the element
      */
     public ClockTime getBaseTime() {
-        return GSTELEMENT_API.gst_element_get_base_time(this);
+        return gst.gst_element_get_base_time(this);
     }
 }
 

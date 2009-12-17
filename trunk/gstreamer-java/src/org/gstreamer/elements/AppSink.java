@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2009 Levente Farkas
  * Copyright (c) 2009 Wayne Meissner
  * Copyright (c) 2008 Wayne Meissner
  * Copyright (C) 2007 David Schleef <ds@schleef.org>
@@ -34,6 +35,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 public class AppSink extends BaseSink {
     private static final AppAPI gst() { return AppAPI.APP_API; }
+
     public AppSink(Initializer init) {
         super(init);
     }

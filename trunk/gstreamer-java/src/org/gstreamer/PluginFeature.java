@@ -22,7 +22,8 @@ package org.gstreamer;
 
 import java.util.logging.Logger;
 
-import static org.gstreamer.lowlevel.GstPluginFeatureAPI.GSTPLUGINFEATURE_API;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPluginFeatureAPI;
 
 /**
  * Base class for contents of a {@link Plugin}
@@ -31,6 +32,7 @@ import static org.gstreamer.lowlevel.GstPluginFeatureAPI.GSTPLUGINFEATURE_API;
  * @see Plugin
  */
 public class PluginFeature extends GstObject {
+    private static final GstPluginFeatureAPI gst = GstNative.load(GstPluginFeatureAPI.class);
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(PluginFeature.class.getName());
     
@@ -51,7 +53,7 @@ public class PluginFeature extends GstObject {
      */
     @Override
     public String getName() {
-        return GSTPLUGINFEATURE_API.gst_plugin_feature_get_name(this);
+        return gst.gst_plugin_feature_get_name(this);
     }
     
     /**
@@ -62,7 +64,7 @@ public class PluginFeature extends GstObject {
      */
     @Override
     public boolean setName(String name) {
-        GSTPLUGINFEATURE_API.gst_plugin_feature_set_name(this, name);
+        gst.gst_plugin_feature_set_name(this, name);
         return true;
     }
     
@@ -73,7 +75,7 @@ public class PluginFeature extends GstObject {
      * @param rank The rank value - higher number means more priority rank
      */
     public void setRank(int rank) {
-        GSTPLUGINFEATURE_API.gst_plugin_feature_set_rank(this, rank);
+        gst.gst_plugin_feature_set_rank(this, rank);
     }
     
     /**
@@ -82,7 +84,7 @@ public class PluginFeature extends GstObject {
      * @return The rank of the feature.
      */
     public int getRank() {
-        return GSTPLUGINFEATURE_API.gst_plugin_feature_get_rank(this);
+        return gst.gst_plugin_feature_get_rank(this);
     }
     
     /**
@@ -94,6 +96,6 @@ public class PluginFeature extends GstObject {
      * @return true if the plugin feature has at least the required version, otherwise false.
      */
     public boolean checkVersion(int major, int minor, int micro) {
-        return GSTPLUGINFEATURE_API.gst_plugin_feature_check_version(this, minor, minor, micro);
+        return gst.gst_plugin_feature_check_version(this, minor, minor, micro);
     }
 }

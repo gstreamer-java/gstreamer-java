@@ -102,8 +102,7 @@ public class Registry extends GstObject {
         void gst_plugin_feature_list_free(GList list);
         GList gst_registry_get_plugin_list(Registry registry);
         GList gst_registry_plugin_filter(Registry registry, PluginFilter filter, boolean first, Pointer user_data);
-        GList gst_registry_feature_filter(Registry registry, PluginFeatureFilter filter,
-                                         boolean first, Pointer user_data);
+        GList gst_registry_feature_filter(Registry registry, PluginFeatureFilter filter, boolean first, Pointer user_data);
         GList gst_registry_get_feature_list(Registry registry, GType type);
         GList gst_registry_get_feature_list_by_plugin(Registry registry, String name);
         GList gst_registry_get_path_list(Registry registry);

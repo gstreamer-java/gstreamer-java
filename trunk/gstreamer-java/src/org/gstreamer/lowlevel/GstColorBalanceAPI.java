@@ -29,6 +29,7 @@ import com.sun.jna.Pointer;
 public interface GstColorBalanceAPI extends Library {
 	GstColorBalanceAPI GSTCOLORBALANCE_API = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
 
+	GType gst_color_balance_channel_get_type();
 	GType gst_color_balance_get_type();
 
 	/* vitrual class functions */

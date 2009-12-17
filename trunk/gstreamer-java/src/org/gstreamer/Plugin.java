@@ -23,7 +23,8 @@ package org.gstreamer;
 
 import java.util.logging.Logger;
 
-import static org.gstreamer.lowlevel.GstPluginAPI.GSTPLUGIN_API;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPluginAPI;
 
 /**
  * Container for features loaded from a shared object module
@@ -55,6 +56,7 @@ import static org.gstreamer.lowlevel.GstPluginAPI.GSTPLUGIN_API;
  * @see ElementFactory
  */
 public class Plugin extends GstObject {
+    private static final GstPluginAPI gst = GstNative.load(GstPluginAPI.class);
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(Plugin.class.getName());
     
@@ -74,7 +76,7 @@ public class Plugin extends GstObject {
      * @return A new Plugin reference if the plugin was loaded, else null.
      */
     public Plugin load(String pluginName) {
-        return GSTPLUGIN_API.gst_plugin_load_by_name(pluginName);
+        return gst.gst_plugin_load_by_name(pluginName);
     }
     
     /**
@@ -84,7 +86,7 @@ public class Plugin extends GstObject {
      */
     @Override
     public String getName() {
-        return GSTPLUGIN_API.gst_plugin_get_name(this);
+        return gst.gst_plugin_get_name(this);
     }
     
     /**
@@ -93,7 +95,7 @@ public class Plugin extends GstObject {
      * @return The long name of the plugin.
      */
     public String getDescription() {
-        return GSTPLUGIN_API.gst_plugin_get_description(this);
+        return gst.gst_plugin_get_description(this);
     }
     
     /**
@@ -102,7 +104,7 @@ public class Plugin extends GstObject {
      * @return The filename of the plugin.
      */
     public String getFilename() {
-        return GSTPLUGIN_API.gst_plugin_get_filename(this);
+        return gst.gst_plugin_get_filename(this);
     }
     
     /**
@@ -111,7 +113,7 @@ public class Plugin extends GstObject {
      * @return The version of the plugin.
      */
     public String getVersion() {
-        return GSTPLUGIN_API.gst_plugin_get_version(this);
+        return gst.gst_plugin_get_version(this);
     }
     
     /**
@@ -120,7 +122,7 @@ public class Plugin extends GstObject {
      * @return The license of the plugin.
      */
     public String getLicense() {
-        return GSTPLUGIN_API.gst_plugin_get_license(this);
+        return gst.gst_plugin_get_license(this);
     }
     
     /**
@@ -129,7 +131,7 @@ public class Plugin extends GstObject {
      * @return The source of the plugin.
      */
     public String getSource() {
-        return GSTPLUGIN_API.gst_plugin_get_source(this);
+        return gst.gst_plugin_get_source(this);
     }
     
     /**
@@ -138,7 +140,7 @@ public class Plugin extends GstObject {
      * @return The package of the plugin.
      */
     public String getPackage() {
-        return GSTPLUGIN_API.gst_plugin_get_package(this);
+        return gst.gst_plugin_get_package(this);
     }
     
     /**
@@ -147,7 +149,7 @@ public class Plugin extends GstObject {
      * @return The origin of the plugin.
      */
     public String getOrigin() {
-        return GSTPLUGIN_API.gst_plugin_get_origin(this);
+        return gst.gst_plugin_get_origin(this);
     }
     
     /**
@@ -156,7 +158,7 @@ public class Plugin extends GstObject {
      * @return true if it is loaded, false otherwise.
      */
     public boolean isLoaded() {
-        return GSTPLUGIN_API.gst_plugin_is_loaded(this);
+        return gst.gst_plugin_is_loaded(this);
     }
     
     /**
@@ -165,6 +167,6 @@ public class Plugin extends GstObject {
      * @return a potentially new <tt>Plugin</tt> reference.
      */
     public Plugin load() {
-        return GSTPLUGIN_API.gst_plugin_load(this);
+        return gst.gst_plugin_load(this);
     }
 }
