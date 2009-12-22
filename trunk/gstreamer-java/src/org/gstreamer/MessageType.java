@@ -125,17 +125,10 @@ public enum MessageType implements IntegerEnum {
     ASYNC_DONE(1 << 21),
     ANY(~0);
     
-    private static final class GstMessageAPISingleton {
-        private static final GstMessageAPI INSTANCE = GstNative.load(GstMessageAPI.class);
-    }
-
-    private static final GstMessageAPI msgapi() {
-    	  return GstMessageAPISingleton.INSTANCE;
-    	}
-
     MessageType(int type) {
         this.type = type;
-        this.name = msgapi().gst_message_type_get_name(this);
+        GstMessageAPI messageAPI = GstNative.load(GstMessageAPI.class);
+        this.name = messageAPI.gst_message_type_get_name(this);
     }
     
     /**
