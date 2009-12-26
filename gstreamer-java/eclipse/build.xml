@@ -8,7 +8,7 @@
 	<path id="library-classpath">
 		<fileset dir="${libraryClasspath}" >		
 			<include name="jna.jar"/>
-			<include name="junit-4.4.jar"/>
+			<include name="junit4.jar"/>
 			<include name="swt.jar"/>			
 		</fileset>
 	</path>		
