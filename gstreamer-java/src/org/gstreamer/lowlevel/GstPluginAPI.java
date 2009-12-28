@@ -26,6 +26,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
  * GstPlugin functions
  */
 public interface GstPluginAPI extends com.sun.jna.Library {
+	GstPluginAPI GSTPLUGIN_API = GstNative.load(GstPluginAPI.class);
+
     GType gst_plugin_get_type();
 
     String gst_plugin_get_name(Plugin plugin);

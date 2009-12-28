@@ -100,7 +100,7 @@ public interface GValueAPI extends Library {
             // of elements.
             values = (GValue[])val.toArray(n_values);
         }
-        
+        @SuppressWarnings("unused")
         private static GValueArray valueOf(Pointer ptr) {
             return ptr != null ? new GValueArray(ptr) : null;
         }

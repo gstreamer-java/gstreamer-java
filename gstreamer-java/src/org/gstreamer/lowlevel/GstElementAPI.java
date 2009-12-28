@@ -47,6 +47,8 @@ import com.sun.jna.Pointer;
  * GstElement methods
  */
 public interface GstElementAPI extends com.sun.jna.Library {
+	GstElementAPI GSTELEMENT_API = GstNative.load(GstElementAPI.class);
+
     GType gst_element_get_type();
     StateChangeReturn gst_element_set_state(Element elem, State state);
     StateChangeReturn gst_element_get_state(Element elem, State[] state, State[] pending, long timeout);

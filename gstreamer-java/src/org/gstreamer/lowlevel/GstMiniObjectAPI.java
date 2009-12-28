@@ -29,6 +29,8 @@ import com.sun.jna.Pointer;
  * GstMiniObject functions
  */
 public interface GstMiniObjectAPI extends com.sun.jna.Library {
+	GstMiniObjectAPI GSTMINIOBJECT_API = GstNative.load(GstMiniObjectAPI.class);
+
     void gst_mini_object_ref(MiniObject ptr);
     void gst_mini_object_unref(MiniObject ptr);
     void gst_mini_object_unref(Pointer ptr);

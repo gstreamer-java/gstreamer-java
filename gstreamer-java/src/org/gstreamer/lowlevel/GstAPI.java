@@ -31,6 +31,7 @@ import com.sun.jna.ptr.PointerByReference;
  *
  */
 public interface GstAPI extends Library {
+	GstAPI GST_API = GstNative.load(GstAPI.class);
     int GST_PADDING = 4;
     int GST_PADDING_LARGE = 20;
         

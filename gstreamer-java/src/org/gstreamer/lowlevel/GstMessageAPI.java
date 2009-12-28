@@ -40,6 +40,8 @@ import com.sun.jna.ptr.PointerByReference;
  * GstMessage functions
  */
 public interface GstMessageAPI extends com.sun.jna.Library {
+	GstMessageAPI GSTMESSAGE_API = GstNative.load(GstMessageAPI.class);
+
     public final class MessageStruct extends com.sun.jna.Structure {
         public volatile MiniObjectStruct mini_object;
         public volatile Pointer lock;

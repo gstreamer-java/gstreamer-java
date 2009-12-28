@@ -32,6 +32,8 @@ import com.sun.jna.Pointer;
  * GstClock functions
  */
 public interface GstClockAPI extends com.sun.jna.Library {
+	GstClockAPI GSTCLOCK_API = GstNative.load(GstClockAPI.class);
+
     GType gst_clock_get_type();
     ClockTime gst_clock_set_resolution(Clock clock, ClockTime resolution);
     ClockTime gst_clock_get_resolution(Clock clock);

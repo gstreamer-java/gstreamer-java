@@ -40,7 +40,7 @@ import com.sun.jna.Pointer;
  * GstPad functions
  */
 public interface GstPadAPI extends com.sun.jna.Library {
-    static GstPadAPI INSTANCE = GstNative.load(GstPadAPI.class);
+    static GstPadAPI GSTPAD_API = GstNative.load(GstPadAPI.class);
     
     GType gst_pad_get_type();
     @CallerOwnsReturn Pad gst_pad_new(String name, PadDirection direction);

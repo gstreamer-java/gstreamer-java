@@ -54,6 +54,7 @@ import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 abstract public class CustomSink extends BaseSink {
     private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
     private final static Logger logger = Logger.getLogger(CustomSink.class.getName());
+    @SuppressWarnings("unused")
     private static class CustomSinkInfo {
         GType type;
         PadTemplate template;

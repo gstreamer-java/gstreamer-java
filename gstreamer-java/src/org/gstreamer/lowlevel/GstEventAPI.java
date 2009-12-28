@@ -36,6 +36,8 @@ import com.sun.jna.ptr.PointerByReference;
  * GstEvent functions
  */
 public interface GstEventAPI extends com.sun.jna.Library {
+	GstEventAPI GSTEVENT_API = GstNative.load(GstEventAPI.class);
+
     String gst_event_type_get_name(EventType type);
     int gst_event_type_get_flags(EventType type);
 
