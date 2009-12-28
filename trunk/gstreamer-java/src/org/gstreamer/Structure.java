@@ -59,7 +59,7 @@ public class Structure extends NativeObject {
     private static interface API extends GstStructureAPI, GstValueAPI {
         @CallerOwnsReturn Pointer ptr_gst_structure_from_string(String data, PointerByReference end);
         @CallerOwnsReturn Pointer ptr_gst_structure_empty_new(String name);
-        //Pointer gst_structure_id_empty_new(GQuark                   quark);
+        //Pointer gst_structure_id_empty_new(GQuark quark);
         @CallerOwnsReturn Pointer ptr_gst_structure_new(String name, String firstField, Object... args);
         void gst_structure_free(Pointer ptr);
     }

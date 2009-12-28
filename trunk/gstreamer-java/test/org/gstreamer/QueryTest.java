@@ -49,7 +49,6 @@ import org.junit.Test;
  * @author wayne
  */
 public class QueryTest {
-    private static final GstQueryAPI gst = GstNative.load(GstQueryAPI.class);
     
     public QueryTest() {
     }
@@ -74,7 +73,7 @@ public class QueryTest {
     
     @Test
     public void gst_query_new_position() {
-        Query query = gst.gst_query_new_position(Format.TIME);
+        Query query = GstQueryAPI.GSTQUERY_API.gst_query_new_position(Format.TIME);
         assertNotNull("Query.newPosition returned null", query);
         assertTrue("Returned query not instance of PositionQuery", query instanceof PositionQuery);
     }
@@ -108,7 +107,7 @@ public class QueryTest {
     }
     @Test
     public void gst_query_new_duration() {
-        Query query = gst.gst_query_new_duration(Format.TIME);
+        Query query = GstQueryAPI.GSTQUERY_API.gst_query_new_duration(Format.TIME);
         assertNotNull("Query.newDuration returned null", query);
         assertTrue("Returned query not instance of DurationQuery", query instanceof DurationQuery);
     }
@@ -137,7 +136,7 @@ public class QueryTest {
     }
     @Test
     public void gst_query_new_latency() {
-        Query query = gst.gst_query_new_latency();
+        Query query = GstQueryAPI.GSTQUERY_API.gst_query_new_latency();
         assertNotNull("gst_query_new_latency() returned null", query);
         assertTrue("Returned query not instance of LatencyQuery", query instanceof LatencyQuery);
     }
@@ -176,7 +175,7 @@ public class QueryTest {
         assertTrue("toString() did not return minLatency", s.contains("max=" + maxLatency));
     }
     @Test public void applicationQuery() {
-        QueryType type = gst.gst_query_type_register("application_test", "An application query");
+        QueryType type = GstQueryAPI.GSTQUERY_API.gst_query_type_register("application_test", "An application query");
         Structure s = new Structure("test");
         ApplicationQuery query = new ApplicationQuery(type, s);
         s = query.getStructure();
@@ -200,7 +199,7 @@ public class QueryTest {
         assertEquals("End time not set", end.toNanos(), query.getEnd());
     }
     @Test public void formatsQuery() {
-        Query query = gst.gst_query_new_formats();
+        Query query = GstQueryAPI.GSTQUERY_API.gst_query_new_formats();
         assertNotNull("gst_query_new_latency() returned null", query);
         assertTrue("Returned query not instance of LatencyQuery", query instanceof FormatsQuery);
     }
@@ -223,7 +222,7 @@ public class QueryTest {
         assertEquals("nick mismatch", qt, QueryType.fromNick(qt.getName()));
     }
     @Test public void customQueryType() {
-        QueryType qt = gst.gst_query_type_register("test", "A test query type");
+        QueryType qt = GstQueryAPI.GSTQUERY_API.gst_query_type_register("test", "A test query type");
         assertEquals("nick mismatch", qt, QueryType.fromNick("test"));
     }
     @Test public void makeWriteable() {

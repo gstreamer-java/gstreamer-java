@@ -82,29 +82,29 @@ public class XOverlay extends GstInterface {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
-    	//Composite style must be embedded
-        if (!Platform.isLinux() || comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
-            return;
-        }
-    	//TODO: Test on windows and mac
-        int handle;
-	try {
-		Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
-		Field embedHandleField = compClass.getField("embeddedHandle");
-		handle = embedHandleField.getInt(comp);
-		GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
-	} catch (IllegalArgumentException e) {
-		e.printStackTrace();
-	} catch (IllegalAccessException e) {
-		e.printStackTrace();
-	} catch (SecurityException e) {
-		e.printStackTrace();
-	} catch (NoSuchFieldException e) {
-		e.printStackTrace();
+	public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
+		// Composite style must be embedded
+		if (!Platform.isLinux() || comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
+			GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
+			return;
+		}
+		// TODO: Test on windows and mac
+		int handle;
+		try {
+			Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
+			Field embedHandleField = compClass.getField("embeddedHandle");
+			handle = embedHandleField.getInt(comp);
+			GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 	}
-    }
     
     /**
      * Tell an overlay that it has been exposed. This will redraw the current frame

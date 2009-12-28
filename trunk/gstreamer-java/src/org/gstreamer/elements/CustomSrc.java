@@ -39,7 +39,6 @@ import org.gstreamer.FlowReturn;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
@@ -53,7 +52,6 @@ import com.sun.jna.ptr.LongByReference;
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 abstract public class CustomSrc extends BaseSrc {
-    private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
     private final static Logger logger = Logger.getLogger(CustomSrc.class.getName());
     private static final Map<Class<? extends CustomSrc>, CustomSrcInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSrc>, CustomSrcInfo>();
 
@@ -432,7 +430,7 @@ abstract public class CustomSrc extends BaseSrc {
             public void callback(Pointer g_class) {
                 info.caps = Caps.anyCaps();
                 info.template = new PadTemplate("src", PadDirection.SRC, info.caps);
-                gst.gst_element_class_add_pad_template(g_class, info.template);
+                GstPadTemplateAPI.GSTPADTEMPLATE_API.gst_element_class_add_pad_template(g_class, info.template);
             }
         };
         

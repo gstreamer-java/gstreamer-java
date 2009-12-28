@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.gstreamer.lowlevel.GstBinAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPipelineAPI;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -206,9 +205,9 @@ public class BinTest {
     // This test doesn't work correctly on older gstreamer?
     //@Test 
     public void iterateSorted() {
-        Pipeline pipeline = GstNative.load(GstPipelineAPI.class).gst_pipeline_new(null);
+        Pipeline pipeline = GstPipelineAPI.GSTPIPELINE_API.gst_pipeline_new(null);
         assertNotNull("Failed to create Pipeline", pipeline);
-        Bin bin = GstNative.load(GstBinAPI.class).gst_bin_new(null);
+        Bin bin = GstBinAPI.GSTBIN_API.gst_bin_new(null);
         assertNotNull("Failed to create bin", bin);
 
         Element src = ElementFactory.make("fakesrc", null);
