@@ -31,6 +31,8 @@ import com.sun.jna.Pointer;
  * GstCaps functions
  */
 public interface GstCapsAPI extends com.sun.jna.Library {
+	GstCapsAPI GSTCAPS_API = GstNative.load(GstCapsAPI.class);
+
     GType gst_caps_get_type();
     @CallerOwnsReturn Pointer ptr_gst_caps_new_empty();
     @CallerOwnsReturn Pointer ptr_gst_caps_new_any();

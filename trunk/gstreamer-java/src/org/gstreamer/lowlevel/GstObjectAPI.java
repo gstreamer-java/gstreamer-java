@@ -30,6 +30,8 @@ import com.sun.jna.Pointer;
  * GstObject functions
  */
 public interface GstObjectAPI extends com.sun.jna.Library {
+	GstObjectAPI GSTOBJECT_API = GstNative.load(GstObjectAPI.class);
+
     GType gst_object_get_type();
     void gst_object_ref(GstObject ptr);
     void gst_object_unref(GstObject ptr);

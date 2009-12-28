@@ -31,6 +31,8 @@ import com.sun.jna.ptr.PointerByReference;
  * GstStructure functions
  */
 public interface GstStructureAPI extends com.sun.jna.Library {
+	GstStructureAPI GSTSTRUCTURE_API = GstNative.load(GstStructureAPI.class);
+
     GType gst_structure_get_type();
 
     boolean gst_structure_get_int(Structure structure, String fieldname, IntByReference value);

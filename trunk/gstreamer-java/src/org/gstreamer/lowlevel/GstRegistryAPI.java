@@ -31,6 +31,8 @@ import com.sun.jna.Pointer;
  * GstRegistry functions
  */
 public interface GstRegistryAPI extends com.sun.jna.Library {
+	GstRegistryAPI GSTREGISTRY_API = GstNative.load(GstRegistryAPI.class);
+
     /* function for filters */
     static interface PluginFilter extends GstCallback {
         /**

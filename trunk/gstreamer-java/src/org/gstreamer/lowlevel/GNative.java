@@ -220,7 +220,7 @@ public final class GNative {
             return retval;
         }
         
-        
+        @SuppressWarnings("unused")
         Class<?> getNativeClass(Class<?> cls) {
             if (cls == Integer.class) {
                 return int.class;

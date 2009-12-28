@@ -94,6 +94,7 @@ public class AudioPanorama {
         public void setPanorama(float pan) {
             audiopanorama.set("panorama", pan);
         }
+        @SuppressWarnings("unused")
         public float getPanorama() {
             return ((Number) audiopanorama.get("panorama")).floatValue();
         }

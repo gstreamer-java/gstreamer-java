@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
  * GstStructure functions
  */
 public interface GstValueAPI extends com.sun.jna.Library {
+	GstValueAPI GSTVALUE_API = GstNative.load(GstValueAPI.class);
+
     GType gst_fourcc_get_type();
     GType gst_int_range_get_type();
     GType gst_double_range_get_type();
