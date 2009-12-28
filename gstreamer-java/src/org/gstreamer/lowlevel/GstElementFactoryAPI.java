@@ -32,7 +32,7 @@ import com.sun.jna.Pointer;
  * GstElementFactory methods
  */
 public interface GstElementFactoryAPI extends com.sun.jna.Library {
-	GstElementFactoryAPI GSTELEMENTFACTORY_API = GstNative.load(GstElementFactoryAPI.class);
+    GstElementFactoryAPI GSTELEMENTFACTORY_API = GstNative.load(GstElementFactoryAPI.class);
 
     GType gst_element_factory_get_type();
     ElementFactory gst_element_factory_find(String factoryName);

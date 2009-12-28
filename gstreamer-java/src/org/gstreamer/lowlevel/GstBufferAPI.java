@@ -32,7 +32,7 @@ import com.sun.jna.Pointer;
  * GstBuffer functions
  */
 public interface GstBufferAPI extends com.sun.jna.Library {
-	GstBufferAPI GSTBUFFER_API = GstNative.load(GstBufferAPI.class);
+    GstBufferAPI GSTBUFFER_API = GstNative.load(GstBufferAPI.class);
 
     GType gst_buffer_get_type();
     @CallerOwnsReturn Buffer gst_buffer_new();
