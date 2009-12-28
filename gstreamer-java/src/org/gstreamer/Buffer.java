@@ -305,7 +305,15 @@ public class Buffer extends MiniObject {
         struct.offset_end = offset;
         struct.writeField("offset_end");
     }
-    
+    /**
+     * Gets GstBuffer flags
+     * 
+     * @return an integer value containing flags
+     */
+    public int getFlags() {
+        return struct.mini_object.flags;
+    }
+
     private final BufferStruct struct;
     private ByteBuffer byteBuffer;
 }

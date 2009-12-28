@@ -38,8 +38,7 @@ public interface GstMixerAPI extends Library {
     void gst_mixer_set_mute(Mixer mixer, MixerTrack track, boolean mute);
     void gst_mixer_set_record(Mixer mixer, MixerTrack track, boolean record);
 //    void gst_mixer_set_option(Mixer mixer, MixerOptions opts, byte value);
-//const gchar *   gst_mixer_get_option     (Mixer      *mixer,
-//                                          MixerOptions *opts);
+//    const gchar* gst_mixer_get_option(Mixer* mixer, MixerOptions *opts);
 
     /* trigger bus messages */
     void gst_mixer_mute_toggled(Mixer mixer, MixerTrack track, boolean mute);

@@ -36,7 +36,6 @@ import org.gstreamer.FlowReturn;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseAPI;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
@@ -52,7 +51,6 @@ import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
  * @author wayne
  */
 abstract public class CustomSink extends BaseSink {
-    private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
     private final static Logger logger = Logger.getLogger(CustomSink.class.getName());
     @SuppressWarnings("unused")
     private static class CustomSinkInfo {
@@ -241,7 +239,7 @@ abstract public class CustomSink extends BaseSink {
             public void callback(Pointer g_class) {
                 info.caps = Caps.anyCaps();
                 info.template = new PadTemplate("sink", PadDirection.SINK, info.caps);
-                gst.gst_element_class_add_pad_template(g_class, info.template);
+                GstPadTemplateAPI.GSTPADTEMPLATE_API.gst_element_class_add_pad_template(g_class, info.template);
             }
         };
         

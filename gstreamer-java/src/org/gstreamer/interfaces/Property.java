@@ -29,7 +29,6 @@ import com.sun.jna.Pointer;
  */
 public class Property extends GObject {
     private final GObjectAPI.GParamSpec spec;
-    //private final PropertyProbe probe;
     
     /**
      * For internal gstreamer-java use only
@@ -44,7 +43,6 @@ public class Property extends GObject {
     Property(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(initializer(ptr, needRef, ownsHandle));
         spec = new GObjectAPI.GParamSpec(ptr);
-        //this.probe = probe;
     }
 
     public String getName() {

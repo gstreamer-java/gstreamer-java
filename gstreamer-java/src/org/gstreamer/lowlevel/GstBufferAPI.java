@@ -64,6 +64,7 @@ public interface GstBufferAPI extends com.sun.jna.Library {
         public Pointer malloc_data;
         public BufferStruct(Pointer ptr) {
             useMemory(ptr);
+            read();
         }
     }
 }
