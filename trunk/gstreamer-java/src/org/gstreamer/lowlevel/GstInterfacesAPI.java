@@ -25,10 +25,10 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 public interface GstInterfacesAPI extends Library {
-    GstInterfacesAPI GSTINTERFACES_API = GstNative.load("gstinterfaces", GstInterfacesAPI.class);
+    GstInterfacesAPI GSTINTERFACES_API = GstNative.load(GstInterfacesAPI.class);
 
     GType  gst_implements_interface_get_type();
-    boolean gst_element_implements_interface(Element element, GType iface_type);
     Pointer gst_implements_interface_cast(NativeObject from, GType type);
     Pointer gst_implements_interface_check(NativeObject from, GType type);
+    boolean gst_element_implements_interface(Element element, GType iface_type);
 }
