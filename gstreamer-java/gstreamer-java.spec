@@ -3,18 +3,13 @@
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
 Version:	1.3
-Release:	0%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
-# The source for this package was pulled from upstream's vcs.  Use the
-# following commands to generate the tarball:
-#  hg clone -r 541 https://kenai.com/hg/gstreamer-java~mercurial gstreamer-java
-#  tar cjvf gstreamer-java-src-1.1.tar.bz2 --exclude .hg* gstreamer-java
-#Source:	http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.tar.bz2
-# but now use the released version
+# zip -r ~/rpm/SOURCES/gstreamer-java-src-1.3.zip gstreamer-java -x \*/.svn*
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
-Patch:		%{name}-%{version}-swt.patch
+Patch:		%{name}-1.2-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # for ExcludeArch and no noarch see bug: 468831
 # since noarch pacakge can't contain ExcludeArch :-( imho it's an rpm bug
@@ -66,8 +61,9 @@ This package contains the API documentation for %{name}.
 
 
 %prep
-%setup -q -n %{name}-src-%{version}
+%setup -q -n %{name}
 cp -p src/org/freedesktop/tango/COPYING COPYING.CC-BY-SA
+
 # remove prebuild binaries
 find . -name '*.jar' -exec rm {} \;
 
@@ -93,12 +89,17 @@ rm -rf src/org/gstreamer/swt src/org/gstreamer/example/SWTOverlayPlayer.java
 %if 0%{?fedora} >= 9
 sed -i -e "s,\(file.reference.junit4.jar=\).*,\1$(build-classpath junit4)," \
 	nbproject/project.properties
-ant
 %else
 sed -i -e 's,\(<javadoc destdir="${dist.javadoc.dir}" source="${javac.source}"\),\1 packagenames="*",' \
 	build.xml
+%endif
 ant jar
 ant javadoc
+
+
+%if 0%{?fedora} >= 9
+%check
+ant test
 %endif
 
 
@@ -125,6 +126,9 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
+* Fri Jan 22 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.3-2
+- drop test from jar
+
 * Sat Dec 26 2009 Levente Farkas <lfarkas@lfarkas.org> - 1.3-1
 - update to version 1.3
 
