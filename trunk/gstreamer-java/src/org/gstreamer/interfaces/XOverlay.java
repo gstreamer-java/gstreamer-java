@@ -25,6 +25,7 @@ import java.lang.reflect.Field;
 
 import org.eclipse.swt.SWT;
 import org.gstreamer.Element;
+import org.gstreamer.GstException;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
@@ -66,14 +67,12 @@ public class XOverlay extends GstInterface {
             GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
             return;
         }
-        if (window.isLightweight()) {
-            throw new IllegalArgumentException("Component must be be a native window");
-        }
-        if (Platform.isWindows()) {
+        if (window.isLightweight())
+            throw new IllegalArgumentException("Component must be a native window");
+        if (Platform.isWindows())
             GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, Native.getComponentPointer(window));
-        } else {
+        else
             GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(Native.getComponentID(window)));
-        }
     }
     
     /**
@@ -82,29 +81,33 @@ public class XOverlay extends GstInterface {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-	public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
-		// Composite style must be embedded
-		if (!Platform.isLinux() || comp == null || (comp.getStyle() | SWT.EMBEDDED) == 0) {
-			GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
-			return;
-		}
-		// TODO: Test on windows and mac
-		int handle;
-		try {
-			Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
-			Field embedHandleField = compClass.getField("embeddedHandle");
-			handle = embedHandleField.getInt(comp);
-			GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		}
-	}
+    public void setWindowID(org.eclipse.swt.widgets.Composite comp) {
+        long handle;
+        // Composite style must be embedded
+        if (comp == null || ((comp.getStyle() | SWT.EMBEDDED) == 0))
+            throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
+        if (Platform.isWindows()) {
+            handle = comp.handle;
+            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+        } else if (Platform.isLinux()) {
+            try {
+                Class<? extends org.eclipse.swt.widgets.Composite> compClass = comp.getClass();
+                Field embedHandleField = compClass.getField("embeddedHandle");
+                handle = embedHandleField.getInt(comp);
+                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            }
+        } else {
+            throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
+        }
+    }
     
     /**
      * Tell an overlay that it has been exposed. This will redraw the current frame
