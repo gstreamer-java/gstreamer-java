@@ -30,6 +30,7 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.interfaces.Tuner;
 import org.gstreamer.interfaces.TunerChannel;
+import org.gstreamer.interfaces.TunerNorm;
 
 public class TunerTest {
 	public static void main(String[] args) {
@@ -46,11 +47,16 @@ public class TunerTest {
 		pipe.setState(State.PLAYING);
 
 		Tuner tun = Tuner.wrap(videosrc);
+
+                List<TunerNorm> normList = tun.getNormList();
+                for (TunerNorm n : normList){
+                    System.out.println("Available norm: "+n.getLabel());
+                }
 		
 		List<TunerChannel> chList = tun.getChannelList();
 		
 		for (TunerChannel ch: chList) {
-			System.out.println("Channel: "+ch.isTuningChannel());
+			System.out.println("Channel ["+ch.getLabel()+"]: "+ch.isTuningChannel());
 		}
 		
 		for (int i=0;;i++) {

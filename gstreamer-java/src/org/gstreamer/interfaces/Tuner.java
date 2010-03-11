@@ -74,7 +74,7 @@ public class Tuner extends GstInterface {
      * @return a list of norms available on the current channel 
      */
     public List<TunerNorm> getNormList() {
-        return objectList(GSTTUNER_API.gst_tuner_list_channels(this), new ListElementCreator<TunerNorm>() {
+        return objectList(GSTTUNER_API.gst_tuner_list_norms(this), new ListElementCreator<TunerNorm>() {
             public TunerNorm create(Pointer pointer) {
                 return GObject.objectFor(pointer, TunerNorm.class, true);
             }

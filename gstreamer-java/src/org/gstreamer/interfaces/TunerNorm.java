@@ -19,12 +19,24 @@
 package org.gstreamer.interfaces;
 
 import org.gstreamer.GObject;
+import org.gstreamer.lowlevel.GstTunerAPI;
 
 /**
  *
  */
 public class TunerNorm extends GObject {
+    private final GstTunerAPI.TunerNormStruct struct;
     public TunerNorm(Initializer init) {
         super(init);
+        struct = new GstTunerAPI.TunerNormStruct(getNativeAddress());
+    }
+
+    /**
+     * Retrieves the label from the given norm
+     *
+     * @return the label
+     */
+    public String getLabel(){
+        return struct.getLabel();
     }
 }
