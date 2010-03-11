@@ -82,6 +82,9 @@ public interface GstTunerAPI extends Library {
         public int getFlags() {
             return (Integer) readField("flags");
         }
+        public String getLabel() {
+            return (String) readField("label");
+        }
         public void read() {}
         public void write() {}
         public TunerChannelStruct(Pointer ptr) {
@@ -95,6 +98,9 @@ public interface GstTunerAPI extends Library {
 //        public int getFlags() {
 //            return (Integer) readField("flags");
 //        }
+        public String getLabel() {
+            return (String) readField("label");
+        }
         public void read() {}
         public void write() {}
         public TunerNormStruct(Pointer ptr) {

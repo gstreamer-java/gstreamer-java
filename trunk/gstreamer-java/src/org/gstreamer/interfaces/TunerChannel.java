@@ -76,6 +76,16 @@ public class TunerChannel extends GObject {
         return GSTTUNER_API.gst_tuner_get_frequency(tuner, this).longValue();
     }
     
+
+    /**
+     * Retrieves the label from the given channel
+     *
+     * @return the label
+     */
+    public String getLabel() {
+        return struct.getLabel();
+    }
+
     /**
      * Sets a tuning frequency on the given tuner/channel. 
      * <p><b>Note:</b> this requires the given channel to be a "tuning" 
