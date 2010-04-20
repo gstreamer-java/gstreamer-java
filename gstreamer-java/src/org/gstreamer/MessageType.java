@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2009 Levente Farkas
+ * Copyright (C) 2009 Levente Farkas
  * Copyright (C) 2008 Wayne Meissner
  * Copyright (C) 2004 Wim Taymans <wim@fluendo.com>
  * 
@@ -123,6 +123,22 @@ public enum MessageType implements IntegerEnum {
      * will only receive this message from the toplevel pipeline. Since: 0.10.13
      */
     ASYNC_DONE(1 << 21),
+    /**
+     * Posted by elements when they want the pipeline to change state. This message 
+     * is a suggestion to the application which can decide to perform the 
+     * state change on (part of) the pipeline. Since: 0.10.23. 
+     */
+    REQUEST_STATE(1 << 22),
+    /**
+     * A stepping operation was started. 
+     */
+    STEP_START(1 << 23),
+    /** 
+     * A buffer was dropped or an element changed its processing strategy for
+     * Quality of Service reasons.
+     */
+    QOS(1 << 24),
+
     ANY(~0);
     
     MessageType(int type) {
