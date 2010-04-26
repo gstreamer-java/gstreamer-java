@@ -21,7 +21,7 @@ package org.gstreamer.swt.overlay;
 import java.lang.reflect.Field;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 
 import org.gstreamer.Element;
 import org.gstreamer.GstException;
@@ -56,45 +56,62 @@ public class SWTOverlay extends XOverlay {
     }
 
     /**
+     * Helper function to get the proper handle for a given SWT Control on Linux.
+     *
+     * @param control the SWT control for what i like to get the handle.
+     * @return the handle of the control or 0 if the handle is not available.
+     */
+    public static long getLinuxHandle(Control control) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Class<? extends Control> controlClass = control.getClass();
+        Field embedHandleField = controlClass.getField("embeddedHandle");
+        Class<?> t = embedHandleField.getType();
+        if (t.equals(long.class))
+        	return embedHandleField.getLong(control);
+        else if (t.equals(int.class))
+        	return embedHandleField.getInt(control);
+        return 0L;
+    }
+    
+    /**
+     * Helper function to get the proper handle for a given SWT Control.
+     *
+     * @param control the SWT control for what i like to get the handle.
+     * @return the handle of the control or 0 if the handle is not available.
+     */
+    public static long handle(Control control) {
+        // Composite style must be embedded
+        if (control == null || ((control.getStyle() | SWT.EMBEDDED) == 0))
+            return 0L;
+        if (Platform.isWindows())
+            return control.handle;
+        else if (Platform.isLinux())
+            try {
+            	return getLinuxHandle(control);
+            } catch (Exception e) {
+                //e.printStackTrace();
+            }
+        return 0L;
+    }
+
+    /**
      * Sets the native window for the {@link Element} to use to display video.
      *
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowID(Composite comp) {
-        long handle;
-        // Composite style must be embedded
-        if (comp == null || ((comp.getStyle() | SWT.EMBEDDED) == 0))
-            throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
-        if (Platform.isWindows()) {
-            handle = comp.handle;
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
-        } else if (Platform.isLinux()) {
+    public void setWindowID(Control control) {
+        // control style must be embedded
+        if (control == null || ((control.getStyle() | SWT.EMBEDDED) == 0))
+            throw new GstException("Cannot set window ID, in XOverlay interface, control is null or not SWT.EMBEDDED");
+        if (Platform.isWindows())
+            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(control.handle));
+        else if (Platform.isLinux())
             try {
-                Class<? extends Composite> compClass = comp.getClass();
-                Field embedHandleField = compClass.getField("embeddedHandle");
-                Class<?> t = embedHandleField.getType();
-                if (t.equals(long.class))
-                	handle = embedHandleField.getLong(comp);
-                else if (t.equals(int.class))
-                	handle = embedHandleField.getInt(comp);
-                else
-                	throw new RuntimeException("Field embeddedHandle of " + compClass.getCanonicalName() + 
-                			" was not of type int or long; it is expected that operating system handles be of type int" +
-                			" or long. This error is likely because " + getClass().getCanonicalName() + 
-                			" was not designed for your platform, or your platform doesn't support the X window system.");
-                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
+                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(getLinuxHandle(control)));
+            } catch (Exception e) {
+                throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
             }
-        } else {
+        else
             throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
-        }
     }
 }
