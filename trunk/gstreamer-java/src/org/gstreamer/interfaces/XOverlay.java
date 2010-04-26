@@ -51,6 +51,15 @@ public class XOverlay extends GstInterface {
     protected XOverlay(Element element) {
         super(element, GSTXOVERLAY_API.gst_x_overlay_get_type());
     }
+    
+    /**
+     * Sets the native window for the {@link Element} to use to display video.
+     *
+     * @param handle A native handle to use to display video.
+     */
+    public void setWindowID(long handle) {
+    	GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+    }
 
     /**
      * Sets the native window for the {@link Element} to use to display video.
