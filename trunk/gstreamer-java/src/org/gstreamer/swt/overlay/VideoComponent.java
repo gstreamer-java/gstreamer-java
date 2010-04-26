@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.interfaces.XOverlay;
 
 import com.sun.jna.Platform;
 
@@ -36,10 +35,12 @@ public class VideoComponent extends Canvas {
 	private final Element videosink;
 	public VideoComponent(final Composite parent, int style) {
 		super(parent, style | SWT.EMBEDDED);
+		// TODO: replace directdrawsink with dshowvideosink if dshowvideosink become more stable:
+		// http://forja.rediris.es/forum/forum.php?thread_id=5255&forum_id=1624
 		videosink = ElementFactory.make(
 				Platform.isWindows() ? "directdrawsink" : "xvimagesink",
 				"OverlayVideoComponent");
-		XOverlay.wrap(videosink).setWindowID(this);
+		SWTOverlay.wrap(videosink).setWindowID(this);
 		
 		addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event event) {
