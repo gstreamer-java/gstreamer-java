@@ -48,13 +48,13 @@ public class TunerTest {
 
 		Tuner tun = Tuner.wrap(videosrc);
 
-                List<TunerNorm> normList = tun.getNormList();
-                for (TunerNorm n : normList){
-                    System.out.println("Available norm: "+n.getLabel());
-                }
-		
+		List<TunerNorm> normList = tun.getNormList();
+		for (TunerNorm n : normList) {
+			System.out.println("Available norm: " + n.getLabel());
+		}
+
 		List<TunerChannel> chList = tun.getChannelList();
-		
+
 		for (TunerChannel ch: chList) {
 			System.out.println("Channel ["+ch.getLabel()+"]: "+ch.isTuningChannel());
 		}
