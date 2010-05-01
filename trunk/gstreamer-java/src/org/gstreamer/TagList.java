@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.gstreamer.glib.GDate;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstTagAPI;
@@ -271,6 +272,16 @@ public class TagList extends Structure {
                     String ret = value[0].getString(0, false);
                     GLIB_API.g_free(value[0]);
                     return ret;
+                }
+            });
+            put(GDate.getGType(), new TagGetter() {
+                public Object get(TagList tl, String tag, int index) {
+                    Pointer[] value = { null };
+                    gst.gst_tag_list_get_date_index(tl, tag, index, value);
+                    if (value[0] == null) {
+                        return null;
+                    }
+                    return new GDate(value[0], false, true);
                 }
             });
         }};

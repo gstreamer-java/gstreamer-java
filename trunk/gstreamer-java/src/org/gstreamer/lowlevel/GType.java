@@ -58,7 +58,7 @@ public class GType extends NativeLong {
     private static GType init(int v) {
         return valueOf(v << 2);
     }
-    GType(long t) {
+    public GType(long t) {
         super(t);
     }
     public GType() {
