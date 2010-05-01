@@ -71,4 +71,12 @@
     nbproject/build-impl.xml file. 
 
     -->
+
+<!--
+<target name="-post-jar">
+    <javac srcdir="${src.dir}" destdir="${build.dir}" classpath="${javac.classpath}"/>
+    <jar includes="${excludes}" destfile="${dist.dir}/gstreamer-java-swt.jar" basedir="${build.dir}"/>
+</target>
+-->
+
 </project>
