@@ -117,10 +117,6 @@ public interface GlibAPI extends Library {
             clear();
         }
         public GList(Pointer ptr) {
-            //data = ptr.getPointer(0);
-            //_next = ptr.getPointer(4);
-            //_prev = ptr.getPointer(8);
-
             useMemory(ptr);
             read();
         }

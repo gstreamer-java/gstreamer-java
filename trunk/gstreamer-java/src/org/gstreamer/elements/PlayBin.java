@@ -384,17 +384,18 @@ public class PlayBin extends Pipeline {
      * available information (like language-codes).
      */
     public List<StreamInfo> getStreamInfo() {
-        Pointer ptr = getPointer("stream-info");
+        Pointer ptr = getArrayPointer("stream-info-value-array");
         if (ptr != null) {
             GList glist = GList.valueOf(ptr);
             if (glist == null) {
                 return null;
             }
+            // TODO: test this doesn't crash when traversing the linked list glist.
             List<StreamInfo> list = new ArrayList<StreamInfo>();
             GList next = glist;
             while (next != null) {
                 if (next.data != null) {
-                    list.add(new StreamInfo(next.data, true, true));
+                    list.add(new StreamInfo(next.data, false, false));
                 }
                 next = next.next();
             }

@@ -30,7 +30,6 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
 
 /**
  *
@@ -46,7 +45,7 @@ public interface GObjectAPI extends Library {
     void g_object_set_property(GObject obj, String property, GValue data);
     void g_object_get_property(GObject obj, String property, GValue data);
     void g_object_set(GObject obj, String propertyName, Object... data);
-    void g_object_get(GObject obj, String propertyName, PointerByReference... data);
+    void g_object_get(GObject obj, String propertyName, Object... data);
     
     Pointer g_object_new(GType object_type, Object... args);
     

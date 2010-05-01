@@ -56,7 +56,7 @@ public class StreamInfo extends GObject {
         return get("object");
     }
 
-    // UNFINISHED...
+    // TODO: finish the StreamInfo API.
     /*
     public GType getType() {
         return get("type");

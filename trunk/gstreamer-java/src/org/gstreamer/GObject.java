@@ -42,6 +42,7 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
@@ -246,8 +247,15 @@ public abstract class GObject extends RefCountedObject {
         }
     }
 
-    public Pointer getPointer(String property) {
-        logger.entering("GObject", "getPointer", new Object[] { property });
+    /**
+     * Gets the pointer to an array of values for a given property.
+     *
+     * @param property The name of the property to get.
+     *
+     * @return A java pointer representing the array.
+     */    
+    public Pointer getArrayPointer(String property) {
+        logger.entering("GObject", "getArrayPointer", new Object[] { property });
         GObjectAPI.GParamSpec propertySpec = findProperty(property);
         if (propertySpec == null) {
             throw new IllegalArgumentException("Unknown property: " + property);
@@ -257,7 +265,6 @@ public abstract class GObject extends RefCountedObject {
         GOBJECT_API.g_object_get(this, property, refPtr, null);
 
         if (refPtr != null) {
-
             Pointer ptr = refPtr.getValue();
 
             if (ptr == null) {
