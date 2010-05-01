@@ -3,18 +3,15 @@
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
 Version:	1.4
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
 # zip -r ~/rpm/SOURCES/gstreamer-java-src-1.4.zip gstreamer-java -x \*/.svn*
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
-Patch1:		%{name}-1.2-swt.patch
+Patch1:		%{name}-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-# for ExcludeArch and no noarch see bug: 468831
-# since noarch pacakge can't contain ExcludeArch :-( imho it's an rpm bug
-#BuildArch:	noarch
-ExcludeArch:	ppc ppc64
+BuildArch:	noarch
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
@@ -73,11 +70,9 @@ sed -i -e "s,\(file.reference.jna.jar=\).*,\1$(build-classpath jna)," \
 	nbproject/project.properties
 
 %ifarch %{arch_with_swt}
+%patch1 -p1
 sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>/dev/null|sort|head -1)," \
 	nbproject/project.properties
-%else
-%patch1 -p1
-rm -rf src/org/gstreamer/swt src/org/gstreamer/example/SWTOverlayPlayer.java
 %endif
 
 
@@ -126,7 +121,7 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
-* Mon Apr 26 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-0
+* Mon Apr 26 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-1
 - update to 1.4
 - drop upstream XOverlay patch
 
