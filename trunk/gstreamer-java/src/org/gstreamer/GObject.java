@@ -42,7 +42,6 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
