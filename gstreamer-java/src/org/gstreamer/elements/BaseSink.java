@@ -35,10 +35,10 @@ public class BaseSink extends Element {
         return gst().gst_base_sink_get_sync(this);
     }
     public void setMaximumLateness(long lateness, TimeUnit units) {
-        gst().gst_base_sink_set_max_lateness(this, units.toMillis(lateness));
+        gst().gst_base_sink_set_max_lateness(this, units.toNanos(lateness));
     }
     public long getMaximumLateness(TimeUnit units) {
-        return units.convert(gst().gst_base_sink_get_max_lateness(this), TimeUnit.MILLISECONDS);
+        return units.convert(gst().gst_base_sink_get_max_lateness(this),TimeUnit.NANOSECONDS);
     }
     public void setQOSEnabled(boolean qos) {
         gst().gst_base_sink_set_qos_enabled(this, qos);
