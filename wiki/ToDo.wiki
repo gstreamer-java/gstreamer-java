@@ -6,6 +6,8 @@
 
 Evaluate options for improved performance:
 
-* JNA's direct mapping: https://jna.dev.java.net/#direct
-* Java Abstracted Foreign Function Layer: http://github.com/wmeissner/jaffl  
-* Java-gnome: http://java-gnome.sourceforge.net/
+  * JNA's direct mapping: https://jna.dev.java.net/#direct
+
+  * Java Abstracted Foreign Function Layer: http://github.com/wmeissner/jaffl  
+
+  * Java-gnome: http://java-gnome.sourceforge.net/
