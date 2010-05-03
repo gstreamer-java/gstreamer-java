@@ -179,6 +179,21 @@ public class Clock extends GstObject {
     }
     
     /**
+     * Gets the internal rate and reference time of clock. See {@link #setCalibration} for more information.
+     * <p>
+     * internal, external, rate_num, and rate_denom can be left NULL if the caller is not interested in the values.
+     *
+     * Thread safe.
+     * @param internal a reference internal time
+     * @param external a reference external time
+     * @param rateNumerator the numerator of the rate of the clock relative to its internal time
+     * @param rateDenominator the denominator of the rate of the clock
+     */
+    public void getCalibration(ClockTime internal, ClockTime external, ClockTime rateNumerator, ClockTime rateDenominator) {
+        gst.gst_clock_set_calibration(this, internal, external, rateNumerator, rateDenominator);
+    }
+    
+    /**
      *  Adjusts the rate and time of this clock. A rate of 1/1 is the normal speed of
      * the clock. Values bigger than 1/1 make the clock go faster.
      * <p>

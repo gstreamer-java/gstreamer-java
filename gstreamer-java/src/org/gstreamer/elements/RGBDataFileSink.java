@@ -64,9 +64,8 @@ public class RGBDataFileSink extends Bin {
      *
      * @param name The name used to identify this RGBDataFileSink.
      * @param width The width of the buffers that will be sent.
-     * @param width The height of the buffers that will be sent.
+     * @param height The height of the buffers that will be sent.
      * @param fps The framerate with which the buffers should be saved to file.
-     * @param encoderStr The name of the encoder to use.
      * @param encoderStr The name of the encoder to use.
      * @param encoderPropertyNames Array of property names for the encoder.
      * @param encoderPropertyData Array of property values for the encoder.

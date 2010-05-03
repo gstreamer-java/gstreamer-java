@@ -111,7 +111,7 @@ public final class Gst {
     }
     
     /**
-     * Signals the thread that called {@link #run} to return.
+     * Signals the thread that called {@link #init} to return.
      */
     public static void quit() {
         quit.countDown();

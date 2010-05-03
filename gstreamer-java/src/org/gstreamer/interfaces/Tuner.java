@@ -191,7 +191,7 @@ public class Tuner extends GstInterface {
          * 
          * @param tuner the tuner
          * @param channel the channel which the frequency changed on
-         * @param signal the new frequency
+         * @param frequency the new frequency
          */
         public void frequencyChanged(Tuner tuner, TunerChannel channel, long frequency);
     }
