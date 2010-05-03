@@ -111,7 +111,6 @@ public interface GlibAPI extends Library {
     int g_date_get_month(Pointer date);
     int g_date_get_day(Pointer date);
     void g_date_free(Pointer date);
-    NativeLong gst_date_get_type();
 
     public final static class GList extends com.sun.jna.Structure {
         public volatile Pointer data;
