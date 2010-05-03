@@ -19,7 +19,7 @@
 package org.gstreamer.elements;
 
 /**
- * Utility {@link Element} to automatically identify media stream types and hook
+ * Utility {@link org.gstreamer.Element} to automatically identify media stream types and hook
  * up elements.
  */
 public class DecodeBin2 extends DecodeBin {

@@ -35,8 +35,8 @@ import com.sun.jna.Pointer;
  * upstream and downstream and travels out-of-bounds with the dataflow.
  * <p>
  * It marks pads as being flushing and will make them return
- * {@link org.gstreamer.FlowReturn#WRONG_STATE} when used for data flow with {@link Pad#push},
- * {@link Pad#chain}, {@link Pad#allocBuffer}, {@link Pad#getRange} and
+ * {@link org.gstreamer.FlowReturn#WRONG_STATE} when used for data flow with {@link Pad#pushEvent},
+ * {@link Pad#chain}, Pad#allocBuffer, {@link Pad#getRange} and
  * {@link Pad#pullRange}. Any event (except a {@link FlushStopEvent}) received
  * on a flushing pad will return {@code false} immediately.
  * <p>

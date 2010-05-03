@@ -539,4 +539,65 @@ public class Pad extends GstObject {
     public boolean pushEvent(Event event) {
         return gst.gst_pad_push_event(this, event);
     }
+    
+    /**
+     * Chain a buffer to pad.
+     * <p>
+     * The function returns {@link org.gstreamer.FlowReturn#WRONG_STATE} if the pad was flushing.
+     * <p>
+     * If the caps on buffer are different from the current caps on pad, this function will call any 
+     * function installed on pad (see gst_pad_set_setcaps_function()). 
+     * If the new caps are not acceptable for pad, this function returns 
+     * {@link org.gstreamer.FlowReturn#NOT_NEGOTIATED}.
+     * <p>
+     * The function proceeds calling the chain function installed on pad and the return value of that function is 
+     * returned to the caller. {@link org.gstreamer.FlowReturn#NOT_SUPPORTED} is returned if pad has no chain function.
+     * <p>
+     * In all cases, success or failure, the caller loses its reference to buffer after calling this function.
+     * 
+     * @param buffer the Buffer, returns {@link org.gstreamer.FlowReturn#ERROR} if NULL.
+     * @return a org.gstreamer.FlowReturn
+     */
+    public FlowReturn chain(Buffer buffer) {
+    	return gst.gst_pad_chain(this, buffer);
+    }
+    
+    /**
+     * When pad is flushing this function returns {@link org.gstreamer.FlowReturn#WRONG_STATE} immediatly.
+     * <p>
+     * Calls the getRange function of pad, see GstPadGetRangeFunction for a description of a getRange function. 
+     * If pad has no getRange function installed (see gst_pad_set_getrange_function()) this function returns 
+     * {@link FlowReturn#NOT_SUPPORTED}.
+     * 
+     * This is a lowlevel function. Usualy {@link Pad#pullRange} is used.
+     * 
+     * @param offset The start offset of the buffer
+     * @param size The length of the buffer
+     * @param buffer the Buffer, returns {@link FlowReturn#ERROR} if NULL.
+     * @return a FlowReturn from the peer pad. When this function returns OK, buffer will contain a valid Buffer.
+     */
+    public FlowReturn getRange(long offset, int size, Buffer[] buffer) {
+    	return gst.gst_pad_get_range(this, offset, size, buffer);
+    }
+
+    /**
+     * Pulls a buffer from the peer pad.
+     * <p>
+     * This function will first trigger the pad block signal if it was installed.
+     * <p>
+     * When pad is not linked {@link FlowReturn#NOT_LINKED} is returned else this function returns 
+     * the result of {@link Pad#getRange} on the peer pad. See {@link Pad#getRange} for a list of return values and for 
+     * the semantics of the arguments of this function.
+     * <p>
+     * buffer's caps must either be unset or the same as what is already configured on pad. 
+     * Renegotiation within a running pull-mode pipeline is not supported.
+     * @param offset The start offset of the buffer
+     * @param size The length of the buffer
+     * @param buffer the Buffer, returns {@link FlowReturn#ERROR} if NULL.
+     * @return a FlowReturn from the peer pad. When this function returns OK, buffer will contain a valid Buffer.
+     * MT safe.
+     */
+    public FlowReturn pullRange(long offset, int size, Buffer[] buffer) {
+    	return gst.gst_pad_pull_range(this, offset, size, buffer);
+    }
 }

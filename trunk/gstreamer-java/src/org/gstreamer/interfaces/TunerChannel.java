@@ -127,7 +127,7 @@ public class TunerChannel extends GObject {
          * Called when the frequency on a {@link Tuner} changes
          * 
          * @param channel the channel which the frequency changed on
-         * @param signal the current frequency
+         * @param frequency the current frequency
          */
         public void frequencyChanged(TunerChannel channel, long frequency);
     }

@@ -107,7 +107,6 @@ abstract public class CustomSrc extends BaseSrc {
      * @param offset 
      * @param size
      * @param bufRef
-     * @return 
      */
     @SrcCallback("create")
     protected FlowReturn srcCreateBuffer(long offset, int size, Buffer[] bufRef) throws IOException {
@@ -121,7 +120,6 @@ abstract public class CustomSrc extends BaseSrc {
      * @param offset
      * @param size
      * @param buffer
-     * @return 
      */
     @SrcCallback("create")
     protected FlowReturn srcFillBuffer(long offset, int size, Buffer buffer) throws IOException {

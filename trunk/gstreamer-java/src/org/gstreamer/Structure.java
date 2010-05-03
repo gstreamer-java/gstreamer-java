@@ -46,10 +46,9 @@ import com.sun.jna.ptr.PointerByReference;
  * {@link #Structure(String, String, Object...)}, which both take a name and an
  * optional set of key/value pairs along with the types of the values.
  * <p>
- * Field values can be changed with {@link #setValue} or {@link #set}.
+ * Field values can be changed with set{Integer,String}() etc functions.
  * <p>
- * Field values can be retrieved with {@link #getValue} or the more
- * specific get{Integer,String}() etc functions.
+ * Field values can be retrieved with get{Integer,String}() etc functions.
  * <p>
  * Fields can be removed with {@link #removeField} or {@link #removeFields}
  * @see Caps

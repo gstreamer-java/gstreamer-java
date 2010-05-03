@@ -56,7 +56,7 @@ public abstract class GstInterface extends NativeValue {
     /**
      * Build a {@link java.util.List} of {@link Object} from the native GList.
      * @param glist The native list to get the objects from.
-     * @param objectClass The proxy class to wrap the list elements in.
+     * @param creator The proxy class to wrap the list elements in.
      * @return The converted list.
      */
     protected <T extends GObject> List<T> objectList(GList glist, ListElementCreator<T> creator) {

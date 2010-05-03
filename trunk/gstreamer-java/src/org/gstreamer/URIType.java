@@ -46,7 +46,7 @@ public enum URIType implements IntegerEnum {
 
     /**
      * Returns the enum constant of this type with the specified integer value.
-     * @param state integer value.
+     * @param uriType integer value.
      * @return Enum constant.
      * @throws java.lang.IllegalArgumentException if the enum type has no constant with the specified value.
      */
