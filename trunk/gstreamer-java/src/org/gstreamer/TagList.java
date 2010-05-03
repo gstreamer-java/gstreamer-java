@@ -35,6 +35,7 @@ import org.gstreamer.lowlevel.GstTagListAPI;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 
 
 /**
@@ -274,14 +275,14 @@ public class TagList extends Structure {
                     return ret;
                 }
             });
-            put(GDate.getGType(), new TagGetter() {
+            put(GDate.GTYPE, new TagGetter() {
                 public Object get(TagList tl, String tag, int index) {
-                    Pointer[] value = { null };
+                    PointerByReference value = new PointerByReference();
                     gst.gst_tag_list_get_date_index(tl, tag, index, value);
-                    if (value[0] == null) {
+                    if (value.getValue() == null) {
                         return null;
                     }
-                    return new GDate(value[0], false, true);
+                    return new GDate(value.getValue(), false, true);
                 }
             });
         }};

@@ -41,6 +41,7 @@ import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
 import org.gstreamer.Query;
 import org.gstreamer.Registry;
+import org.gstreamer.glib.GDate;
 import org.gstreamer.elements.TypeFind;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
@@ -113,50 +114,52 @@ public class GstTypes {
     }
     private static final Map<Pointer, Class<? extends NativeObject>> gTypeInstanceMap
             = new ConcurrentHashMap<Pointer, Class<? extends NativeObject>>();
-    private static class StaticData {
-        private static interface API extends com.sun.jna.Library {
-            GType gst_base_src_get_type();
-            GType gst_base_sink_get_type();
+    
+    public static interface API extends com.sun.jna.Library {
+        GType gst_base_src_get_type();
+        GType gst_base_sink_get_type();
 
-            GType gst_bin_get_type();
-            GType gst_buffer_get_type();
-            GType gst_bus_get_type();
-            GType gst_caps_get_type();
-            GType gst_child_proxy_get_type();
-            GType gst_clock_get_type();
-            GType gst_element_get_type();
-            GType gst_element_factory_get_type();
-            GType gst_event_get_type();
-            GType gst_g_error_get_type();
-            GType gst_ghost_pad_get_type();
-            GType gst_index_get_type();
-            GType gst_index_entry_get_type();
-            GType gst_index_factory_get_type();
-            GType gst_message_get_type();
-            GType gst_mini_object_get_type();
-            GType gst_object_get_type();
-            GType gst_pad_get_type();
-            GType gst_pad_template_get_type();
-            GType gst_pipeline_get_type();
-            GType gst_plugin_get_type();
-            GType gst_plugin_feature_get_type();
-            GType gst_query_get_type();
-            GType gst_registry_get_type();
-            GType gst_segment_get_type();
-            GType gst_static_pad_template_get_type();        
-            GType gst_static_caps_get_type();
-            GType gst_system_clock_get_type();
-            GType gst_structure_get_type();
-            GType gst_tag_get_type(String tag);
-            GType gst_tag_list_get_type();
-            GType gst_tag_setter_get_type();
-            GType gst_task_get_type();
-            GType gst_type_find_get_type();
-            GType gst_type_find_factory_get_type();
-            GType gst_uri_handler_get_type();
-        }
-        
-        private static final API gst = GstNative.load(API.class);
+        GType gst_bin_get_type();
+        GType gst_buffer_get_type();
+        GType gst_bus_get_type();
+        GType gst_caps_get_type();
+        GType gst_child_proxy_get_type();
+        GType gst_clock_get_type();
+        GType gst_date_get_type();
+        GType gst_element_get_type();
+        GType gst_element_factory_get_type();
+        GType gst_event_get_type();
+        GType gst_g_error_get_type();
+        GType gst_ghost_pad_get_type();
+        GType gst_index_get_type();
+        GType gst_index_entry_get_type();
+        GType gst_index_factory_get_type();
+        GType gst_message_get_type();
+        GType gst_mini_object_get_type();
+        GType gst_object_get_type();
+        GType gst_pad_get_type();
+        GType gst_pad_template_get_type();
+        GType gst_pipeline_get_type();
+        GType gst_plugin_get_type();
+        GType gst_plugin_feature_get_type();
+        GType gst_query_get_type();
+        GType gst_registry_get_type();
+        GType gst_segment_get_type();
+        GType gst_static_pad_template_get_type();        
+        GType gst_static_caps_get_type();
+        GType gst_system_clock_get_type();
+        GType gst_structure_get_type();
+        GType gst_tag_get_type(String tag);
+        GType gst_tag_list_get_type();
+        GType gst_tag_setter_get_type();
+        GType gst_task_get_type();
+        GType gst_type_find_get_type();
+        GType gst_type_find_factory_get_type();
+        GType gst_uri_handler_get_type();
+    }
+    public static final API GST_API = GstNative.load(API.class);
+    
+    private static class StaticData {
 		private static final Map<GType, Class<? extends NativeObject>> typeMap =
 			new HashMap<GType, Class<? extends NativeObject>>() {
 			{
@@ -166,27 +169,28 @@ public class GstTypes {
 				put(GSTTUNER_API.gst_tuner_channel_get_type(), TunerChannel.class);
 				put(GSTTUNER_API.gst_tuner_norm_get_type(), TunerNorm.class);
 				// GstObject types
-				put(gst.gst_element_get_type(), Element.class);
-				put(gst.gst_clock_get_type(), Clock.class);
-				put(gst.gst_pipeline_get_type(), Pipeline.class);
-				put(gst.gst_bus_get_type(), Bus.class);
-				put(gst.gst_pad_get_type(), Pad.class);
-				put(gst.gst_pad_template_get_type(), PadTemplate.class);
-				put(gst.gst_ghost_pad_get_type(), GhostPad.class);
-				put(gst.gst_plugin_get_type(), Plugin.class);
-				put(gst.gst_plugin_feature_get_type(), PluginFeature.class);
-				put(gst.gst_registry_get_type(), Registry.class);
+				put(GST_API.gst_element_get_type(), Element.class);
+				put(GST_API.gst_clock_get_type(), Clock.class);
+				put(GST_API.gst_date_get_type(), GDate.class);
+				put(GST_API.gst_pipeline_get_type(), Pipeline.class);
+				put(GST_API.gst_bus_get_type(), Bus.class);
+				put(GST_API.gst_pad_get_type(), Pad.class);
+				put(GST_API.gst_pad_template_get_type(), PadTemplate.class);
+				put(GST_API.gst_ghost_pad_get_type(), GhostPad.class);
+				put(GST_API.gst_plugin_get_type(), Plugin.class);
+				put(GST_API.gst_plugin_feature_get_type(), PluginFeature.class);
+				put(GST_API.gst_registry_get_type(), Registry.class);
 				// GstMiniObject types
-				put(gst.gst_buffer_get_type(), Buffer.class);
-				put(gst.gst_event_get_type(), Event.class);
-				put(gst.gst_message_get_type(), Message.class);
-				put(gst.gst_query_get_type(), Query.class);
+				put(GST_API.gst_buffer_get_type(), Buffer.class);
+				put(GST_API.gst_event_get_type(), Event.class);
+				put(GST_API.gst_message_get_type(), Message.class);
+				put(GST_API.gst_query_get_type(), Query.class);
 				// Element types
 				put(BASE_API.gst_base_sink_get_type(), BaseSink.class);
 				put(BASE_API.gst_base_src_get_type(), BaseSrc.class);
-				put(gst.gst_type_find_get_type(), TypeFind.class);
-				put(gst.gst_element_factory_get_type(), ElementFactory.class);
-				put(gst.gst_bin_get_type(), Bin.class);
+				put(GST_API.gst_type_find_get_type(), TypeFind.class);
+				put(GST_API.gst_element_factory_get_type(), ElementFactory.class);
+				put(GST_API.gst_bin_get_type(), Bin.class);
 			}
 		};
     }

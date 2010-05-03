@@ -20,6 +20,7 @@ package org.gstreamer.glib;
 
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GlibAPI;
+import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
@@ -31,9 +32,8 @@ public class GDate extends NativeObject {
     public static GDate createInstance(int julian_day) {
     	return new GDate(GlibAPI.GLIB_API.g_date_new_julian(julian_day), false, true);
     }
-    public static final GType getGType() {
-    	return new GType(GlibAPI.GLIB_API.gst_date_get_type().longValue());
-    }
+    
+    public static final GType GTYPE = GstTypes.GST_API.gst_date_get_type();
 
     public GDate(Initializer init) {
         super(init);
@@ -61,6 +61,6 @@ public class GDate extends NativeObject {
     
     @Override
     public String toString() {
-        return "Year: " + getYear() + " Month: " + getMonth() + " Day: " + getDay();
+        return "" + getYear() + "-" + getMonth() + "-" + getDay();
     }
 }
