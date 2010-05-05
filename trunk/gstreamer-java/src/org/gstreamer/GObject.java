@@ -247,14 +247,14 @@ public abstract class GObject extends RefCountedObject {
     }
 
     /**
-     * Gets the pointer to an array of values for a given property.
+     * Gets the pointer to the the value of the specified property.
      *
      * @param property The name of the property to get.
      *
-     * @return A java pointer representing the array.
+     * @return A java pointer.
      */    
-    public Pointer getArrayPointer(String property) {
-        logger.entering("GObject", "getArrayPointer", new Object[] { property });
+    public Pointer getPointer(String property) {
+        logger.entering("GObject", "getPointer", new Object[] { property });
         GObjectAPI.GParamSpec propertySpec = findProperty(property);
         if (propertySpec == null) {
             throw new IllegalArgumentException("Unknown property: " + property);
@@ -265,14 +265,8 @@ public abstract class GObject extends RefCountedObject {
 
         if (refPtr != null) {
             Pointer ptr = refPtr.getValue();
-
-            if (ptr == null) {
-                throw new IllegalArgumentException("Referenced value is NULL.");
-            }
-
             return ptr;
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Got NULL pointer for property="+property);
         }
     }
