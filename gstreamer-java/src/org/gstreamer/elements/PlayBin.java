@@ -384,7 +384,7 @@ public class PlayBin extends Pipeline {
      * available information (like language-codes).
      */
     public List<StreamInfo> getStreamInfo() {
-        Pointer ptr = getArrayPointer("stream-info-value-array");
+        Pointer ptr = getPointer("stream-info-value-array");
         if (ptr != null) {
             GList glist = GList.valueOf(ptr);
             if (glist == null) {
