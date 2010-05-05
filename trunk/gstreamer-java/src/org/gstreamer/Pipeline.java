@@ -29,6 +29,7 @@ import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
+import org.gstreamer.lowlevel.GstQueryAPI;
 
 /**
  * A {@code Pipeline} is a special {@link Bin} used as the toplevel container for
@@ -357,6 +358,32 @@ public class Pipeline extends Bin {
         long[] duration = { 0 };
         gst.gst_element_query_duration(this, fmt, duration);
         return duration[0];
+    }
+
+    /**
+     * Gets the {@link Segment} for the current media stream in terms of the specified {@link Format}.
+     *
+     * @return The information regarding the current {@code Segment}.
+     */
+    public Segment querySegment() {
+        return querySegment(Format.TIME);
+    }
+
+    /**
+     * Gets the {@link Segment} for the current media stream in terms of the specified {@link Format}.
+     *
+     * @param format the {@code Format} to return the segment in.
+     * @return The information regarding the current {@code Segment}.
+     */
+    public Segment querySegment(Format format) {
+        Query qry = GstQueryAPI.GSTQUERY_API.gst_query_new_segment(format);
+        gst.gst_element_query(this, qry);
+        double[] rate = { 0.0D };
+        Format[] fmt = { Format.UNDEFINED };
+        long[] start_value = { 0 };
+        long[] stop_value = { 0 };
+        GstQueryAPI.GSTQUERY_API.gst_query_parse_segment(qry, rate, fmt, start_value, stop_value);
+        return new Segment(rate[0], fmt[0], start_value[0], stop_value[0]);
     }
 
     /**
