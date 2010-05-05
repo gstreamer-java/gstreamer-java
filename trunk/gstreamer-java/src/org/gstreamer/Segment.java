@@ -29,7 +29,7 @@ public final class Segment {
     private final double rate;
     private final Format format;
     private final long startValue;
-    private final long stopvalue;
+    private final long stopValue;
 
    /**
     * Creates a new instance of {@link Segment}.
@@ -42,7 +42,7 @@ public final class Segment {
     Segment(double rate, Format format, long startValue, long stopValue) {
         this.rate = rate;
         this.format = format;
-        this.stopvalue = stopValue;
+        this.stopValue = stopValue;
         this.startValue = startValue;
     }
 
@@ -78,7 +78,7 @@ public final class Segment {
      * 
      * @return The stop value.
      */
-    public long getStopvalue() {
-        return stopvalue;
+    public long getStopValue() {
+        return stopValue;
     }
 }
