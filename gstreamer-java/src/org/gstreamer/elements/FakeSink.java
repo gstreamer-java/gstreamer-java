@@ -20,7 +20,6 @@ package org.gstreamer.elements;
 
 import com.sun.jna.Pointer;
 import org.gstreamer.Buffer;
-import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI;
 

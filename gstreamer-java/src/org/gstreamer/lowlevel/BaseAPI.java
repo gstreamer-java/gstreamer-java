@@ -35,6 +35,7 @@ import org.gstreamer.lowlevel.GstElementAPI.GstElementStruct;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import com.sun.jna.Union;
 import com.sun.jna.ptr.LongByReference;
 //import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
@@ -258,8 +259,19 @@ public interface BaseAPI extends Library {
             gpointer _gst_reserved[GST_PADDING_LARGE - 1];
         } abidata;
         */
-        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 1)];
+        public volatile GstBaseSinkAbiData abidata;
         public volatile Pointer /* GstBaseSinkPrivate */ priv;
+    }
+
+    public final static class GstBaseSinkAbiData extends Union {
+        public volatile GstBaseSinkAbi abi;
+        public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
+    }
+
+    public final static class GstBaseSinkAbi extends com.sun.jna.Structure {
+        public volatile Pointer /* GstSegment */ clip_segment;
+        public volatile long max_lateness;
+        public volatile boolean running;
     }
     
     public final static class GstBaseSinkClass extends com.sun.jna.Structure {
