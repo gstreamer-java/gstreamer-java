@@ -53,7 +53,7 @@ public class VideoComponent extends Canvas {
 	private Color bgColor;
 
 	public VideoComponent(final Composite parent, int style) {
-		super(parent, style);
+		super(parent, style | SWT.DOUBLE_BUFFERED);
 
 		videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
 		videosink.setPassDirectBuffer(true);

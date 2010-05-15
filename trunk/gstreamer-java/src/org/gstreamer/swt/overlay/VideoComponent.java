@@ -23,43 +23,50 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Message;
+import org.gstreamer.Structure;
+import org.gstreamer.event.BusSyncHandler;
 
 import com.sun.jna.Platform;
 
-public class VideoComponent extends Canvas {
-	private double aspectY = 0d;
-	private double aspectX = 0d;
+public class VideoComponent extends Canvas implements BusSyncHandler {
+	private double aspectY = 0.0;
+	private double aspectX = 0.0;
 
 	private final Element videosink;
+	
 	public VideoComponent(final Composite parent, int style) {
 		super(parent, style | SWT.EMBEDDED);
+		
 		// TODO: replace directdrawsink with dshowvideosink if dshowvideosink become more stable:
 		// http://forja.rediris.es/forum/forum.php?thread_id=5255&forum_id=1624
-		videosink = ElementFactory.make(
-				Platform.isWindows() ? "directdrawsink" : "xvimagesink",
-				"OverlayVideoComponent");
+		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "directdrawsink", "OverlayVideoComponent");
 		SWTOverlay.wrap(videosink).setWindowID(this);
 		
 		addListener(SWT.Resize, new Listener() {
 			public void handleEvent(Event event) {
-				if (aspectX == 0d || aspectY == 0d)
+				if (aspectX == 0.0 || aspectY == 0.0)
 					return;
 				int newX = getSize().x;
 				int newY = getSize().y;
-				double coX = ((double)getSize().x) / aspectY;
-				double coY = ((double)getSize().y) / aspectX;
-				if (coY <= coX) {
-					newX = (int) (coY * aspectY);
-				} else {
-					newY = (int) (coX * aspectX);
-				}
+				double coX = ((double)newX) / aspectY;
+				double coY = ((double)newY) / aspectX;
+				if (coY <= coX)
+					newX = (int)(coY * aspectY);
+				else
+					newY = (int)(coX * aspectX);
 				setSize(newX, newY);
 				setLocation(getSize().x / 2 - getSize().x / 2, getSize().y / 2 - getSize().y / 2);
 				layout(true);
 			}
 		});
+		videosink.set("sync", false);
+		videosink.set("async", false);
+		if (Platform.isLinux())
+			videosink.set("handle-events", false);
 	}
 	
 	/**
@@ -68,8 +75,8 @@ public class VideoComponent extends Canvas {
 	 * @param y
 	 */
 	public void setAspectRatio(double x, double y) {
-		this.aspectX = x;
-		this.aspectY = y;
+		aspectX = x;
+		aspectY = y;
 	}
 
 	/**
@@ -87,6 +94,14 @@ public class VideoComponent extends Canvas {
 	 * @param keepAspect
 	 */
 	public void setKeepAspect(boolean keepAspect) {
-		videosink.set("force-aspect-ratio", true);
+		videosink.set("force-aspect-ratio", keepAspect);
+	}
+
+	public BusSyncReply syncMessage(Message message) {
+		Structure s = message.getStructure();
+        if (s == null || !s.hasName("prepare-xwindow-id"))
+            return BusSyncReply.PASS;
+		SWTOverlay.wrap(videosink).setWindowID(this);
+        return BusSyncReply.DROP; 
 	}
 }
