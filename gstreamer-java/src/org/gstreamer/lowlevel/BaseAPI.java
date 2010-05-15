@@ -93,9 +93,22 @@ public interface BaseAPI extends Library {
             gpointer       _gst_reserved[GST_PADDING_LARGE-1];
         } data;
         */
-        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 1)];
-        public volatile /* GstBaseSrcPrivate */ Pointer priv;
+        public volatile GstBaseSrcAbiData abidata;
+        public volatile Pointer /* GstBaseSrcPrivate */ priv;
     }
+    
+    public final static class GstBaseSrcAbiData extends Union {
+        public volatile GstBaseSrcAbi abi;
+        public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
+    }
+
+    public final static class GstBaseSrcAbi extends com.sun.jna.Structure {
+        public volatile boolean typefind;
+        public volatile boolean running;
+        public volatile Pointer /* GstEvent */ pending_seek;
+    }
+    
+    
     //
     // Callbacks for BaseSrc/BaseSink classes
     //
