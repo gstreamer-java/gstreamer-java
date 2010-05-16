@@ -69,11 +69,9 @@ sed -i -e "s,\(file.reference.jna.jar=\).*,\1$(build-classpath jna)," \
 	-e "s,\(run.jvmargs=-Djna.library.path=\).*,\1%{_libdir}:$(pkg-config --variable=pluginsdir gstreamer-0.10)," \
 	nbproject/project.properties
 
-%ifarch %{arch_with_swt}
 %patch1 -p1
 sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>/dev/null|sort|head -1)," \
 	nbproject/project.properties
-%endif
 
 
 %build
