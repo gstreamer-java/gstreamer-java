@@ -21,7 +21,7 @@ package org.gstreamer.swt.overlay;
 import java.lang.reflect.Field;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Composite;
 
 import org.gstreamer.Element;
 import org.gstreamer.GstException;
@@ -61,32 +61,33 @@ public class SWTOverlay extends XOverlay {
      * @param control the SWT control for what i like to get the handle.
      * @return the handle of the control or 0 if the handle is not available.
      */
-    public static long getLinuxHandle(Control control) throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Class<? extends Control> controlClass = control.getClass();
-        Field embedHandleField = controlClass.getField("embeddedHandle");
+    public static long getLinuxHandle(Composite composite) 
+             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Class<? extends Composite> compositeClass = composite.getClass();
+        Field embedHandleField = compositeClass.getField("embeddedHandle");
         Class<?> t = embedHandleField.getType();
         if (t.equals(long.class))
-        	return embedHandleField.getLong(control);
+            return embedHandleField.getLong(composite);
         else if (t.equals(int.class))
-        	return embedHandleField.getInt(control);
+            return embedHandleField.getInt(composite);
         return 0L;
     }
     
     /**
-     * Helper function to get the proper handle for a given SWT Control.
+     * Helper function to get the proper handle for a given SWT Composite.
      *
-     * @param control the SWT control for what i like to get the handle.
-     * @return the handle of the control or 0 if the handle is not available.
+     * @param composite the SWT Composite for what i like to get the handle.
+     * @return the handle of the Composite or 0 if the handle is not available.
      */
-    public static long handle(Control control) {
+    public static long handle(Composite composite) {
         // Composite style must be embedded
-        if (control == null || ((control.getStyle() | SWT.EMBEDDED) == 0))
+        if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             return 0L;
         if (Platform.isWindows())
-            return control.handle;
+            return composite.handle;
         else if (Platform.isLinux())
             try {
-            	return getLinuxHandle(control);
+            	return getLinuxHandle(composite);
             } catch (Exception e) {
                 //e.printStackTrace();
             }
@@ -99,15 +100,15 @@ public class SWTOverlay extends XOverlay {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowID(Control control) {
-        // control style must be embedded
-        if (control == null || ((control.getStyle() | SWT.EMBEDDED) == 0))
-            throw new GstException("Cannot set window ID, in XOverlay interface, control is null or not SWT.EMBEDDED");
+    public void setWindowID(Composite composite) {
+        // composite style must be embedded
+        if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
+            throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
         if (Platform.isWindows())
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(control.handle));
+            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(composite.handle));
         else if (Platform.isLinux())
             try {
-                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(getLinuxHandle(control)));
+                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(getLinuxHandle(composite)));
             } catch (Exception e) {
                 throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
             }
