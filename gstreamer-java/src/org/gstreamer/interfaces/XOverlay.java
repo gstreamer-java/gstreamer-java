@@ -87,4 +87,15 @@ public class XOverlay extends GstInterface {
     public void expose() {
         GSTXOVERLAY_API.gst_x_overlay_expose(this);
     }
+    
+    /**
+     * Tell an overlay that it should handle events from the window system. 
+     * These events are forwared upstream as navigation events. In some window 
+     * system, events are not propagated in the window hierarchy if a client is 
+     * listening for them. This method allows you to disable events handling 
+     * completely from the XOverlay.
+     */
+    public void handleEvent(boolean handle_events) {
+    	GSTXOVERLAY_API.gst_x_overlay_handle_events(this, handle_events);
+    }
 }
