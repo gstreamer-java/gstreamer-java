@@ -81,12 +81,10 @@ public class VideoComponent extends Canvas {
 						if (keepAspect) {
 							if (((float) currentImage.getWidth() / (float) cSize.x)
 								> ((float) currentImage.getHeight() / (float) cSize.y)) {
-								sizeY = cSize.x * currentImage.getHeight()
-										/ currentImage.getWidth();
+								sizeY = cSize.x * currentImage.getHeight() / currentImage.getWidth();
 								newY = (cSize.y - sizeY) / 2;
 							} else {
-								sizeX = cSize.y * currentImage.getWidth()
-										/ currentImage.getHeight();
+								sizeX = cSize.y * currentImage.getWidth() / currentImage.getHeight();
 								newX = (cSize.x - sizeX) / 2;
 							}
 						}
@@ -108,8 +106,7 @@ public class VideoComponent extends Canvas {
 						newY += 20;
 					}
 					if (showFPS) {
-						event.gc.drawText(" FPS:" + fps, newX + 5, newY + 5,
-								false);
+						event.gc.drawText(" FPS:" + fps, newX + 5, newY + 5, false);
 					}
 					image.dispose();
 					if (showFPS) {
@@ -214,8 +211,7 @@ public class VideoComponent extends Canvas {
 		if (currentImage != null) {
 			currentImage.flush();
 		}
-		currentImage = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		currentImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		currentImage.setAccelerationPriority(0.0f);
 		return currentImage;
 	}
@@ -249,8 +245,7 @@ public class VideoComponent extends Canvas {
 				return;
 			}
 			try {
-				final BufferedImage renderImage = getBufferedImage(width,
-						height);
+				final BufferedImage renderImage = getBufferedImage(width, height);
 				int[] pixels = ((DataBufferInt) renderImage.getRaster().getDataBuffer()).getData();
 				rgb.get(pixels, 0, width * height);
 				updatePending = true;
