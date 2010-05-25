@@ -490,7 +490,7 @@ public class Pad extends GstObject {
     public void addEventProbe(final EVENT_PROBE listener) {
         final GstPadAPI.PadEventProbe probe = new GstPadAPI.PadEventProbe() {
             public boolean callback(Pad pad, Event ev, Pointer unused) {
-            	//XXX: We have to negate the return value to keep consistency with gstreamer's API
+            	//We have to negate the return value to keep consistency with gstreamer's API
                 return !listener.eventReceived(pad, ev);
             }
         };
