@@ -160,7 +160,7 @@ public class NavigationEvent extends Event {
     public static NavigationEvent createKeyReleaseEvent(String key) {
         return createKeyEvent("key-release", key);
     }
-    private static final class MouseEvent extends NavigationEvent {
+    public static final class MouseEvent extends NavigationEvent {
         public MouseEvent(String event, double x, double y, int button) {
             super(new Structure("application/x-gst-navigation", 
                 "event", GType.STRING, event,
@@ -183,7 +183,7 @@ public class NavigationEvent extends Event {
                     s.getInteger("button"));
         }
     }
-    private static final class KeyEvent extends NavigationEvent {
+    public static final class KeyEvent extends NavigationEvent {
         public KeyEvent(String event, String key) {
             super(new Structure("application/x-gst-navigation", 
                 "event", GType.STRING, event,
