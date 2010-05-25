@@ -23,27 +23,38 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Message;
-import org.gstreamer.Pad;
 import org.gstreamer.Structure;
-import org.gstreamer.Pad.LINKED;
-import org.gstreamer.Pad.UNLINKED;
-import org.gstreamer.Pad.EVENT_PROBE;
 import org.gstreamer.event.BusSyncHandler;
-import org.gstreamer.event.NavigationEvent;
-
 import com.sun.jna.Platform;
 
+/**
+ * VideoComponent which use OS's overlay video component 
+ * @author lfarkas
+ *
+ */
 public class VideoComponent extends Canvas implements BusSyncHandler {
 	private static int counter = 0;
 	private final Element videosink;
-	private final EVENT_PROBE probe;
-	private Pad srcPad;
+	private final SWTOverlay overlay;
 	
-	public VideoComponent(final Composite parent, int style) {
+	// called in case of handle-events false and resize
+	private final Listener resizer = new Listener() {
+		public void handleEvent(Event event) {
+			overlay.expose();
+		}
+	};
+	/**
+	 * Overlay VideoComponent
+	 * @param parent
+	 * @param style
+	 * @param enableMouseMove true if mouse move event generated
+	 */
+	public VideoComponent(final Composite parent, int style, boolean enableMouseMove) {
 		super(parent, style | SWT.EMBEDDED);
 
 		// TODO: replace directdrawsink with dshowvideosink if dshowvideosink become more stable:
@@ -51,47 +62,34 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "directdrawsink", "OverlayVideoComponent" + counter++);
 		videosink.set("sync", false);
 		videosink.set("async", false);
-		SWTOverlay.wrap(videosink).setWindowID(this);
-		
-		probe = new EVENT_PROBE() {
-			public boolean eventReceived(Pad arg0, org.gstreamer.Event event) {
-				if (event instanceof NavigationEvent) {
-					Structure s = event.getStructure();
-					System.out.println(s);
-					if ("mouse-move".equals(s.getString("event"))) {
-						final double x = s.getDouble("pointer_x");
-						final double y = s.getDouble("pointer_y");
-						parent.getDisplay().asyncExec(new Runnable() {
-							public void run() {
-								if(!parent.isDisposed() && getListeners(SWT.MouseMove).length != 0) {
-									Event m = new Event();
-									m.x = (int)(Math.round(x));
-									m.y = (int)(Math.round(y));
-									notifyListeners(SWT.MouseMove, m);
-								}
-							}
-						});
+		overlay = SWTOverlay.wrap(videosink);
+		overlay.setWindowID(this);
+		if (enableMouseMove) {
+			mouseMove(enableMouseMove);
+			parent.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(!parent.isDisposed()) {
+						overlay.expose();
 					}
 				}
-				return false;
-			}
-		};
-		
-		Pad sinkPad = videosink.getSinkPads().get(0);
-		sinkPad.connect(new LINKED() {
-			public void linked(Pad pad, Pad peer) {
-				srcPad = peer;
-				srcPad.addEventProbe(probe);
-			}
-		});
-		sinkPad.connect(new UNLINKED() {
-			public void unlinked(Pad pad, Pad peer) {
-				if (srcPad != null) {
-					srcPad.removeEventProbe(probe);
-					srcPad = null;
-				}
-			}
-		});
+			});
+		}
+	}
+	
+	public VideoComponent(final Composite parent, int style) {
+		this(parent, style, false);
+	}
+	
+	/**
+	 * Enable the handling of mouse-move or not
+	 * @param enable true if mouse move event generated
+	 */
+	public void mouseMove(boolean enable) {
+		videosink.set("handle-events", !enable);
+		if (enable)
+			addListener(SWT.Resize, resizer);
+		else
+			removeListener(SWT.Resize, resizer);
 	}
 	
 	/**
