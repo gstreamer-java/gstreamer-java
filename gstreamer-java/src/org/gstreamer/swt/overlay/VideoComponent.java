@@ -64,16 +64,8 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 		videosink.set("async", false);
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowID(this);
-		if (enableMouseMove) {
+		if (enableMouseMove)
 			mouseMove(enableMouseMove);
-			parent.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					if(!parent.isDisposed()) {
-						overlay.expose();
-					}
-				}
-			});
-		}
 	}
 	
 	public VideoComponent(final Composite parent, int style) {
@@ -86,8 +78,17 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 	 */
 	public void mouseMove(boolean enable) {
 		videosink.set("handle-events", !enable);
-		if (enable)
+		if (enable) {
 			addListener(SWT.Resize, resizer);
+			final Composite parent = getParent();
+			parent.getDisplay().asyncExec(new Runnable() {
+				public void run() {
+					if(!parent.isDisposed()) {
+						overlay.expose();
+					}
+				}
+			});
+		}
 		else
 			removeListener(SWT.Resize, resizer);
 	}
