@@ -58,8 +58,6 @@ public class Event extends MiniObject {
      * @return a structure.
      */
     public Structure getStructure() {
-        Structure s = gst.gst_event_get_structure(this);
-        ReferenceManager.addKeepAliveReference(s, this);
-        return s;
+    	return ReferenceManager.addKeepAliveReference(gst.gst_event_get_structure(this), this);
     }
 }
