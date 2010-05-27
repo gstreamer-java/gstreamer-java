@@ -41,56 +41,61 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 	private static int counter = 0;
 	private final Element videosink;
 	private final SWTOverlay overlay;
+	private Listener resizer;
 	
-	// called in case of handle-events false and resize
-	private final Listener resizer = new Listener() {
-		public void handleEvent(Event event) {
-			overlay.expose();
-		}
-	};
 	/**
 	 * Overlay VideoComponent
 	 * @param parent
 	 * @param style
-	 * @param enableMouseMove true if mouse move event generated
+	 * @param enableMouseMove true if mouse move event requested even on Linux
 	 */
 	public VideoComponent(final Composite parent, int style, boolean enableMouseMove) {
 		super(parent, style | SWT.EMBEDDED);
-
 		// TODO: replace directdrawsink with dshowvideosink if dshowvideosink become more stable:
 		// http://forja.rediris.es/forum/forum.php?thread_id=5255&forum_id=1624
 		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "directdrawsink", "OverlayVideoComponent" + counter++);
-		videosink.set("sync", false);
-		videosink.set("async", false);
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowID(this);
-		if (enableMouseMove)
-			mouseMove(enableMouseMove);
+		mouseMove(enableMouseMove);
 	}
 	
+	/**
+	 * Overlay VideoComponent
+	 * @param parent
+	 * @param style
+	 */
 	public VideoComponent(final Composite parent, int style) {
 		this(parent, style, false);
 	}
 	
 	/**
-	 * Enable the handling of mouse-move or not
+	 * Enable the handling of mouse-move or not (only for Linux)
 	 * @param enable true if mouse move event generated
 	 */
 	public void mouseMove(boolean enable) {
-		videosink.set("handle-events", !enable);
-		if (enable) {
-			addListener(SWT.Resize, resizer);
-			final Composite parent = getParent();
-			parent.getDisplay().asyncExec(new Runnable() {
-				public void run() {
-					if(!parent.isDisposed()) {
+		if (Platform.isLinux()) {
+			videosink.set("handle-events", !enable);
+			if (enable && resizer == null) {
+				resizer = new Listener() {
+					public void handleEvent(Event event) {
 						overlay.expose();
 					}
-				}
-			});
+				};
+				addListener(SWT.Resize, resizer);
+				final Composite parent = getParent();
+				parent.getDisplay().asyncExec(new Runnable() {
+					public void run() {
+						if(!parent.isDisposed()) {
+							overlay.expose();
+						}
+					}
+				});
+			}
+			else if (resizer != null) {
+					removeListener(SWT.Resize, resizer);
+					resizer = null;
+			}
 		}
-		else
-			removeListener(SWT.Resize, resizer);
 	}
 	
 	/**
