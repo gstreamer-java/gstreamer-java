@@ -133,7 +133,14 @@ public class Structure extends NativeObject {
             throw new InvalidFieldException("Array", fieldName);        	
         }
         return new GValueArray(val);
-    }    
+    }
+    public ValueList getValueList(String fieldName) {
+    	GValue val = gst.gst_structure_get_value(this, fieldName);
+    	if (val == null) {
+    		throw new InvalidFieldException("ValueList", fieldName);        	
+    	}
+    	return new ValueList(val);
+	}
     
     public int getInteger(String fieldName) {
         int[] val = { 0 };

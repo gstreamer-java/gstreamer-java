@@ -235,7 +235,7 @@ public class Clock extends GstObject {
      * @param time The requested time
      * @return A {@link ClockID} that can be used to request the time notification.
      */
-    ClockID newSingleShotID(ClockTime time) {
+    public ClockID newSingleShotID(ClockTime time) {
         return gst.gst_clock_new_single_shot_id(this, time);
     }
     
@@ -250,7 +250,7 @@ public class Clock extends GstObject {
      * @param interval The requested interval.
      * @return A {@link ClockID} that can be used to request the time notification.
      */
-    ClockID newPeriodicID(ClockTime startTime, ClockTime interval) {
+    public ClockID newPeriodicID(ClockTime startTime, ClockTime interval) {
         return gst.gst_clock_new_periodic_id(this, startTime, interval);
     }
 }

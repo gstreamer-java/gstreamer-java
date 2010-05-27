@@ -43,4 +43,6 @@ public interface GstValueAPI extends com.sun.jna.Library {
     double gst_value_get_double_range_max(GValue value);
     int gst_value_get_int_range_min(GValue value);
     int gst_value_get_int_range_max(GValue value);
+    int gst_value_list_get_size(GValue value);
+    GValue gst_value_list_get_value(GValue value, int index);
 }
