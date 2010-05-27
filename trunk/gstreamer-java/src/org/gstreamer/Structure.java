@@ -25,6 +25,7 @@ import org.gstreamer.lowlevel.GstStructureAPI;
 import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
+import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -70,6 +71,7 @@ public class Structure extends NativeObject {
     public Structure(Initializer init) {
         super(init);
     }
+
     private Structure(Pointer ptr) {
         this(initializer(ptr));
     }
@@ -82,6 +84,7 @@ public class Structure extends NativeObject {
     public Structure(String name) {
         this(gst.ptr_gst_structure_empty_new(name));
     }
+
     /**
      * Creates a new Structure with the given name.  Parses the
      * list of variable arguments and sets fields to the values listed.
@@ -95,6 +98,7 @@ public class Structure extends NativeObject {
     public Structure(String name, String firstFieldName, Object... data) {
         this(gst.ptr_gst_structure_new(name, firstFieldName, data));
     }
+
     /**
      * Creates a Structure from a string representation.
      *
@@ -104,11 +108,11 @@ public class Structure extends NativeObject {
     public static Structure fromString(String data) {
         return new Structure(gst.ptr_gst_structure_from_string(data, new PointerByReference()));
     }
+
     public Structure copy() {
         return gst.gst_structure_copy(this);
     }
-    
-     
+
     public class InvalidFieldException extends RuntimeException {
 
         private static final long serialVersionUID = 864118748304334069L;
@@ -117,12 +121,29 @@ public class Structure extends NativeObject {
             super(String.format("Structure does not contain %s field '%s'", type, fieldName));
         }
     }
+
+    /**
+     * Gets GValueArray field representation
+     * @param fieldName The name of the field.
+     * @return field as GValueArray
+     */
+    public GValueArray getArray(String fieldName) {
+    	Pointer val = gst.ptr_gst_structure_get_value(this, fieldName);
+        if (val == null) {
+            throw new InvalidFieldException("Array", fieldName);        	
+        }
+        return new GValueArray(val);
+    }    
+    
     public int getInteger(String fieldName) {
         int[] val = { 0 };
         if (!gst.gst_structure_get_int(this, fieldName, val)) {
             throw new InvalidFieldException("integer", fieldName);
         }
         return val[0];
+    }
+    public int getInteger(String fieldName, int i) {
+    	return ((Integer)getArray(fieldName).getValue(i)).intValue();
     }
     public double getDouble(String fieldName) {
         double[] val = { 0d };
@@ -131,9 +152,78 @@ public class Structure extends NativeObject {
         }
         return val[0];
     }
+    public double getDouble(String fieldName, int i) {
+    	return ((Double)getArray(fieldName).getValue(i)).doubleValue();
+    }
     public String getString(String fieldName) {
         return gst.gst_structure_get_string(this, fieldName);
     }
+    public String getString(String fieldName, int i) {
+    	return ((String)getArray(fieldName).getValue(i));
+    }
+    /**
+     * 
+     * @param fieldName
+     * @return The boolean value for fieldName
+     */
+    public boolean getBoolean(String fieldName) {
+        int[] val = { 0 };
+        if (!gst.gst_structure_get_boolean(this, fieldName, val)) {
+            throw new InvalidFieldException("boolean", fieldName);
+        }
+        return val[0] != 0;
+    }
+    public boolean getBoolean(String fieldName, int i) {
+    	return ((Boolean)getArray(fieldName).getValue(i)).booleanValue();
+    }
+    public Fraction getFraction(String fieldName) {
+        int[] numerator = { 0 };
+        int[] denominator = { 0 };
+        if (!gst.gst_structure_get_fraction(this, fieldName, numerator, denominator)) {
+            throw new InvalidFieldException("fraction", fieldName);
+        }
+        return new Fraction(numerator[0], denominator[0]);
+    }    
+    /**
+     * Gets FOURCC field int representation
+     * @param fieldName The name of the field.
+     * @return FOURCC field as a 4 byte integer
+     */
+    public int getFourcc(String fieldName) {
+    	int[] val = { 0 };
+        if (!gst.gst_structure_get_fourcc(this, fieldName, val)) {
+            throw new InvalidFieldException("FOURCC", fieldName);
+        }
+        return val[0];    	
+    }
+    /**
+     * Gets FOURCC field String representation
+     * @param fieldName The name of the field.
+     * @return FOURCC field as a String
+     */
+    public String getFourccString(String fieldName) {
+    	int f = getFourcc(fieldName);
+    	byte[] b = {(byte)((f>>0)&0xff),(byte)((f>>8)&0xff),
+    			    (byte)((f>>16)&0xff),(byte)((f>>24)&0xff)};
+    	return new String(b);
+    }
+    /**
+     * Gets Range field representation
+     * @param fieldName The name of the field.
+     * @return field as Range
+     */
+    public Range getRange(String fieldName) {
+    	GValue val = gst.gst_structure_get_value(this, fieldName);
+        if (val == null) {
+            throw new InvalidFieldException("Range", fieldName);        	
+        }
+        return new Range(val);
+    }
+
+    public boolean fixateNearestInteger(String field, Integer value) {
+        return gst.gst_structure_fixate_field_nearest_int(this, field, value);
+    }
+    
     /**
      * Sets an integer field in the structure.
      * 
@@ -153,66 +243,6 @@ public class Structure extends NativeObject {
     public void setDoubleRange(String field, Double min, Double max) {
         gst.gst_structure_set(this, field, 
                 gst.gst_double_range_get_type(), min, max);
-    }
-    
-    public boolean fixateNearestInteger(String field, Integer value) {
-        return gst.gst_structure_fixate_field_nearest_int(this, field, value);
-    }
-    /**
-     * 
-     * @param fieldName
-     * @return The boolean value for fieldName
-     */
-    public boolean getBoolean(String fieldName) {
-        int[] val = { 0 };
-        if (!gst.gst_structure_get_boolean(this, fieldName, val)) {
-            throw new InvalidFieldException("boolean", fieldName);
-        }
-        return val[0] != 0;
-    }
-    public Fraction getFraction(String fieldName) {
-        int[] numerator = { 0 };
-        int[] denominator = { 0 };
-        if (!gst.gst_structure_get_fraction(this, fieldName, numerator, denominator)) {
-            throw new InvalidFieldException("fraction", fieldName);
-        }
-        return new Fraction(numerator[0], denominator[0]);
-    }
-    public boolean fixateFieldNearestInteger(String field, Integer target) {
-        return gst.gst_structure_fixate_field_nearest_int(this, field, target);
-    } 
-    
-    /**
-     * Gets FOURCC field int representation
-     * @param fieldName The name of the field.
-     * @return FOURCC field as a 4 byte integer
-     */
-    public int getFourcc(String fieldName) {
-    	int[] val = { 0 };
-        if (!gst.gst_structure_get_fourcc(this, fieldName, val)) {
-            throw new InvalidFieldException("FOURCC", fieldName);
-        }
-        return val[0];    	
-    }
-    
-    /**
-     * Gets FOURCC field String representation
-     * @param fieldName The name of the field.
-     * @return FOURCC field as a String
-     */
-    public String getFourccString(String fieldName) {
-    	int f = getFourcc(fieldName);
-    	byte[] b = {(byte)((f>>0)&0xff),(byte)((f>>8)&0xff),
-    			    (byte)((f>>16)&0xff),(byte)((f>>24)&0xff)};
-    	return new String(b);
-    }
-    
-    public Range getRange(String fieldName) {
-    	GValue val = gst.gst_structure_get_value(this, fieldName);
-        if (val == null) {
-            throw new InvalidFieldException("Range", fieldName);        	
-        }
-        return new Range(val);
     }
     
     /**

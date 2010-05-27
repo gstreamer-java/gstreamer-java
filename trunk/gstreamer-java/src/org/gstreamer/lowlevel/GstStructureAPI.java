@@ -70,6 +70,7 @@ public interface GstStructureAPI extends com.sun.jna.Library {
     boolean gst_structure_get_fraction(Structure structure, String fieldname,
 							    int[] value_numerator,
 							    int[] value_denominator);
-    GValue gst_structure_get_value (Structure structure, String fieldname);
+    GValue gst_structure_get_value(Structure structure, String fieldname);
+    Pointer ptr_gst_structure_get_value(Structure structure, String fieldname);
     void gst_structure_set(Structure structure, String fieldname, Object... args);
 }
