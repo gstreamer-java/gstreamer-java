@@ -25,7 +25,6 @@ import org.gstreamer.lowlevel.GstStructureAPI;
 import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
-import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -123,17 +122,10 @@ public class Structure extends NativeObject {
     }
 
     /**
-     * Gets GValueArray field representation
+     * Gets ValueList field representation
      * @param fieldName The name of the field.
-     * @return field as GValueArray
+     * @return field as ValueList
      */
-    public GValueArray getArray(String fieldName) {
-    	Pointer val = gst.ptr_gst_structure_get_value(this, fieldName);
-        if (val == null) {
-            throw new InvalidFieldException("Array", fieldName);        	
-        }
-        return new GValueArray(val);
-    }
     public ValueList getValueList(String fieldName) {
     	GValue val = gst.gst_structure_get_value(this, fieldName);
     	if (val == null) {
@@ -150,7 +142,7 @@ public class Structure extends NativeObject {
         return val[0];
     }
     public int getInteger(String fieldName, int i) {
-    	return ((Integer)getArray(fieldName).getValue(i)).intValue();
+    	return getValueList(fieldName).getInteger(i);
     }
     public double getDouble(String fieldName) {
         double[] val = { 0d };
@@ -160,13 +152,13 @@ public class Structure extends NativeObject {
         return val[0];
     }
     public double getDouble(String fieldName, int i) {
-    	return ((Double)getArray(fieldName).getValue(i)).doubleValue();
+    	return getValueList(fieldName).getDouble(i);
     }
     public String getString(String fieldName) {
         return gst.gst_structure_get_string(this, fieldName);
     }
     public String getString(String fieldName, int i) {
-    	return ((String)getArray(fieldName).getValue(i));
+    	return getValueList(fieldName).getString(i);
     }
     /**
      * 
@@ -181,7 +173,7 @@ public class Structure extends NativeObject {
         return val[0] != 0;
     }
     public boolean getBoolean(String fieldName, int i) {
-    	return ((Boolean)getArray(fieldName).getValue(i)).booleanValue();
+    	return getValueList(fieldName).getBoolean(i);
     }
     public Fraction getFraction(String fieldName) {
         int[] numerator = { 0 };
