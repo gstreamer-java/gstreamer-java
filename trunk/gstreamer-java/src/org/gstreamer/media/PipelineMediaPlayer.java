@@ -43,7 +43,6 @@ import org.gstreamer.media.event.StopEvent;
 public abstract class PipelineMediaPlayer extends AbstractMediaPlayer {
     protected final Pipeline pipeline;    
     private volatile ScheduledFuture<?> positionTimer = null;
-    protected volatile State currentState = State.NULL;
     
     protected PipelineMediaPlayer(Pipeline pipeline, Executor executor) {
         super(executor);
@@ -123,34 +122,23 @@ public abstract class PipelineMediaPlayer extends AbstractMediaPlayer {
             
         }
     };
-    
+
     private final Bus.STATE_CHANGED stateChanged = new Bus.STATE_CHANGED() {
         public void stateChanged(GstObject source, State old, State newState, State pending) {
             if (!source.equals(getPipeline()))
-                return;
+            	return;
             final ClockTime position = getPipeline().queryPosition();
-            switch (newState) {
-            case PLAYING:
-                if (currentState == State.NULL || currentState == State.PAUSED) {
-                    fireStartEvent(new StartEvent(PipelineMediaPlayer.this,
-                            currentState, newState, State.VOID_PENDING, position));
-                    currentState = State.PLAYING;
-                }
-                break;
-            case PAUSED:
-                if (currentState == State.PLAYING) {
-                    firePauseEvent(new PauseEvent(PipelineMediaPlayer.this, 
-                                currentState, newState, State.VOID_PENDING, position));
-                    currentState = State.PAUSED;
-                }
-                break;
-            case NULL:
-            case READY:
-                if (currentState == State.PLAYING) {
-                    fireStopEvent(new StopEvent(PipelineMediaPlayer.this,
-                                currentState, newState, State.VOID_PENDING, position));
-                }
-                break;
+            if (newState.equals(State.PLAYING) && old.equals(State.PAUSED)) {
+                fireStartEvent(new StartEvent(PipelineMediaPlayer.this, old, newState, State.VOID_PENDING, position));
+            } else if (newState.equals(State.PAUSED) && pending.equals(State.VOID_PENDING)) {
+                firePauseEvent(new PauseEvent(PipelineMediaPlayer.this, old, newState, State.VOID_PENDING, position));
+            } else if (newState.equals(State.READY) && pending.equals(State.NULL)) {
+                fireStopEvent(new StopEvent(PipelineMediaPlayer.this, old, newState, pending, position));
+            }
+
+            // Anything else means we are transitioning!
+            if (!pending.equals(State.VOID_PENDING) && !pending.equals(State.NULL)) {
+                // TODO: Maybe a new callback method on MediaListener with TransitionEvent?
             }
         }
     };
