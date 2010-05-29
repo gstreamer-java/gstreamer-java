@@ -28,6 +28,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import org.gstreamer.glib.GQuark;
 
 /**
  *
@@ -61,6 +62,9 @@ public interface GSignalAPI extends Library {
     String g_signal_name(int signal_id);
     void g_signal_query(int signal_id, GSignalQuery query);
     int g_signal_list_ids(GType itype, int[] n_ids);
+
+    void g_signal_emit(GObject obj, int signal_id, GQuark detail, Object... arguments);
+    void g_signal_emit_by_name(GObject obj, String signal, Object... arguments);
     
     // Do nothing, but provide a base Callback class that gets automatic type conversion
     public static interface GSignalCallbackProxy extends com.sun.jna.CallbackProxy {}
