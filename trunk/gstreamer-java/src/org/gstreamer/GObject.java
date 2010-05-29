@@ -625,7 +625,10 @@ public abstract class GObject extends RefCountedObject {
     }
 
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
-        return new GObjectAPI.GParamSpec(GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName));
+        Pointer ptr = GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName);
+        if (ptr == null)
+            return null;
+        return new GObjectAPI.GParamSpec(ptr);
     }
     
     private GObjectAPI.GParamSpecTypeSpecific findProperty(String propertyName, GType type) {
