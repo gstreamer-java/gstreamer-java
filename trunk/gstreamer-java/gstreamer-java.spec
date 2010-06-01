@@ -11,38 +11,20 @@ URL:		http://code.google.com/p/gstreamer-java/
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
 Patch1:		%{name}-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if 0%{?fedora} <= 12 || 0%{?rhel} <= 5
+%if 0%{?fedora} > 12 || 0%{?rhel} > 5
 BuildArch:	noarch
 %endif
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0
-Requires:	jpackage-utils
-Requires:	jna
-# versioned gstreamer required since earlier version don't have features like:
-# gst_caps_merge, gst_query_new_latency
-Requires:	gstreamer >= 0.10.19
-Requires:	gstreamer-plugins-base >= 0.10.19
-Conflicts:	gstreamer-plugins-good < 0.10.7
-Conflicts:	gstreamer-plugins-ugly < 0.10.7
-Conflicts:	gstreamer-plugins-bad < 0.10.6
-
-BuildRequires:	java-devel >= 1:1.6.0
-BuildRequires:	jpackage-utils
-BuildRequires:	jna
-%ifarch %{arch_with_swt}
-BuildRequires:	libswt3-gtk2
-%endif
-BuildRequires:	gstreamer-devel >= 0.10.19
-BuildRequires:	gstreamer-plugins-base-devel >= 0.10.19
-BuildRequires:	gstreamer-plugins-good-devel >= 0.10.7
-#BuildRequires:	gstreamer-plugins-ugly-devel >= 0.10.7
-#BuildRequires:	gstreamer-plugins-bad-devel >= 0.10.6
-BuildRequires:	ant
-BuildRequires:	ant-junit
-%if 0%{?fedora} >= 9
+Requires:	java >= 1:1.6.0, java, jpackage-utils, jna, gstreamer-plugins-good
+BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna, gstreamer-plugins-good-devel
+BuildRequires:	ant, ant-junit
+%if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 BuildRequires:	junit4
+%endif
+%ifarch %{arch_with_swt} noarch
+BuildRequires:	libswt3-gtk2
 %endif
 
 %description
@@ -81,7 +63,7 @@ sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>
 # have only ant-1.6.5 and junit-3.8.2 therefore on older releases and EPEL we
 # have small hacks like ant-1.6.5 need packagenames for javadoc task
 # and test targets need ant-1.7.x and junit4 so we skip the test during packaging
-%if 0%{?fedora} >= 9
+%if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 sed -i -e "s,\(file.reference.junit4.jar=\).*,\1$(build-classpath junit4)," \
 	nbproject/project.properties
 %else
@@ -92,7 +74,7 @@ ant jar
 ant javadoc
 
 
-%if 0%{?fedora} >= 9
+%if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 %check
 ant test
 %endif
