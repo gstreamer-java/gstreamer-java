@@ -11,7 +11,9 @@ URL:		http://code.google.com/p/gstreamer-java/
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
 Patch1:		%{name}-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+%if 0%{?fedora} <= 12 || 0%{?rhel} <= 5
 BuildArch:	noarch
+%endif
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
