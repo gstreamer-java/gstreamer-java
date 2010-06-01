@@ -41,7 +41,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 	private static int counter = 0;
 	private final Element videosink;
 	private final SWTOverlay overlay;
-	private Listener resizer;
+	private Listener exposer;
 	
 	/**
 	 * Overlay VideoComponent
@@ -69,31 +69,33 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 	}
 	
 	/**
-	 * Enable the handling of mouse-move or not (only for Linux)
+	 * Enable the handling of mouse-move or not (only for Linux).
+	 * In this case we (gstreamer-linux) must handle redraw too!
 	 * @param enable true if mouse move event generated
 	 */
-	public void mouseMove(boolean enable) {
+	public synchronized void mouseMove(boolean enable) {
 		if (Platform.isLinux()) {
-			videosink.set("handle-events", !enable);
-			if (enable && resizer == null) {
-				resizer = new Listener() {
+			if (enable && exposer == null) {
+				exposer = new Listener() {
 					public void handleEvent(Event event) {
-						overlay.expose();
+						getDisplay().asyncExec(new Runnable() {
+							public void run() {
+								if(!isDisposed()) {
+									overlay.expose();
+								}
+							}
+						});
 					}
 				};
-				addListener(SWT.Resize, resizer);
-				final Composite parent = getParent();
-				parent.getDisplay().asyncExec(new Runnable() {
-					public void run() {
-						if(!parent.isDisposed()) {
-							overlay.expose();
-						}
-					}
-				});
+				addListener(SWT.Resize, exposer);
+				getShell().addListener(SWT.Activate, exposer);
+				videosink.set("handle-events", false);
 			}
-			else if (resizer != null) {
-					removeListener(SWT.Resize, resizer);
-					resizer = null;
+			else if (exposer != null) {
+					removeListener(SWT.Resize, exposer);
+					getShell().removeListener(SWT.Activate, exposer);
+					videosink.set("handle-events", true);
+					exposer = null;
 			}
 		}
 	}
@@ -125,7 +127,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 		Structure s = message.getStructure();
 		if (s == null || !s.hasName("prepare-xwindow-id"))
 			return BusSyncReply.PASS;
-		SWTOverlay.wrap(videosink).setWindowID(this);
+		overlay.setWindowID(this);
 		return BusSyncReply.DROP;
 	}
 }
