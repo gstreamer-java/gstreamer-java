@@ -20,6 +20,8 @@
 package org.gstreamer.swt.overlay;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -37,7 +39,7 @@ import com.sun.jna.Platform;
  * @author lfarkas
  *
  */
-public class VideoComponent extends Canvas implements BusSyncHandler {
+public class VideoComponent extends Canvas implements BusSyncHandler, DisposeListener {
 	private static int counter = 0;
 	private final Element videosink;
 	private final SWTOverlay overlay;
@@ -74,30 +76,41 @@ public class VideoComponent extends Canvas implements BusSyncHandler {
 	 * @param enable true if mouse move event generated
 	 */
 	public synchronized void mouseMove(boolean enable) {
-		if (Platform.isLinux()) {
-			if (enable && exposer == null) {
+		if (Platform.isLinux() && enable == (exposer == null)) {
+			if (enable) {
 				exposer = new Listener() {
 					public void handleEvent(Event event) {
 						getDisplay().asyncExec(new Runnable() {
 							public void run() {
-								if(!isDisposed()) {
-									overlay.expose();
-								}
+								expose();
 							}
 						});
 					}
 				};
 				addListener(SWT.Resize, exposer);
 				getShell().addListener(SWT.Activate, exposer);
-				videosink.set("handle-events", false);
+				addDisposeListener(this);
+			} else {
+				removeListener(SWT.Resize, exposer);
+				getShell().removeListener(SWT.Activate, exposer);
+				removeDisposeListener(this);
+				exposer = null;
 			}
-			else if (exposer != null) {
-					removeListener(SWT.Resize, exposer);
-					getShell().removeListener(SWT.Activate, exposer);
-					videosink.set("handle-events", true);
-					exposer = null;
-			}
+			videosink.set("handle-events", !enable);
 		}
+	}
+	
+	public void widgetDisposed(DisposeEvent arg0) {
+		getShell().removeListener(SWT.Activate, exposer);
+	}	
+	
+	/**
+     * Tell an overlay that it has been exposed. This will redraw the current frame
+     * in the drawable even if the pipeline is PAUSED.
+     */
+	public void expose() {
+		if(!isDisposed())
+			overlay.expose();
 	}
 	
 	/**
