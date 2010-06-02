@@ -20,8 +20,8 @@ package org.gstreamer.lowlevel;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Manages keep alive links from one object to another.
@@ -46,7 +46,7 @@ public class ReferenceManager {
      * Holds static data for lazy loading.
      */
     private static class StaticData {
-        private static final Map<Object, Object> map = new HashMap<Object, Object>();
+        private static final Map<Object, Object> map = new ConcurrentHashMap<Object, Object>();
         private static final ReferenceQueue<Object> queue = new ReferenceQueue<Object>();
         static {
             Thread t = new Thread(new Runnable() {
