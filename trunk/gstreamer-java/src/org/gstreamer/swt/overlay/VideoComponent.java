@@ -80,11 +80,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 			if (enable) {
 				exposer = new Listener() {
 					public void handleEvent(Event event) {
-						getDisplay().asyncExec(new Runnable() {
-							public void run() {
-								expose();
-							}
-						});
+						expose();
 					}
 				};
 				addListener(SWT.Resize, exposer);
@@ -109,8 +105,12 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
      * in the drawable even if the pipeline is PAUSED.
      */
 	public void expose() {
-		if(!isDisposed())
-			overlay.expose();
+		getDisplay().asyncExec(new Runnable() {
+			public void run() {
+				if(!isDisposed())
+					overlay.expose();
+			}
+		});
 	}
 	
 	/**
