@@ -1,0 +1,38 @@
+
+Changes since 0.5:
+- Some of the Clock API is implemented.
+- org.gstreamer.Time renamed to ClockTime to match C api.
+- A useful set of Query, Event and Message subclasses are implemented.
+- Much javadoc improvement.
+- Lazy loading improvements so it no longer loads all org.gstreamer.* classes 
+  at startup - they are now only loaded when referenced by an application.
+- More lazy loading improvements for static class data.
+- Revamp TagList api.  Hopefully close to being sane now.
+- Pipeline.launch() will now return a Pipeline based on a text description the 
+  same as that used by gst-launch.
+- SeekFlags is no longer an enum - this was needed to be able to easily or 
+  flags together.
+- QueryType is no longer an enum - custom query types can be created with 
+  values outside the pre-defined range.
+- All the java.util.EventObject based events/listeners are gone.
+- Reviewed listener api to make sure arguments expected in signal listeners 
+  reflect those of the native C api.
+- Memory management fixes.
+- Get rid of MainLoop usage - its still there, but now does nothing.
+- Bus messages are now dispatched on a separate thread.  This decouples the 
+  event from the response, and avoids lockups when responding to Bus messages.
+- Renamed various Bus listener methods to crop off the superfluous 'Message' 
+  suffix.
+- In addition to the specific Bus message listeners, you can now listen for all
+  messages with a single listener.
+- VideoComponent reworked so it no longer paints the black bars on every call.
+- VideoComponent changed to use a single BufferedImage for rendering.
+- More unit tests.
+- Update to JNA 3.0 
+- Improvements to seeking in VideoPlayer.
+- Rename setPosition() to seek(), getPosition() to queryPosition(), and 
+  getDuration(0 to queryDuration() to match the gstreamer API
+- Add a version of Element.getState() that allows the TimeUnit to be specified
+- VideoComponent now supports navigation events - which means DVD navigation 
+  should work - test it with org.gstreamer.example.NavigationTest
+
