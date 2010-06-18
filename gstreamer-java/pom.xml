@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.google.code.gstreamer-java</groupId>
+  <groupId>com.googlecode.gstreamer-java</groupId>
   <artifactId>gstreamer-java</artifactId>
   <packaging>jar</packaging>
   <name>Gstreamer Java</name>
@@ -106,6 +107,15 @@
 	</configuration>
       </plugin>
       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.0</version>
+          <configuration>
+	    <!-- needed to enable display of password prompt during gpg signing -->
+            <mavenExecutorId>forked-path</mavenExecutorId>
+          </configuration>
+      </plugin>
+      <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
 	<version>2.2</version>
@@ -132,18 +142,19 @@
       
         tanaka> LANG=en_GB.UTF-8  mvn -Dgpg.Dkeyname=xxx@example.com \
                     -Dgpg.passphrase=xxxx \
+                    -Darguments="-Dgpg.passphrase=xxxx" \
                     -DconnectionUrl=scm:svn:https://gstreamer-java.googlecode.com/svn/branches/1.x-maven/gstreamer-java \
                     release:perform
       -->
     <repository> 
       <id>sonatype-nexus-staging</id> 
       <name>Nexus Release Repository</name> 
-      <url>http://oss.sonatype.org/service/local/staging/deploy/maven2</url> 
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url> 
     </repository> 
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
       <name>Nexus Snapshot Repository</name>
-      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
 
