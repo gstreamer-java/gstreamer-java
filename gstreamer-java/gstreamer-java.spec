@@ -13,12 +13,19 @@ Patch1:		%{name}-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %if 0%{?fedora} > 12 || 0%{?rhel} > 5
 BuildArch:	noarch
+%else
+# for ExcludeArch and no noarch see bug: 468831
+# since noarch pacakge can't contain ExcludeArch :-( imho it's an rpm bug
+ExcludeArch:	ppc ppc64
 %endif
+
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0, java, jpackage-utils, jna, gstreamer-plugins-good
-BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna, gstreamer-plugins-good-devel
+Requires:	java >= 1:1.6.0, java, jpackage-utils, jna
+Requires:	gstreamer, gstreamer-plugins-base, gstreamer-plugins-good
+BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna
+BuildRequires:	gstreamer-devel, gstreamer-plugins-base-devel, gstreamer-plugins-good
 BuildRequires:	ant, ant-junit
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 BuildRequires:	junit4
