@@ -25,10 +25,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
 import org.gstreamer.elements.FakeSink;
 import org.gstreamer.elements.FakeSrc;
 import org.gstreamer.elements.FileSrc;
 import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.TypeFind;
 import org.gstreamer.lowlevel.GstCapsAPI;
 import org.gstreamer.lowlevel.GstElementFactoryAPI;
@@ -180,14 +182,16 @@ public class ElementFactory extends PluginFeature {
     @SuppressWarnings("serial")
     private static final Map<String, Class<? extends Element>> typeMap
         = new HashMap<String, Class<? extends Element>>() {{
-        put("playbin", PlayBin.class);
-        put("decodebin", DecodeBin.class);
-        put("typefind", TypeFind.class);
-        put("fakesrc", FakeSrc.class);
-        put("fakesink", FakeSink.class);
-        put("filesrc", FileSrc.class);
-        put("appsrc", AppSrc.class);
-        put("appsink", AppSink.class);
+            put("appsink",    AppSink.class);
+            put("appsrc",     AppSrc.class);
+            put("decodebin",  DecodeBin.class);
+            put("decodebin2", DecodeBin2.class);
+            put("fakesink",   FakeSink.class);
+            put("fakesrc",    FakeSrc.class);
+            put("filesrc",    FileSrc.class);
+            put("playbin",    PlayBin.class);
+            put("playbin2",   PlayBin2.class);
+            put("typefind",   TypeFind.class);
     }};
     @SuppressWarnings("unchecked")
     private static Element elementFor(Pointer ptr, String factoryName) {
