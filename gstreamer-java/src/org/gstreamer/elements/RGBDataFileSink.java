@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.concurrent.ScheduledExecutorService;
 import com.sun.jna.Pointer;
 
+import org.gstreamer.Format;
 import org.gstreamer.Gst;
 import org.gstreamer.ClockTime;
 import org.gstreamer.Buffer;
@@ -90,8 +91,18 @@ public class RGBDataFileSink extends Bin {
 
         // Building pipeline.
         source = (AppSrc)ElementFactory.make("appsrc", "source");
-        source.set("is-live", true);
-        source.set("format", 3); // GST_FORMAT_TIME = 3
+        
+        source.setLive(true);
+        
+        // Using either BUFFERS or TIME doesn't seem
+        // to make a difference, but BUFFERS make more
+        // sense with the buffer timestamping. See comments
+        // in pushBuffer() method below.
+        source.setFormat(Format.BUFFERS);
+        //source.setFormat(Format.TIME);
+        
+        source.setLatency(-1, 0);
+        source.setSize(-1);
         source.setCaps(videoCaps);
         source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
 
@@ -259,10 +270,21 @@ public class RGBDataFileSink extends Bin {
                 Buffer buf = bufferList.remove(0);
                 frameCount++;
 
-                long f = frameCount * NANOS_PER_FRAME;
                 buf.setCaps(videoCaps);
-                buf.setTimestamp(ClockTime.fromNanos(f));
-                buf.setDuration(ClockTime.fromNanos(NANOS_PER_FRAME));
+                
+                // For some reason this duration and timestamp setting works 
+                // with all encoders I tried so far (theora, x264, dirac),
+                // although doesn't make much sense (frame duration 1 nano?)...
+                buf.setTimestamp(ClockTime.fromNanos(frameCount));
+                buf.setDuration(ClockTime.fromNanos(1));
+                
+                // ... this other one, which is logically correc, doesn't work for
+                // theora (frames are dropped for no apparent reason each 
+                // two seconds):
+                //long f = frameCount * NANOS_PER_FRAME;
+                //buf.setTimestamp(ClockTime.fromNanos(f));
+                //buf.setDuration(ClockTime.fromNanos(NANOS_PER_FRAME));
+                
                 source.pushBuffer(buf);
                 buf.dispose();
             }
