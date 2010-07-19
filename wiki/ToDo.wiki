@@ -11,3 +11,5 @@ Evaluate options for improved performance:
   * Java Abstracted Foreign Function Layer: http://github.com/wmeissner/jaffl  
 
   * Java-gnome: http://java-gnome.sourceforge.net/
+
+  * JNAerator: http://code.google.com/p/jnaerator/
