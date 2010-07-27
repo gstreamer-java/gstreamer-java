@@ -3,7 +3,7 @@
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
 Version:	1.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
@@ -22,7 +22,7 @@ ExcludeArch:	ppc ppc64
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0, java, jpackage-utils, jna
+Requires:	java >= 1:1.6.0, jpackage-utils, jna
 Requires:	gstreamer, gstreamer-plugins-base, gstreamer-plugins-good
 BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna
 BuildRequires:	gstreamer-devel, gstreamer-plugins-base-devel, gstreamer-plugins-good
@@ -110,6 +110,9 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
+* Tue Jul 27 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-2
+- fix spec file typo
+
 * Mon Apr 26 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-1
 - update to 1.4
 - drop upstream XOverlay patch
