@@ -123,10 +123,18 @@ public class ElementFactory extends PluginFeature {
     /**
      * Gets the list of {@link StaticPadTemplate} for this factory.
      *
+     * This function sometimes throw Exception and i don't know why:-(
+     * That's the reason why i made it @Deprecated
+     * The question here is whether the {@link gst_static_caps_get } should have
+     * to annotated with @CallerOwnsReturn?
+     * 
      * @return The list of {@link StaticPadTemplate}
      */
+    @Deprecated 
     public List<StaticPadTemplate> getStaticPadTemplates() {
+        logger.entering("ElementFactory", "getStaticPadTemplates");
         GList glist = gst.gst_element_factory_get_static_pad_templates(this);
+        logger.log(DEBUG, "gst.gst_element_factory_get_static_pad_templates returned: " + glist);
         List<StaticPadTemplate> templates = new ArrayList<StaticPadTemplate>();
         GList next = glist;
         while (next != null) {
