@@ -134,6 +134,16 @@ public class Structure extends NativeObject {
     	return new ValueList(val);
 	}
     
+    public Object getValue(String fieldName) {
+    	GValue val = gst.gst_structure_get_value(this, fieldName);
+    	
+    	if (val == null) {
+    		throw new InvalidFieldException("Object", fieldName);        	
+    	}
+
+	return val.getValue();
+    }
+    
     public int getInteger(String fieldName) {
         int[] val = { 0 };
         if (!gst.gst_structure_get_int(this, fieldName, val)) {
@@ -232,6 +242,11 @@ public class Structure extends NativeObject {
     public void setInteger(String field, Integer value) {
         gst.gst_structure_set(this, field, GType.INT, value);
     }
+        
+    public void setValue(String field, GType type, Object value) {
+    	gst.gst_structure_set(this, field, type, value);
+    }
+        
     public void setDouble(String field, Double value) {
         gst.gst_structure_set(this, field, GType.DOUBLE, value);
     }

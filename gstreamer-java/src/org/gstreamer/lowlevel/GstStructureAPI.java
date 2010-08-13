@@ -58,6 +58,7 @@ public interface GstStructureAPI extends com.sun.jna.Library {
     /* utility functions */
     boolean gst_structure_get_boolean(Structure structure, String fieldname, int[] value);
     boolean gst_structure_get_int(Structure structure, String fieldname, int[] value);
+    boolean gst_structure_get_uint(Structure structure, String fieldname, int[] value);
     boolean gst_structure_get_fourcc(Structure structure, String fieldname, int[] value);
     boolean gst_structure_get_double(Structure structure, String fieldname, double[] value);
     

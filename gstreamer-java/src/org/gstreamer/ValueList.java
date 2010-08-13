@@ -33,28 +33,38 @@ public class ValueList {
     }
 
     public double getDouble(int index) {
-        return GValueAPI.GVALUE_API.g_value_get_double(getValue(index));
+        return GValueAPI.GVALUE_API.g_value_get_double(get(index));
     }
 
+    public float getFloat(int index) {
+    	return GValueAPI.GVALUE_API.g_value_get_float(get(index));
+    }
+    
     public int getInteger(int index) {
-        return GValueAPI.GVALUE_API.g_value_get_int(getValue(index));
+        return GValueAPI.GVALUE_API.g_value_get_int(get(index));
     }
 
     public String getString(int index) {
-        return GValueAPI.GVALUE_API.g_value_get_string(getValue(index));
+        return GValueAPI.GVALUE_API.g_value_get_string(get(index));
     }
 
     public boolean getBoolean(int index) {
-        return GValueAPI.GVALUE_API.g_value_get_boolean(getValue(index));
+        return GValueAPI.GVALUE_API.g_value_get_boolean(get(index));
     }
 
     public Fraction getFraction(int index) {
-        GValueAPI.GValue value = getValue(index);
+        GValueAPI.GValue value = get(index);
         return new Fraction(GstValueAPI.GSTVALUE_API.gst_value_get_fraction_numerator(value),
                 GstValueAPI.GSTVALUE_API.gst_value_get_fraction_denominator(value));
     }
 
-    private GValueAPI.GValue getValue(int index) {
+    public Object getValue(int index) {
+    	GValueAPI.GValue v = get(index);
+    	
+    	return v.getValue();
+    }
+    
+    private GValueAPI.GValue get(int index) {
         GValueAPI.GValue val = GstValueAPI.GSTVALUE_API.gst_value_list_get_value(value, index);
         if (val == null) {
             throw new RuntimeException(String.format("List does not contain value %d", index));
