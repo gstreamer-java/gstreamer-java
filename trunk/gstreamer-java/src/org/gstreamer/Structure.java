@@ -298,6 +298,15 @@ public class Structure extends NativeObject {
     public boolean hasField(String fieldName) {
         return gst.gst_structure_has_field(this, fieldName);
     }
+
+    /**
+     * Get the number of fields in the {@link Structure}.
+     *
+     * @return the structure's filed number.
+     */
+    public int getFields() {
+        return gst.gst_structure_n_fields(this);
+    }
     
     /**
      * Check if the {@link Structure} contains a field named fieldName.
@@ -358,6 +367,15 @@ public class Structure extends NativeObject {
      */
     public void removeFields(String... fieldNames) {
         gst.gst_structure_remove_fields(this, fieldNames);
+    }
+    
+    /**
+     * Get the @structure's ith field name as a string.
+     * @param i the requested filed number
+     * @return The name of the structure.
+     */
+    public String getName(int i) {
+        return gst.gst_structure_nth_field_name(this, i);
     }
     
     @Override
