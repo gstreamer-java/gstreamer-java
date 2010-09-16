@@ -81,7 +81,21 @@ public final class Gst {
     public static String getVersionString() {
         return gst.gst_version_string();
     }
-    
+    /**
+     * Get Segmentation Trap status.
+     * @return Segmentation Trap status.
+     */
+    public static boolean isSegTrapEnabled() {
+    	return gst.gst_segtrap_is_enabled();
+    }
+    /**
+     * Set Segmentation Trap status.
+     * @param enabled
+     */
+    public static void setSegTrap(boolean enabled) {
+    	gst.gst_segtrap_set_enabled(enabled);
+    }
+
     /**
      * Gets the common {@code Executor} used to execute background tasks.
      * 
