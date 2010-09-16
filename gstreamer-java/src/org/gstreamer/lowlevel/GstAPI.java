@@ -40,6 +40,8 @@ public interface GstAPI extends Library {
     boolean gst_init(IntByReference argc, PointerByReference argv);
     boolean gst_init_check(IntByReference argc, PointerByReference argv, Pointer[] err);
     boolean gst_init_check(IntByReference argc, PointerByReference argv, GErrorStruct[] err);
+    boolean gst_segtrap_is_enabled();
+    void gst_segtrap_set_enabled(boolean enabled);
     void gst_deinit();
     
     public static final class GstSegmentStruct extends com.sun.jna.Structure {
