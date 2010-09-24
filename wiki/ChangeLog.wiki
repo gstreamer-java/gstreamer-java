@@ -2,6 +2,9 @@
 
 = Changelog =
 
+== Recent log can be browse at ==
+ http://code.google.com/p/gstreamer-java/source/list
+
 == Release 1.1 (March 28th, 2009) ==
 
   * Added return value for seek methods:
