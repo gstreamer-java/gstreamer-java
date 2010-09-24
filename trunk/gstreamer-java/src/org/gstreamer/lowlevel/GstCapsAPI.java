@@ -61,6 +61,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     void gst_caps_merge_structure(Caps caps, @Invalidate Structure structure);
     int gst_caps_get_size(Caps caps);
     Structure gst_caps_get_structure(Caps caps, int index);
+    @CallerOwnsReturn Structure gst_caps_steal_structure(Caps caps, int index);
     @CallerOwnsReturn Caps gst_caps_copy_nth(Caps caps, int nth);
     void gst_caps_truncate(Caps caps);
     void gst_caps_set_simple(Caps caps, String field, Object... values);
@@ -80,7 +81,12 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     boolean gst_caps_is_subset(Caps subset,  Caps superset);
     boolean gst_caps_is_equal(Caps caps1,  Caps caps2);
     boolean gst_caps_is_equal_fixed(Caps caps1,  Caps caps2);
-    
+    boolean gst_caps_can_intersect(Caps caps1, Caps caps2);
+
+    public class GPtrArray extends com.sun.jna.Structure {
+    	public volatile Pointer pdata;
+    	public volatile int     len;    	
+    }
     public class GstCapsStruct extends com.sun.jna.Structure {
 
         public volatile GType type;
@@ -91,7 +97,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
         public volatile int flags;
 
         /*< private >*/
-        public volatile Pointer structs;
+        public volatile GPtrArray structs;
 
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
@@ -99,9 +105,12 @@ public interface GstCapsAPI extends com.sun.jna.Library {
 
     
     class GstStaticCapsStruct extends com.sun.jna.Structure {
-
+    	/*< public >*/
         public volatile GstCapsStruct caps;
         public volatile String string;
+
+        /*< private >*/
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
     }
    
     GType gst_static_caps_get_type();
