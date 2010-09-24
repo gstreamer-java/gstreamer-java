@@ -615,7 +615,7 @@ public abstract class GObject extends RefCountedObject {
         }
     }
     
-    public static GObject objectFor(Pointer ptr, Class<? extends GObject> defaultClass) {
+    public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
         return GObject.objectFor(ptr, defaultClass, true);
     }
     
