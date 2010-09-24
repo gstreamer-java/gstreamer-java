@@ -240,4 +240,60 @@ public class BinTest {
         assertEquals("Third sorted element should be bin", bin, it.next());
         pipeline.dispose();
     }
+    
+    @Test
+    public void testLaunch() {
+        Bin bin = Bin.launch("fakesrc ! fakesink", false);
+        assertNotNull("Bin not created", bin);
+    }   
+    @Test
+    public void testLaunchElementCount() {
+        Bin bin = Bin.launch("fakesrc ! fakesink", false);
+        assertEquals("Number of elements in pipeline incorrect", 2, bin.getElements().size());
+    }
+    @Test
+    public void testLaunchSrcElement() {
+    	Bin bin = Bin.launch("fakesrc ! fakesink", false);
+        assertEquals("First element not a fakesrc", "fakesrc", bin.getSources().get(0).getFactory().getName());
+    }
+    @Test
+    public void testLaunchSinkElement() {
+    	Bin bin = Bin.launch("fakesrc ! fakesink", false);
+        assertEquals("First element not a fakesink", "fakesink", bin.getSinks().get(0).getFactory().getName());
+    }
+    @Test
+    public void testLaunchDisabledGhostPadsForSource() {
+    	Bin bin = Bin.launch("fakesrc", false);
+    	assertEquals("Number of src pads incorrect", 0, bin.getSrcPads().size());
+    }
+    @Test
+    public void testLaunchDisabledGhostPadsForSink() {
+    	Bin bin = Bin.launch("fakesink", false);
+    	assertEquals("Number of sink pads incorrect", 0, bin.getSinkPads().size());
+    }
+    @Test
+    public void testLaunchEnabledGhostPadsForSource() {
+    	Bin bin = Bin.launch("fakesrc", true);
+    	assertEquals("Number of src pads incorrect", 1, bin.getSrcPads().size());
+    }
+    @Test
+    public void testLaunchEnabledGhostPadsForSink() {
+    	Bin bin = Bin.launch("fakesink", true);
+    	assertEquals("Number of sink pads incorrect", 1, bin.getSinkPads().size());
+    }
+    @Test
+    public void testLaunchEnabledGhostPadsForSourceWithNoUsablePads() {
+    	Bin bin = Bin.launch("fakesrc ! fakesink", true);
+    	assertEquals("Number of src pads incorrect", 0, bin.getSrcPads().size());
+    }
+    @Test
+    public void testLaunchEnabledGhostPadsForSinkWithNoUsablePads() {
+    	Bin bin = Bin.launch("fakesrc ! fakesink", true);
+    	assertEquals("Number of sink pads incorrect", 0, bin.getSinkPads().size());
+    }
+    @Test
+    public void testLaunchEnabledGhostPadsWithNoUsablePads() {
+    	Bin bin = Bin.launch("fakesrc ! fakesink", true);
+    	assertEquals("Number of pads incorrect", 0, bin.getPads().size());
+    }
 }
