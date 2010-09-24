@@ -19,6 +19,7 @@
 
 package org.gstreamer.lowlevel;
 
+import org.gstreamer.Bin;
 import org.gstreamer.Pipeline;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
@@ -34,4 +35,5 @@ public interface GstParseAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Pipeline gst_parse_launchv(String[] pipeline_description, Pointer[] error);
     @CallerOwnsReturn Pipeline gst_parse_launch(String pipeline_description, GstAPI.GErrorStruct[] error);
     @CallerOwnsReturn Pipeline gst_parse_launchv(String[] pipeline_description, GstAPI.GErrorStruct[] error);
+    @CallerOwnsReturn Bin gst_parse_bin_from_description(String bin_description, boolean ghost_unlinked_pads,Pointer[] error);
 }

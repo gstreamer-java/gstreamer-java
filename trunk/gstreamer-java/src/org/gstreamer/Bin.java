@@ -23,8 +23,11 @@ package org.gstreamer;
 import java.util.List;
 
 import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstParseAPI;
 import org.gstreamer.lowlevel.GstTypes;
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.GstBinAPI;
 
 import com.sun.jna.Pointer;
@@ -56,7 +59,11 @@ import com.sun.jna.Pointer;
  *
  */
 public class Bin extends Element {
-    private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
+	private static interface API extends GstBinAPI, GstParseAPI {
+		@CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
+	}
+	private static final API gst = GstNative.load(API.class);
+    
     public static final int DEBUG_GRAPH_SHOW_MEDIA_TYPE         = (1<<0);
     public static final int DEBUG_GRAPH_SHOW_CAPS_DETAILS       = (1<<1);
     public static final int DEBUG_GRAPH_SHOW_NON_DEFAULT_PARAMS = (1<<2);
@@ -81,6 +88,25 @@ public class Bin extends Element {
     public Bin(String name) {
         this(initializer(gst.ptr_gst_bin_new(name)));
     }
+    
+	/**
+	 * Creates a bin from a text bin description. 
+	 * 
+	 * This function allows creation of a bin based on the syntax used in the
+	 * gst-launch utillity.
+	 * 
+	 * @param binDecription the command line describing the bin
+	 * @param ghostUnlinkedPads whether to create ghost pads for the bin from any unlinked pads
+	 * @return The new Bin.
+	 */
+	public static Bin launch(String binDecription, boolean ghostUnlinkedPads) {
+		Pointer[] err = { null };
+		Bin bin = gst.gst_parse_bin_from_description(binDecription, ghostUnlinkedPads, err);
+		if (bin == null) {
+			throw new GstException(new GError(new GErrorStruct(err[0])));
+		}
+		return bin;
+	}
     
     /**
      * Adds an Element to this Bin.
