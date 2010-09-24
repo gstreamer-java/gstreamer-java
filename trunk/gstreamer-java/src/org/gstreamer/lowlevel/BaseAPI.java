@@ -28,6 +28,7 @@ import org.gstreamer.FlowReturn;
 import org.gstreamer.Pad;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
 import org.gstreamer.lowlevel.GstElementAPI.GstElementClass;
 import org.gstreamer.lowlevel.GstElementAPI.GstElementStruct;
@@ -48,6 +49,8 @@ public interface BaseAPI extends Library {
     GType gst_base_sink_get_type();
     GType gst_base_transform_get_type();
     
+    // ---------------------- BaseSrc -----------------------------
+
     public final static class GstBaseSrcStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
 
@@ -154,6 +157,13 @@ public interface BaseAPI extends Library {
     public static interface Fixate extends Callback {
         public void callback(Element element, Caps caps);
     }
+    public static interface RenderList extends Callback {
+        public FlowReturn callback(BaseSink sink, GList bufferList);
+    }
+    public static interface PrepareSeek extends Callback {
+        boolean callback(BaseSrc src, Event seek, GstSegmentStruct segment);
+    }
+    
     public final static class GstBaseSrcClass extends com.sun.jna.Structure {
         public GstBaseSrcClass() {}
         public GstBaseSrcClass(Pointer ptr) {
@@ -222,9 +232,18 @@ public interface BaseAPI extends Library {
         /* called if, in negotation, caps need fixating */
         public Fixate fixate;        
 
+        /* Clear any pending unlock request, as we succeeded in unlocking */
+        public BooleanFunc1 unlock_stop;
+        
+        /* Prepare the segment on which to perform do_seek(), converting to the
+         * current basesrc format. */
+        public PrepareSeek prepare_seek_segment;
+        
         /*< private >*/
-        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 4)];
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 6)];
     }
+
+    // ---------------------- BaseSink -----------------------------
     
     public final static class GstBaseSinkStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
@@ -340,21 +359,16 @@ public interface BaseAPI extends Library {
         /* fixate sink caps during pull-mode negotiation */
         public Fixate fixate;
 
+        /* Clear a previously indicated unlock request not that unlocking is
+         * complete. Sub-classes should clear any command queue or indicator they
+         * set during unlock 
+         */
+        public BooleanFunc1 unlock_stop;
+        
+        /* Render a BufferList */
+        public Render render_list;
+        
         /*< private >*/
-        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-3)];
+        public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-5)];
     }
-    /* synchronizing against the clock */
-    void gst_base_sink_set_sync(BaseSink sink, boolean sync);
-    boolean gst_base_sink_get_sync(BaseSink sink);
-
-    /* dropping late buffers */
-    void gst_base_sink_set_max_lateness (BaseSink sink, long max_lateness);
-    long gst_base_sink_get_max_lateness(BaseSink sink);
-
-    /* performing QoS */
-    void gst_base_sink_set_qos_enabled(BaseSink sink, boolean enabled);
-    boolean gst_base_sink_is_qos_enabled(BaseSink sink);
-    /* doing async state changes */
-    void gst_base_sink_set_async_enabled(BaseSink sink, boolean enabled);
-    boolean gst_base_sink_is_async_enabled(BaseSink sink);
 }
