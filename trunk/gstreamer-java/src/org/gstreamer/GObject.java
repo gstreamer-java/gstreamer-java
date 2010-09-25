@@ -246,6 +246,16 @@ public abstract class GObject extends RefCountedObject {
         }
     }
 
+    public GType getType(String property) {
+        logger.entering("GObject", "getType", new Object[] { property });
+        GObjectAPI.GParamSpec propertySpec = findProperty(property);
+        if (propertySpec == null) {
+            throw new IllegalArgumentException("Unknown property: " + property);
+        }
+        final GType propType = propertySpec.value_type;
+        return propType;
+    }
+    
     /**
      * Gets the pointer to the the value of the specified property.
      *

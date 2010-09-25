@@ -52,6 +52,10 @@ public final class SeekFlags {
      * Seek to the nearest keyframe. This might be faster but less accurate.
      */
     public final static int KEY_UNIT = 1 << 2;
+    
     /** Perform a segment seek. */
     public final static int SEGMENT = 1 << 3;
+    
+    /** when doing fast forward or fast reverse playback, allow elements to skip frames instead of generating all frames. Since 0.10.22. */
+    public final static int SKIP = 1 << 4;
 }

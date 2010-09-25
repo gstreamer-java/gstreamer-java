@@ -18,6 +18,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.NativeLong;
 
@@ -33,6 +36,7 @@ public class GType extends NativeLong {
             cache[i] = new GType(i << 2);
         }        
     };
+    
     public static final GType INVALID = init(0);
     public static final GType NONE = init(1);
     public static final GType INTERFACE = init(2);
@@ -55,6 +59,33 @@ public class GType extends NativeLong {
     public static final GType PARAM = init(19);
     public static final GType OBJECT = init(20);
 
+    public static final Map<Long, String> typeNames;
+    
+    static {
+    	typeNames = new HashMap<Long, String> ();
+    	typeNames.put(INVALID.longValue(), "INVALID");
+    	typeNames.put(NONE.longValue(), "NONE");
+    	typeNames.put(INTERFACE.longValue(), "INTERFACE");
+    	typeNames.put(CHAR.longValue(), "CHAR");
+    	typeNames.put(UCHAR.longValue(), "UCHAR");
+    	typeNames.put(BOOLEAN.longValue(), "BOOLEAN");
+    	typeNames.put(INT.longValue(), "INT");
+    	typeNames.put(UINT.longValue(), "UINT");
+    	typeNames.put(LONG.longValue(), "LONG");
+    	typeNames.put(ULONG.longValue(), "ULONG");
+    	typeNames.put(INT64.longValue(), "INT64");
+    	typeNames.put(UINT64.longValue(), "UINT64");
+    	typeNames.put(ENUM.longValue(), "ENUM");
+    	typeNames.put(FLAGS.longValue(), "FLAGS");
+    	typeNames.put(FLOAT.longValue(), "FLOAT");
+    	typeNames.put(DOUBLE.longValue(), "DOUBLE");
+    	typeNames.put(STRING.longValue(), "STRING");
+    	typeNames.put(POINTER.longValue(), "POINTER");
+    	typeNames.put(BOXED.longValue(), "BOXED");
+    	typeNames.put(PARAM.longValue(), "PARAM");
+    	typeNames.put(OBJECT.longValue(), "OBJECT");
+    }
+    
     private static GType init(int v) {
         return valueOf(v << 2);
     }
@@ -89,4 +120,7 @@ public class GType extends NativeLong {
     public Object fromNative(Object nativeValue, FromNativeContext context) {
         return valueOf(((Number) nativeValue).longValue());
     }    
+    public String toString() {
+    	return typeNames.containsKey(this) ? ("[" + typeNames.get(this) + ":" + longValue() + "]") : (longValue() + "");
+    }
 }
