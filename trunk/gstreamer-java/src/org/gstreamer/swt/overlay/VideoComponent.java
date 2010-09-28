@@ -130,6 +130,15 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	public Element getElement() {
 		return videosink;
 	}
+	
+	/**
+	 * Get the native handle of this video component
+	 * 
+	 * @return long the native window handle
+	 */
+	public long handle() {
+		return SWTOverlay.handle(this);
+	}
 
 	/**
 	 * Implements the BusSyncHandler interface
