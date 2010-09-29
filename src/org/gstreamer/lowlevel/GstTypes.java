@@ -20,6 +20,12 @@
 
 package org.gstreamer.lowlevel;
 
+import static org.gstreamer.lowlevel.BaseAPI.BASE_API;
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
+import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,6 +34,7 @@ import java.util.logging.Logger;
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
+import org.gstreamer.Caps;
 import org.gstreamer.Clock;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
@@ -41,22 +48,16 @@ import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
 import org.gstreamer.Query;
 import org.gstreamer.Registry;
-import org.gstreamer.glib.GDate;
-import org.gstreamer.elements.TypeFind;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.elements.TypeFind;
+import org.gstreamer.glib.GDate;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.interfaces.MixerTrack;
 import org.gstreamer.interfaces.TunerChannel;
 import org.gstreamer.interfaces.TunerNorm;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
-import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
-import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
-import static org.gstreamer.lowlevel.BaseAPI.BASE_API;
 
 /**
  *
@@ -171,6 +172,7 @@ public class GstTypes {
 				// GstObject types
 				put(GST_API.gst_element_get_type(), Element.class);
 				put(GST_API.gst_clock_get_type(), Clock.class);
+				put(GST_API.gst_caps_get_type(), Caps.class);
 				put(GST_API.gst_date_get_type(), GDate.class);
 				put(GST_API.gst_pipeline_get_type(), Pipeline.class);
 				put(GST_API.gst_bus_get_type(), Bus.class);
