@@ -123,11 +123,6 @@ public class ElementFactory extends PluginFeature {
     /**
      * Gets the list of {@link StaticPadTemplate} for this factory.
      *
-     * This function sometimes throw Exception and i don't know why:-(
-     * That's the reason why i made it @Deprecated
-     * The question here is whether the {@link gst_static_caps_get } should have
-     * to annotated with @CallerOwnsReturn?
-     * 
      * @return The list of {@link StaticPadTemplate}
      */
     @Deprecated 

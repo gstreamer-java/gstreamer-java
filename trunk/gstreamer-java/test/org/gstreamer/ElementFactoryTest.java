@@ -166,8 +166,7 @@ public class ElementFactoryTest {
         Element elem = ElementFactory.make("typefind", "foo");
         assertTrue("typefind element not instance of TypeFind", elem instanceof TypeFind);
     }
-    // For some unknown reason this test used to failed on 64 bit (throw Exception or crash the vm)
-    //@Test
+    @Test
     public void getStaticPadTemplates() {
         ElementFactory f = ElementFactory.find("fakesink");
         List<StaticPadTemplate> templates = f.getStaticPadTemplates();
