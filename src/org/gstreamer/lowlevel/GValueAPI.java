@@ -36,6 +36,17 @@ import com.sun.jna.Pointer;
  */
 @SuppressWarnings("serial")
 public interface GValueAPI extends Library {
+
+    public interface NoMapperAPI extends Library {
+
+        Pointer g_value_get_object(GValue value);
+
+        Pointer g_value_dup_object(GValue value);
+    }
+
+    NoMapperAPI GVALUE_NOMAPPER_API = GNative.loadLibrary("gobject-2.0", NoMapperAPI.class,
+                    new HashMap<String, Object>() {});
+
     GValueAPI GVALUE_API = GNative.loadLibrary("gobject-2.0", GValueAPI.class,
     		new HashMap<String, Object>() {{
     			put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
@@ -64,6 +75,10 @@ public interface GValueAPI extends Library {
         {
             useMemory(ptr);
             read();
+        }
+        
+        public boolean checkHolds(GType type) {
+        	return GVALUE_API.g_type_check_value_holds(this, type);
         }
         
         public Object getValue() {
@@ -96,27 +111,15 @@ public interface GValueAPI extends Library {
             clear();
         }
         public GValueArray(Pointer pointer) {
-            // pointer points to a structure with three integer fields: n_values (an integer),
-            // values (an array of GValues, therefore also a pointer, i.e.: an integer
-            // memory address) and n_prealloced (an integer). Then this structure
-            // occupies 12 bytes (4 for n_values, 4 for the array pointer and 4 for
-            // n_prealloced.
+            n_values = pointer.getInt(0);
 
-            // Viewing the data pointed by the pointer as an array of three integers.
-            int[] intArray = pointer.getIntArray(0, 3);
-            n_values = intArray[0];     // the first element of the array is n_values.
-            n_prealloced = intArray[2]; // the third element of the array n_prealloced.
-
-            // By constructing a new pointer taking the original and offsetting it by
-            // 4 bytes, we get the pointer to the GValues array.
-            Pointer pointerToArray = pointer.getPointer(4);
-
-            // This is how to construct an array of structures from a given pointer.
-            // First, a single instance of GValue is created from the pointer data.
-            GValue val = new GValue(pointerToArray);
-            // The structure is converted into an array with the appropriate number
-            // of elements.
-            values = (GValue[])val.toArray(n_values);
+            if (n_values > 0) {
+                Pointer pointerToArray = pointer.getPointer(GType.INT.SIZE);
+                GValue val = new GValue(pointerToArray);
+                values = (GValue[]) val.toArray(n_values);
+            } else {
+                values = new GValue[0];
+            }
         }
         @SuppressWarnings("unused")
         private static GValueArray valueOf(Pointer ptr) {
@@ -126,9 +129,9 @@ public interface GValueAPI extends Library {
         public int getNValues() {
             return n_values;
         }
-        
+
         public Object getValue(int i) {
-        	return values[i].getValue();
+            return values[i].getValue();
         }
     }
     
@@ -171,6 +174,9 @@ public interface GValueAPI extends Library {
     GObject g_value_get_object(GValue value);
     @CallerOwnsReturn GObject g_value_dup_object(GValue value);
    
+    Pointer g_value_get_boxed(GValue value);
+    Pointer g_value_dup_boxed(GValue value);
+
     GValue g_value_array_get_nth(GValueArray value_array, int index);
     Pointer g_value_array_new(int n_prealloced);
     void g_value_array_free (GValueArray value_array);
@@ -180,6 +186,9 @@ public interface GValueAPI extends Library {
     Pointer g_value_array_append(GValueArray value_array, GValue value);
     Pointer g_value_array_insert(GValueArray value_array, int index_, GValue value);
     Pointer g_value_array_remove(GValueArray value_array, int index);
+    
+    boolean g_type_check_value_holds(GValue value, GType type);
+
 /*
  * GCompareDataFunc needs to be implemented.
 Pointer g_value_array_sort(GValueArray value_array, GCompareFunc compare_func);
