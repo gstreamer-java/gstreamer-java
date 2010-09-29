@@ -21,6 +21,10 @@
 
 package org.gstreamer;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.gstreamer.lowlevel.GSignalAPI.GSIGNAL_API;
+import static org.gstreamer.lowlevel.GValueAPI.GVALUE_API;
+
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.HashMap;
@@ -43,10 +47,7 @@ import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
-import static org.gstreamer.lowlevel.GSignalAPI.GSIGNAL_API;
-import static org.gstreamer.lowlevel.GValueAPI.GVALUE_API;
+import org.gstreamer.lowlevel.GstTypes;
 
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
@@ -240,10 +241,17 @@ public abstract class GObject extends RefCountedObject {
             return GVALUE_API.g_value_get_int(transform(propValue, GType.INT));
         } else if (GVALUE_API.g_value_type_transformable(propType, GType.INT64)) {
             return GVALUE_API.g_value_get_int64(transform(propValue, GType.INT64));
+        } else if (propValue.checkHolds(GType.BOXED)) {
+                Class<? extends NativeObject> cls = GstTypes.classFor(propType);
+
+                if (cls != null) {
+                    // TODO: investigate refcount issu
+                    Pointer dupPtr = GVALUE_API.g_value_dup_boxed(propValue);
+                    return NativeObject.objectFor(dupPtr, cls, true);
+                }
         }
-        else {
-            throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
-        }
+        
+        throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
     }
 
     public GType getType(String property) {
@@ -363,9 +371,10 @@ public abstract class GObject extends RefCountedObject {
         }
         throw new IllegalArgumentException("Expected double value, not " + value.getClass());
     }
-    
+
+    @Override
     protected void disposeNativeHandle(Pointer ptr) {
-        logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" +  ptr + ")");
+        logger.log(LIFECYCLE, "Removing toggle ref " + getClass().getSimpleName() + " (" + ptr + ")");
         GOBJECT_API.g_object_remove_toggle_ref(ptr, toggle, objectID);
     }
     @Override
@@ -377,6 +386,7 @@ public abstract class GObject extends RefCountedObject {
     protected void unref() {
         GOBJECT_API.g_object_unref(this);
     }
+    @Override
     protected void invalidate() {
         try {
             // Need to increase the ref count before removing the toggle ref, so 
@@ -432,7 +442,8 @@ public abstract class GObject extends RefCountedObject {
                 throw new IllegalArgumentException(String.format("Failed to connect signal '%s'", signal));
             }
         }
-        synchronized protected void disconnect() {
+        @Override
+	synchronized protected void disconnect() {
             GOBJECT_API.g_signal_handler_disconnect(GObject.this, id);
         }
     }
