@@ -19,9 +19,9 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.NativeObject;
+
 import com.sun.jna.Pointer;
-//import org.gstreamer.lowlevel.GObjectAPI;
-//import org.gstreamer.lowlevel.GType;
 
 /**
  * Object containing specific meta information such as width/height/framerate of
@@ -36,8 +36,16 @@ import com.sun.jna.Pointer;
  * "codec" (string) (format this stream was encoded in)
  */
 public class StreamInfo extends GObject {
-    //private static final GObjectAPI gst = GObjectAPI.INSTANCE;
 
+	public enum StreamType {
+		  UNKNOWN,
+		  AUDIO,    /* an audio stream */
+		  VIDEO,    /* a video stream */
+		  TEXT,    /* a subtitle/text stream */
+		  SUBPICTURE, /* a subtitle in picture-form */
+		  ELEMENT    /* stream handled by an element */
+	}
+		
     /**
      * For internal gstreamer-java use only
      *
@@ -45,42 +53,49 @@ public class StreamInfo extends GObject {
      */
     public StreamInfo(Initializer init) {
         super(init);
-        throw new IllegalArgumentException("Cannot instantiate this class");
     }
 
     public StreamInfo(Pointer ptr, boolean needRef, boolean ownsHandle) {
         super(initializer(ptr, needRef, ownsHandle));
     }
-
-    public Object getObject() {
-        return get("object");
+    
+    public StreamType getStreamType() {
+    	
+    	int typeVal = (Integer) get("type");
+    	
+    	assert typeVal < StreamType.values().length: "unknown value for GstStreamType enum - maybe gststreaminfo.h has changed";
+    	
+    	if (typeVal < StreamType.values().length) {
+    		return StreamType.values()[typeVal];
+    	}
+    	
+    	return StreamType.UNKNOWN;
     }
-
-    // TODO: finish the StreamInfo API.
-    /*
-    public GType getType() {
-        return get("type");
+    
+    /** Source Pad or object of the stream */
+    public GstObject getObject() {
+        Object object = get("object");
+        assert object == null || object instanceof GstObject;
+        return object instanceof GstObject ? (GstObject) object : null;
     }
 
     public String getDecoder() {
-        return get("decoder");
+    	return (String) get("decoder");
     }
-
+    
     public boolean getMute() {
-        return get("mute");
+        return (Boolean) get("mute");
     }
 
     public Caps getCaps() {
-        return get("caps");
+        return (Caps) get("caps");
     }
 
     public String getLanguageCode() {
-        return get("language-code");
+        return (String) get("language-code");
     }
 
     public String getCodec() {
-        return get("codec");
+    	return (String) get("codec");
     }
-     */
-
 }
