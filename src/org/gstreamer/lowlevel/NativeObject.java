@@ -108,6 +108,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
     }
     
+    @Override
     protected void invalidate() {
         logger.log(LIFECYCLE, "Invalidating object " + this + " = " + handle());
         getInstanceMap().remove(handle(), nativeRef);
@@ -126,6 +127,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
             super.finalize();
         }
     }
+    @Override
     protected Object nativeValue() {
         return handle();
     }
