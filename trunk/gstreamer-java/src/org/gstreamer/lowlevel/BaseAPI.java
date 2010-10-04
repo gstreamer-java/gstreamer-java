@@ -22,9 +22,13 @@ package org.gstreamer.lowlevel;
 import org.gstreamer.ActivateMode;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.ClockReturn;
+import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.Event;
 import org.gstreamer.FlowReturn;
+import org.gstreamer.Format;
+import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
@@ -32,6 +36,7 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
 import org.gstreamer.lowlevel.GstElementAPI.GstElementClass;
 import org.gstreamer.lowlevel.GstElementAPI.GstElementStruct;
+import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
@@ -243,6 +248,23 @@ public interface BaseAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 6)];
     }
 
+    FlowReturn gst_base_src_wait_playing(BaseSrc src);
+
+    void gst_base_src_set_live(BaseSrc src, boolean live);
+    boolean gst_base_src_is_live(BaseSrc src);
+
+    void gst_base_src_set_format(BaseSrc src, Format format);
+
+    boolean gst_base_src_query_latency(BaseSrc src, boolean[] live, ClockTime[] min_latency, ClockTime[] max_latency);
+
+    void gst_base_src_set_blocksize(BaseSrc src, long blocksize);
+    long gst_base_src_get_blocksize(BaseSrc src);
+
+    void gst_base_src_set_do_timestamp(BaseSrc src, boolean timestamp);
+    boolean gst_base_src_get_do_timestamp(BaseSrc src);
+
+    boolean gst_base_src_new_seamless_segment(BaseSrc src, long start, long stop, long position);
+
     // ---------------------- BaseSink -----------------------------
     
     public final static class GstBaseSinkStruct extends com.sun.jna.Structure {
@@ -371,4 +393,46 @@ public interface BaseAPI extends Library {
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-5)];
     }
+    FlowReturn gst_base_sink_do_preroll(BaseSink sink, MiniObject obj);
+    FlowReturn gst_base_sink_wait_preroll(BaseSink sink);
+    
+    /* synchronizing against the clock */
+    void gst_base_sink_set_sync(BaseSink sink, boolean sync);
+    boolean gst_base_sink_get_sync(BaseSink sink);
+
+    /* dropping late buffers */
+    void gst_base_sink_set_max_lateness (BaseSink sink, long max_lateness);
+    long gst_base_sink_get_max_lateness(BaseSink sink);
+    
+    /* performing QoS */
+    void gst_base_sink_set_qos_enabled(BaseSink sink, boolean enabled);
+    boolean gst_base_sink_is_qos_enabled(BaseSink sink);
+    
+    /* doing async state changes */
+    void gst_base_sink_set_async_enabled(BaseSink sink, boolean enabled);
+    boolean gst_base_sink_is_async_enabled(BaseSink sink);
+    
+    /* tuning synchronisation */
+    void gst_base_sink_set_ts_offset(BaseSink sink, long offset);
+    long gst_base_sink_get_ts_offset(BaseSink sink);
+
+    /* last buffer */
+    @CallerOwnsReturn Buffer gst_base_sink_get_last_buffer(BaseSink sink);
+    void gst_base_sink_set_last_buffer_enabled(BaseSink sink, boolean enable);
+    boolean gst_base_sink_is_last_buffer_enabled(BaseSink sink);
+
+    /* latency */
+    boolean gst_base_sink_query_latency(BaseSink sink, boolean live, boolean upstream_live, ClockTime min_latency, ClockTime max_latency);
+    ClockTime gst_base_sink_get_latency(BaseSink sink);
+        
+    /* render delay */
+    void gst_base_sink_set_render_delay(BaseSink sink, ClockTime delay);
+    ClockTime gst_base_sink_get_render_delay(BaseSink sink);
+    
+    /* blocksize */
+    void gst_base_sink_set_blocksize(BaseSink sink, int blocksize);
+    int gst_base_sink_get_blocksize(BaseSink sink);
+    
+    ClockReturn gst_base_sink_wait_clock(BaseSink sink, ClockTime time, /* GstClockTimeDiff */ Pointer jitter);
+    FlowReturn gst_base_sink_wait_eos(BaseSink sink, ClockTime time, /* GstClockTimeDiff */ Pointer jitter);
 }
