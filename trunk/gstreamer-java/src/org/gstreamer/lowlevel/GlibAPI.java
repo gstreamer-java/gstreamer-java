@@ -134,4 +134,22 @@ public interface GlibAPI extends Library {
             return valueOf(_prev);
         }
     }
+    public final static class GSList extends com.sun.jna.Structure {
+        public volatile Pointer data;
+        public volatile Pointer _next;
+        public GSList() {
+            clear();
+        }
+        public GSList(Pointer ptr) {
+            useMemory(ptr);
+            read();
+        }
+        public static GSList valueOf(Pointer ptr) {
+            return ptr != null ? new GSList(ptr) : null;
+        }
+
+        public GSList next() {
+            return valueOf(_next);
+        }
+    }
 }

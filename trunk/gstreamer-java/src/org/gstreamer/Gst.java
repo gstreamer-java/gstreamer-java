@@ -58,6 +58,50 @@ public final class Gst {
     private static List<Runnable> shutdownTasks = Collections.synchronizedList(new ArrayList<Runnable>());
     private static final GstAPI gst = GstNative.load(GstAPI.class);    
     
+    public static class NativeArgs {
+        public IntByReference argcRef;
+        public PointerByReference argvRef;
+        Memory[] argsCopy;
+        Memory argvMemory;
+        public NativeArgs(String progname, String[] args) {
+            //
+            // Allocate some native memory to pass the args down to the native layer
+            //
+            argsCopy = new Memory[args.length + 2];
+            argvMemory = new Memory(argsCopy.length * Pointer.SIZE);
+            
+            //
+            // Insert the program name as argv[0]
+            //
+            Memory arg = new Memory(progname.length() + 4);
+            arg.setString(0, progname, false);
+            argsCopy[0] = arg;
+            
+            for (int i = 0; i < args.length; i++) {
+                arg = new Memory(args[i].length() + 1);
+                arg.setString(0, args[i], false);
+                argsCopy[i + 1] = arg;
+            }
+            argvMemory.write(0, argsCopy, 0, argsCopy.length);
+            argvRef = new PointerByReference(argvMemory);
+            argcRef = new IntByReference(args.length + 1);
+        }
+        String[] toStringArray() {
+            //
+            // Unpack the native arguments back into a String array
+            //
+            List<String> args = new ArrayList<String>();
+            Pointer argv = argvRef.getValue();
+            for (int i = 1; i < argcRef.getValue(); i++) {
+                Pointer arg = argv.getPointer(i * Pointer.SIZE);
+                if (arg != null) {
+                    args.add(arg.getString(0, false));
+                }
+            }
+            return args.toArray(new String[args.size()]);
+        }   
+    }
+
     /** Creates a new instance of Gst */
     private Gst() {
     }
@@ -337,49 +381,4 @@ public final class Gst {
             return t;
         }
     };
-}
-
-class NativeArgs {
-    IntByReference argcRef;
-    PointerByReference argvRef;
-    Memory[] argsCopy;
-    Memory argvMemory;
-    public NativeArgs(String progname, String[] args) {
-        //
-        // Allocate some native memory to pass the args down to the native layer
-        //
-        argsCopy = new Memory[args.length + 2];
-        argvMemory = new Memory(argsCopy.length * Pointer.SIZE);
-        
-        //
-        // Insert the program name as argv[0]
-        //
-        Memory arg = new Memory(progname.length() + 4);
-        arg.setString(0, progname, false);
-        argsCopy[0] = arg;
-        
-        for (int i = 0; i < args.length; i++) {
-            arg = new Memory(args[i].length() + 1);
-            arg.setString(0, args[i], false);
-            argsCopy[i + 1] = arg;
-        }
-        argvMemory.write(0, argsCopy, 0, argsCopy.length);
-        argvRef = new PointerByReference(argvMemory);
-        argcRef = new IntByReference(args.length + 1);
-    }
-    String[] toStringArray() {
-        //
-        // Unpack the native arguments back into a String array
-        //
-        List<String> args = new ArrayList<String>();
-        Pointer argv = argvRef.getValue();
-        for (int i = 1; i < argcRef.getValue(); i++) {
-            Pointer arg = argv.getPointer(i * Pointer.SIZE);
-            if (arg != null) {
-                args.add(arg.getString(0, false));
-            }
-        }
-        return args.toArray(new String[args.size()]);
-    }
-    
 }
