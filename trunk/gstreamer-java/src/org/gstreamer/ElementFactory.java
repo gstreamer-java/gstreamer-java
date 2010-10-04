@@ -125,7 +125,6 @@ public class ElementFactory extends PluginFeature {
      *
      * @return The list of {@link StaticPadTemplate}
      */
-    @Deprecated 
     public List<StaticPadTemplate> getStaticPadTemplates() {
         logger.entering("ElementFactory", "getStaticPadTemplates");
         GList glist = gst.gst_element_factory_get_static_pad_templates(this);
