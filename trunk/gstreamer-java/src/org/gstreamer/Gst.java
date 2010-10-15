@@ -141,6 +141,15 @@ public final class Gst {
     }
 
     /**
+     * Test whether the GStreamer library already initialized.
+     * 
+     * @return true if the GStreamer library already initialized.
+     */
+    public static synchronized final boolean isInitialized() {
+    	return initCount.get() > 0;
+    }
+    
+    /**
      * Gets the common {@code Executor} used to execute background tasks.
      * 
      * @return an executor that can be used for background tasks.
