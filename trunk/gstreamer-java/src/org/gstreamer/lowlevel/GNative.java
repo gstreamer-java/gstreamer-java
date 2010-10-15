@@ -38,7 +38,7 @@ public final class GNative {
     private GNative() {
     }
 
-    public static <T extends Library> T loadLibrary(String name, Class<T> interfaceClass, Map<String, ?> options) {
+    public static synchronized <T extends Library> T loadLibrary(String name, Class<T> interfaceClass, Map<String, ?> options) {
         if (Platform.isWindows()) {
             return loadWin32Library(name, interfaceClass, options);
         }
@@ -98,7 +98,7 @@ public final class GNative {
         }
         throw new UnsatisfiedLinkError("Could not load library " + name);
     }
-    public static NativeLibrary getNativeLibrary(String name) {
+    public static synchronized NativeLibrary getNativeLibrary(String name) {
         if (Platform.isWindows()) {
             return getWin32NativeLibrary(name);
         }
