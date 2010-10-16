@@ -513,6 +513,7 @@ public class VideoComponent extends javax.swing.JComponent {
                     imgWidth = width;
                     imgHeight = height;
                 }
+
                 if (renderComponent.isVisible()) {
                     renderComponent.paintImmediately(0, 0, 
                         renderComponent.getWidth(), renderComponent.getHeight());
@@ -533,8 +534,7 @@ public class VideoComponent extends javax.swing.JComponent {
         return currentImage;
     }
     private class RGBListener implements RGBDataSink.Listener {
-        public void rgbFrame(int width, int height, IntBuffer rgb) {
-            //
+        public void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb) {
             // If the EDT is still copying data from the buffer, just drop this frame
             //
             if (!bufferLock.tryLock()) {
@@ -544,7 +544,7 @@ public class VideoComponent extends javax.swing.JComponent {
             //
             // If there is already a swing update pending, also drop this frame.
             //
-            if (updatePending) {
+            if (updatePending && !isPrerollFrame) {
                 bufferLock.unlock();
                 return;
             }

@@ -250,6 +250,11 @@ public class Structure extends NativeObject {
     public void setDouble(String field, Double value) {
         gst.gst_structure_set(this, field, GType.DOUBLE, value);
     }
+
+    public void setPointer(String field, Pointer value) {
+        gst.gst_structure_set(this, field, GType.POINTER, value);
+    }
+
     public void setIntegerRange(String field, Integer min, Integer max) {
         gst.gst_structure_set(this, field, 
                 gst.gst_int_range_get_type(), min, max);

@@ -32,6 +32,7 @@ public interface GstBinAPI extends com.sun.jna.Library {
     GstBinAPI GSTBIN_API = GstNative.load(GstBinAPI.class);
 
     @CallerOwnsReturn Pointer ptr_gst_bin_new(String name);
+    @CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
     @CallerOwnsReturn Bin gst_bin_new(String name);
     GType gst_bin_get_type();
     

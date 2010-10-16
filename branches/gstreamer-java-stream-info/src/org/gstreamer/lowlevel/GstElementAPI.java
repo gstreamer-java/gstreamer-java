@@ -91,7 +91,8 @@ public interface GstElementAPI extends com.sun.jna.Library {
     boolean gst_element_set_clock(Element element, Clock clock);
     void gst_element_set_base_time(Element element, ClockTime time);
     ClockTime gst_element_get_base_time(Element element);
-
+    void gst_element_set_start_time(Element element, ClockTime time);
+    ClockTime gst_element_get_start_time(Element element);
     
     public final static class GstElementDetails extends com.sun.jna.Structure {
          /*< public > */

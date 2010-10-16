@@ -39,6 +39,7 @@ import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstPadTemplateAPI.GstStaticPadTemplate;
+import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
 import org.gstreamer.elements.AppSink;
@@ -206,6 +207,6 @@ public class ElementFactory extends PluginFeature {
         Class<? extends Element> cls = typeMap.get(factoryName);
         cls = (cls == null) ? (Class<Element>)GstTypes.classFor(ptr) : cls;
         cls = (cls == null || !Element.class.isAssignableFrom(cls)) ? Element.class : cls;
-        return GstObject.objectFor(ptr, cls);
+        return NativeObject.objectFor(ptr, cls);
     }
 }

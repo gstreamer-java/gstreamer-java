@@ -644,5 +644,44 @@ public class Element extends GstObject {
     public ClockTime getBaseTime() {
         return gst.gst_element_get_base_time(this);
     }
+
+    /**
+     * Set the base time of an element.
+     * 
+     * @param time the base time to set
+     * @see #getBaseTime()
+     */
+    public void setBaseTime(ClockTime time) {
+    	gst.gst_element_set_base_time(this, time);
+    }
+    
+    /**
+     * Returns the start time of this element. 
+     * 
+     * The start time is the running time of the clock when this element was last put to {@link State#PAUSED}. Usually the start_time is managed by a toplevel element such as {@link Pipeline}. 
+     * 
+     * MT safe.
+     * 
+     * @return the start time of this element.
+     */
+    public ClockTime getStartTime() {
+    	return gst.gst_element_get_start_time(this);
+    }
+    
+    /**
+     * Set the start time of an element. The start time of the element is the running time of the element when it last went to the {@link State#PAUSED} state. In {@link State#READY} or after a flushing seek, it is set to 0.
+     * 
+     * Toplevel elements like GstPipeline will manage the start_time and base_time on its children. Setting the start_time to {@link ClockTime#NONE} on such a toplevel element will disable the distribution 
+     * of the base_time to the children and can be useful if the application manages the base_time itself, for example if you want to synchronize capture from multiple pipelines, and you can also ensure 
+     * that the pipelines have the same clock.
+     * 
+     * MT safe.
+     * 
+     * @param time the start time to set
+     * @see #getStartTime()
+     */
+    public void setStartTime(ClockTime time) {
+    	gst.gst_element_set_start_time(this, time);
+    }
 }
 

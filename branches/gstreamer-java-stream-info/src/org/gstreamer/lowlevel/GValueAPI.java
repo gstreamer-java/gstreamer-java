@@ -81,23 +81,90 @@ public interface GValueAPI extends Library {
         	return GVALUE_API.g_type_check_value_holds(this, type);
         }
         
+        public GType getType() {
+        	return g_type;
+        }
+        
         public Object getValue() {
-        	if (g_type.equals(GType.INT)) { return new Integer(GVALUE_API.g_value_get_int(this));
-        	} else if (g_type.equals(GType.UINT)) { return new Integer(GVALUE_API.g_value_get_uint(this));
-        	} else if (g_type.equals(GType.CHAR)) { return new Byte(GVALUE_API.g_value_get_char(this));
-        	} else if (g_type.equals(GType.UCHAR)) { return new Byte(GVALUE_API.g_value_get_uchar(this));
-        	} else if (g_type.equals(GType.LONG)) { return new Long(GVALUE_API.g_value_get_long(this).longValue());
-        	} else if (g_type.equals(GType.ULONG)) { return new Long(GVALUE_API.g_value_get_ulong(this).longValue());
-        	} else if (g_type.equals(GType.INT64)) { return new Long(GVALUE_API.g_value_get_int64(this));
-        	} else if (g_type.equals(GType.UINT64)) { return new Long(GVALUE_API.g_value_get_uint64(this));
-        	} else if (g_type.equals(GType.BOOLEAN)) { return new Boolean(GVALUE_API.g_value_get_boolean(this));
-        	} else if (g_type.equals(GType.FLOAT)) { return new Float(GVALUE_API.g_value_get_float(this));
-        	} else if (g_type.equals(GType.DOUBLE)) { return new Double(GVALUE_API.g_value_get_double(this));
-        	} else if (g_type.equals(GType.STRING)) { return GVALUE_API.g_value_get_string(this);
-        	} else if (g_type.equals(GType.OBJECT)) { return GVALUE_API.g_value_get_object(this);
-        	}
-        	return null;
-        }    
+            if (g_type.equals(GType.INT)) { return toInt();
+            } else if (g_type.equals(GType.UINT)) { return toUInt();
+            } else if (g_type.equals(GType.CHAR)) { return toChar();
+            } else if (g_type.equals(GType.UCHAR)) { return toUChar();
+            } else if (g_type.equals(GType.LONG)) { return toLong();
+            } else if (g_type.equals(GType.ULONG)) { return toULong();
+            } else if (g_type.equals(GType.INT64)) { return toInt64();
+            } else if (g_type.equals(GType.UINT64)) { return toUInt64();
+            } else if (g_type.equals(GType.BOOLEAN)) { return toBoolean();
+            } else if (g_type.equals(GType.FLOAT)) { return toFloat();
+            } else if (g_type.equals(GType.DOUBLE)) { return toDouble();
+            } else if (g_type.equals(GType.STRING)) { return toJavaString();
+            } else if (g_type.equals(GType.OBJECT)) { return toObject();
+            } else if (g_type.equals(GType.POINTER)) { return toPointer();
+            } else {
+            	// object type not supported!
+            }
+            return null;
+        }
+        
+        public Integer toInt() {
+        	return g_type.equals(GType.INT) ? new Integer(GVALUE_API.g_value_get_int(this)) : null; 
+        }
+        
+        public Integer toUInt() {
+        	return g_type.equals(GType.UINT) ? new Integer(GVALUE_API.g_value_get_uint(this)) : null; 
+        }
+        
+        public Byte toChar() {
+        	return g_type.equals(GType.CHAR) ? new Byte(GVALUE_API.g_value_get_char(this)) : null; 
+        }
+        
+        public Byte toUChar() {
+        	return g_type.equals(GType.UCHAR) ? new Byte(GVALUE_API.g_value_get_uchar(this)) : null;
+        }
+        
+        public Long toLong() {
+        	return g_type.equals(GType.LONG) ? new Long(GVALUE_API.g_value_get_long(this).longValue()) : null;
+        }
+        
+        public Long toULong() {
+        	return g_type.equals(GType.ULONG) ? new Long(GVALUE_API.g_value_get_ulong(this).longValue()) : null; 
+        }
+        
+        public Long toInt64() {
+        	return g_type.equals(GType.INT64)? new Long(GVALUE_API.g_value_get_int64(this)) : null; 
+        }
+        
+        public Long toUInt64() {
+        	return g_type.equals(GType.UINT64) ? new Long(GVALUE_API.g_value_get_uint64(this)) : null;
+        }
+        
+        public Boolean toBoolean() {
+        	return g_type.equals(GType.BOOLEAN) ? new Boolean(GVALUE_API.g_value_get_boolean(this)) : null;
+        }
+        
+        public Float toFloat() {
+        	return g_type.equals(GType.FLOAT) ? new Float(GVALUE_API.g_value_get_float(this)) : null;
+        }
+        
+        public Double toDouble() {
+        	return g_type.equals(GType.DOUBLE) ? new Double(GVALUE_API.g_value_get_double(this)) : null;
+        }
+        
+        public String toJavaString() {
+        	return g_type.equals(GType.STRING) ? GVALUE_API.g_value_get_string(this) : null;
+        }
+        
+        public Object toObject() {
+        	return g_type.equals(GType.OBJECT) ? GVALUE_API.g_value_get_object(this) : null;
+        }
+        
+        public Pointer toPointer() {
+        	return g_type.equals(GType.POINTER) ? GVALUE_API.g_value_get_pointer(this) : null;
+        }
+        
+        public String toString() {
+        	return GVALUE_API.g_strdup_value_contents(this);
+        }
     }
 
     static class GValueArray extends com.sun.jna.Structure {
@@ -165,9 +232,12 @@ public interface GValueAPI extends Library {
     void g_value_set_string(GValue value, String v_string);
     void g_value_set_static_string (GValue value, String v_string);
     String g_value_get_string(GValue value);
+    Pointer g_value_get_pointer(GValue value);
     boolean g_value_type_compatible(GType src_type, GType dest_type);
     boolean g_value_type_transformable(GType src_type, GType dest_type);
     boolean g_value_transform(GValue src_value, GValue dest_value);
+    
+    @CallerOwnsReturn String g_strdup_value_contents(GValue value);
     
     void g_value_set_object(GValue value, GObject v_object);
     void g_value_take_object(GValue value, @Invalidate GObject v_object);

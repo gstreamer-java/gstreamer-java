@@ -53,9 +53,9 @@ import org.gstreamer.lowlevel.GstNative;
  * interrupted with the gst_clock_id_unschedule() call. If the blocking wait is
  * unscheduled a return value of GST_CLOCK_UNSCHEDULED is returned.
  * <p>
- * Periodic callbacks scheduled async will be repeadedly called automatically
+ * Periodic callbacks scheduled async will be repeatedly called automatically
  * until it is unscheduled. To schedule a sync periodic callback,
- * gst_clock_id_wait() should be called repeadedly.
+ * gst_clock_id_wait() should be called repeatedly.
  * <p>
  * The async callbacks can happen from any thread, either provided by the core
  * or from a streaming thread. The application should be prepared for this.
@@ -75,7 +75,7 @@ import org.gstreamer.lowlevel.GstNative;
  * <p>
  * When a clock has the GST_CLOCK_FLAG_CAN_SET_MASTER flag set, it can be
  * slaved to another #GstClock with the gst_clock_set_master(). The clock will
- * then automatically be synchronized to this master clock by repeadedly
+ * then automatically be synchronized to this master clock by repeatedly
  * sampling the master clock and the slave clock and recalibrating the slave
  * clock with {@link #setCalibration}. This feature is mostly useful for
  * plugins that have an internal clock but must operate with another clock
