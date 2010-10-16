@@ -18,6 +18,7 @@
 
 package org.gstreamer.elements;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
@@ -27,9 +28,13 @@ import org.gstreamer.Bin;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
+import org.gstreamer.Fraction;
 import org.gstreamer.GhostPad;
+import org.gstreamer.GObject;
+import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.StreamInfo;
+import org.gstreamer.Video;
 import org.gstreamer.lowlevel.GValueAPI;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 
@@ -386,34 +391,66 @@ public class PlayBin extends Pipeline {
      * since before that the list might not be complete yet or not contain all
      * available information (like language-codes).
      */
- 
     public List<StreamInfo> getStreamInfo() {
-        Pointer ptr = getPointer("stream-info-value-array");
-        if (ptr != null) {
-        	GValueArray garray = new GValueArray(ptr);
-            List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
-            
-            for (GValueAPI.GValue value: garray.values) {
-		StreamInfo streamInfo;
+      Pointer ptr = getPointer("stream-info-value-array");
+      if (ptr != null) {
+        GValueArray garray = new GValueArray(ptr);
+        List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
 
-		{ /*
-		   * this is a work-around gst_stream_info_get_type() symbols
-		   * not available in one of the top-level shared objects (libgstreamer or libgstbase).
-		   * As a result, StreamInfo.class can not be registered in GstTypes
-		   * even though if is an instance of GObject. value.getValue() will
-		   * fail to resolve to an instance of StreamInfo. Here we bypass
-		   * JNA type mapping that would occur had we called GValueAPI.g_value_dup_object()
-		   */ 
-		    // TODO: investigate what happens refcount of this StreamInfo
-		    Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_dup_object(value);
-		    streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
-		}
+        for (GValueAPI.GValue value : garray.values) {
+          StreamInfo streamInfo;
 
-                list.add(streamInfo);
-            }
-            return list;
-        } 
-	
-	return null;
+          { /*
+           * this is a work-around gst_stream_info_get_type() symbols not
+           * available in one of the top-level shared objects (libgstreamer or
+           * libgstbase). As a result, StreamInfo.class can not be registered in
+           * GstTypes even though if is an instance of GObject. value.getValue()
+           * will fail to resolve to an instance of StreamInfo. Here we bypass
+           * JNA type mapping that would occur had we called
+           * GValueAPI.g_value_dup_object()
+           */
+            // TODO: investigate what happens refcount of this StreamInfo
+            Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_dup_object(value);
+            streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
+          }
+
+          list.add(streamInfo);
+        }
+        return list;
+      }
+
+      return null;
+    }
+    
+    /**
+     * Retrieves the framerate from the caps of the video sink's pad.
+     * @return frame rate (frames per second), or 0 if the framerate is not available
+     */
+    public double getVideoSinkFrameRate() {
+        for (Element sink : getSinks()) {
+	    	for (Pad pad : sink.getPads()) {
+	    		Fraction frameRate = Video.getVideoFrameRate(pad);
+	    		if (frameRate != null) {
+	    			return frameRate.toDouble();
+	    		}
+	    	}
+        }
+    	return 0;
+    }
+    
+    /**
+     * Retrieves the width and height of the video frames configured in the caps of the video sink's pad.
+     * @return dimensions of the video frames, or null if the video frame size is not available
+     */
+    public Dimension getVideoSize() {
+        for (Element sink : getSinks()) {
+	    	for (Pad pad : sink.getPads()) {
+	    		Dimension size = Video.getVideoSize(pad);
+	    		if (size != null) {
+	    			return size;
+	    		}
+	    	}
+        }
+    	return null;
     }
 }
