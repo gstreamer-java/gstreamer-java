@@ -31,10 +31,10 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.StreamInfo;
 import org.gstreamer.lowlevel.GValueAPI;
+import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.NativeObject;
 
 /**
  * Playbin provides a stand-alone everything-in-one abstraction for an audio 
@@ -402,10 +402,9 @@ public class PlayBin extends Pipeline {
 		   * As a result, StreamInfo.class can not be registered in GstTypes
 		   * even though if is an instance of GObject. value.getValue() will
 		   * fail to resolve to an instance of StreamInfo. Here we bypass
-		   * JNA type mapping that would occur had we called GValueAPI.g_value_dup_object()
+		   * JNA type mapping that would occur had we called GValueAPI.g_value_get_object()
 		   */ 
-		    // TODO: investigate what happens refcount of this StreamInfo
-		    Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_dup_object(value);
+		    Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
 		    streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
 		}
 

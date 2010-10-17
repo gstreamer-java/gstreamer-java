@@ -175,7 +175,6 @@ public interface GValueAPI extends Library {
     @CallerOwnsReturn GObject g_value_dup_object(GValue value);
    
     Pointer g_value_get_boxed(GValue value);
-    Pointer g_value_dup_boxed(GValue value);
 
     GValue g_value_array_get_nth(GValueArray value_array, int index);
     Pointer g_value_array_new(int n_prealloced);
