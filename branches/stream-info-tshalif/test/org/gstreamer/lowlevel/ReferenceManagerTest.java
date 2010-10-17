@@ -66,11 +66,7 @@ public class ReferenceManagerTest {
         }
         return ref.get() == null;
     }
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+
     @Test public void testReference() throws Exception {
         Object ref = new Object();
         Caps target = new Caps("video/x-raw-rgb");

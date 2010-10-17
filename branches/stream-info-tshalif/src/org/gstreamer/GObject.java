@@ -38,6 +38,7 @@ import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.GSignalAPI;
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
@@ -47,7 +48,6 @@ import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-import org.gstreamer.lowlevel.GstTypes;
 
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
@@ -245,9 +245,8 @@ public abstract class GObject extends RefCountedObject {
                 Class<? extends NativeObject> cls = GstTypes.classFor(propType);
 
                 if (cls != null) {
-                    // TODO: investigate refcount issu
-                    Pointer dupPtr = GVALUE_API.g_value_dup_boxed(propValue);
-                    return NativeObject.objectFor(dupPtr, cls, true);
+                    Pointer ptr = GVALUE_API.g_value_get_boxed(propValue);
+                    return NativeObject.objectFor(ptr, cls, -1, true);
                 }
         }
         
