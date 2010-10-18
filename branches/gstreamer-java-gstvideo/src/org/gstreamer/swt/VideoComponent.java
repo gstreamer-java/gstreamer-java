@@ -236,11 +236,11 @@ public class VideoComponent extends Canvas {
 
 	private class RGBListener implements RGBDataSink.Listener {
 
-		public void rgbFrame(int width, int height, IntBuffer rgb) {
+		public void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb) {
 			if (!bufferLock.tryLock()) {
 				return;
 			}
-			if (updatePending) {
+			if (updatePending && !isPrerollFrame) {
 				bufferLock.unlock();
 				return;
 			}
