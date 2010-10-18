@@ -19,11 +19,15 @@
 
 package org.gstreamer.elements;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Fraction;
+import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.Video;
 
 /*
  * <p>
@@ -240,4 +244,41 @@ public class PlayBin2 extends Pipeline {
     public double getVolume() {
         return ((Number) get("volume")).doubleValue();
     }
+    
+    /**
+     * Retrieves the framerate from the caps of the video sink's pad.
+     * 
+     * @return frame rate (frames per second), or 0 if the framerate is not
+     *         available
+     */
+    public double getVideoSinkFrameRate() {
+      for (Element sink : getSinks()) {
+        for (Pad pad : sink.getPads()) {
+          Fraction frameRate = Video.getVideoFrameRate(pad);
+          if (frameRate != null) {
+            return frameRate.toDouble();
+          }
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * Retrieves the width and height of the video frames configured in the caps
+     * of the video sink's pad.
+     * 
+     * @return dimensions of the video frames, or null if the video frame size is
+     *         not available
+     */
+    public Dimension getVideoSize() {
+      for (Element sink : getSinks()) {
+        for (Pad pad : sink.getPads()) {
+          Dimension size = Video.getVideoSize(pad);
+          if (size != null) {
+            return size;
+          }
+        }
+      }
+      return null;
+    }    
 }
