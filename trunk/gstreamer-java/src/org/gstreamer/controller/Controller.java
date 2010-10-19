@@ -32,22 +32,25 @@ import com.sun.jna.Pointer;
  * The controller subsystem offers a lightweight way to adjust gobject properties over stream-time.
  * It works by using time-stamped value pairs that are queued for element-properties.
  * At run-time the elements continously pull values changes for the current stream-time.
- * 
+ * <p>
  * What needs to be changed in a GstElement? Very little - it is just two steps to make a plugin controllable!
- * 1. mark gobject-properties paramspecs that make sense to be controlled, by GST_PARAM_CONTROLLABLE.
- * 2. when processing data (get, chain, loop function) at the beginning call gst_object_sync_values(element,timestamp). 
+ * <ul>
+ * <li> mark gobject-properties paramspecs that make sense to be controlled, by GST_PARAM_CONTROLLABLE.
+ * <li> when processing data (get, chain, loop function) at the beginning call gst_object_sync_values(element,timestamp).
+ * </ul> 
  * This will made the controller to update all gobject properties that are under control with the current values 
  * based on timestamp.
- * 
+ * <p>
  * What needs to be done in applications? Again its not a lot to change.
- * 1. first put some properties under control, by calling controller = gst_object_control_properties (object, "prop1", "prop2",...);
- * 2. Get a GstControlSource for the property and set it up. 
+ * <li> first put some properties under control, by calling controller = gst_object_control_properties (object, "prop1", "prop2",...);
+ * <li> Get a GstControlSource for the property and set it up. 
  * csource = gst_interpolation_control_source_new(); 
  * gst_interpolation_control_source_set_interpolation_mode(csource, mode); 
  * gst_interpolation_control_source_set (csource,0 * GST_SECOND, value1); 
  * gst_interpolation_control_source_set (csource,1 * GST_SECOND, value2);
- * 3. Set the GstControlSource in the controller. gst_controller_set_control_source (controller, "prop1", csource);
- * 4. start your pipeline
+ * <li> Set the GstControlSource in the controller. gst_controller_set_control_source (controller, "prop1", csource);
+ * <li> start your pipeline
+ * <ul>
  */
 public class Controller extends GObject {
 	static Logger logger = Logger.getLogger(Controller.class.getName());

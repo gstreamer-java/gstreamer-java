@@ -50,8 +50,11 @@ import javax.swing.Timer;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import org.gstreamer.Caps;
 import org.gstreamer.Element;
+import org.gstreamer.Fraction;
 import org.gstreamer.Pad;
+import org.gstreamer.Structure;
 import org.gstreamer.elements.RGBDataSink;
 import org.gstreamer.event.NavigationEvent;
 
@@ -556,8 +559,20 @@ public class VideoComponent extends javax.swing.JComponent {
             } finally {
                 bufferLock.unlock();
             }
+            
+            int scaledWidth = currentImage.getWidth();
+            if (keepAspect) {
+                // Scale width according to pixel aspect ratio.
+                Caps videoCaps = videoPad.getNegotiatedCaps();
+                Structure capsStruct = videoCaps.getStructure(0);
+                if (capsStruct.hasField("pixel-aspect-ratio")) {
+                    Fraction pixelAspectRatio = capsStruct.getFraction("pixel-aspect-ratio");
+                    scaledWidth = scaledWidth * pixelAspectRatio.getNumerator() / pixelAspectRatio.getDenominator();
+                }
+            }
+
             // Tell swing to use the new buffer
-            update(currentImage.getWidth(), currentImage.getHeight());
+            update(scaledWidth, currentImage.getHeight());
         } 
     }
 }
