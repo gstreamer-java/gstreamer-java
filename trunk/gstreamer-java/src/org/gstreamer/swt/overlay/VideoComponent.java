@@ -32,7 +32,12 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Message;
 import org.gstreamer.Structure;
 import org.gstreamer.event.BusSyncHandler;
+
+//import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
+//import com.sun.jna.platform.unix.X11;
+//import com.sun.jna.platform.unix.X11.Window;
+//import com.sun.jna.platform.unix.X11.XEvent;
 
 /**
  * VideoComponent which use OS's overlay video component 
@@ -86,6 +91,40 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 				addListener(SWT.Resize, exposer);
 				getShell().addListener(SWT.Activate, exposer);
 				addDisposeListener(this);
+
+//				final X11 x11 = X11.INSTANCE;
+//				final com.sun.jna.platform.unix.X11.Display display = x11.XOpenDisplay(null);
+//				final XEvent event = new XEvent();
+//				Window window = new Window(windowId.longValue());
+//				x11.XSelectInput(display, window, new NativeLong(X11.ExposureMask | X11.VisibilityChangeMask | X11.StructureNotifyMask | X11.FocusChangeMask));
+//				while (running) {
+//					x11.XNextEvent(display, event);
+//					System.out.println("Event T: " + event.type);
+//					if (videoComponent != null && !videoComponent.isDisposed())
+//						videoComponent.getDisplay().asyncExec(new Runnable() {
+//							public void run() {
+//								if (videoComponent != null && !videoComponent.isDisposed()) {
+//									System.out.println(" expose");
+//									videoComponent.expose();
+//								}
+//							}
+//						});
+//				}
+//				x11.XDestroyWindow(display, window);
+//				x11.XCloseDisplay(display);			
+				
+//				final NativeLong nativeLongID = component.handle();
+//				final X11EventWatcher thread = new X11EventWatcher(component, nativeLongID);
+//				thread.start();
+//				component.addDisposeListener(new DisposeListener() {
+//					public void widgetDisposed(DisposeEvent arg0) {
+//						thread.setRunning(false);
+//					}
+//				});
+				
+				
+				
+				
 			} else {
 				removeListener(SWT.Resize, exposer);
 				getShell().removeListener(SWT.Activate, exposer);
