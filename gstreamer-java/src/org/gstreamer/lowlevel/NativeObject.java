@@ -154,6 +154,9 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         }
         return ref != null ? ref.get() : null;
     }
+    public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls) {
+    	return objectFor(ptr, cls, true);
+    }
     public static <T extends NativeObject> T objectFor(Pointer ptr, Class<T> cls, boolean needRef) {
         return objectFor(ptr, cls, needRef, true);
     }
