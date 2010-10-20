@@ -39,6 +39,8 @@ import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.TagList;
+import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.elements.FakeSrc;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -57,7 +59,7 @@ public class FakeSrcTest {
         final int width = 320, height = 200;
         /* setup pipeline */
         pipeline = new Pipeline("pipeline");
-        final Element fakesrc = ElementFactory.make("fakesrc", "source");
+        final FakeSrc fakesrc = (FakeSrc) ElementFactory.make("fakesrc", "source");
         //fakesrc = ElementFactory.make("videotestsrc", "source");
         final Element srcfilter = ElementFactory.make("capsfilter", "srcfilter");
        
@@ -84,11 +86,11 @@ public class FakeSrcTest {
                 fakesrc.set("sync", true);
                 fakesrc.set("is-live", true);
                 fakesrc.set("filltype", 1); // Don't fill the buffer before handoff
-                fakesrc.connect(new Element.HANDOFF() {
+                fakesrc.connect(new BaseSrc.HANDOFF() {
                     byte color = 0;
                     byte[] data = new byte[width * height * 2];
-                    public void handoff(Element element, Buffer buffer, Pad pad) {
-                        System.out.println("HANDOFF: Element=" + element.getNativeAddress()
+                    public void handoff(BaseSrc src, Buffer buffer, Pad pad) {
+                        System.out.println("HANDOFF: Element=" + src.getNativeAddress()
                                 + " buffer=" + buffer.getNativeAddress()
                                 + " pad=" + pad.getNativeAddress());
                         Arrays.fill(data, color++);
