@@ -39,7 +39,7 @@ public class RGBDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
     private final Listener listener;
-    private final FakeSink videosink;
+    private final BaseSink videosink;
     
     public static interface Listener {
         void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb);
@@ -57,8 +57,8 @@ public class RGBDataSink extends Bin {
         videosink.set("signal-handoffs", true);
         videosink.set("sync", true);
         videosink.set("preroll-queue-len", 1);
-        videosink.connect((Element.HANDOFF) new VideoHandoffListener());
-        videosink.connect((FakeSink.PREROLL_HANDOFF) new VideoHandoffListener());
+        videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
+        videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
         
         //
         // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
@@ -79,12 +79,22 @@ public class RGBDataSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        videosink = (FakeSink) pipeline.getElementByName("VideoSink");
-        videosink.set("signal-handoffs", true);
-        videosink.set("sync", true);
-        videosink.set("preroll-queue-len", 1);
-        videosink.connect((Element.HANDOFF) new VideoHandoffListener());
-        videosink.connect((FakeSink.PREROLL_HANDOFF) new VideoHandoffListener());
+        Element element = pipeline.getElementByName("VideoSink");
+        if (element != null) {
+            
+            // This should be (FakeSink) element, but the cast fails,
+            // maybe there it a problem with getElementByName? 
+            videosink = (BaseSink) element;
+            
+            videosink.set("signal-handoffs", true);
+            videosink.set("sync", true);
+            videosink.set("preroll-queue-len", 1);
+            videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
+            videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
+        } else {
+          videosink = null;
+          throw new RuntimeException("Element with name VideoSink not found in the pipeline");
+        }
     }
 
     /**
@@ -107,12 +117,12 @@ public class RGBDataSink extends Bin {
         return videosink;
     }
 
-    class VideoHandoffListener implements Element.HANDOFF, FakeSink.PREROLL_HANDOFF {
-        public void handoff(Element element, Buffer buffer, Pad pad) {
+    class VideoHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
         	doHandoff(buffer, pad, false);
         }
         
-        public void prerollHandoff(FakeSink fakesink, Buffer buffer, Pad pad, Pointer user_data) {
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
         	doHandoff(buffer, pad, true);
     	}        
         

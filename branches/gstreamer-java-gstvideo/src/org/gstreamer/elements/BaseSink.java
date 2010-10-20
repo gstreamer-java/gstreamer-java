@@ -26,7 +26,9 @@ import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.MiniObject;
+import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.BaseAPI;
+import org.gstreamer.lowlevel.GstAPI;
 
 import com.sun.jna.Pointer;
 
@@ -106,4 +108,85 @@ public class BaseSink extends Element {
     public FlowReturn waitEOS(ClockTime time, /* GstClockTimeDiff */ Pointer jitter) {
     	return gst().gst_base_sink_wait_eos(this, time, jitter);
     }
+    
+    /**
+     * Signal emitted when this {@link BaseSink} has a {@link Buffer} ready.
+     * 
+     * @see #connect(HANDOFF)
+     * @see #disconnect(HANDOFF)
+     */
+    public static interface HANDOFF {
+        /**
+         * Called when an {@link BaseSink} has a {@link Buffer} ready.
+         * 
+         * @param sink the sink which has a buffer ready.
+         * @param buffer the buffer for the data.
+         * @param pad the pad on the element.
+         */
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad);
+    }
+    
+    /**
+     * Add a listener for the <code>handoff</code> signal on this sink
+     * 
+     * @param listener The listener to be called when a {@link Buffer} is ready.
+     */
+    public void connect(final HANDOFF listener) {
+        connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
+                listener.handoff(sink, buffer, pad);
+            }            
+        });
+    }
+    
+    /**
+     * Remove a listener for the <code>handoff</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(HANDOFF listener) {
+        disconnect(HANDOFF.class, listener);
+    }   
+    
+    /**
+     * Signal emitted when this {@link BaseSink} has a {@link Buffer} ready.
+     *
+     * @see #connect(PREROLL_HANDOFF)
+     * @see #disconnect(PREROLL_HANDOFF)
+     */
+    public static interface PREROLL_HANDOFF {
+        /**
+         * Called when a {@link BaseSink} has a {@link Buffer} ready.
+         *
+         * @param sink the sink instance.
+         * @param buffer the buffer that just has been received.
+         * @param pad the pad that received it.
+         * @param user_data user data set when the signal handler was connected.
+         */
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
+    }
+
+    /**
+     * Add a listener for the <code>preroll-handoff</code> signal.
+     *
+     * @param listener The listener to be called when a {@link Buffer} is ready.
+     */
+    public void connect(final PREROLL_HANDOFF listener) {
+        connect("preroll-handoff", PREROLL_HANDOFF.class, listener, new GstAPI.GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
+                listener.prerollHandoff(sink, buffer, pad, user_data);
+            }
+        });
+    }
+
+    /**
+     * Remove a listener for the <code>preroll-handoff</code> signal.
+     *
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(PREROLL_HANDOFF listener) {
+        disconnect(PREROLL_HANDOFF.class, listener);
+    }    
 }
