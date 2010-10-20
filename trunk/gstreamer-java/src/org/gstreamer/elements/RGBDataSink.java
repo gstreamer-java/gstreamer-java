@@ -20,6 +20,7 @@ package org.gstreamer.elements;
 
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.concurrent.TimeUnit;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
@@ -33,6 +34,8 @@ import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
+import com.sun.jna.Pointer;
+
 public class RGBDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
@@ -40,7 +43,7 @@ public class RGBDataSink extends Bin {
     private final BaseSink videosink;
     
     public static interface Listener {
-        void rgbFrame(int width, int height, IntBuffer rgb);
+        void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb);
     }
     
     /**
@@ -51,10 +54,12 @@ public class RGBDataSink extends Bin {
     public RGBDataSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-        videosink = (BaseSink) ElementFactory.make("fakesink", "VideoSink");
+        videosink = (FakeSink) ElementFactory.make("fakesink", "VideoSink");
         videosink.set("signal-handoffs", true);
         videosink.set("sync", true);
-        videosink.connect(new VideoHandoffListener());
+        videosink.set("preroll-queue-len", 1);
+        videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
+        videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
         
         //
         // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
@@ -81,10 +86,22 @@ public class RGBDataSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        videosink = (BaseSink) pipeline.getElementByName("VideoSink");
-        videosink.set("signal-handoffs", true);
-        videosink.set("sync", true);
-        videosink.connect(new VideoHandoffListener());
+        Element element = pipeline.getElementByName("VideoSink");
+        if (element != null) {
+            
+            // This should be (FakeSink) element, but the cast fails,
+            // maybe there it a problem with getElementByName? 
+            videosink = (BaseSink) element;
+            
+            videosink.set("signal-handoffs", true);
+            videosink.set("sync", true);
+            videosink.set("preroll-queue-len", 1);
+            videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
+            videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
+        } else {
+          videosink = null;
+          throw new RuntimeException("Element with name VideoSink not found in the pipeline");
+        }
     }
 
     /**
@@ -107,8 +124,17 @@ public class RGBDataSink extends Bin {
         return videosink;
     }
 
-    class VideoHandoffListener implements Element.HANDOFF {
-        public void handoff(Element element, Buffer buffer, Pad pad) {
+    class VideoHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+        	doHandoff(buffer, pad, false);
+        }
+        
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
+        	doHandoff(buffer, pad, true);
+    	}        
+        
+        private void doHandoff(Buffer buffer, Pad pad, boolean isPrerollFrame) {
+        	
             Caps caps = buffer.getCaps();
             Structure struct = caps.getStructure(0);
             
@@ -124,7 +150,8 @@ public class RGBDataSink extends Bin {
                 rgb = IntBuffer.allocate(width * height);
                 rgb.put(buffer.getByteBuffer().asIntBuffer()).flip();
             }
-            listener.rgbFrame(width, height, rgb);
+            
+            listener.rgbFrame(isPrerollFrame, width, height, rgb);
             
             //
             // Dispose of the gstreamer buffer immediately to avoid more being 

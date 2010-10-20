@@ -18,9 +18,6 @@
 
 package org.gstreamer.lowlevel;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.sun.jna.FromNativeContext;
 import com.sun.jna.NativeLong;
 
@@ -37,70 +34,58 @@ public class GType extends NativeLong {
         }        
     };
     
-    public static final GType INVALID = init(0);
-    public static final GType NONE = init(1);
-    public static final GType INTERFACE = init(2);
-    public static final GType CHAR = init(3);
-    public static final GType UCHAR = init(4);
-    public static final GType BOOLEAN = init(5);
-    public static final GType INT = init(6);
-    public static final GType UINT = init(7);
-    public static final GType LONG = init(8);
-    public static final GType ULONG = init(9);
-    public static final GType INT64 = init(10);
-    public static final GType UINT64 = init(11);
-    public static final GType ENUM = init(12);
-    public static final GType FLAGS = init(13);
-    public static final GType FLOAT = init(14);
-    public static final GType DOUBLE = init(15);
-    public static final GType STRING = init(16);
-    public static final GType POINTER = init(17);
-    public static final GType BOXED = init(18);
-    public static final GType PARAM = init(19);
-    public static final GType OBJECT = init(20);
+    public static final GType INVALID = init(0, "INVALID");
+    public static final GType NONE = init(1, "NONE");
+    public static final GType INTERFACE = init(2, "INTERFACE");
+    public static final GType CHAR = init(3, "CHAR");
+    public static final GType UCHAR = init(4, "UCHAR");
+    public static final GType BOOLEAN = init(5, "BOOLEAN");
+    public static final GType INT = init(6, "INT");
+    public static final GType UINT = init(7, "UINT");
+    public static final GType LONG = init(8, "LONG");
+    public static final GType ULONG = init(9, "ULONG");
+    public static final GType INT64 = init(10, "INT64");
+    public static final GType UINT64 = init(11, "UINT64");
+    public static final GType ENUM = init(12, "ENUM");
+    public static final GType FLAGS = init(13, "FLAGS");
+    public static final GType FLOAT = init(14, "FLOAT");
+    public static final GType DOUBLE = init(15, "DOUBLE");
+    public static final GType STRING = init(16, "STRING");
+    public static final GType POINTER = init(17, "POINTER");
+    public static final GType BOXED = init(18, "BOXED");
+    public static final GType PARAM = init(19, "PARAM");
+    public static final GType OBJECT = init(20, "OBJECT");
 
-    public static final Map<Long, String> typeNames;
-    
-    static {
-    	typeNames = new HashMap<Long, String> ();
-    	typeNames.put(INVALID.longValue(), "INVALID");
-    	typeNames.put(NONE.longValue(), "NONE");
-    	typeNames.put(INTERFACE.longValue(), "INTERFACE");
-    	typeNames.put(CHAR.longValue(), "CHAR");
-    	typeNames.put(UCHAR.longValue(), "UCHAR");
-    	typeNames.put(BOOLEAN.longValue(), "BOOLEAN");
-    	typeNames.put(INT.longValue(), "INT");
-    	typeNames.put(UINT.longValue(), "UINT");
-    	typeNames.put(LONG.longValue(), "LONG");
-    	typeNames.put(ULONG.longValue(), "ULONG");
-    	typeNames.put(INT64.longValue(), "INT64");
-    	typeNames.put(UINT64.longValue(), "UINT64");
-    	typeNames.put(ENUM.longValue(), "ENUM");
-    	typeNames.put(FLAGS.longValue(), "FLAGS");
-    	typeNames.put(FLOAT.longValue(), "FLOAT");
-    	typeNames.put(DOUBLE.longValue(), "DOUBLE");
-    	typeNames.put(STRING.longValue(), "STRING");
-    	typeNames.put(POINTER.longValue(), "POINTER");
-    	typeNames.put(BOXED.longValue(), "BOXED");
-    	typeNames.put(PARAM.longValue(), "PARAM");
-    	typeNames.put(OBJECT.longValue(), "OBJECT");
+    private final String description;
+
+    private static GType init(int v, String description) {
+        return valueOf(v << 2, description);
     }
     
-    private static GType init(int v) {
-        return valueOf(v << 2);
+    public GType(long t, String description) {
+    	super(t);
+    	this.description = description;
     }
+    
     public GType(long t) {
-        super(t);
+        this(t, "?");
     }
+    
     public GType() {
-        super(0);
+        this(0L);
     }
+    
     public static GType valueOf(long value) {
+    	return valueOf(value, "?");
+    }
+    
+    public static GType valueOf(long value, String description) {
         if (value >= 0 && (value >> 2) < cache.length) {
             return cache[(int)value >> 2];
         }
-        return new GType(value);
+        return new GType(value, description);
     }
+    
     public static GType valueOf(Class<?> javaType) {
         if (Integer.class == javaType || int.class == javaType) {
             return INT;
@@ -116,11 +101,13 @@ public class GType extends NativeLong {
             throw new IllegalArgumentException("No GType for " + javaType);
         }
     }
+    
     @Override
     public Object fromNative(Object nativeValue, FromNativeContext context) {
-        return valueOf(((Number) nativeValue).longValue());
+        return valueOf(((Number) nativeValue).longValue(), "");
     }    
+    
     public String toString() {
-    	return typeNames.containsKey(this) ? ("[" + typeNames.get(this) + ":" + longValue() + "]") : (longValue() + "");
+    	return ("[" + description + ":" + longValue() + "]");
     }
 }

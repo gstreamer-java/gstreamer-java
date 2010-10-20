@@ -1,6 +1,4 @@
-/*
- * Copyright (c) 2008 Wayne Meissner
- *
+/* 
  * This file is part of gstreamer-java.
  *
  * This code is free software: you can redistribute it and/or modify it under
@@ -16,17 +14,16 @@
  * version 3 along with this work.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.gstreamer.elements;
+package org.gstreamer.lowlevel;
 
-/**
- *
- */
-public class FakeSink extends BaseSink {
-    public FakeSink(String name) {
-        this(makeRawElement("fakesink", name));
-    }
+import org.gstreamer.Pad;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 
-    public FakeSink(Initializer init) {
-        super(init);
-    } 
+import com.sun.jna.Library;
+
+public interface GstVideoAPI extends Library {
+	public final static GstVideoAPI GSTVIDEO_API = GstNative.load("gstvideo", GstVideoAPI.class);
+
+    GValue gst_video_frame_rate(Pad pad);
+    boolean gst_video_get_size(Pad pad, int [] width, int [] height);
 }

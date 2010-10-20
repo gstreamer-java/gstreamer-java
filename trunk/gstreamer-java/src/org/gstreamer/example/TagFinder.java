@@ -34,6 +34,8 @@ import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.State;
 import org.gstreamer.TagList;
+import org.gstreamer.elements.BaseSink;
+import org.gstreamer.elements.FakeSink;
 import org.gstreamer.elements.PlayBin;
 
 /**
@@ -60,8 +62,8 @@ public class TagFinder {
         // 
         final PlayBin pipe = new PlayBin(progname);
         pipe.setInputFile(new File(args[0]));
-        Element audio = ElementFactory.make("fakesink", "audio-sink");
-        Element video = ElementFactory.make("fakesink", "video-sink");
+        FakeSink audio = (FakeSink) ElementFactory.make("fakesink", "audio-sink");
+        FakeSink video = (FakeSink) ElementFactory.make("fakesink", "video-sink");
         pipe.setAudioSink(audio);
         pipe.setVideoSink(video);
         
@@ -90,9 +92,9 @@ public class TagFinder {
         //
         // As soon as data starts to flow, it means all tags have been found
         //
-        Element.HANDOFF handoff = new Element.HANDOFF() {
+        BaseSink.HANDOFF handoff = new BaseSink.HANDOFF() {
 
-            public void handoff(Element element, Buffer buffer, Pad pad) {
+            public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
                 pipe.setState(State.NULL);
                 done.countDown();
             }
