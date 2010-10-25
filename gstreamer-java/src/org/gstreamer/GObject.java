@@ -639,11 +639,6 @@ public abstract class GObject extends RefCountedObject {
         return GObject.objectFor(ptr, defaultClass, true);
     }
     
-    public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {
-        logger.entering("GObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
-        return NativeObject.objectFor(ptr, defaultClass, needRef);        
-    }
-
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
         Pointer ptr = GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName);
         if (ptr == null)

@@ -131,15 +131,6 @@ public class GstObject extends GObject {
     	return gst.gst_object_get_parent(this);
     }
     
-    public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
-        return GstObject.objectFor(ptr, defaultClass, true);
-    }
-   
-    public static <T extends GstObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {
-        logger.entering("GstObject", "objectFor", new Object[] { ptr, defaultClass, needRef });
-        return GObject.objectFor(ptr, defaultClass, needRef);
-    }
-    
     /**
      * Adds an {@link EventListenerProxy} on this object.
      * This is used by subclasses that wish to map between java style event listeners 

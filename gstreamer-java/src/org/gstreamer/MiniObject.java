@@ -87,8 +87,4 @@ public class MiniObject extends RefCountedObject {
     protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_mini_object_unref(ptr);
     }
-    
-    public static <T extends MiniObject> T objectFor(Pointer ptr, Class<T> defaultClass, boolean needRef) {        
-        return NativeObject.objectFor(ptr, defaultClass, needRef);        
-    }
 }
