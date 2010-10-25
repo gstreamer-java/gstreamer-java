@@ -30,12 +30,12 @@
 	<property name="dist" location="dist"/>	
 	
 	<target name="init">
-		<echo>Properties initialized.
-		src path			${src}
-		bin path 			${bin}
-		libraryClasspath	${libraryClasspath}
-		java version		${javaVersion}
-		</echo>
+	<echo>Properties initialized.
+	src path		${src}
+	bin path 		${bin}
+	libraryClasspath	${libraryClasspath}
+	java version		${javaVersion}
+	</echo>
 		<echo>building library ...</echo>
 		
 		<!-- Create the time stamp -->
@@ -47,6 +47,7 @@
   
 	<!-- compile the library -->
 	<target name="compile" depends="init" description="compile the source" >  	
+		<mkdir dir="${bin}" />
 		<javac srcdir="${src}" destdir="${bin}" source="${javaVersion}">
 			<classpath>
 				<path refid="library-classpath"/>
