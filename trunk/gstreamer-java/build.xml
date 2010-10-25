@@ -74,8 +74,10 @@
 
 <!--
 <target name="-post-jar">
-    <javac srcdir="${src.dir}" destdir="${build.dir}" classpath="${javac.classpath}"/>
-    <jar includes="${excludes}" destfile="${dist.dir}/gstreamer-java-swt.jar" basedir="${build.dir}"/>
+    <javac includes="${excludes.swt}" excludes="${excludes.apple}" srcdir="${src.dir}" destdir="${build.dir}" classpath="${javac.classpath}"/>
+    <jar includes="${excludes.swt}" excludes="${excludes.apple}" destfile="${dist.dir}/gstreamer-java-swt.jar" basedir="${build.dir}"/>
+    <javac includes="${excludes.apple}" excludes="${excludes.swt}" srcdir="${src.dir}" destdir="${build.dir}" classpath="${javac.classpath}"/>
+    <jar includes="${excludes.apple}" excludes="${excludes.swt}" destfile="${dist.dir}/gstreamer-java-apple.jar" basedir="${build.dir}"/>
 </target>
 -->
 
