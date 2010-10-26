@@ -20,7 +20,6 @@
 package org.gstreamer;
 
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
 import org.gstreamer.lowlevel.GstMiniObjectAPI;
 

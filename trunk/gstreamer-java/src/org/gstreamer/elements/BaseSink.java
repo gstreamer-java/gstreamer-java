@@ -27,13 +27,13 @@ import org.gstreamer.Element;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.MiniObject;
 import org.gstreamer.Pad;
-import org.gstreamer.lowlevel.BaseAPI;
+import org.gstreamer.lowlevel.BaseSinkAPI;
 import org.gstreamer.lowlevel.GstAPI;
 
 import com.sun.jna.Pointer;
 
 public class BaseSink extends Element {
-	private static final BaseAPI gst() { return BaseAPI.BASE_API; }
+	private static final BaseSinkAPI gst() { return BaseSinkAPI.BASESINK_API; }
 	
     public BaseSink(Initializer init) {
         super(init);
@@ -123,7 +123,7 @@ public class BaseSink extends Element {
          * @param buffer the buffer for the data.
          * @param pad the pad on the element.
          */
-        public void handoff(BaseSink sink, Buffer buffer, Pad pad);
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
     }
     
     /**
@@ -135,7 +135,7 @@ public class BaseSink extends Element {
         connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
             public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
-                listener.handoff(sink, buffer, pad);
+                listener.handoff(sink, buffer, pad, user_data);
             }            
         });
     }

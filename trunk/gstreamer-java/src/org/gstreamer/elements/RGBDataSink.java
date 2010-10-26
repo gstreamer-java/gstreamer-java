@@ -20,7 +20,6 @@ package org.gstreamer.elements;
 
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
-import java.util.concurrent.TimeUnit;
 
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
@@ -125,7 +124,7 @@ public class RGBDataSink extends Bin {
     }
 
     class VideoHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
-        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
         	doHandoff(buffer, pad, false);
         }
         

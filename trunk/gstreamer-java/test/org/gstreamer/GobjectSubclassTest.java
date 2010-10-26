@@ -19,7 +19,7 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.BaseAPI;
+import org.gstreamer.lowlevel.BaseSrcAPI;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadTemplateAPI;
@@ -96,13 +96,13 @@ public class GobjectSubclassTest {
         info.clear();
         info.class_init = classInit;
         info.instance_init = instanceInit;
-        info.class_size = (short)new BaseAPI.GstBaseSrcClass().size();
-        info.instance_size = (short)new BaseAPI.GstBaseSrcStruct().size();
+        info.class_size = (short)new BaseSrcAPI.GstBaseSrcClass().size();
+        info.instance_size = (short)new BaseSrcAPI.GstBaseSrcStruct().size();
         info.class_size = 1024;
         info.base_init = baseInit;
         info.instance_size = 1024;        
         
-        GType type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_src_get_type(), 
+        GType type = GOBJECT_API.g_type_register_static(BaseSrcAPI.BASESRC_API.gst_base_src_get_type(), 
                 name, info, 0);
         System.out.println("New type=" + type);
         assertEquals("Name incorrect", name, GOBJECT_API.g_type_name(type));

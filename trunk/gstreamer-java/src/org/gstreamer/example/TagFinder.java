@@ -27,7 +27,6 @@ import java.util.concurrent.CountDownLatch;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Bus;
-import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
@@ -37,6 +36,8 @@ import org.gstreamer.TagList;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.FakeSink;
 import org.gstreamer.elements.PlayBin;
+
+import com.sun.jna.Pointer;
 
 /**
  * A simple pipeline, demonstrating media tag detection
@@ -93,8 +94,7 @@ public class TagFinder {
         // As soon as data starts to flow, it means all tags have been found
         //
         BaseSink.HANDOFF handoff = new BaseSink.HANDOFF() {
-
-            public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+            public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
                 pipe.setState(State.NULL);
                 done.countDown();
             }

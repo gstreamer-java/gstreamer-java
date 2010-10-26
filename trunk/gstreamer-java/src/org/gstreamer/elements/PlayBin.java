@@ -30,7 +30,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.Fraction;
 import org.gstreamer.GhostPad;
-import org.gstreamer.GObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.StreamInfo;
