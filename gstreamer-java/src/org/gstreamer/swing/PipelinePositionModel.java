@@ -122,7 +122,7 @@ public class PipelinePositionModel extends DefaultBoundedRangeModel {
         if (!updating && !isSeeking.get()) {
             long pos = TimeUnit.SECONDS.toNanos(getValue());
             if (pos != seekingPos) {
-                segmentSeek(pos);
+                seekTo(pos);
             }
         }
     }
@@ -138,6 +138,19 @@ public class PipelinePositionModel extends DefaultBoundedRangeModel {
                 int flags = SeekFlags.FLUSH | SeekFlags.SEGMENT;
                 pipeline.seek(1.0, Format.TIME, flags,
                         SeekType.SET, position, SeekType.SET, stop);
+            }
+        });
+    }
+    
+    private void seekTo(final long position) {
+        isSeeking.set(true);
+        seekingPos = position;
+        Gst.getExecutor().execute(new Runnable() {
+
+            public void run() {
+            	int flags = SeekFlags.FLUSH | SeekFlags.ACCURATE;
+                pipeline.seek(1.0, Format.TIME, flags, SeekType.SET, position, SeekType.NONE, -1);
+                isSeeking.set(false);
             }
         });
     }
