@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.GSignalAPI;
@@ -633,6 +634,14 @@ public abstract class GObject extends RefCountedObject {
                 }
             }
         }
+    }
+    
+    public synchronized void emit(int signal_id, GQuark detail, Object... arguments) {
+    	GSIGNAL_API.g_signal_emit(this, signal_id, detail, arguments);
+    }
+    
+    public synchronized void emit(String signal, Object... arguments) {
+    	GSIGNAL_API.g_signal_emit_by_name(this, signal, arguments);
     }
     
     public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass) {

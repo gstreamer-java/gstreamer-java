@@ -137,7 +137,7 @@ public class Main {
     public static void main(String[] args) {
         String jnaPath = System.getProperty("jna.library.path");
         if (jnaPath == null) {
-            System.setProperty("jna.library.path", "/opt/local/lib:/usr/local/lib:/usr/lib");
+            System.setProperty("jna.library.path", "/usr/share/java:/opt/local/lib:/usr/local/lib:/usr/lib");
         }
         // Quartz is abysmally slow at scaling video for some reason, so turn it off.
         System.setProperty("apple.awt.graphics.UseQuartz", "false");
