@@ -20,7 +20,9 @@
 
 package org.gstreamer.lowlevel;
 
-import static org.gstreamer.lowlevel.BaseAPI.BASE_API;
+import static org.gstreamer.lowlevel.BaseSrcAPI.BASESRC_API;
+import static org.gstreamer.lowlevel.BaseSinkAPI.BASESINK_API;
+import static org.gstreamer.lowlevel.BaseTransformAPI.BASETRANSFORM_API;
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
 import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
@@ -50,6 +52,7 @@ import org.gstreamer.Query;
 import org.gstreamer.Registry;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.elements.BaseTransform;
 import org.gstreamer.elements.TypeFind;
 import org.gstreamer.glib.GDate;
 import org.gstreamer.interfaces.ColorBalanceChannel;
@@ -188,8 +191,9 @@ public class GstTypes {
 				put(GST_API.gst_message_get_type(), Message.class);
 				put(GST_API.gst_query_get_type(), Query.class);
 				// Element types
-				put(BASE_API.gst_base_sink_get_type(), BaseSink.class);
-				put(BASE_API.gst_base_src_get_type(), BaseSrc.class);
+				put(BASESRC_API.gst_base_src_get_type(), BaseSrc.class);
+				put(BASESINK_API.gst_base_sink_get_type(), BaseSink.class);
+				put(BASETRANSFORM_API.gst_base_transform_get_type(), BaseTransform.class);
 				put(GST_API.gst_type_find_get_type(), TypeFind.class);
 				put(GST_API.gst_element_factory_get_type(), ElementFactory.class);
 				put(GST_API.gst_bin_get_type(), Bin.class);

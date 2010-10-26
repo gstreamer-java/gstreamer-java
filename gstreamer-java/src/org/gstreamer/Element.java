@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstElementAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;

@@ -19,6 +19,8 @@
 
 package org.gstreamer.elements;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,14 +35,13 @@ import java.util.logging.Logger;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
-import org.gstreamer.Element;
 import org.gstreamer.Event;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
-import org.gstreamer.lowlevel.BaseAPI;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
+import org.gstreamer.lowlevel.BaseSrcAPI;
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
@@ -48,8 +49,6 @@ import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
-
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 abstract public class CustomSrc extends BaseSrc {
     private final static Logger logger = Logger.getLogger(CustomSrc.class.getName());
@@ -66,18 +65,18 @@ abstract public class CustomSrc extends BaseSrc {
         GBaseInitFunc baseInit;
         
         // Per-instance callback functions - names must match GstBaseSrcClass
-        BaseAPI.Create create;
-        BaseAPI.Seek seek;
+        BaseSrcAPI.Create create;
+        BaseSrcAPI.Seek seek;
         BooleanFunc1 is_seekable;
         BooleanFunc1 start;
         BooleanFunc1 stop;
         BooleanFunc1 negotiate;
-        BaseAPI.GetCaps get_caps;
-        BaseAPI.SetCaps set_caps;
-        BaseAPI.GetSize get_size;
-        BaseAPI.GetTimes get_times;
-        BaseAPI.Fixate fixate;
-        BaseAPI.EventNotify event;
+        BaseSrcAPI.GetCaps get_caps;
+        BaseSrcAPI.SetCaps set_caps;
+        BaseSrcAPI.GetSize get_size;
+        BaseSrcAPI.GetTimes get_times;
+        BaseSrcAPI.Fixate fixate;
+        BaseSrcAPI.EventNotify event;
     }
     protected CustomSrc(Class<? extends CustomSrc> subClass, String name) {
         super(initializer(GOBJECT_API.g_object_new(getSubclassType(subClass), "name", name)));
@@ -187,7 +186,7 @@ abstract public class CustomSrc extends BaseSrc {
         logger.info("CustomSrc.srcFixate");
     }
     
-    private static final BaseAPI.Create fillBufferCallback = new BaseAPI.Create() {
+    private static final BaseSrcAPI.Create fillBufferCallback = new BaseSrcAPI.Create() {
 
         public FlowReturn callback(BaseSrc element, long offset, int size, Pointer bufRef) {                  
             try {      
@@ -204,7 +203,7 @@ abstract public class CustomSrc extends BaseSrc {
         }
         
     };
-    private static final BaseAPI.Create createBufferCallback = new BaseAPI.Create() {
+    private static final BaseSrcAPI.Create createBufferCallback = new BaseSrcAPI.Create() {
 
         public FlowReturn callback(BaseSrc element, long offset, int size, Pointer bufRef) {                  
             try {      
@@ -222,7 +221,7 @@ abstract public class CustomSrc extends BaseSrc {
         }
         
     };
-    private static class BooleanFunc1 implements BaseAPI.BooleanFunc1 {
+    private static class BooleanFunc1 implements BaseSrcAPI.BooleanFunc1 {
         private Method method;
         public BooleanFunc1(String methodName) {
             try {
@@ -231,7 +230,7 @@ abstract public class CustomSrc extends BaseSrc {
                 throw new RuntimeException(ex);
             }
         }
-        public boolean callback(Element element) {
+        public boolean callback(BaseSrc element) {
             try {
                 return ((Boolean) method.invoke(element)).booleanValue();
             } catch (Exception ex) {
@@ -244,7 +243,7 @@ abstract public class CustomSrc extends BaseSrc {
     private static final BooleanFunc1 startCallback = new BooleanFunc1("srcStart");
     private static final BooleanFunc1 stopCallback = new BooleanFunc1("srcStop");
     private static final BooleanFunc1 negotiateCallback = new BooleanFunc1("srcNegotiate");
-    private static final BaseAPI.Seek seekCallback = new BaseAPI.Seek() {
+    private static final BaseSrcAPI.Seek seekCallback = new BaseSrcAPI.Seek() {
        
         public boolean callback(BaseSrc element, GstSegmentStruct segment) {
             try {
@@ -254,9 +253,9 @@ abstract public class CustomSrc extends BaseSrc {
             }
         }        
     };
-    private static final BaseAPI.SetCaps setCapsCallback = new BaseAPI.SetCaps() {
+    private static final BaseSrcAPI.SetCaps setCapsCallback = new BaseSrcAPI.SetCaps() {
 
-        public boolean callback(Element element, Caps caps) {
+        public boolean callback(BaseSrc element, Caps caps) {
             try {
                 return ((CustomSrc) element).srcSetCaps(caps);
             } catch (Exception ex) {
@@ -264,9 +263,9 @@ abstract public class CustomSrc extends BaseSrc {
             }
         }
     };
-    private static final BaseAPI.GetCaps getCapsCallback = new BaseAPI.GetCaps() {
+    private static final BaseSrcAPI.GetCaps getCapsCallback = new BaseSrcAPI.GetCaps() {
 
-        public Caps callback(Element element) {
+        public Caps callback(BaseSrc element) {
             try {
                 Caps caps = ((CustomSrc) element).srcGetCaps().copy();
                 caps.disown();
@@ -278,9 +277,9 @@ abstract public class CustomSrc extends BaseSrc {
             }
         }
     };
-    private static final BaseAPI.GetTimes getTimesCallback = new BaseAPI.GetTimes() {
+    private static final BaseSrcAPI.GetTimes getTimesCallback = new BaseSrcAPI.GetTimes() {
 
-        public void callback(Element src, Buffer buffer, Pointer startRef, Pointer endRef) {
+        public void callback(BaseSrc src, Buffer buffer, Pointer startRef, Pointer endRef) {
             try {
                 long[] start = {-1}, end = {-1};
                 ((CustomSrc) src).srcGetTimes(buffer, start, end);
@@ -289,17 +288,17 @@ abstract public class CustomSrc extends BaseSrc {
             } catch (Exception ex) { }
         }
     };
-    private static final BaseAPI.Fixate fixateCallback = new BaseAPI.Fixate() {
+    private static final BaseSrcAPI.Fixate fixateCallback = new BaseSrcAPI.Fixate() {
 
-        public void callback(Element src, Caps caps) {
+        public void callback(BaseSrc src, Caps caps) {
             try {
                 ((CustomSrc) src).srcFixate(caps);
             } catch (Exception ex) {}
         }
     };
-    private static final BaseAPI.EventNotify eventCallback = new BaseAPI.EventNotify() {
+    private static final BaseSrcAPI.EventNotify eventCallback = new BaseSrcAPI.EventNotify() {
 
-        public boolean callback(Element src, Event ev) {
+        public boolean callback(BaseSrc src, Event ev) {
             try {
                 return ((CustomSrc) src).srcEvent(ev);
             } catch (Exception ex) {
@@ -307,7 +306,7 @@ abstract public class CustomSrc extends BaseSrc {
             }
         }
     };
-    private static final BaseAPI.GetSize getSizeCallback = new BaseAPI.GetSize() {
+    private static final BaseSrcAPI.GetSize getSizeCallback = new BaseSrcAPI.GetSize() {
 
         public boolean callback(BaseSrc element, LongByReference sizeRef) {
             try {
@@ -409,7 +408,7 @@ abstract public class CustomSrc extends BaseSrc {
         }
         info.classInit = new GClassInitFunc() {
             public void callback(Pointer g_class, Pointer class_data) {
-                BaseAPI.GstBaseSrcClass base = new BaseAPI.GstBaseSrcClass(g_class);
+                BaseSrcAPI.GstBaseSrcClass base = new BaseSrcAPI.GstBaseSrcClass(g_class);
                 // Copy all the callback fields over
                 for (Field f : base.getClass().getDeclaredFields()) {
                     try {
@@ -439,10 +438,10 @@ abstract public class CustomSrc extends BaseSrc {
         ginfo.class_init = info.classInit;
         ginfo.base_init = info.baseInit;
         ginfo.instance_init = null;
-        ginfo.class_size = (short)new BaseAPI.GstBaseSrcClass().size();
-        ginfo.instance_size = (short)new BaseAPI.GstBaseSrcStruct().size();
+        ginfo.class_size = (short)new BaseSrcAPI.GstBaseSrcClass().size();
+        ginfo.instance_size = (short)new BaseSrcAPI.GstBaseSrcStruct().size();
         
-        GType type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_src_get_type(), 
+        GType type = GOBJECT_API.g_type_register_static(BaseSrcAPI.BASESRC_API.gst_base_src_get_type(), 
                 srcClass.getSimpleName(), ginfo, 0);
         info.type = type;
     }

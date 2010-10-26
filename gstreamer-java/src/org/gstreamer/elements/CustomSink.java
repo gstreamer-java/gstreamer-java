@@ -19,6 +19,8 @@
 
 package org.gstreamer.elements;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+
 import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -31,20 +33,17 @@ import java.util.logging.Logger;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
-import org.gstreamer.Element;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
-import org.gstreamer.lowlevel.BaseAPI;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
+import org.gstreamer.lowlevel.BaseSinkAPI;
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 /**
  *
@@ -63,12 +62,12 @@ abstract public class CustomSink extends BaseSink {
         GBaseInitFunc baseInit;
         
         // Per-instance callback functions
-        BaseAPI.Render render;
-        BaseAPI.Render preroll;
-        BaseAPI.BooleanFunc1 start;
-        BaseAPI.BooleanFunc1 stop;
-        BaseAPI.GetCaps getCaps;
-        BaseAPI.SetCaps setCaps;
+        BaseSinkAPI.Render render;
+        BaseSinkAPI.Render preroll;
+        BaseSinkAPI.BooleanFunc1 start;
+        BaseSinkAPI.BooleanFunc1 stop;
+        BaseSinkAPI.GetCaps getCaps;
+        BaseSinkAPI.SetCaps setCaps;
     }
     private static final Map<Class<? extends CustomSink>, CustomSinkInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSink>, CustomSinkInfo>();
     protected CustomSink(Class<? extends CustomSink> subClass, String name) {
@@ -123,7 +122,7 @@ abstract public class CustomSink extends BaseSink {
         logger.info(getClass().getSimpleName() + ".sinkSetCaps");
         return false; 
     }
-    private static class BooleanFunc1 implements BaseAPI.BooleanFunc1 {
+    private static class BooleanFunc1 implements BaseSinkAPI.BooleanFunc1 {
         private Method method;
         public BooleanFunc1(String methodName) {
             try {
@@ -132,7 +131,7 @@ abstract public class CustomSink extends BaseSink {
                 throw new RuntimeException(ex);
             }
         }
-        public boolean callback(Element element) {
+        public boolean callback(BaseSink element) {
             try {
                 return ((Boolean) method.invoke(element)).booleanValue();
             } catch (Throwable ex) {
@@ -143,7 +142,7 @@ abstract public class CustomSink extends BaseSink {
     }
     private static final BooleanFunc1 startCallback = new BooleanFunc1("sinkStart");
     private static final BooleanFunc1 stopCallback = new BooleanFunc1("sinkStop");
-    private static final BaseAPI.Render renderCallback = new BaseAPI.Render() {
+    private static final BaseSinkAPI.Render renderCallback = new BaseSinkAPI.Render() {
         
         public FlowReturn callback(BaseSink sink, Buffer buffer) {
             try {
@@ -154,7 +153,7 @@ abstract public class CustomSink extends BaseSink {
             }
         }
     };
-    private static final BaseAPI.Render prerollCallback = new BaseAPI.Render() {
+    private static final BaseSinkAPI.Render prerollCallback = new BaseSinkAPI.Render() {
         
         public FlowReturn callback(BaseSink sink, Buffer buffer) {
             try {
@@ -164,9 +163,9 @@ abstract public class CustomSink extends BaseSink {
             }
         }
     };
-    private static final BaseAPI.GetCaps getCapsCallback = new BaseAPI.GetCaps() {
+    private static final BaseSinkAPI.GetCaps getCapsCallback = new BaseSinkAPI.GetCaps() {
 
-        public Caps callback(Element element) {
+        public Caps callback(BaseSink element) {
             try {
                 return ((CustomSink) element).sinkGetCaps();
             } catch (Throwable ex) {
@@ -174,9 +173,9 @@ abstract public class CustomSink extends BaseSink {
             }
         }
     };
-    private static final BaseAPI.SetCaps setCapsCallback = new BaseAPI.SetCaps() {
+    private static final BaseSinkAPI.SetCaps setCapsCallback = new BaseSinkAPI.SetCaps() {
 
-        public boolean callback(Element element, Caps caps) {
+        public boolean callback(BaseSink element, Caps caps) {
             try {
                 return ((CustomSink) element).sinkSetCaps(caps);
             } catch (Throwable ex) {
@@ -226,7 +225,7 @@ abstract public class CustomSink extends BaseSink {
         }
         info.classInit = new GClassInitFunc() {
             public void callback(Pointer g_class, Pointer class_data) {
-                BaseAPI.GstBaseSinkClass base = new BaseAPI.GstBaseSinkClass(g_class);
+                BaseSinkAPI.GstBaseSinkClass base = new BaseSinkAPI.GstBaseSinkClass(g_class);
                 base.render = info.render;
                 base.preroll = info.preroll;
                 base.start = info.start;
@@ -250,10 +249,10 @@ abstract public class CustomSink extends BaseSink {
         ginfo.class_init = info.classInit;
         ginfo.base_init = info.baseInit;
         ginfo.instance_init = null;
-        ginfo.class_size = (short)new BaseAPI.GstBaseSinkClass().size();
-        ginfo.instance_size = (short)new BaseAPI.GstBaseSinkStruct().size();
+        ginfo.class_size = (short)new BaseSinkAPI.GstBaseSinkClass().size();
+        ginfo.instance_size = (short)new BaseSinkAPI.GstBaseSinkStruct().size();
         
-        info.type = GOBJECT_API.g_type_register_static(BaseAPI.BASE_API.gst_base_sink_get_type(), 
+        info.type = GOBJECT_API.g_type_register_static(BaseSinkAPI.BASESINK_API.gst_base_sink_get_type(), 
                 sinkClass.getSimpleName(), ginfo, 0);
     }
 }
