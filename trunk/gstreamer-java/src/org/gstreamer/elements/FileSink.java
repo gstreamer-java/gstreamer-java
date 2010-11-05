@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2008 Wayne Meissner
+ * Copyright (c) 2008 Levente Farkas
  * 
  * This file is part of gstreamer-java.
  *
@@ -19,14 +19,14 @@
 package org.gstreamer.elements;
 
 /**
- * A gstreamer element that reads from a file.
+ * A gstreamer element that write to a file.
  */
-public class FileSrc extends BaseSrc {
-    public FileSrc(String name) {
-        this(makeRawElement("filesrc", name));
+public class FileSink extends BaseSink {
+    public FileSink(String name) {
+        this(makeRawElement("filesink", name));
     }  
-  
-    public FileSrc(Initializer init) {
+
+    public FileSink(Initializer init) {
         super(init);
     }
     /**

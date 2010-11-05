@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2008 Wayne Meissner
+ * Copyright (c) 2008 Levente Farkas
  * 
  * This file is part of gstreamer-java.
  *
@@ -18,32 +18,17 @@
 
 package org.gstreamer.elements;
 
+import org.gstreamer.Element;
+
 /**
- * A gstreamer element that reads from a file.
+ * A gstreamer element for data queue.
  */
-public class FileSrc extends BaseSrc {
-    public FileSrc(String name) {
-        this(makeRawElement("filesrc", name));
+public class Queue2 extends Element {
+    public Queue2(String name) {
+        this(makeRawElement("queue2", name));
     }  
-  
-    public FileSrc(Initializer init) {
+
+    public Queue2(Initializer init) {
         super(init);
-    }
-    /**
-     * Sets the path of the file this source is to read.
-     * 
-     * @param location the path to the file to read.
-     */
-    public void setLocation(java.io.File location) {
-        setLocation(location.getAbsolutePath());
-    }
-    
-    /**
-     * Sets the path of the file this source is to read.
-     * 
-     * @param location the path to the file to read.
-     */
-    public void setLocation(String location) {
-        set("location", location);
     }
 }
