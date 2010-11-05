@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.TypeFind;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -85,7 +85,7 @@ public class ElementFactoryTest {
         assertNotNull("Failed to create playbin", e);
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
-        assertTrue("Element not a subclass of PlayBin", e instanceof PlayBin);
+        assertTrue("Element not a subclass of PlayBin2", e instanceof PlayBin2);
     }
     @Test
     public void testCreateFakesrc() {
@@ -115,12 +115,12 @@ public class ElementFactoryTest {
     public void testCreatePlaybin() {
         ElementFactory factory = ElementFactory.find("playbin");
         assertNotNull("Could not locate pipeline factory", factory);
-        System.out.println("PlayBin factory name=" + factory.getName());
+        System.out.println("PlayBin2 factory name=" + factory.getName());
         Element e = factory.create("bin");
         assertNotNull("Failed to create playbin", e);
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
-        assertTrue("Element not a subclass of PlayBin", e instanceof PlayBin);
+        assertTrue("Element not a subclass of PlayBin2", e instanceof PlayBin2);
     }
     public boolean waitGC(WeakReference<? extends Object> ref) throws InterruptedException {
         System.gc();

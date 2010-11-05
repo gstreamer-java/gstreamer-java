@@ -53,6 +53,7 @@ import com.sun.jna.Pointer;
  * or use {@link #make} as a convenient shortcut.
  *
  */
+@SuppressWarnings({ "deprecation", "serial" })
 public class ElementFactory extends PluginFeature {
     private static Logger logger = Logger.getLogger(ElementFactory.class.getName());
     private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI {}
@@ -183,7 +184,6 @@ public class ElementFactory extends PluginFeature {
         return elem;
     }
     
-    @SuppressWarnings("serial")
     private static final Map<String, Class<? extends Element>> typeMap
         = new HashMap<String, Class<? extends Element>>() {{
             put("appsink",       AppSink.class);

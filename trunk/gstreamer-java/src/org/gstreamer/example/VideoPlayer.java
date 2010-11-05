@@ -32,7 +32,7 @@ import javax.swing.WindowConstants;
 
 import org.gstreamer.Gst;
 import org.gstreamer.State;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -52,10 +52,10 @@ public class VideoPlayer {
         }
         
         //
-        // Create a PlayBin to play the media file.  A PlayBin is a Pipeline that
+        // Create a PlayBin2 to play the media file.  A PlayBin2 is a Pipeline that
         // creates all the needed elements and automatically links them together.
         //
-        final PlayBin playbin = new PlayBin("VideoPlayer");
+        final PlayBin2 playbin = new PlayBin2("VideoPlayer");
         
         // Set the file to play
         playbin.setInputFile(new File(args[0]));

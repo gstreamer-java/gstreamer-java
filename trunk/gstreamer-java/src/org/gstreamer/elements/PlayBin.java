@@ -41,6 +41,8 @@ import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 import com.sun.jna.Pointer;
 
 /**
+ * @deprecated This element is deprecated and no longer supported. You should use the PlayBin2 element instead.
+ * 
  * Playbin provides a stand-alone everything-in-one abstraction for an audio 
  * and/or video player.
  * <p>
@@ -244,6 +246,7 @@ import com.sun.jna.Pointer;
  * the drive is detected automatically by the plugin).
  * </p>
  */
+@Deprecated
 public class PlayBin extends Pipeline {
     
     /**
@@ -399,7 +402,6 @@ public class PlayBin extends Pipeline {
 
       for (GValueAPI.GValue value : garray.values) {
         StreamInfo streamInfo;
-
         { /*
            * this is a work-around gst_stream_info_get_type() symbols not
            * available in one of the top-level shared objects (libgstreamer or
@@ -412,12 +414,10 @@ public class PlayBin extends Pipeline {
           Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
           streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
         }
-
         list.add(streamInfo);
       }
       return list;
     }
-
     return null;
   }
 

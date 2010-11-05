@@ -42,7 +42,7 @@ import javax.swing.SwingUtilities;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.swing.VideoPlayer;
 
 /**
@@ -129,8 +129,8 @@ public class PiPDemo {
                     player.setControlsVisible(false);
                     Pipeline pipe = player.getMediaPlayer().getPipeline();
                     // Turn off sound - otherwise everything goes slow.
-                    if (pipe instanceof PlayBin) {
-                        ((PlayBin) pipe).setAudioSink(ElementFactory.make("fakesink", "audio"));
+                    if (pipe instanceof PlayBin2) {
+                        ((PlayBin2) pipe).setAudioSink(ElementFactory.make("fakesink", "audio"));
                     }
                     pip.add(player);
                     // Stagger the start times, so gstreamer doesn't choke

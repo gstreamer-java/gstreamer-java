@@ -22,12 +22,21 @@ package org.gstreamer.elements;
 import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Fraction;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
+import org.gstreamer.StreamInfo;
 import org.gstreamer.Video;
+import org.gstreamer.lowlevel.GValueAPI;
+import org.gstreamer.lowlevel.NativeObject;
+import org.gstreamer.lowlevel.GValueAPI.GValueArray;
+
+import com.sun.jna.Pointer;
 
 /*
  * <p>
@@ -243,6 +252,43 @@ public class PlayBin2 extends Pipeline {
      */
     public double getVolume() {
         return ((Number) get("volume")).doubleValue();
+    }
+    
+    /**
+     * Returns a list with with specific meta information like
+     * width/height/framerate of video streams or samplerate/number of channels of
+     * audio streams. This stream information from the "stream-info" property is
+     * best queried once playbin has changed into PAUSED or PLAYING state (which
+     * can be detected via a state-changed message on the GstBus where
+     * old_state=READY and new_state=PAUSED), since before that the list might not
+     * be complete yet or not contain all available information (like
+     * language-codes).
+     */
+    public List<StreamInfo> getStreamInfo() {
+      Pointer ptr = getPointer("stream-info-value-array");
+      if (ptr != null) {
+        GValueArray garray = new GValueArray(ptr);
+        List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
+
+        for (GValueAPI.GValue value : garray.values) {
+          StreamInfo streamInfo;
+          { /*
+             * this is a work-around gst_stream_info_get_type() symbols not
+             * available in one of the top-level shared objects (libgstreamer or
+             * libgstbase). As a result, StreamInfo.class can not be registered in
+             * GstTypes even though if is an instance of GObject. value.getValue()
+             * will fail to resolve to an instance of StreamInfo. Here we bypass
+             * JNA type mapping that would occur had we called
+             * GValueAPI.g_value_get_object()
+             */
+            Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
+            streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
+          }
+          list.add(streamInfo);
+        }
+        return list;
+      }
+      return null;
     }
     
     /**

@@ -26,18 +26,18 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import org.gstreamer.Element;
 import org.gstreamer.State;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  * Basic implementation of a MediaPlayer
  */
 public class PlayBinMediaPlayer extends PipelineMediaPlayer {
     private static final Executor defaultExec = Executors.newSingleThreadExecutor();
-    private final PlayBin playbin;
+    private final PlayBin2 playbin;
 
     public PlayBinMediaPlayer(String name, Executor eventExecutor) {
-        super(new PlayBin(name), eventExecutor);
-        playbin = (PlayBin) getPipeline();
+        super(new PlayBin2(name), eventExecutor);
+        playbin = (PlayBin2) getPipeline();
         
     }
 

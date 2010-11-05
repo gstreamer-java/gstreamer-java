@@ -32,7 +32,7 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  * An audiopanorama element example.
@@ -52,7 +52,7 @@ public class AudioPanorama {
         PanoramaSink sink = new PanoramaSink("panorama sink");
         Pipeline pipe;
         if (args.length > 0) {
-            PlayBin playbin = new PlayBin("AudioPanorama");
+            PlayBin2 playbin = new PlayBin2("AudioPanorama");
 
             playbin.setInputFile(new File(args[0]));
             

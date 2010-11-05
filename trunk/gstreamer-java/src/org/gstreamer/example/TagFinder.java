@@ -35,7 +35,7 @@ import org.gstreamer.State;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.FakeSink;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 import com.sun.jna.Pointer;
 
@@ -61,7 +61,7 @@ public class TagFinder {
         // Instead of using a playbin, it would be possible to use a pipe
         // a typefind element and a demux and wire them up manually.
         // 
-        final PlayBin pipe = new PlayBin(progname);
+        final PlayBin2 pipe = new PlayBin2(progname);
         pipe.setInputFile(new File(args[0]));
         FakeSink audio = (FakeSink) ElementFactory.make("fakesink", "audio-sink");
         FakeSink video = (FakeSink) ElementFactory.make("fakesink", "video-sink");
