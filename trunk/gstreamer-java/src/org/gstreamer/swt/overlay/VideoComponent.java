@@ -58,9 +58,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 */
 	public VideoComponent(final Composite parent, int style, boolean enableMouseMove) {
 		super(parent, style | SWT.EMBEDDED);
-		// TODO: replace directdrawsink with dshowvideosink if dshowvideosink become more stable:
-		// http://forja.rediris.es/forum/forum.php?thread_id=5255&forum_id=1624
-		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "directdrawsink", "OverlayVideoComponent" + counter++);
+		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "d3dvideosink", "OverlayVideoComponent" + counter++);
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowID(this);
 		mouseMove(enableMouseMove);
