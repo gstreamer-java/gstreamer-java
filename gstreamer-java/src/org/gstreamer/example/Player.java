@@ -29,7 +29,7 @@ import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.TagList;
 import org.gstreamer.TagMergeMode;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  *
@@ -40,7 +40,7 @@ public class Player {
     public Player() {
     }
     static TagList tags;
-    static PlayBin player;
+    static PlayBin2 player;
     public static void main(String[] args) {
         for (String s : args) {
             System.out.println("cmdline arg=" + s);
@@ -50,7 +50,7 @@ public class Player {
         for (String s : args) {
             System.out.println("Leftover arg=" + s);
         }
-        player = new PlayBin("Example Player");
+        player = new PlayBin2("Example Player");
         player.setInputFile(new File(args[0]));
         Bus bus = player.getBus();
         tags = new TagList();

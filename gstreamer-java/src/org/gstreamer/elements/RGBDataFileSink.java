@@ -50,8 +50,8 @@ public class RGBDataFileSink extends Bin {
     private final AppSrcNeedDataListener needDataListener;
     private final AppSrcEnoughDataListener enoughDataListener;
     private final BufferDispatcher bufferDispatcher;
-    private final int FPS;
-    private final int NANOS_PER_FRAME;
+    //private final int FPS;
+    //private final int NANOS_PER_FRAME;
     private final int sourceWidth;
     private final int sourceHeight;
 
@@ -82,8 +82,8 @@ public class RGBDataFileSink extends Bin {
 
         sourceWidth = width;
         sourceHeight = height;
-        FPS = fps;
-        NANOS_PER_FRAME = (int)(1e9 / FPS);
+        //FPS = fps;
+        //NANOS_PER_FRAME = (int)(1e9 / FPS);
 
         videoCaps = Caps.fromString("video/x-raw-rgb,width=" + width + ",height=" + height + "," +
                                     "bpp=32,endianness=4321,depth=24,red_mask=65280,green_mask=16711680,blue_mask=-16777216," +

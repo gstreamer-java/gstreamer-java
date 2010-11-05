@@ -27,7 +27,7 @@ import java.io.File;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.State;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  * A basic, non-gui player
@@ -45,10 +45,10 @@ public class AudioPlayer {
             System.exit(1);
         }
         //
-        // Create a PlayBin to play the media file.  A PlayBin is a Pipeline that
+        // Create a PlayBin2 to play the media file.  A PlayBin2 is a Pipeline that
         // creates all the needed elements and automatically links them together.
         //
-        PlayBin playbin = new PlayBin("AudioPlayer");
+        PlayBin2 playbin = new PlayBin2("AudioPlayer");
         
         // Make sure a video window does not appear.
         playbin.setVideoSink(ElementFactory.make("fakesink", "videosink"));

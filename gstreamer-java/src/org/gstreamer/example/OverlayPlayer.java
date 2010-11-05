@@ -38,7 +38,7 @@ import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Message;
 import org.gstreamer.Structure;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.interfaces.XOverlay;
 
@@ -72,7 +72,7 @@ public class OverlayPlayer {
                 frame.pack();
                 frame.setVisible(true);
                                 
-                PlayBin player = new PlayBin("Overlay Player");                
+                PlayBin2 player = new PlayBin2("Overlay Player");                
                 player.setInputFile(new File(file));
                 bus = player.getBus();
                 

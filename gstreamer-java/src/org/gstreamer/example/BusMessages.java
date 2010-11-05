@@ -30,7 +30,7 @@ import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.State;
 import org.gstreamer.TagList;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  * Demonstrates capturing messages posted on the pipeline bus by elements.
@@ -48,10 +48,10 @@ public class BusMessages {
             System.exit(1);
         }
         //
-        // Create a PlayBin to play the media file.  A PlayBin is a Pipeline that
+        // Create a PlayBin2 to play the media file.  A PlayBin2 is a Pipeline that
         // creates all the needed elements and automatically links them together.
         //
-        final PlayBin playbin = new PlayBin("BusMessages");
+        final PlayBin2 playbin = new PlayBin2("BusMessages");
         
         // Make sure a video window does not appear.
         playbin.setVideoSink(ElementFactory.make("fakesink", "videosink"));

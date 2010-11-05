@@ -7,6 +7,8 @@ import com.sun.jna.Pointer;
 
 
 public class OSXVideoComponent extends CocoaComponent {
+	private static final long serialVersionUID = -8534578348583192142L;
+
 	public OSXVideoComponent(final Pointer nsview) {
 		this(nsview, false);
 	}

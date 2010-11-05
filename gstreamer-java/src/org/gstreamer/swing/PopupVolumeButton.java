@@ -41,7 +41,7 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 
 /**
  *
@@ -73,7 +73,7 @@ public class PopupVolumeButton extends JToggleButton {
         volumePanel.validate();
         setAction(volumeAction);
     }
-    public PopupVolumeButton(final PlayBin playbin) {
+    public PopupVolumeButton(final PlayBin2 playbin) {
         this(new DefaultBoundedRangeModel() {
 
             private static final long serialVersionUID = 1462054216375236024L;

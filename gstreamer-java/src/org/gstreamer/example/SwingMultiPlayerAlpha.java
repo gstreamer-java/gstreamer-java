@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.swing.VideoPlayer;
 
 /**
@@ -96,8 +96,8 @@ public class SwingMultiPlayerAlpha {
                     player.setOpaque(false);
                     player.setOpacity(alpha);
                     Pipeline pipe = player.getMediaPlayer().getPipeline();
-                    if (pipe instanceof PlayBin) {
-                        ((PlayBin) pipe).setAudioSink(ElementFactory.make("fakesink", "audio"));
+                    if (pipe instanceof PlayBin2) {
+                        ((PlayBin2) pipe).setAudioSink(ElementFactory.make("fakesink", "audio"));
                     }
                     
                     frame.setOpaque(false);
