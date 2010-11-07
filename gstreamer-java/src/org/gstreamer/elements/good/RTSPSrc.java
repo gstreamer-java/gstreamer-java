@@ -23,9 +23,10 @@ import org.gstreamer.Bin;
  * Java representation of gstreamer rtspsrc 
  */
 public class RTSPSrc extends Bin {
+	public static final String GST_NAME = "rtspsrc";
 	
 	public RTSPSrc(String name) {
-		this(makeRawElement("rtspsrc", name));
+		this(makeRawElement(GST_NAME, name));
 	}
 
 	public RTSPSrc(Initializer init) {

@@ -11,17 +11,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.gstreamer.StreamInfo.StreamType;
-import org.gstreamer.elements.PlayBin2;
+import org.gstreamer.elements.PlayBin;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class StreamInfoTest {
 
 	private static File testSrc;
 
-	private PlayBin2 playBin;
+	private PlayBin playBin;
 
 	private StreamInfo videoStream;
 
@@ -82,7 +83,7 @@ public class StreamInfoTest {
 
 	@Before
 	public void setUp() throws Exception {
-		playBin = new PlayBin2("playbin2", testSrc.toURI());
+		playBin = new PlayBin("playbin", testSrc.toURI());
 		Element videoSink = ElementFactory.make("fakesink", "videosink");
 		Element audioSink = ElementFactory.make("fakesink", "audiosink");
 		

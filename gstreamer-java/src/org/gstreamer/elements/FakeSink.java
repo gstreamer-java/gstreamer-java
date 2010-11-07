@@ -22,11 +22,13 @@ package org.gstreamer.elements;
  *
  */
 public class FakeSink extends BaseSink {
-    public FakeSink(String name) {
-        this(makeRawElement("fakesink", name));
+	public static final String GST_NAME = "fakesink";
+
+	public FakeSink(String name) {
+        this(makeRawElement(GST_NAME, name));
     }
 
     public FakeSink(Initializer init) {
         super(init);
-    } 
+    }
 }

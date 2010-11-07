@@ -19,6 +19,7 @@
 package org.gstreamer.elements;
 
 import org.gstreamer.Bin;
+import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
@@ -28,20 +29,24 @@ import com.sun.jna.Pointer;
 /**
  * Utility {@link Element} to automatically identify media stream types and hook
  * up elements.
+ * 
+ * @deprecated This element is deprecated and no longer supported. You should use the uridecodebin or decodebin2 element instead (or, even better: playbin2).
  */
+@Deprecated
 public class DecodeBin extends Bin {
+	public static final String GST_NAME = "decodebin";
     /**
      * Creates a new DecodeBin.
      * 
      * @param name The name used to identify this DecodeBin.
      */
     public DecodeBin(String name) {
-        this(makeRawElement("decodebin", name));
+        this(makeRawElement(GST_NAME, name));
     }
     public DecodeBin(Initializer init) {
         super(init);
     }
-    
+
     /**
      * Signal emitted when this {@link DecodeBin} decodes a new pad.
      */
@@ -52,9 +57,8 @@ public class DecodeBin extends Bin {
          * @param pad the new Pad.
          * @param last (unknown)
          */
-        public void newDecodedPad(Element element, Pad pad, boolean last);
+        public void newDecodedPad(DecodeBin element, Pad pad, boolean last, Pointer user_data);
     }
-    
     /**
      * Adds a listener for the <code>new-decoded-pad</code> signal
      * 
@@ -62,14 +66,13 @@ public class DecodeBin extends Bin {
      * on the {@link Element}
      */
     public void connect(final NEW_DECODED_PAD listener) {
-        connect("new-decoded-pad", NEW_DECODED_PAD.class, listener, new GstCallback() {
+        connect(NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pad pad, boolean last, Pointer user_data) {
-                listener.newDecodedPad(elem, pad, last);
+            public void callback(DecodeBin elem, Pad pad, boolean last, Pointer user_data) {
+                listener.newDecodedPad(elem, pad, last, user_data);
             }
         });
     }
-    
     /**
      * Removes a listener for the <code>new-decoded-pad</code> signal
      * 
@@ -79,4 +82,73 @@ public class DecodeBin extends Bin {
         disconnect(NEW_DECODED_PAD.class, listener);
     }
     
+
+    /**
+     * Signal emitted when this {@link DecodeBin} decodes a removed pad.
+     */
+    public static interface REMOVED_DECODED_PAD {
+        /**
+         * 
+         * @param element The element which has the new Pad.
+         * @param pad the new Pad.
+         */
+        public void removedDecodedPad(DecodeBin element, Pad pad, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>removed-decoded-pad</code> signal
+     * 
+     * @param listener Listener to be called when a new {@link Pad} is encountered
+     * on the {@link Element}
+     */
+    public void connect(final REMOVED_DECODED_PAD listener) {
+        connect(REMOVED_DECODED_PAD.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(DecodeBin elem, Pad pad, Pointer user_data) {
+                listener.removedDecodedPad(elem, pad, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>removed-decoded-pad</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(REMOVED_DECODED_PAD listener) {
+        disconnect(REMOVED_DECODED_PAD.class, listener);
+    }
+
+    /**
+     * Signal is emitted when a pad for which there is no further possible decoding is added to the {@link DecodeBin}.
+     */
+    public static interface UNKNOWN_TYPE {
+        /**
+         * 
+         * @param element The element which has the new Pad.
+         * @param pad the new Pad.
+         * @param caps the caps of the pad that cannot be resolved.
+         */
+        public void unknownType(DecodeBin element, Pad pad, Caps caps, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>unknown-type</code> signal
+     * 
+     * @param listener Listener to be called when a new {@link Pad} is encountered
+     * on the {@link Element}
+     */
+    public void connect(final UNKNOWN_TYPE listener) {
+        connect(UNKNOWN_TYPE.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(DecodeBin elem, Pad pad, Caps caps, Pointer user_data) {
+                listener.unknownType(elem, pad, caps, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>unknown-type</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(UNKNOWN_TYPE listener) {
+        disconnect(UNKNOWN_TYPE.class, listener);
+    }
 }

@@ -24,8 +24,10 @@ import org.gstreamer.Element;
  * A gstreamer element for data queue.
  */
 public class Queue2 extends Element {
-    public Queue2(String name) {
-        this(makeRawElement("queue2", name));
+	public static final String GST_NAME = "queue2";
+
+	public Queue2(String name) {
+        this(makeRawElement(GST_NAME, name));
     }  
 
     public Queue2(Initializer init) {

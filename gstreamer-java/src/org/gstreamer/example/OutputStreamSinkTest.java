@@ -36,9 +36,11 @@ import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 import org.gstreamer.TagList;
-import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
 import org.gstreamer.io.ReadableByteChannelSrc;
 import org.gstreamer.io.WriteableByteChannelSink;
+
+import com.sun.jna.Pointer;
 
 public class OutputStreamSinkTest {
     static final String name = "InputStreamSrcTest";    
@@ -79,7 +81,7 @@ public class OutputStreamSinkTest {
             throw new RuntimeException(ex);
         }
         
-        DecodeBin decodeBin = (DecodeBin) ElementFactory.make("decodebin", "Decode Bin");
+        DecodeBin2 decodeBin = (DecodeBin2) ElementFactory.make("decodebin2", "Decode Bin");
         Pipeline pipe = new Pipeline("main pipeline");
         pipe.addMany(src, decodeBin);
         src.link(decodeBin);
@@ -95,8 +97,8 @@ public class OutputStreamSinkTest {
         
         pipe.add(audioBin);
 
-        decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
-            public void newDecodedPad(Element elem, Pad pad, boolean last) {
+        decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
+            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean las, Pointer user_datat) {
                 System.out.println("newDecodedPad");
                   /* only link once */
                 Pad audioPad = audioBin.getStaticPad("sink");

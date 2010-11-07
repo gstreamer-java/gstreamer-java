@@ -29,11 +29,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.GstException;
 import org.gstreamer.Message;
 import org.gstreamer.Structure;
 import org.gstreamer.event.BusSyncHandler;
 
-//import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
 //import com.sun.jna.platform.unix.X11;
 //import com.sun.jna.platform.unix.X11.Window;
@@ -58,7 +58,12 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 */
 	public VideoComponent(final Composite parent, int style, boolean enableMouseMove) {
 		super(parent, style | SWT.EMBEDDED);
-		videosink = ElementFactory.make(Platform.isLinux() ? "xvimagesink" : "d3dvideosink", "OverlayVideoComponent" + counter++);
+		String name = Platform.isLinux() ? "xvimagesink" : 
+					  Platform.isWindows() ? "d3dvideosink" : 
+					  Platform.isMac() ? "osxvideosink" : null;
+		if (name == null)
+			throw new GstException("Platform not supported");
+		videosink = ElementFactory.make(name, "OverlayVideoComponent" + counter++);
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowID(this);
 		mouseMove(enableMouseMove);

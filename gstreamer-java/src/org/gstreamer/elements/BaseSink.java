@@ -125,7 +125,6 @@ public class BaseSink extends Element {
          */
         public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
     }
-    
     /**
      * Add a listener for the <code>handoff</code> signal on this sink
      * 
@@ -139,7 +138,6 @@ public class BaseSink extends Element {
             }            
         });
     }
-    
     /**
      * Remove a listener for the <code>handoff</code> signal
      * 
@@ -166,21 +164,19 @@ public class BaseSink extends Element {
          */
         public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
     }
-
     /**
      * Add a listener for the <code>preroll-handoff</code> signal.
      *
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final PREROLL_HANDOFF listener) {
-        connect("preroll-handoff", PREROLL_HANDOFF.class, listener, new GstAPI.GstCallback() {
+        connect(PREROLL_HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
             public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
                 listener.prerollHandoff(sink, buffer, pad, user_data);
             }
         });
     }
-
     /**
      * Remove a listener for the <code>preroll-handoff</code> signal.
      *

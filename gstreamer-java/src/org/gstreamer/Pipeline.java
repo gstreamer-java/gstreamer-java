@@ -90,6 +90,7 @@ public class Pipeline extends Bin {
         @CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
     }
     private static final API gst = GstNative.load(API.class);
+	public static final String GST_NAME = "pipeline";
     
     public Pipeline(Initializer init) { 
         super(init);

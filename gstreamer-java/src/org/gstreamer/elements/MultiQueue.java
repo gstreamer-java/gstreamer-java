@@ -27,12 +27,52 @@ import com.sun.jna.Pointer;
  * A gstreamer element for Multiple data queue.
  */
 public class MultiQueue extends Element {
+	public static final String GST_NAME = "multiqueue";
+
     public MultiQueue(String name) {
-        this(makeRawElement("multiqueue", name));
+        this(makeRawElement(GST_NAME, name));
     }  
 
     public MultiQueue(Initializer init) {
         super(init);
+    }
+
+    /**
+	 * This signal is emitted from the streaming thread when there is no 
+	 * data in any of the queues inside the multiqueue instance (underrun).
+	 * 
+	 * This indicates either starvation or EOS from the upstream data sources.
+     * 
+     * @see #connect(UNDERRUN)
+     * @see #disconnect(UNDERRUN)
+     */
+    public static interface UNDERRUN {
+        /**
+         * @param mq the object which received the signal
+         * @param user_data user data set when the signal handler was connected.
+         */
+        public void underrun(MultiQueue mq, Pointer userData);
+    }
+    /**
+     * Add a listener for the <code>underrun</code> signal on this MultiQueue
+     * 
+     * @param listener The listener to be called.
+     */
+    public void connect(final UNDERRUN listener) {
+        connect(UNDERRUN.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(MultiQueue mq, Pointer userData) {
+                listener.underrun(mq, userData);
+            }
+        });
+    }    
+    /**
+     * Disconnect the listener for the <code>underrun</code> signal on this MultiQueue
+     * 
+     * @param listener The listener that was registered to receive the signal.
+     */
+    public void disconnect(UNDERRUN listener) {
+        disconnect(UNDERRUN.class, listener);
     }
 
 	/**
@@ -72,43 +112,5 @@ public class MultiQueue extends Element {
      */
     public void disconnect(OVERRUN listener) {
         disconnect(OVERRUN.class, listener);
-    }
-
-	/**
-	 * This signal is emitted from the streaming thread when there is no 
-	 * data in any of the queues inside the multiqueue instance (underrun).
-	 * 
-	 * This indicates either starvation or EOS from the upstream data sources.
-     * 
-     * @see #connect(UNDERRUN)
-     * @see #disconnect(UNDERRUN)
-     */
-    public static interface UNDERRUN {
-        /**
-         * @param mq the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
-         */
-        public void underrun(MultiQueue mq, Pointer userData);
-    }
-    /**
-     * Add a listener for the <code>underrun</code> signal on this MultiQueue
-     * 
-     * @param listener The listener to be called.
-     */
-    public void connect(final UNDERRUN listener) {
-        connect(UNDERRUN.class, listener, new GstCallback() {
-            @SuppressWarnings("unused")
-            public void callback(MultiQueue mq, Pointer userData) {
-                listener.underrun(mq, userData);
-            }
-        });
-    }    
-    /**
-     * Disconnect the listener for the <code>underrun</code> signal on this MultiQueue
-     * 
-     * @param listener The listener that was registered to receive the signal.
-     */
-    public void disconnect(UNDERRUN listener) {
-        disconnect(UNDERRUN.class, listener);
     }
 }

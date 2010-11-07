@@ -23,8 +23,10 @@ package org.gstreamer.elements;
  * @author wayne
  */
 public class FakeSrc extends BaseSrc {
+	public static final String GST_NAME = "fakesrc";
+    
     public FakeSrc(String name) {
-        this(makeRawElement("fakesrc", name));
+        this(makeRawElement(GST_NAME, name));
     }  
   
     public FakeSrc(Initializer init) {

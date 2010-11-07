@@ -27,6 +27,8 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
+import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.TypeFind;
 import org.junit.After;
@@ -39,6 +41,7 @@ import org.junit.Test;
  *
  * @author wayne
  */
+@SuppressWarnings("deprecation")
 public class ElementFactoryTest {
     
     public ElementFactoryTest() {
@@ -62,9 +65,36 @@ public class ElementFactoryTest {
     public void tearDown() throws Exception {
     }
     @Test
+    public void makeDecodeBinTest() {
+        Element elem = ElementFactory.make("decodebin", "foo");
+        assertTrue("decodebin element not instance of DecodeBin", elem instanceof DecodeBin);
+        assertTrue("decodebin not subclass of Bin", elem instanceof Bin);
+    }
+    @Test
+    public void makeDecodeBin2Test() {
+        Element elem = ElementFactory.make("decodebin2", "foo");
+        assertTrue("decodebin2 element not instance of DecodeBin2", elem instanceof DecodeBin2);
+        assertTrue("decodebin2 not subclass of Bin", elem instanceof Bin);
+    }
+    @Test
+    public void testMakeFakesink() {
+        Element e = ElementFactory.make("fakesink", "sink");
+        assertNotNull("Failed to create fakesink", e);
+    }
+    @Test
     public void testMakeFakesrc() {
         Element e = ElementFactory.make("fakesrc", "source");
         assertNotNull("Failed to create fakesrc", e);
+    }
+    @Test
+    public void testMakeFilesink() {
+        Element e = ElementFactory.make("filesink", "sink");
+        assertNotNull("Failed to create filesink", e);
+    }
+    @Test
+    public void testMakeFilesrc() {
+        Element e = ElementFactory.make("filesrc", "source");
+        assertNotNull("Failed to create filesrc", e);
     }
     @Test
     public void testMakeBin() {
@@ -83,6 +113,14 @@ public class ElementFactoryTest {
     public void testMakePlaybin() {
         Element e = ElementFactory.make("playbin", "bin");
         assertNotNull("Failed to create playbin", e);
+        assertTrue("Element not a subclass of Bin", e instanceof Bin);
+        assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
+        assertTrue("Element not a subclass of PlayBin", e instanceof PlayBin);
+    }
+    @Test
+    public void testMakePlaybin2() {
+        Element e = ElementFactory.make("playbin2", "bin");
+        assertNotNull("Failed to create playbin2", e);
         assertTrue("Element not a subclass of Bin", e instanceof Bin);
         assertTrue("Element not a subclass of Pipeline", e instanceof Pipeline);
         assertTrue("Element not a subclass of PlayBin2", e instanceof PlayBin2);
@@ -113,7 +151,7 @@ public class ElementFactoryTest {
     }
     @Test
     public void testCreatePlaybin() {
-        ElementFactory factory = ElementFactory.find("playbin");
+        ElementFactory factory = ElementFactory.find("playbin2");
         assertNotNull("Could not locate pipeline factory", factory);
         System.out.println("PlayBin2 factory name=" + factory.getName());
         Element e = factory.create("bin");
@@ -154,12 +192,6 @@ public class ElementFactoryTest {
         WeakReference<Element> ref = new WeakReference<Element>(e);
         e = null;
         assertTrue("Element not garbage collected", waitGC(ref));
-    }
-    @Test 
-    public void makeDecodeBinTest() {
-        Element elem = ElementFactory.make("decodebin", "foo");
-        assertTrue("decodebin element not instance of DecodeBin", elem instanceof DecodeBin);
-        assertTrue("decodebin not subclass of Bin", elem instanceof Bin);
     }
     @Test 
     public void makeTypeFindTest() {
