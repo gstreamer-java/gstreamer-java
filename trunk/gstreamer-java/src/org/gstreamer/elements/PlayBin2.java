@@ -22,21 +22,17 @@ package org.gstreamer.elements;
 import java.awt.Dimension;
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Fraction;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
-import org.gstreamer.StreamInfo;
 import org.gstreamer.Video;
-import org.gstreamer.lowlevel.GValueAPI;
-import org.gstreamer.lowlevel.NativeObject;
-import org.gstreamer.lowlevel.GValueAPI.GValueArray;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
+
 
 /*
  * <p>
@@ -118,6 +114,7 @@ import com.sun.jna.Pointer;
  * </p>
 */
 public class PlayBin2 extends Pipeline {
+	public static final String GST_NAME = "playbin2";
 
     /**
      * Creates a new PlayBin2.
@@ -125,7 +122,7 @@ public class PlayBin2 extends Pipeline {
      * @param name The name used to identify this pipeline.
      */
     public PlayBin2(String name) {
-        this(makeRawElement("playbin2", name));
+        this(makeRawElement(GST_NAME, name));
     }
 
     /**
@@ -255,43 +252,6 @@ public class PlayBin2 extends Pipeline {
     }
     
     /**
-     * Returns a list with with specific meta information like
-     * width/height/framerate of video streams or samplerate/number of channels of
-     * audio streams. This stream information from the "stream-info" property is
-     * best queried once playbin has changed into PAUSED or PLAYING state (which
-     * can be detected via a state-changed message on the GstBus where
-     * old_state=READY and new_state=PAUSED), since before that the list might not
-     * be complete yet or not contain all available information (like
-     * language-codes).
-     */
-    public List<StreamInfo> getStreamInfo() {
-      Pointer ptr = getPointer("stream-info-value-array");
-      if (ptr != null) {
-        GValueArray garray = new GValueArray(ptr);
-        List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
-
-        for (GValueAPI.GValue value : garray.values) {
-          StreamInfo streamInfo;
-          { /*
-             * this is a work-around gst_stream_info_get_type() symbols not
-             * available in one of the top-level shared objects (libgstreamer or
-             * libgstbase). As a result, StreamInfo.class can not be registered in
-             * GstTypes even though if is an instance of GObject. value.getValue()
-             * will fail to resolve to an instance of StreamInfo. Here we bypass
-             * JNA type mapping that would occur had we called
-             * GValueAPI.g_value_get_object()
-             */
-            Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
-            streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
-          }
-          list.add(streamInfo);
-        }
-        return list;
-      }
-      return null;
-    }
-    
-    /**
      * Retrieves the framerate from the caps of the video sink's pad.
      * 
      * @return frame rate (frames per second), or 0 if the framerate is not
@@ -327,4 +287,210 @@ public class PlayBin2 extends Pipeline {
       }
       return null;
     }    
+
+    /**
+     * Signal emitted when the current uri is about to finish. You can set 
+     * the uri and suburi to make sure that playback continues.
+     */
+    public static interface ABOUT_TO_FINISH {
+        /**
+         */
+        public void aboutToFinish(PlayBin2 element, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>about-to-finish</code> signal
+     */
+    public void connect(final ABOUT_TO_FINISH listener) {
+        connect(ABOUT_TO_FINISH.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, Pointer user_data) {
+                listener.aboutToFinish(elem, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>about-to-finish</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(ABOUT_TO_FINISH listener) {
+        disconnect(ABOUT_TO_FINISH.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the number or order of the video streams has changed. 
+     * The application will most likely want to select a new video stream.
+     */
+    public static interface VIDEO_CHANGED {
+        /**
+         */
+        public void videoChanged(PlayBin2 element, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>video-changed</code> signal
+     */
+    public void connect(final VIDEO_CHANGED listener) {
+        connect(VIDEO_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, Pointer user_data) {
+                listener.videoChanged(elem, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>video-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(VIDEO_CHANGED listener) {
+        disconnect(VIDEO_CHANGED.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the number or order of the audio streams has changed. 
+     * The application will most likely want to select a new audio stream.
+     */
+    public static interface AUDIO_CHANGED {
+        /**
+         */
+        public void audioChanged(PlayBin2 element, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>audio-changed</code> signal
+     */
+    public void connect(final AUDIO_CHANGED listener) {
+        connect(AUDIO_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, Pointer user_data) {
+                listener.audioChanged(elem, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>audio-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(AUDIO_CHANGED listener) {
+        disconnect(AUDIO_CHANGED.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the number or order of the audio streams has changed. 
+     * The application will most likely want to select a new audio stream.
+     */
+    public static interface TEXT_CHANGED {
+        /**
+         */
+        public void textChanged(PlayBin2 element, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>audio-changed</code> signal
+     */
+    public void connect(final TEXT_CHANGED listener) {
+        connect(TEXT_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, Pointer user_data) {
+                listener.textChanged(elem, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>text-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(TEXT_CHANGED listener) {
+        disconnect(TEXT_CHANGED.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the tags of a video stream have changed. 
+     * The application will most likely want to get the new tags.
+     */
+    public static interface VIDEO_TAGS_CHANGED {
+        /**
+         * @param stream stream index with changed tags
+         */
+        public void videoTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>video-tags-changed</code> signal
+     */
+    public void connect(final VIDEO_TAGS_CHANGED listener) {
+        connect(VIDEO_TAGS_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
+                listener.videoTagsChanged(elem, stream, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>video-tags-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(VIDEO_TAGS_CHANGED listener) {
+        disconnect(VIDEO_TAGS_CHANGED.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the tags of an audio stream have changed. 
+     * The application will most likely want to get the new tags.
+     */
+    public static interface AUDIO_TAGS_CHANGED {
+        /**
+         * @param stream stream index with changed tags
+         */
+        public void audioTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>audio-tags-changed</code> signal
+     */
+    public void connect(final AUDIO_TAGS_CHANGED listener) {
+        connect(AUDIO_TAGS_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
+                listener.audioTagsChanged(elem, stream, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>audio-tags-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(AUDIO_TAGS_CHANGED listener) {
+        disconnect(AUDIO_TAGS_CHANGED.class, listener);
+    }
+
+    /**
+     * Signal is emitted whenever the tags of a text stream have changed. 
+     * The application will most likely want to get the new tags.
+     */
+    public static interface TEXT_TAGS_CHANGED {
+        /**
+         * @param stream stream index with changed tags
+         */
+        public void textTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+    }
+    /**
+     * Adds a listener for the <code>audio-tags-changed</code> signal
+     */
+    public void connect(final TEXT_TAGS_CHANGED listener) {
+        connect(TEXT_TAGS_CHANGED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
+                listener.textTagsChanged(elem, stream, user_data);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>text-tags-changed</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(TEXT_TAGS_CHANGED listener) {
+        disconnect(TEXT_TAGS_CHANGED.class, listener);
+    }
 }

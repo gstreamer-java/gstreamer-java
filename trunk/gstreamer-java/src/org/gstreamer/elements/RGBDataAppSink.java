@@ -111,7 +111,7 @@ public class RGBDataAppSink extends Bin {
      *
      */
     class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(Element elem, Pointer userData)
+        public void newBuffer(AppSink elem, Pointer userData)
         {
             Buffer buffer = sink.pullBuffer();
 

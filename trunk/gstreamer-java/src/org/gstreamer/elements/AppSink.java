@@ -25,7 +25,6 @@ package org.gstreamer.elements;
 import com.sun.jna.Pointer;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
-import org.gstreamer.Element;
 import org.gstreamer.lowlevel.AppAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
@@ -35,6 +34,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 public class AppSink extends BaseSink {
     private static final AppAPI gst() { return AppAPI.APP_API; }
+    public static final String GST_NAME = "appsink";
 
     public AppSink(Initializer init) {
         super(init);
@@ -124,6 +124,75 @@ public class AppSink extends BaseSink {
     }
 
     /**
+     * Signal emitted when this {@link AppSink} got EOS.
+     */
+    public static interface EOS {
+        /**
+         *
+         * @param elem
+         * @param userData
+         */
+        public void eos(AppSink elem, Pointer userData);
+    }
+    /**
+     * Adds a listener for the <code>eos</code> signal.
+     *
+     * @param listener
+     */
+    public void connect(final EOS listener) {
+        connect(EOS.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(AppSink elem, Pointer userData) {
+                listener.eos(elem, userData);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>eos</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(EOS listener) {
+        disconnect(EOS.class, listener);
+    }
+    
+    /**
+     * Signal emitted when this {@link AppSink} when a new buffer is ready.
+     */
+    public static interface NEW_PREROLL {
+        /**
+         *
+         * @param elem
+         * @param userData
+         */
+        public void newPreroll(AppSink elem, Pointer userData);
+    }
+    /**
+     * Adds a listener for the <code>new-preroll</code> signal. If a blocking
+     * behaviour is not desirable, setting the "emit-signals" property to TRUE
+     * will make appsink emit the "new-buffer" and "new-preroll" signals when a
+     * buffer can be pulled without blocking.
+     *
+     * @param listener
+     */
+    public void connect(final NEW_PREROLL listener) {
+        connect(NEW_PREROLL.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(AppSink elem, Pointer userData) {
+                listener.newPreroll(elem, userData);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>new-preroll</code> signal
+     *
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(NEW_PREROLL listener) {
+        disconnect(NEW_PREROLL.class, listener);
+    }
+    
+    /**
      * Signal emitted when this {@link AppSink} when a new buffer is ready.
      */
     public static interface NEW_BUFFER {
@@ -132,9 +201,8 @@ public class AppSink extends BaseSink {
          * @param elem
          * @param userData
          */
-        public void newBuffer(Element elem, Pointer userData);
+        public void newBuffer(AppSink elem, Pointer userData);
     }
-
     /**
      * Adds a listener for the <code>new-buffer</code> signal. If a blocking
      * behaviour is not desirable, setting the "emit-signals" property to TRUE
@@ -144,14 +212,13 @@ public class AppSink extends BaseSink {
      * @param listener
      */
     public void connect(final NEW_BUFFER listener) {
-        connect("new-buffer", NEW_BUFFER.class, listener, new GstCallback() {
+        connect(NEW_BUFFER.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pointer userData) {
+            public void callback(AppSink elem, Pointer userData) {
                 listener.newBuffer(elem, userData);
             }
         });
     }
-
     /**
      * Removes a listener for the <code>new-buffer</code> signal
      *
@@ -164,38 +231,33 @@ public class AppSink extends BaseSink {
     /**
      * Signal emitted when this {@link AppSink} when a new buffer is ready.
      */
-    public static interface NEW_PREROLL {
+    public static interface NEW_BUFFER_LIST {
         /**
          *
          * @param elem
          * @param userData
          */
-        public void newPreroll(Element elem, Pointer userData);
+        public void newBufferList(AppSink elem, Pointer userData);
     }
-
     /**
-     * Adds a listener for the <code>new-preroll</code> signal. If a blocking
-     * behaviour is not desirable, setting the "emit-signals" property to TRUE
-     * will make appsink emit the "new-buffer" and "new-preroll" signals when a
-     * buffer can be pulled without blocking.
+     * Adds a listener for the <code>new-buffer-list</code> signal.
      *
      * @param listener
      */
-    public void connect(final NEW_PREROLL listener) {
-        connect("new-preroll", NEW_PREROLL.class, listener, new GstCallback() {
+    public void connect(final NEW_BUFFER_LIST listener) {
+        connect(NEW_BUFFER_LIST.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pointer userData) {
-                listener.newPreroll(elem, userData);
+            public void callback(AppSink elem, Pointer userData) {
+                listener.newBufferList(elem, userData);
             }
         });
     }
-
     /**
-     * Removes a listener for the <code>new-buffer</code> signal
+     * Removes a listener for the <code>new-buffer-list</code> signal
      *
      * @param listener The listener that was previously added.
      */
-    public void disconnect(NEW_PREROLL listener) {
-        disconnect(NEW_PREROLL.class, listener);
+    public void disconnect(NEW_BUFFER_LIST listener) {
+        disconnect(NEW_BUFFER_LIST.class, listener);
     }
 }

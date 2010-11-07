@@ -248,6 +248,7 @@ import com.sun.jna.Pointer;
  */
 @Deprecated
 public class PlayBin extends Pipeline {
+	public static final String GST_NAME = "playbin";
     
     /**
      * Creates a new PlayBin.
@@ -255,7 +256,7 @@ public class PlayBin extends Pipeline {
      * @param name The name used to identify this pipeline.
      */
     public PlayBin(String name) {
-        this(makeRawElement("playbin", name));
+        this(makeRawElement(GST_NAME, name));
     }
     
     /**

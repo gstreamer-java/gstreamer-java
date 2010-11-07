@@ -22,8 +22,10 @@ package org.gstreamer.elements;
  * A gstreamer element that write to a file.
  */
 public class FileSink extends BaseSink {
+	public static final String GST_NAME = "filesink";
+
     public FileSink(String name) {
-        this(makeRawElement("filesink", name));
+        this(makeRawElement(GST_NAME, name));
     }  
 
     public FileSink(Initializer init) {

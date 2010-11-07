@@ -34,7 +34,6 @@ import org.gstreamer.elements.FileSink;
 import org.gstreamer.elements.FileSrc;
 import org.gstreamer.elements.Identity;
 import org.gstreamer.elements.MultiQueue;
-import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.Queue;
@@ -67,6 +66,30 @@ public class ElementFactory extends PluginFeature {
     private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI {}
     private static final API gst = GstNative.load(API.class);
     static Level DEBUG = Level.FINE;
+	private static final Map<String, Class<? extends Element>> typeMap
+		= new HashMap<String, Class<? extends Element>>() {{
+			put(AppSink.GST_NAME, AppSink.class);
+			put(AppSrc.GST_NAME, AppSrc.class);
+			put(DecodeBin.GST_NAME, DecodeBin.class);
+			put(DecodeBin2.GST_NAME, DecodeBin2.class);
+			put(FakeSink.GST_NAME, FakeSink.class);
+			put(FakeSrc.GST_NAME, FakeSrc.class);
+			put(FileSink.GST_NAME, FileSink.class);
+			put(FileSrc.GST_NAME, FileSrc.class);
+			put(Identity.GST_NAME, Identity.class);
+			put(MultiQueue.GST_NAME, MultiQueue.class);
+			//put(OSXVideoSink.GST_NAME, OSXVideoSink.class);
+			put(Pipeline.GST_NAME, Pipeline.class);
+			put(PlayBin.GST_NAME, PlayBin.class);
+			put(PlayBin2.GST_NAME, PlayBin2.class);
+			put(Queue.GST_NAME, Queue.class);
+			put(Queue2.GST_NAME, Queue2.class);
+			put(Tee.GST_NAME, Tee.class);
+			put(TypeFind.GST_NAME, TypeFind.class);
+
+			put(RTPBin.GST_NAME, RTPBin.class);
+			put(RTSPSrc.GST_NAME, RTSPSrc.class);
+		}};
     
     /**
      * Creates a new instance of ElementFactory
@@ -153,6 +176,11 @@ public class ElementFactory extends PluginFeature {
         return templates;
     }
     
+    public static void registerElement(Class<? extends Element> klass, String name) {
+    	if (!typeMap.containsKey(name))
+    		typeMap.put(name, klass);
+    }
+    
     /**
      * Retrieve an instance of a factory that can produce {@link Element}s
      * 
@@ -192,31 +220,6 @@ public class ElementFactory extends PluginFeature {
         return elem;
     }
     
-    private static final Map<String, Class<? extends Element>> typeMap
-        = new HashMap<String, Class<? extends Element>>() {{
-            put("appsink",       AppSink.class);
-            put("appsrc",        AppSrc.class);
-//            put("basesink",      BaseSink.class);
-//            put("basesrc",       BaseSrc.class);
-//            put("basetransform", BaseTransform.class);
-            put("decodebin",     DecodeBin.class);
-            put("decodebin2",    DecodeBin2.class);
-            put("fakesink",      FakeSink.class);
-            put("fakesrc",       FakeSrc.class);
-            put("filesink",      FileSink.class);
-            put("filesrc",       FileSrc.class);
-            put("identity",      Identity.class);
-            put("multiqueue",    MultiQueue.class);
-            put("osxvideosink",  OSXVideoSink.class);
-            put("playbin",       PlayBin.class);
-            put("playbin2",      PlayBin2.class);
-            put("queue",         Queue.class);
-            put("queue2",        Queue2.class);
-            put("gstrtpbin",     RTPBin.class);
-            put("rtspsrc",       RTSPSrc.class);
-            put("tee",           Tee.class);
-            put("typefind",      TypeFind.class);
-    }};
     @SuppressWarnings("unchecked")
     private static Element elementFor(Pointer ptr, String factoryName) {
         Class<? extends Element> cls = typeMap.get(factoryName);

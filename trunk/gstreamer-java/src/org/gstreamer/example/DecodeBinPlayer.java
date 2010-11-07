@@ -40,8 +40,10 @@ import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
 import org.gstreamer.Structure;
-import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
 import org.gstreamer.swing.VideoComponent;
+
+import com.sun.jna.Pointer;
 
 /**
  * An example of playing audio/video files using a decodebin and manually linking
@@ -65,7 +67,7 @@ public class DecodeBinPlayer {
         Element src = ElementFactory.make("filesrc", "Input File");
         src.set("location", args[0]);
         
-        DecodeBin decodeBin = new DecodeBin("Decode Bin");
+        DecodeBin2 decodeBin = new DecodeBin2("Decode Bin");
         pipe = new Pipeline("main pipeline");
         Element decodeQueue = ElementFactory.make("queue", "Decode Queue");
         pipe.addMany(src, decodeQueue, decodeBin);
@@ -82,8 +84,8 @@ public class DecodeBinPlayer {
         audioBin.addPad(new GhostPad("sink", conv.getStaticPad("sink")));
         pipe.add(audioBin);
         
-        decodeBin.connect(new DecodeBin.NEW_DECODED_PAD() {
-            public void newDecodedPad(Element elem, Pad pad, boolean last) {
+        decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
+            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean last, Pointer user_data) {
                 
                 /* only link once */
                 if (pad.isLinked()) {

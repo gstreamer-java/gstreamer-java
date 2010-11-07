@@ -28,8 +28,10 @@ import com.sun.jna.Pointer;
  * Utility {@link Element} to identify media types in the stream.
  */
 public final class TypeFind extends Element {
+	public static final String GST_NAME = "typefind";
+
     public TypeFind(String name) {
-        this(makeRawElement("typefind", name));
+        this(makeRawElement(GST_NAME, name));
     }
     
     public TypeFind(Initializer init) {

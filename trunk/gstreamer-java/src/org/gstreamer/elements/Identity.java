@@ -23,6 +23,12 @@ import org.gstreamer.lowlevel.GstAPI;
 import com.sun.jna.Pointer;
 
 public class Identity extends BaseTransform {
+	public static final String GST_NAME = "identity";
+
+    public Identity(String name) {
+        this(makeRawElement(GST_NAME, name));
+    }  
+
     public Identity(Initializer init) {
         super(init);
     }

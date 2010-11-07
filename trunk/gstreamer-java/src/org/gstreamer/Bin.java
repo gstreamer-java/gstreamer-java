@@ -281,7 +281,28 @@ public class Bin extends Element {
          * @param bin the Bin the element was added to.
          * @param element the {@link Element} that was added.
          */
-        public void elementAdded(Bin bin, Element element);
+        public void elementAdded(Bin bin, Element element, Pointer user_data);
+    }
+    /**
+     * Add a listener for the <code>element-added</code> signal on this Bin
+     * 
+     * @param listener The listener to be called when an {@link Element} is added.
+     */
+    public void connect(final ELEMENT_ADDED listener) {
+        connect(ELEMENT_ADDED.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Bin bin, Element elem, Pointer user_data) {
+                listener.elementAdded(bin, elem, user_data);
+            }
+        });
+    }
+    /**
+     * Disconnect the listener for the <code>element-added</code> signal
+     * 
+     * @param listener The listener that was registered to receive the signal.
+     */
+    public void disconnect(ELEMENT_ADDED listener) {
+        disconnect(ELEMENT_ADDED.class, listener);
     }
     
     /**
@@ -297,23 +318,8 @@ public class Bin extends Element {
          * @param bin the Bin the element was removed from.
          * @param element the {@link Element} that was removed.
          */
-        public void elementRemoved(Bin bin, Element element);
+        public void elementRemoved(Bin bin, Element element, Pointer user_data);
     }
-    
-    /**
-     * Add a listener for the <code>element-added</code> signal on this Bin
-     * 
-     * @param listener The listener to be called when an {@link Element} is added.
-     */
-    public void connect(final ELEMENT_ADDED listener) {
-        connect(ELEMENT_ADDED.class, listener, new GstCallback() {
-            @SuppressWarnings("unused")
-            public void callback(Bin bin, Element elem, Pointer user_data) {
-                listener.elementAdded(bin, elem);
-            }
-        });
-    }
-    
     /**
      * Add a listener for the <code>element-removed</code> signal on this Bin
      * 
@@ -323,20 +329,10 @@ public class Bin extends Element {
         connect(ELEMENT_REMOVED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
             public void callback(Bin bin, Element elem, Pointer user_data) {
-                listener.elementRemoved(bin, elem);
+                listener.elementRemoved(bin, elem, user_data);
             }
         });
     }
-    
-    /**
-     * Disconnect the listener for the <code>element-added</code> signal
-     * 
-     * @param listener The listener that was registered to receive the signal.
-     */
-    public void disconnect(ELEMENT_ADDED listener) {
-        disconnect(ELEMENT_ADDED.class, listener);
-    }
-    
     /**
      * Disconnect the listener for the <code>element-removed</code> signal
      * 
@@ -344,5 +340,41 @@ public class Bin extends Element {
      */
     public void disconnect(ELEMENT_REMOVED listener) {
         disconnect(ELEMENT_REMOVED.class, listener);
+    }
+    
+    /**
+     * Signal emitted when an {@link Element} has latency
+     * 
+     * @see #connect(DO_LATENCY)
+     * @see #disconnect(DO_LATENCY)
+     */
+    public static interface DO_LATENCY {
+        /**
+         * Called when an {@link Element} is removed from a {@link Bin}
+         * 
+         * @param bin the Bin the element was removed from.
+         */
+        public void doLatency(Bin bin, Pointer user_data);
+    }
+    /**
+     * Add a listener for the <code>do-latency</code> signal on this Bin
+     * 
+     * @param listener The listener to be called when an {@link Element} is removed.
+     */
+    public void connect(final DO_LATENCY listener) {
+        connect(DO_LATENCY.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(Bin bin, Pointer user_data) {
+                listener.doLatency(bin, user_data);
+            }
+        });
+    }
+    /**
+     * Disconnect the listener for the <code>do-latency</code> signal
+     * 
+     * @param listener The listener that was registered to receive the signal.
+     */
+    public void disconnect(DO_LATENCY listener) {
+        disconnect(DO_LATENCY.class, listener);
     }
 }

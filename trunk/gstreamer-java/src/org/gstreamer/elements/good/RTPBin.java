@@ -27,9 +27,10 @@ import com.sun.jna.Pointer;
  * Java representation of gstreamer gstrtpbin
  */
 public class RTPBin extends Bin {
+	public static final String GST_NAME = "gstrtpbin";
 	
 	public RTPBin(String name) {
-		this(makeRawElement("gstrtpbin", name));
+		this(makeRawElement(GST_NAME, name));
 	}
 
 	public RTPBin(Initializer init) {

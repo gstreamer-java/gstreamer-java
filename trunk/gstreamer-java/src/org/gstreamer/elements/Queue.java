@@ -27,8 +27,10 @@ import com.sun.jna.Pointer;
  * A gstreamer element for data queue.
  */
 public class Queue extends Element {
-    public Queue(String name) {
-        this(makeRawElement("queue", name));
+	public static final String GST_NAME = "queue";
+
+	public Queue(String name) {
+        this(makeRawElement(GST_NAME, name));
     }  
 
     public Queue(Initializer init) {

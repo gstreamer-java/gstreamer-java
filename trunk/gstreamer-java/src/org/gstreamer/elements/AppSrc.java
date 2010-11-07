@@ -23,7 +23,6 @@ package org.gstreamer.elements;
 
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
-import org.gstreamer.Element;
 import org.gstreamer.lowlevel.AppAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
@@ -35,6 +34,7 @@ import com.sun.jna.ptr.LongByReference;
  */
 public class AppSrc extends BaseSrc {
     private static final AppAPI gst() { return AppAPI.APP_API; }
+    public static final String GST_NAME = "appsink";
     
     public enum Type {
         STREAM,
@@ -104,23 +104,21 @@ public class AppSrc extends BaseSrc {
          * @param size
          * @param userData
          */
-        public void needData(Element elem, int size, Pointer userData);
+        public void needData(AppSrc elem, int size, Pointer userData);
     }
-
     /**
      * Adds a listener for the <code>need-data</code> signal
      *
      * @param listener Listener to be called when appsrc needs data.
      */
     public void connect(final NEED_DATA listener) {
-        connect("need-data", NEED_DATA.class, listener, new GstCallback() {
+        connect(NEED_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, int size, Pointer userData) {
+            public void callback(AppSrc elem, int size, Pointer userData) {
                 listener.needData(elem, size, userData);
             }
         });
     }
-
     /**
      * Removes a listener for the <code>need-data</code> signal
      *
@@ -139,7 +137,7 @@ public class AppSrc extends BaseSrc {
          * @param elem
          * @param userData
          */
-        public void enoughData(Element elem, Pointer userData);
+        public void enoughData(AppSrc elem, Pointer userData);
     }
 
     /**
@@ -148,14 +146,13 @@ public class AppSrc extends BaseSrc {
      * @param listener Listener to be called this when appsrc fills its queue.
      */
     public void connect(final ENOUGH_DATA listener) {
-        connect("enough-data", ENOUGH_DATA.class, listener, new GstCallback() {
+        connect(ENOUGH_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pointer userData) {
+            public void callback(AppSrc elem, Pointer userData) {
                 listener.enoughData(elem, userData);
             }
         });
     }
-
     /**
      * Removes a listener for the <code>enough-data</code> signal
      *
@@ -176,9 +173,8 @@ public class AppSrc extends BaseSrc {
          * @param position
          * @param userData
          */
-        public void seekData(Element elem, long position, Pointer userData);
+        public void seekData(AppSrc elem, long position, Pointer userData);
     }
-
     /**
      * Adds a listener for the <code>seek-data</code> signal
      *
@@ -189,14 +185,13 @@ public class AppSrc extends BaseSrc {
      * the application should push-buffers from the new position.
      */
     public void connect(final SEEK_DATA listener) {
-        connect("seek-data", SEEK_DATA.class, listener, new GstCallback() {
+        connect(SEEK_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, long position, Pointer userData) {
+            public void callback(AppSrc elem, long position, Pointer userData) {
                 listener.seekData(elem, position, userData);
             }
         });
     }
-
     /**
      * Removes a listener for the <code>seek-data</code> signal
      *

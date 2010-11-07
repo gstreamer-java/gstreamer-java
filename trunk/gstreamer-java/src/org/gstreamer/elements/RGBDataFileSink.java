@@ -215,7 +215,7 @@ public class RGBDataFileSink extends Bin {
      *
      */
     class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
-        public void needData(Element elem, int size, Pointer userData)
+        public void needData(AppSrc elem, int size, Pointer userData)
         {
             if (!sendingData)
             {
@@ -236,7 +236,7 @@ public class RGBDataFileSink extends Bin {
      *
      */
     class AppSrcEnoughDataListener implements AppSrc.ENOUGH_DATA {
-        public void enoughData(Element elem, Pointer userData)
+        public void enoughData(AppSrc elem, Pointer userData)
         {
             if (sendingData)
             {

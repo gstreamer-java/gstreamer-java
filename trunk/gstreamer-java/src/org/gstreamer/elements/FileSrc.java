@@ -22,8 +22,10 @@ package org.gstreamer.elements;
  * A gstreamer element that reads from a file.
  */
 public class FileSrc extends BaseSrc {
+	public static final String GST_NAME = "filesrc";
+    
     public FileSrc(String name) {
-        this(makeRawElement("filesrc", name));
+        this(makeRawElement(GST_NAME, name));
     }  
   
     public FileSrc(Initializer init) {
