@@ -34,7 +34,7 @@ import com.sun.jna.ptr.LongByReference;
  */
 public class AppSrc extends BaseSrc {
     private static final AppAPI gst() { return AppAPI.APP_API; }
-    public static final String GST_NAME = "appsink";
+    public static final String GST_NAME = "appsrc";
     
     public enum Type {
         STREAM,
