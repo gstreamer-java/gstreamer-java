@@ -82,9 +82,9 @@ public class GValueTest {
     	
     	assertEquals("int value mismatch", 5, v.getValue());
     	
-    	api.g_value_set_double(v, 6.0);
+    	api.g_value_set_int(v, 6);
     	
-    	assertEquals("int value mismatch", 5, v.getValue());
+    	assertEquals("int value mismatch", 6, v.getValue());
     	
     	assertTrue("type mismatch", v.getValue() instanceof Integer);
     	
