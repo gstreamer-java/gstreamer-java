@@ -181,7 +181,7 @@ public interface GValueAPI extends Library {
             n_values = pointer.getInt(0);
 
             if (n_values > 0) {
-                Pointer pointerToArray = pointer.getPointer(GType.SIZE);
+                Pointer pointerToArray = pointer.getPointer(4);
                 GValue val = new GValue(pointerToArray);
                 values = (GValue[]) val.toArray(n_values);
             } else {
