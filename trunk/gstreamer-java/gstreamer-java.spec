@@ -2,29 +2,25 @@
 
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
-Version:	1.4
-Release:	2%{?dist}
+Version:	1.5
+Release:	0%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
-# zip -r ~/rpm/SOURCES/gstreamer-java-src-1.4.zip gstreamer-java -x \*/.svn*
+# zip -r ~/rpm/SOURCES/gstreamer-java-src-1.5.zip gstreamer-java -x \*/.svn*
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
-Patch1:		%{name}-swt.patch
+Patch1:		gstreamer-java-swt.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-%if 0%{?fedora} > 12 || 0%{?rhel} > 5
-BuildArch:	noarch
-%else
 # for ExcludeArch and no noarch see bug: 468831
 # since noarch pacakge can't contain ExcludeArch :-( imho it's an rpm bug
 ExcludeArch:	ppc ppc64
-%endif
 
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0, jpackage-utils, jna
+Requires:	java >= 1:1.6.0, jpackage-utils, jna, jna-contrib
 Requires:	gstreamer, gstreamer-plugins-base, gstreamer-plugins-good
-BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna
+BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna, jna-contrib
 BuildRequires:	gstreamer-devel, gstreamer-plugins-base-devel, gstreamer-plugins-good
 BuildRequires:	ant, ant-junit
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
@@ -38,6 +34,16 @@ BuildRequires:	libswt3-gtk2
 An unofficial/alternative set of java bindings for the gstreamer multimedia
 framework.
 
+%ifarch %{arch_with_swt} noarch
+%package swt
+Summary:	SWT support for %{name}
+Group:		System Environment/Libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	libswt3-gtk2
+
+%description swt
+This package contains SWT support for %{name}.
+%endif
 %package javadoc
 Summary:	Javadocs for %{name}
 Group:		Documentation
@@ -50,22 +56,23 @@ This package contains the API documentation for %{name}.
 
 %prep
 %setup -q -n %{name}
+%ifarch %{arch_with_swt} noarch
+%patch1 -p1 -b .swt
+# replace included jar files with the system packaged version SWT
+sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>/dev/null|sort|head -1)," \
+	nbproject/project.properties
+%endif
 cp -p src/org/freedesktop/tango/COPYING COPYING.CC-BY-SA
 
 # remove prebuild binaries
-find . -name '*.jar' -exec rm {} \;
+find . -name '*.jar' -delete
 
 # replace included jar files with the system packaged version (JNA, SWT, GStreamer plugins dir)
 sed -i -e "s,\(file.reference.jna.jar=\).*,\1$(build-classpath jna)," \
+	-e "s,\(file.reference.platform.jar=\).*,\1$(build-classpath jna/platform.jar)," \
 	-e "s,\(run.jvmargs=-Djna.library.path=\).*,\1%{_libdir}:$(pkg-config --variable=pluginsdir gstreamer-0.10)," \
 	nbproject/project.properties
 
-%patch1 -p1
-sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>/dev/null|sort|head -1)," \
-	nbproject/project.properties
-
-
-%build
 # from Fedora-9 we've got ant-1.7.0 and junit4 while on older releases and EPEL
 # have only ant-1.6.5 and junit-3.8.2 therefore on older releases and EPEL we
 # have small hacks like ant-1.6.5 need packagenames for javadoc task
@@ -77,8 +84,8 @@ sed -i -e "s,\(file.reference.junit4.jar=\).*,\1$(build-classpath junit4)," \
 sed -i -e 's,\(<javadoc destdir="${dist.javadoc.dir}" source="${javac.source}"\),\1 packagenames="*",' \
 	build.xml
 %endif
-ant jar
-ant javadoc
+%build
+ant jar javadoc
 
 
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
@@ -102,14 +109,25 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{_javadir}/*
+%{_javadir}/%{name}.jar
 %doc CHANGES COPYING* tutorials/*
+%ifarch %{arch_with_swt} noarch
+%files swt
+%defattr(-,root,root,-)
+%{_javadir}/%{name}-swt.jar
+%endif
 
 %files javadoc
 %defattr(-,root,root,-)
 %{_javadocdir}/%{name}
 
 %changelog
+* Wed Dec  1 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.5-0
+- update spec and bump version to 1.5
+
+* Sat Jul 31 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-3
+- add SWT subpackage and disable getStaticPadTemplates test
+
 * Tue Jul 27 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.4-2
 - fix spec file typo
 
