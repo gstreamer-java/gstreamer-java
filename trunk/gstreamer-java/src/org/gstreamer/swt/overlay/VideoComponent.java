@@ -25,19 +25,21 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GstException;
 import org.gstreamer.Message;
+import org.gstreamer.MessageType;
 import org.gstreamer.Structure;
 import org.gstreamer.event.BusSyncHandler;
 
+import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-//import com.sun.jna.platform.unix.X11;
-//import com.sun.jna.platform.unix.X11.Window;
-//import com.sun.jna.platform.unix.X11.XEvent;
+import com.sun.jna.platform.unix.X11;
+import com.sun.jna.platform.unix.X11.Display;
+import com.sun.jna.platform.unix.X11.Window;
+import com.sun.jna.platform.unix.X11.XEvent;
 
 /**
  * VideoComponent which use OS's overlay video component 
@@ -48,15 +50,19 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	private static int counter = 0;
 	private final Element videosink;
 	private final SWTOverlay overlay;
-	private Listener exposer;
+	private boolean watcherRunning = false;
 	
 	/**
 	 * Overlay VideoComponent
 	 * @param parent
 	 * @param style
-	 * @param enableMouseMove true if mouse move event requested even on Linux
+	 * @param enableX11Events true if X11 event should have to be grabbed (mouse move, enter and leave event on Linux).
+	 * 
+	 * On Linux by default the handling of mouse move, enter and leave event are not propagated.
+	 * Unfortunately the "handle-events" properties hide some important expose events too, 
+	 * sowe've to do some lowlevel trick to be able to get these events.
 	 */
-	public VideoComponent(final Composite parent, int style, boolean enableMouseMove) {
+	public VideoComponent(final Composite parent, int style, boolean enableX11Events) {
 		super(parent, style | SWT.EMBEDDED);
 		String name = Platform.isLinux() ? "xvimagesink" : 
 					  Platform.isWindows() ? "d3dvideosink" : 
@@ -65,8 +71,61 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 			throw new GstException("Platform not supported");
 		videosink = ElementFactory.make(name, "OverlayVideoComponent" + counter++);
 		overlay = SWTOverlay.wrap(videosink);
-		overlay.setWindowID(this);
-		mouseMove(enableMouseMove);
+		overlay.setWindowHandle(this);
+		enableX11Events(enableX11Events);
+	}
+	
+	/**
+	 * In this case we (gstreamer-linux) must handle redraw too!
+	 *
+	 * @param enableX11Events true if X11 event should have to be grabbed (mouse move, enter and leave event on Linux).
+	 */
+    public synchronized void enableX11Events(boolean enable) {
+		if (enable && Platform.isLinux()) {
+			videosink.set("handle-events", !enable);
+			overlay.handleEvent(!enable);
+			watcherRunning = true;
+			new Thread() {
+				@Override
+				public void run() {
+					try {
+						final X11 x11 = X11.INSTANCE;
+						final Display display = x11.XOpenDisplay(null);
+						Window window = new Window(SWTOverlay.getLinuxHandle(VideoComponent.this));
+						x11.XSelectInput(display, window,
+								new NativeLong(X11.ExposureMask |
+										X11.VisibilityChangeMask |
+										X11.StructureNotifyMask |
+										X11.FocusChangeMask |
+										X11.EnterWindowMask |
+										X11.LeaveWindowMask));
+						while (watcherRunning) {
+							final XEvent xEvent = new XEvent();
+							x11.XNextEvent(display, xEvent);
+							if (watcherRunning && !isDisposed()) {
+								getDisplay().asyncExec(new Runnable() {
+									public void run() {
+										if (watcherRunning && !isDisposed()) {
+											if (xEvent.type == X11.EnterNotify) {
+												notifyListeners(SWT.MouseEnter, new Event());
+											} else if (xEvent.type == X11.LeaveNotify) {
+												notifyListeners(SWT.MouseExit, new Event());
+											} else {
+												overlay.expose();
+											}
+										}
+									}
+								});
+							}
+						}
+						x11.XCloseDisplay(display);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}.start();
+			addDisposeListener(this);
+		}
 	}
 	
 	/**
@@ -78,68 +137,9 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		this(parent, style, false);
 	}
 	
-	/**
-	 * Enable the handling of mouse-move or not (only for Linux).
-	 * In this case we (gstreamer-linux) must handle redraw too!
-	 * @param enable true if mouse move event generated
-	 */
-	public synchronized void mouseMove(boolean enable) {
-		if (Platform.isLinux() && enable == (exposer == null)) {
-			if (enable) {
-				exposer = new Listener() {
-					public void handleEvent(Event event) {
-						expose();
-					}
-				};
-				addListener(SWT.Resize, exposer);
-				getShell().addListener(SWT.Activate, exposer);
-				addDisposeListener(this);
-
-//				final X11 x11 = X11.INSTANCE;
-//				final com.sun.jna.platform.unix.X11.Display display = x11.XOpenDisplay(null);
-//				final XEvent event = new XEvent();
-//				Window window = new Window(windowId.longValue());
-//				x11.XSelectInput(display, window, new NativeLong(X11.ExposureMask | X11.VisibilityChangeMask | X11.StructureNotifyMask | X11.FocusChangeMask));
-//				while (running) {
-//					x11.XNextEvent(display, event);
-//					System.out.println("Event T: " + event.type);
-//					if (videoComponent != null && !videoComponent.isDisposed())
-//						videoComponent.getDisplay().asyncExec(new Runnable() {
-//							public void run() {
-//								if (videoComponent != null && !videoComponent.isDisposed()) {
-//									System.out.println(" expose");
-//									videoComponent.expose();
-//								}
-//							}
-//						});
-//				}
-//				x11.XDestroyWindow(display, window);
-//				x11.XCloseDisplay(display);			
-				
-//				final NativeLong nativeLongID = component.handle();
-//				final X11EventWatcher thread = new X11EventWatcher(component, nativeLongID);
-//				thread.start();
-//				component.addDisposeListener(new DisposeListener() {
-//					public void widgetDisposed(DisposeEvent arg0) {
-//						thread.setRunning(false);
-//					}
-//				});
-				
-				
-				
-				
-			} else {
-				removeListener(SWT.Resize, exposer);
-				getShell().removeListener(SWT.Activate, exposer);
-				removeDisposeListener(this);
-				exposer = null;
-			}
-			videosink.set("handle-events", !enable);
-		}
-	}
-	
 	public void widgetDisposed(DisposeEvent arg0) {
-		getShell().removeListener(SWT.Activate, exposer);
+		watcherRunning = false;
+		removeDisposeListener(this);
 	}	
 	
 	/**
@@ -188,10 +188,12 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 * @return
 	 */
 	public BusSyncReply syncMessage(Message message) {
+		if (message.getType() != MessageType.ELEMENT)
+			return BusSyncReply.PASS;
 		Structure s = message.getStructure();
 		if (s == null || !s.hasName("prepare-xwindow-id"))
 			return BusSyncReply.PASS;
-		overlay.setWindowID(this);
+		overlay.setWindowHandle(this);
 		return BusSyncReply.DROP;
 	}
 }
