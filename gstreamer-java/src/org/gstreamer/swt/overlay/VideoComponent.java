@@ -39,7 +39,9 @@ import com.sun.jna.Platform;
 import com.sun.jna.platform.unix.X11;
 import com.sun.jna.platform.unix.X11.Display;
 import com.sun.jna.platform.unix.X11.Window;
+import com.sun.jna.platform.unix.X11.XCrossingEvent;
 import com.sun.jna.platform.unix.X11.XEvent;
+//import com.sun.jna.platform.unix.X11.XMotionEvent;
 
 /**
  * VideoComponent which use OS's overlay video component 
@@ -97,6 +99,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 										X11.VisibilityChangeMask |
 										X11.StructureNotifyMask |
 										X11.FocusChangeMask |
+										//X11.PointerMotionMask |
 										X11.EnterWindowMask |
 										X11.LeaveWindowMask));
 						while (watcherRunning) {
@@ -106,12 +109,29 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 								getDisplay().asyncExec(new Runnable() {
 									public void run() {
 										if (watcherRunning && !isDisposed()) {
-											if (xEvent.type == X11.EnterNotify) {
-												notifyListeners(SWT.MouseEnter, new Event());
-											} else if (xEvent.type == X11.LeaveNotify) {
-												notifyListeners(SWT.MouseExit, new Event());
-											} else {
-												overlay.expose();
+											final Event swtEvent = new Event();
+											XCrossingEvent ce;
+											switch (xEvent.type) {
+//												case X11.MotionNotify:
+//													XMotionEvent e = (XMotionEvent)xEvent.readField("xmotion");
+//													swtEvent.x = e.x;
+//													swtEvent.y = e.y;
+//													notifyListeners(SWT.MouseMove, swtEvent);
+//													break;
+												case X11.EnterNotify:
+													ce = (XCrossingEvent)xEvent.readField("xcrossing");
+													swtEvent.x = ce.x;
+													swtEvent.y = ce.y;
+													notifyListeners(SWT.MouseEnter, swtEvent);
+													break;
+												case X11.LeaveNotify:
+													ce = (XCrossingEvent)xEvent.readField("xcrossing");
+													swtEvent.x = ce.x;
+													swtEvent.y = ce.y;
+													notifyListeners(SWT.MouseExit, swtEvent);
+													break;
+												default:
+													overlay.expose();														
 											}
 										}
 									}
