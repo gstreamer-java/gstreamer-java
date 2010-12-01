@@ -95,12 +95,12 @@ public class OverlayPlayer {
                             if (s == null || !s.hasName("prepare-xwindow-id")) {
                                 return BusSyncReply.PASS;
                             }
-                            XOverlay.wrap(videoSink).setWindowID(canvas);
+                            XOverlay.wrap(videoSink).setWindowHandle(canvas);
                             return BusSyncReply.DROP;
                         }
                     });
                 } else {
-                    XOverlay.wrap(videoSink).setWindowID(canvas);
+                    XOverlay.wrap(videoSink).setWindowHandle(canvas);
                 } 
                 player.play();       
             }  
