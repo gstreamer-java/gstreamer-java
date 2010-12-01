@@ -27,10 +27,7 @@ import org.gstreamer.Element;
 import org.gstreamer.GstException;
 import org.gstreamer.interfaces.XOverlay;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.Platform;
-
-import static org.gstreamer.lowlevel.GstXOverlayAPI.GSTXOVERLAY_API;
 
 /**
  * Interface for elements providing tuner operations
@@ -100,19 +97,30 @@ public class SWTOverlay extends XOverlay {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowID(Composite composite) {
+    public void setWindowHandle(Composite composite) {
         // composite style must be embedded
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
         if (Platform.isWindows())
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(composite.handle));
+            setWindowHandle(composite.handle);
         else if (Platform.isLinux())
             try {
-                GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(getLinuxHandle(composite)));
+                setWindowHandle(getLinuxHandle(composite));
             } catch (Exception e) {
                 throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
             }
         else
             throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
+    }
+    /**
+     * Sets the native window for the {@link Element} to use to display video.
+     *
+     * @param window A native window to use to display video, or <tt>null</tt> to
+     * stop using the previously set window.
+     * @deprecated use {@link #setWindowHandle(Composite)} instead
+     */
+    @Deprecated
+    public void setWindowID(Composite composite) {
+    	setWindowHandle(composite);
     }
 }
