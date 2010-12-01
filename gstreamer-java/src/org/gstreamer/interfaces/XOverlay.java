@@ -57,8 +57,19 @@ public class XOverlay extends GstInterface {
      *
      * @param handle A native handle to use to display video.
      */
-    public void setWindowID(long handle) {
+    public void setWindowHandle(long handle) {
     	GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
+    	//GSTXOVERLAY_API.gst_x_overlay_set_xwindow_handle(this, new NativeLong(handle));
+    }
+    /**
+     * Sets the native window for the {@link Element} to use to display video.
+     *
+     * @param handle A native handle to use to display video.
+     * @deprecated use {@link #setWindowHandle(long)} instead
+     */
+    @Deprecated
+    public void setWindowID(long handle) {
+    	setWindowHandle(handle);
     }
 
     /**
@@ -67,17 +78,29 @@ public class XOverlay extends GstInterface {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowID(java.awt.Component window) {
+    public void setWindowHandle(java.awt.Component window) {
         if (window == null) {
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(0));
+            setWindowHandle(0);
             return;
         }
         if (window.isLightweight())
             throw new IllegalArgumentException("Component must be a native window");
         if (Platform.isWindows())
             GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, Native.getComponentPointer(window));
+            //GSTXOVERLAY_API.gst_x_overlay_set_window_handle(this, Native.getComponentPointer(window));
         else
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(Native.getComponentID(window)));
+            setWindowHandle(Native.getComponentID(window));
+    }
+    /**
+     * Sets the native window for the {@link Element} to use to display video.
+     *
+     * @param window A native window to use to display video, or <tt>null</tt> to
+     * stop using the previously set window.
+     * @deprecated use {@link #setWindowHandle(java.awt.Component)} instead
+     */
+    @Deprecated
+    public void setWindowID(java.awt.Component window) {
+    	setWindowHandle(window);
     }
        
     /**
@@ -97,5 +120,28 @@ public class XOverlay extends GstInterface {
      */
     public void handleEvent(boolean handle_events) {
     	GSTXOVERLAY_API.gst_x_overlay_handle_events(this, handle_events);
+    }
+    
+    /**
+     * Configure a subregion as a video target within the window set by 
+     * {@link #setWindowHandle(long)}. If this is not used or not supported 
+     * the video will fill the area of the window set as the overlay to 100%. 
+     * By specifying the rectangle, the video can be overlayed to a specific 
+     * region of that window only. After setting the new rectangle one should 
+     * call {@link #expose()} to force a redraw. To unset the region pass -1 
+     * for the width and height parameters.
+     * 
+     * This method is needed for non fullscreen video overlay in UI toolkits 
+     * that do not support subwindows.
+     * 
+     * @param overlay
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @return
+     */
+    boolean setRenderRectangle(XOverlay overlay, int x, int y, int width, int height) {
+    	return GSTXOVERLAY_API.gst_x_overlay_set_render_rectangle(this, x, y, width, height);
     }
 }
