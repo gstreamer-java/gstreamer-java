@@ -70,7 +70,7 @@ public class Bin extends Element {
     public static final int DEBUG_GRAPH_SHOW_STATES             = (1<<3);
     public static final int DEBUG_GRAPH_SHOW_ALL                = ((1<<4)-1);
     
-    public Bin(Initializer init) { 
+    public Bin(Initializer init) {
         super(init);
     }
     
