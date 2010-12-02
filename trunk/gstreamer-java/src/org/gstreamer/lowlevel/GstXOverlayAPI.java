@@ -31,14 +31,17 @@ public interface GstXOverlayAPI extends Library {
 	GType gst_x_overlay_get_type();
 
 	/* virtual class function wrappers */
+	@Deprecated
 	void gst_x_overlay_set_xwindow_id(XOverlay overlay, NativeLong xwindow_id);
-	//void gst_x_overlay_set_window_handle(XOverlay overlay, NativeLong xwindow_id);
+	void gst_x_overlay_set_window_handle(XOverlay overlay, NativeLong xwindow_id);
 
+	@Deprecated
 	void gst_x_overlay_set_xwindow_id(XOverlay overlay, Pointer xwindow_id);
-	//void gst_x_overlay_set_window_handle(XOverlay overlay, Pointer xwindow_id);
+	void gst_x_overlay_set_window_handle(XOverlay overlay, Pointer xwindow_id);
 
+	@Deprecated
 	void gst_x_overlay_got_xwindow_id(XOverlay overlay, NativeLong xwindow_id);
-	//void gst_x_overlay_set_window_handle(XOverlay overlay, NativeLong xwindow_id);
+	void gst_x_overlay_got_window_handle(XOverlay overlay, NativeLong xwindow_id);
 
 	void gst_x_overlay_prepare_xwindow_id(XOverlay overlay);
 
