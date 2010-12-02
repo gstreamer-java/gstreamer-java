@@ -58,8 +58,7 @@ public class XOverlay extends GstInterface {
      * @param handle A native handle to use to display video.
      */
     public void setWindowHandle(long handle) {
-    	GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, new NativeLong(handle));
-    	//GSTXOVERLAY_API.gst_x_overlay_set_xwindow_handle(this, new NativeLong(handle));
+    	GSTXOVERLAY_API.gst_x_overlay_set_window_handle(this, new NativeLong(handle));
     }
     /**
      * Sets the native window for the {@link Element} to use to display video.
@@ -86,8 +85,7 @@ public class XOverlay extends GstInterface {
         if (window.isLightweight())
             throw new IllegalArgumentException("Component must be a native window");
         if (Platform.isWindows())
-            GSTXOVERLAY_API.gst_x_overlay_set_xwindow_id(this, Native.getComponentPointer(window));
-            //GSTXOVERLAY_API.gst_x_overlay_set_window_handle(this, Native.getComponentPointer(window));
+            GSTXOVERLAY_API.gst_x_overlay_set_window_handle(this, Native.getComponentPointer(window));
         else
             setWindowHandle(Native.getComponentID(window));
     }
