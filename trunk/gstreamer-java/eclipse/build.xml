@@ -9,11 +9,12 @@
 			<include name="jna.jar"/>
 			<include name="junit4.jar"/>
 			<include name="swt.jar"/>
+			<include name="platform.jar"/>
 			<include name="applejavaextensions.jar"/>
 		</fileset>
 	</path>		
 	
-	<property name="javaVersion" value="1.5"/>
+	<property name="javaVersion" value="1.5s"/>
 	
 	<property name="libraryName"  value="gstreamer-java"/>
 	
@@ -65,6 +66,7 @@
 		<mkdir dir="${dist}/lib" />
 		<jar jarfile="${dist}/${jarFile}" basedir="${bin}"/>
 		<copy file="${libraryClasspath}/jna.jar" todir="${dist}/lib" />
+		<copy file="${libraryClasspath}/platform.jar" todir="${dist}/lib" />
 		<copy file="${libraryClasspath}/swt.jar" todir="${dist}/lib" />
 		<copy file="${libraryClasspath}/applejavaextensions.jar" todir="${dist}/lib" />  	
 		<!-- done, finished. -->
