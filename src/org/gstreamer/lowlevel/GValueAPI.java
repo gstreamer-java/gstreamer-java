@@ -169,10 +169,13 @@ public interface GValueAPI extends Library {
 
     static class GValueArray extends com.sun.jna.Structure {
         public volatile int n_values;
-        public volatile GValue[] values;
+        public volatile Pointer p_values;
+        
         //public volatile Pointer values;
         //< private >
         public volatile int n_prealloced;
+
+        private volatile GValue[] values;
 
         public GValueArray() {
             clear();
@@ -181,7 +184,7 @@ public interface GValueAPI extends Library {
             n_values = pointer.getInt(0);
 
             if (n_values > 0) {
-                Pointer pointerToArray = pointer.getPointer(4);
+                Pointer pointerToArray = pointer.getPointer(GType.SIZE);
                 GValue val = new GValue(pointerToArray);
                 values = (GValue[]) val.toArray(n_values);
             } else {
@@ -195,6 +198,10 @@ public interface GValueAPI extends Library {
 
         public int getNValues() {
             return n_values;
+        }
+        
+        public GValue[] getValues() {
+        	return values;
         }
 
         public Object getValue(int i) {

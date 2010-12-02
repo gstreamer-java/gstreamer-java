@@ -401,7 +401,7 @@ public class PlayBin extends Pipeline {
       GValueArray garray = new GValueArray(ptr);
       List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
 
-      for (GValueAPI.GValue value : garray.values) {
+      for (GValueAPI.GValue value : garray.getValues()) {
         StreamInfo streamInfo;
         { /*
            * this is a work-around gst_stream_info_get_type() symbols not
