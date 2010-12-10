@@ -6,6 +6,8 @@
 
 Evaluate options for improved performance:
 
+  * BridJ: http://code.google.com/p/bridj/
+
   * JNA's direct mapping: https://jna.dev.java.net/#direct
 
   * Java Abstracted Foreign Function Layer: http://github.com/wmeissner/jaffl  
