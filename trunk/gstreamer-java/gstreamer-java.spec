@@ -18,16 +18,16 @@ ExcludeArch:	ppc ppc64
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0, jpackage-utils, jna, jna-contrib
+Requires:	java >= 1:1.6.0, jpackage-utils, jna
 Requires:	gstreamer, gstreamer-plugins-base, gstreamer-plugins-good
-BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna, jna-contrib
+BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna
 BuildRequires:	gstreamer-devel, gstreamer-plugins-base-devel, gstreamer-plugins-good
 BuildRequires:	ant, ant-junit
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 BuildRequires:	junit4
 %endif
 %ifarch %{arch_with_swt} noarch
-BuildRequires:	libswt3-gtk2
+BuildRequires:	libswt3-gtk2, jna-contrib
 %endif
 
 %description
@@ -39,7 +39,7 @@ framework.
 Summary:	SWT support for %{name}
 Group:		System Environment/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libswt3-gtk2
+Requires:	libswt3-gtk2, jna-contrib
 
 %description swt
 This package contains SWT support for %{name}.
