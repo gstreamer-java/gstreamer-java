@@ -1,10 +1,10 @@
-package org.gstreamer.elements.bad;
+package org.gstreamer.elements;
 
 import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
+import com.sun.jna.ptr.LongByReference;
 
 public class InputSelector extends Element {
     public InputSelector(Initializer init) {
@@ -18,7 +18,7 @@ public class InputSelector extends Element {
      * if there is no current active pad or the current active pad never received data.
      */
     public static interface BLOCK {
-    	public long block(InputSelector inputselector, Pointer user_data); 
+    	public long block(InputSelector inputselector); 
     }
     /**
      * Adds a listener for the <code>block</code> signal
@@ -28,8 +28,8 @@ public class InputSelector extends Element {
     public void connect(final BLOCK listener) {
         connect(BLOCK.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public long callback(InputSelector inputselector, Pointer user_data) {
-                return listener.block(inputselector, user_data);
+            public long callback(InputSelector inputselector) {
+                return listener.block(inputselector);
             }
         });
     }
@@ -67,10 +67,9 @@ public class InputSelector extends Element {
     	 * 			the running time of the previously active sink pad
     	 * @param start_time running time at which to start the new segment, or -1 to use the 
     	 * 			running time of the newly active sink pad
-    	 * @param user_data user data set when the signal handler was connected.
     	 * @return
     	 */
-    	public void Switch(InputSelector inputselector, Pad pad, int stop_time, int start_time, Pointer user_data); 
+    	public void Switch(InputSelector inputselector, Pad pad, long stop_time, long start_time); 
     }
     /**
      * Adds a listener for the <code>switch</code> signal
@@ -80,10 +79,18 @@ public class InputSelector extends Element {
     public void connect(final SWITCH listener) {
         connect(SWITCH.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(InputSelector inputselector, Pad pad, int stop_time, int start_time, Pointer user_data) {
-                listener.Switch(inputselector, pad, stop_time, start_time, user_data);
+            public void callback(InputSelector inputselector, Pad pad, long stop_time, long start_time) {
+                listener.Switch(inputselector, pad, stop_time, start_time);
             }
         });
     }
-
+    
+    public long block() {
+    	LongByReference result = new LongByReference();
+    	emit("block", result);
+    	return result.getValue();
+    }
+    public void switchTo(Pad pad, long stop_time, long start_time) {
+    	emit("switch", pad, stop_time, start_time);
+    }
 }

@@ -20,8 +20,6 @@ package org.gstreamer.elements;
 import org.gstreamer.Buffer;
 import org.gstreamer.lowlevel.GstAPI;
 
-import com.sun.jna.Pointer;
-
 public class Identity extends BaseTransform {
 	public static final String GST_NAME = "identity";
 
@@ -45,9 +43,8 @@ public class Identity extends BaseTransform {
          * 
          * @param identity the identity instance.
          * @param buffer the buffer for the data.
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void handoff(Identity identity, Buffer buffer, Pointer user_data);
+        public void handoff(Identity identity, Buffer buffer);
     }
     
     /**
@@ -58,8 +55,8 @@ public class Identity extends BaseTransform {
     public void connect(final HANDOFF listener) {
         connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Identity identity, Buffer buffer, Pointer user_data) {
-                listener.handoff(identity, buffer, user_data);
+            public void callback(Identity identity, Buffer buffer) {
+                listener.handoff(identity, buffer);
             }            
         });
     }

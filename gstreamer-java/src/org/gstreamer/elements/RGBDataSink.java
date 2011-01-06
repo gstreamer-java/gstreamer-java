@@ -33,8 +33,6 @@ import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
-import com.sun.jna.Pointer;
-
 public class RGBDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
@@ -124,11 +122,11 @@ public class RGBDataSink extends Bin {
     }
 
     class VideoHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
-        public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
         	doHandoff(buffer, pad, false);
         }
         
-        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad) {
         	doHandoff(buffer, pad, true);
     	}        
         

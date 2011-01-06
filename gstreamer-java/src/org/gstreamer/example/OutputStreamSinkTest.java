@@ -40,8 +40,6 @@ import org.gstreamer.elements.DecodeBin2;
 import org.gstreamer.io.ReadableByteChannelSrc;
 import org.gstreamer.io.WriteableByteChannelSink;
 
-import com.sun.jna.Pointer;
-
 public class OutputStreamSinkTest {
     static final String name = "InputStreamSrcTest";    
 
@@ -98,7 +96,7 @@ public class OutputStreamSinkTest {
         pipe.add(audioBin);
 
         decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
-            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean las, Pointer user_datat) {
+            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean last) {
                 System.out.println("newDecodedPad");
                   /* only link once */
                 Pad audioPad = audioBin.getStaticPad("sink");

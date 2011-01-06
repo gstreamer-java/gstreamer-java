@@ -18,8 +18,8 @@
 
 package org.gstreamer.elements;
 
-import com.sun.jna.Pointer;
 import java.nio.IntBuffer;
+
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
@@ -111,7 +111,7 @@ public class RGBDataAppSink extends Bin {
      *
      */
     class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(AppSink elem, Pointer userData)
+        public void newBuffer(AppSink elem)
         {
             Buffer buffer = sink.pullBuffer();
 

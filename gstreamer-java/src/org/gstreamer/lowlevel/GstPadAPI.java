@@ -102,29 +102,26 @@ public interface GstPadAPI extends com.sun.jna.Library {
     void gst_pad_set_fixatecaps_function(Pad pad, PadFixateCaps fixate);
     
     public static interface PadBlockCallback extends GstCallback {
-        void callback(Pad pad, boolean blocked, Pointer unused);
+        void callback(Pad pad, boolean blocked, Pointer user_data);
     }
 
     /* probes */
     public static interface PadDataProbe extends GstCallback {
-        void callback(Pad pad, Buffer buffer, Pointer unused);
+        void callback(Pad pad, Buffer buffer, Pointer user_data);
     }
     public static interface PadEventProbe extends GstCallback {
-        boolean callback(Pad pad, Event ev, Pointer unused);
+        boolean callback(Pad pad, Event ev, Pointer user_data);
     }
 
-    NativeLong /* gulong */ gst_pad_add_data_probe(Pad pad, PadDataProbe handler,
-            Pointer data);
+    NativeLong /* gulong */ gst_pad_add_data_probe(Pad pad, PadDataProbe handler, Pointer data);
 
     void gst_pad_remove_data_probe(Pad pad, NativeLong handler_id);
 
-    NativeLong /* gulong */ gst_pad_add_event_probe(Pad pad, PadEventProbe handler,
-            Pointer data);
+    NativeLong /* gulong */ gst_pad_add_event_probe(Pad pad, PadEventProbe handler, Pointer data);
 
     void gst_pad_remove_event_probe(Pad pad, NativeLong handler_id);
 
-    NativeLong /* gulong */ gst_pad_add_buffer_probe(Pad pad, GstCallback handler,
-            Pointer data);
+    NativeLong /* gulong */ gst_pad_add_buffer_probe(Pad pad, GstCallback handler, Pointer data);
 
     void gst_pad_remove_buffer_probe(Pad pad, NativeLong handler_id);
 }

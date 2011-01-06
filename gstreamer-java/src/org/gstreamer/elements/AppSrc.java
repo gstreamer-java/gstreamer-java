@@ -26,7 +26,6 @@ import org.gstreamer.Caps;
 import org.gstreamer.lowlevel.AppAPI;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;
 
 /**
@@ -102,9 +101,8 @@ public class AppSrc extends BaseSrc {
          *
          * @param elem
          * @param size
-         * @param userData
          */
-        public void needData(AppSrc elem, int size, Pointer userData);
+        public void needData(AppSrc elem, int size);
     }
     /**
      * Adds a listener for the <code>need-data</code> signal
@@ -114,8 +112,8 @@ public class AppSrc extends BaseSrc {
     public void connect(final NEED_DATA listener) {
         connect(NEED_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSrc elem, int size, Pointer userData) {
-                listener.needData(elem, size, userData);
+            public void callback(AppSrc elem, int size) {
+                listener.needData(elem, size);
             }
         });
     }
@@ -135,9 +133,8 @@ public class AppSrc extends BaseSrc {
         /**
          *
          * @param elem
-         * @param userData
          */
-        public void enoughData(AppSrc elem, Pointer userData);
+        public void enoughData(AppSrc elem);
     }
 
     /**
@@ -148,8 +145,8 @@ public class AppSrc extends BaseSrc {
     public void connect(final ENOUGH_DATA listener) {
         connect(ENOUGH_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSrc elem, Pointer userData) {
-                listener.enoughData(elem, userData);
+            public void callback(AppSrc elem) {
+                listener.enoughData(elem);
             }
         });
     }
@@ -171,9 +168,8 @@ public class AppSrc extends BaseSrc {
          *
          * @param elem
          * @param position
-         * @param userData
          */
-        public void seekData(AppSrc elem, long position, Pointer userData);
+        public void seekData(AppSrc elem, long position);
     }
     /**
      * Adds a listener for the <code>seek-data</code> signal
@@ -187,8 +183,8 @@ public class AppSrc extends BaseSrc {
     public void connect(final SEEK_DATA listener) {
         connect(SEEK_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSrc elem, long position, Pointer userData) {
-                listener.seekData(elem, position, userData);
+            public void callback(AppSrc elem, long position) {
+                listener.seekData(elem, position);
             }
         });
     }

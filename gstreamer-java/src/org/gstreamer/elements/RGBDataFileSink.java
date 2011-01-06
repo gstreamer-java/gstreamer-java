@@ -22,17 +22,16 @@ package org.gstreamer.elements;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.concurrent.ScheduledExecutorService;
-import com.sun.jna.Pointer;
 
-import org.gstreamer.Format;
-import org.gstreamer.Gst;
-import org.gstreamer.ClockTime;
-import org.gstreamer.Buffer;
-import org.gstreamer.State;
 import org.gstreamer.Bin;
+import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
+import org.gstreamer.ClockTime;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.Format;
+import org.gstreamer.Gst;
+import org.gstreamer.State;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
@@ -215,7 +214,7 @@ public class RGBDataFileSink extends Bin {
      *
      */
     class AppSrcNeedDataListener implements AppSrc.NEED_DATA {
-        public void needData(AppSrc elem, int size, Pointer userData)
+        public void needData(AppSrc elem, int size)
         {
             if (!sendingData)
             {
@@ -236,7 +235,7 @@ public class RGBDataFileSink extends Bin {
      *
      */
     class AppSrcEnoughDataListener implements AppSrc.ENOUGH_DATA {
-        public void enoughData(AppSrc elem, Pointer userData)
+        public void enoughData(AppSrc elem)
         {
             if (sendingData)
             {

@@ -43,8 +43,6 @@ import org.gstreamer.elements.BaseSrc;
 import org.gstreamer.elements.FakeSrc;
 import org.gstreamer.swing.VideoComponent;
 
-import com.sun.jna.Pointer;
-
 /**
  *
  */
@@ -91,7 +89,7 @@ public class FakeSrcTest {
                 fakesrc.connect(new BaseSrc.HANDOFF() {
                     byte color = 0;
                     byte[] data = new byte[width * height * 2];
-                    public void handoff(BaseSrc src, Buffer buffer, Pad pad, Pointer user_data) {
+                    public void handoff(BaseSrc src, Buffer buffer, Pad pad) {
                         System.out.println("HANDOFF: Element=" + src.getNativeAddress()
                                 + " buffer=" + buffer.getNativeAddress()
                                 + " pad=" + pad.getNativeAddress());

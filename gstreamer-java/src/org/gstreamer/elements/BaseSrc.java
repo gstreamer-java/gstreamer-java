@@ -27,8 +27,6 @@ import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.BaseSrcAPI;
 import org.gstreamer.lowlevel.GstAPI;
 
-import com.sun.jna.Pointer;
-
 public class BaseSrc extends Element {
 	private static final BaseSrcAPI gst() { return BaseSrcAPI.BASESRC_API; }
 
@@ -81,7 +79,7 @@ public class BaseSrc extends Element {
          * @param buffer the buffer for the data.
          * @param pad the pad on the element.
          */
-        public void handoff(BaseSrc src, Buffer buffer, Pad pad, Pointer user_data);
+        public void handoff(BaseSrc src, Buffer buffer, Pad pad);
     }
     
     /**
@@ -92,8 +90,8 @@ public class BaseSrc extends Element {
     public void connect(final HANDOFF listener) {
         connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(BaseSrc src, Buffer buffer, Pad pad, Pointer user_data) {
-                listener.handoff(src, buffer, pad, user_data);
+            public void callback(BaseSrc src, Buffer buffer, Pad pad) {
+                listener.handoff(src, buffer, pad);
             }            
         });
     }

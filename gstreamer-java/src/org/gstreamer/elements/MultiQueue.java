@@ -21,8 +21,6 @@ package org.gstreamer.elements;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
-
 /**
  * A gstreamer element for Multiple data queue.
  */
@@ -49,9 +47,8 @@ public class MultiQueue extends Element {
     public static interface UNDERRUN {
         /**
          * @param mq the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void underrun(MultiQueue mq, Pointer userData);
+        public void underrun(MultiQueue mq);
     }
     /**
      * Add a listener for the <code>underrun</code> signal on this MultiQueue
@@ -61,8 +58,8 @@ public class MultiQueue extends Element {
     public void connect(final UNDERRUN listener) {
         connect(UNDERRUN.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(MultiQueue mq, Pointer userData) {
-                listener.underrun(mq, userData);
+            public void callback(MultiQueue mq) {
+                listener.underrun(mq);
             }
         });
     }    
@@ -88,9 +85,8 @@ public class MultiQueue extends Element {
     public static interface OVERRUN {
         /**
          * @param mq the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void overrun(MultiQueue mq, Pointer userData);
+        public void overrun(MultiQueue mq);
     }
     /**
      * Add a listener for the <code>overrun</code> signal on this MultiQueue
@@ -100,8 +96,8 @@ public class MultiQueue extends Element {
     public void connect(final OVERRUN listener) {
         connect(OVERRUN.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(MultiQueue mq, Pointer userData) {
-                listener.overrun(mq, userData);
+            public void callback(MultiQueue mq) {
+                listener.overrun(mq);
             }
         });
     }    

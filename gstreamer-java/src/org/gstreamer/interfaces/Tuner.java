@@ -221,7 +221,7 @@ public class Tuner extends GstInterface {
     public void connect(final NORM_CHANGED listener) {
         element.connect(NORM_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer tuner, TunerNorm norm, Pointer user_data) {
+            public boolean callback(Pointer tuner, TunerNorm norm) {
                 listener.normChanged(Tuner.this, norm);
                 return true;
             }
@@ -245,7 +245,7 @@ public class Tuner extends GstInterface {
     public void connect(final CHANNEL_CHANGED listener) {
         element.connect(CHANNEL_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer tuner, Pointer channel, Pointer user_data) {
+            public boolean callback(Pointer tuner, Pointer channel) {
                 listener.channelChanged(Tuner.this, channelFor(channel, false));
                 return true;
             }
@@ -269,7 +269,7 @@ public class Tuner extends GstInterface {
     public void connect(final FREQUENCY_CHANGED listener) {
         element.connect(FREQUENCY_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer tuner, Pointer channel, long frequency, Pointer user_data) {
+            public boolean callback(Pointer tuner, Pointer channel, long frequency) {
                 listener.frequencyChanged(Tuner.this, channelFor(channel, false), frequency);
                 return true;
             }
@@ -293,7 +293,7 @@ public class Tuner extends GstInterface {
     public void connect(final SIGNAL_CHANGED listener) {
         element.connect(SIGNAL_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer tuner, Pointer channel, int signal, Pointer user_data) {
+            public boolean callback(Pointer tuner, Pointer channel, int signal) {
                 listener.signalChanged(Tuner.this, channelFor(channel, false), signal);
                 return true;
             }

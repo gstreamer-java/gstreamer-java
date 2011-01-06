@@ -423,7 +423,7 @@ public class Pad extends GstObject {
     public void connect(final LINKED listener) {
         connect(LINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pad pad, Pad peer, Pointer user_data) {
+            public boolean callback(Pad pad, Pad peer) {
                 listener.linked(pad, peer);
                 return true;
             }
@@ -447,7 +447,7 @@ public class Pad extends GstObject {
     public void connect(final UNLINKED listener) {
         connect(UNLINKED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pad pad, Pad peer, Pointer user_data) {
+            public boolean callback(Pad pad, Pad peer) {
                 listener.unlinked(pad, peer);
                 return true;
             }
@@ -471,7 +471,7 @@ public class Pad extends GstObject {
     public void connect(final REQUEST_LINK listener) {
         connect(REQUEST_LINK.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pad pad, Pad peer, Pointer user_daa) {
+            public boolean callback(Pad pad, Pad peer) {
                 listener.requestLink(pad, peer);
                 return true;
             }
