@@ -24,8 +24,6 @@ import org.gstreamer.Element;
 import org.gstreamer.Pad;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
-
 /**
  * Utility {@link Element} to automatically identify media stream types and hook
  * up elements.
@@ -57,7 +55,7 @@ public class DecodeBin extends Bin {
          * @param pad the new Pad.
          * @param last (unknown)
          */
-        public void newDecodedPad(DecodeBin element, Pad pad, boolean last, Pointer user_data);
+        public void newDecodedPad(DecodeBin element, Pad pad, boolean last);
     }
     /**
      * Adds a listener for the <code>new-decoded-pad</code> signal
@@ -68,8 +66,8 @@ public class DecodeBin extends Bin {
     public void connect(final NEW_DECODED_PAD listener) {
         connect(NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin elem, Pad pad, boolean last, Pointer user_data) {
-                listener.newDecodedPad(elem, pad, last, user_data);
+            public void callback(DecodeBin elem, Pad pad, boolean last) {
+                listener.newDecodedPad(elem, pad, last);
             }
         });
     }
@@ -92,7 +90,7 @@ public class DecodeBin extends Bin {
          * @param element The element which has the new Pad.
          * @param pad the new Pad.
          */
-        public void removedDecodedPad(DecodeBin element, Pad pad, Pointer user_data);
+        public void removedDecodedPad(DecodeBin element, Pad pad);
     }
     /**
      * Adds a listener for the <code>removed-decoded-pad</code> signal
@@ -103,8 +101,8 @@ public class DecodeBin extends Bin {
     public void connect(final REMOVED_DECODED_PAD listener) {
         connect(REMOVED_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin elem, Pad pad, Pointer user_data) {
-                listener.removedDecodedPad(elem, pad, user_data);
+            public void callback(DecodeBin elem, Pad pad) {
+                listener.removedDecodedPad(elem, pad);
             }
         });
     }
@@ -127,7 +125,7 @@ public class DecodeBin extends Bin {
          * @param pad the new Pad.
          * @param caps the caps of the pad that cannot be resolved.
          */
-        public void unknownType(DecodeBin element, Pad pad, Caps caps, Pointer user_data);
+        public void unknownType(DecodeBin element, Pad pad, Caps caps);
     }
     /**
      * Adds a listener for the <code>unknown-type</code> signal
@@ -138,8 +136,8 @@ public class DecodeBin extends Bin {
     public void connect(final UNKNOWN_TYPE listener) {
         connect(UNKNOWN_TYPE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin elem, Pad pad, Caps caps, Pointer user_data) {
-                listener.unknownType(elem, pad, caps, user_data);
+            public void callback(DecodeBin elem, Pad pad, Caps caps) {
+                listener.unknownType(elem, pad, caps);
             }
         });
     }

@@ -21,8 +21,6 @@ package org.gstreamer.elements;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
-
 /**
  * A gstreamer element for data queue.
  */
@@ -48,9 +46,8 @@ public class Queue extends Element {
     public static interface OVERRUN {
         /**
          * @param queue the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void overrun(Queue queue, Pointer userData);
+        public void overrun(Queue queue);
     }
     /**
      * Add a listener for the <code>overrun</code> signal on this Queue
@@ -60,8 +57,8 @@ public class Queue extends Element {
     public void connect(final OVERRUN listener) {
         connect(OVERRUN.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Queue queue, Pointer userData) {
-                listener.overrun(queue, userData);
+            public void callback(Queue queue) {
+                listener.overrun(queue);
             }
         });
     }    
@@ -85,9 +82,8 @@ public class Queue extends Element {
     public static interface RUNNING {
         /**
          * @param queue the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void running(Queue queue, Pointer userData);
+        public void running(Queue queue);
     }
     /**
      * Add a listener for the <code>running</code> signal on this Queue
@@ -97,8 +93,8 @@ public class Queue extends Element {
     public void connect(final RUNNING listener) {
         connect(RUNNING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Queue queue, Pointer userData) {
-                listener.running(queue, userData);
+            public void callback(Queue queue) {
+                listener.running(queue);
             }
         });
     }    
@@ -122,9 +118,8 @@ public class Queue extends Element {
     public static interface UNDERRUN {
         /**
          * @param queue the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void underrun(Queue queue, Pointer userData);
+        public void underrun(Queue queue);
     }
     /**
      * Add a listener for the <code>underrun</code> signal on this Queue
@@ -134,8 +129,8 @@ public class Queue extends Element {
     public void connect(final UNDERRUN listener) {
         connect(UNDERRUN.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Queue queue, Pointer userData) {
-                listener.underrun(queue, userData);
+            public void callback(Queue queue) {
+                listener.underrun(queue);
             }
         });
     }    
@@ -157,9 +152,8 @@ public class Queue extends Element {
     public static interface PUSHING {
         /**
          * @param queue the object which received the signal
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void pushing(Queue queue, Pointer userData);
+        public void pushing(Queue queue);
     }
     /**
      * Add a listener for the <code>pushing</code> signal on this Queue
@@ -169,8 +163,8 @@ public class Queue extends Element {
     public void connect(final PUSHING listener) {
         connect(PUSHING.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Queue queue, Pointer userData) {
-                listener.pushing(queue, userData);
+            public void callback(Queue queue) {
+                listener.pushing(queue);
             }
         });
     }    

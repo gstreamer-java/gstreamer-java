@@ -21,17 +21,15 @@
 
 package org.gstreamer;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstElementAPI;
+import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
-
-import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 /**
  * Abstract base class for all pipeline elements.
@@ -439,7 +437,7 @@ public class Element extends GstObject {
     public void connect(final PAD_ADDED listener) {
         connect(PAD_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pad pad, Pointer user_data) {
+            public void callback(Element elem, Pad pad) {
                 listener.padAdded(elem, pad);
             }
         });
@@ -461,7 +459,7 @@ public class Element extends GstObject {
     public void connect(final PAD_REMOVED listener) {
         connect(PAD_REMOVED.class, listener,new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pad pad, Pointer user_data) {
+            public void callback(Element elem, Pad pad) {
                 listener.padRemoved(elem, pad);
             }
         });
@@ -485,7 +483,7 @@ public class Element extends GstObject {
     public void connect(final NO_MORE_PADS listener) {
         connect(NO_MORE_PADS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, Pointer user_data) {
+            public void callback(Element elem) {
                 listener.noMorePads(elem);
             }
         });

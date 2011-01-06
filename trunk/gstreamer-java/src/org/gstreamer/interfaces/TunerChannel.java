@@ -156,7 +156,7 @@ public class TunerChannel extends GObject {
     public void connect(final FREQUENCY_CHANGED listener) {
         connect(FREQUENCY_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer unused, long frequency, Pointer user_data) {
+            public boolean callback(long frequency) {
                 listener.frequencyChanged(TunerChannel.this, frequency);
                 return true;
             }
@@ -180,7 +180,7 @@ public class TunerChannel extends GObject {
     public void connect(final SIGNAL_CHANGED listener) {
         connect(SIGNAL_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(Pointer unused, int signal, Pointer user_data) {
+            public boolean callback(int signal) {
                 listener.signalChanged(TunerChannel.this, signal);
                 return true;
             }

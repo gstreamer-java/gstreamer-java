@@ -22,13 +22,13 @@
 package org.gstreamer;
 import java.util.List;
 
+import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstParseAPI;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
-import org.gstreamer.lowlevel.GstBinAPI;
 
 import com.sun.jna.Pointer;
 
@@ -281,7 +281,7 @@ public class Bin extends Element {
          * @param bin the Bin the element was added to.
          * @param element the {@link Element} that was added.
          */
-        public void elementAdded(Bin bin, Element element, Pointer user_data);
+        public void elementAdded(Bin bin, Element element);
     }
     /**
      * Add a listener for the <code>element-added</code> signal on this Bin
@@ -291,8 +291,8 @@ public class Bin extends Element {
     public void connect(final ELEMENT_ADDED listener) {
         connect(ELEMENT_ADDED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Bin bin, Element elem, Pointer user_data) {
-                listener.elementAdded(bin, elem, user_data);
+            public void callback(Bin bin, Element elem) {
+                listener.elementAdded(bin, elem);
             }
         });
     }
@@ -318,7 +318,7 @@ public class Bin extends Element {
          * @param bin the Bin the element was removed from.
          * @param element the {@link Element} that was removed.
          */
-        public void elementRemoved(Bin bin, Element element, Pointer user_data);
+        public void elementRemoved(Bin bin, Element element);
     }
     /**
      * Add a listener for the <code>element-removed</code> signal on this Bin
@@ -328,8 +328,8 @@ public class Bin extends Element {
     public void connect(final ELEMENT_REMOVED listener) {
         connect(ELEMENT_REMOVED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Bin bin, Element elem, Pointer user_data) {
-                listener.elementRemoved(bin, elem, user_data);
+            public void callback(Bin bin, Element elem) {
+                listener.elementRemoved(bin, elem);
             }
         });
     }
@@ -354,7 +354,7 @@ public class Bin extends Element {
          * 
          * @param bin the Bin the element was removed from.
          */
-        public void doLatency(Bin bin, Pointer user_data);
+        public void doLatency(Bin bin);
     }
     /**
      * Add a listener for the <code>do-latency</code> signal on this Bin
@@ -364,8 +364,8 @@ public class Bin extends Element {
     public void connect(final DO_LATENCY listener) {
         connect(DO_LATENCY.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Bin bin, Pointer user_data) {
-                listener.doLatency(bin, user_data);
+            public void callback(Bin bin) {
+                listener.doLatency(bin);
             }
         });
     }

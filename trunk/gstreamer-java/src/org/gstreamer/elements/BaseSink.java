@@ -123,7 +123,7 @@ public class BaseSink extends Element {
          * @param buffer the buffer for the data.
          * @param pad the pad on the element.
          */
-        public void handoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad);
     }
     /**
      * Add a listener for the <code>handoff</code> signal on this sink
@@ -133,8 +133,8 @@ public class BaseSink extends Element {
     public void connect(final HANDOFF listener) {
         connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
-                listener.handoff(sink, buffer, pad, user_data);
+            public void callback(BaseSink sink, Buffer buffer, Pad pad) {
+                listener.handoff(sink, buffer, pad);
             }            
         });
     }
@@ -160,9 +160,8 @@ public class BaseSink extends Element {
          * @param sink the sink instance.
          * @param buffer the buffer that just has been received.
          * @param pad the pad that received it.
-         * @param user_data user data set when the signal handler was connected.
          */
-        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data);
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad);
     }
     /**
      * Add a listener for the <code>preroll-handoff</code> signal.
@@ -172,8 +171,8 @@ public class BaseSink extends Element {
     public void connect(final PREROLL_HANDOFF listener) {
         connect(PREROLL_HANDOFF.class, listener, new GstAPI.GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(BaseSink sink, Buffer buffer, Pad pad, Pointer user_data) {
-                listener.prerollHandoff(sink, buffer, pad, user_data);
+            public void callback(BaseSink sink, Buffer buffer, Pad pad) {
+                listener.prerollHandoff(sink, buffer, pad);
             }
         });
     }

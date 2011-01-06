@@ -31,8 +31,6 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.Video;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
-
 
 /*
  * <p>
@@ -295,7 +293,7 @@ public class PlayBin2 extends Pipeline {
     public static interface ABOUT_TO_FINISH {
         /**
          */
-        public void aboutToFinish(PlayBin2 element, Pointer user_data);
+        public void aboutToFinish(PlayBin2 element);
     }
     /**
      * Adds a listener for the <code>about-to-finish</code> signal
@@ -303,8 +301,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final ABOUT_TO_FINISH listener) {
         connect(ABOUT_TO_FINISH.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, Pointer user_data) {
-                listener.aboutToFinish(elem, user_data);
+            public void callback(PlayBin2 elem) {
+                listener.aboutToFinish(elem);
             }
         });
     }
@@ -324,7 +322,7 @@ public class PlayBin2 extends Pipeline {
     public static interface VIDEO_CHANGED {
         /**
          */
-        public void videoChanged(PlayBin2 element, Pointer user_data);
+        public void videoChanged(PlayBin2 element);
     }
     /**
      * Adds a listener for the <code>video-changed</code> signal
@@ -332,8 +330,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final VIDEO_CHANGED listener) {
         connect(VIDEO_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, Pointer user_data) {
-                listener.videoChanged(elem, user_data);
+            public void callback(PlayBin2 elem) {
+                listener.videoChanged(elem);
             }
         });
     }
@@ -353,7 +351,7 @@ public class PlayBin2 extends Pipeline {
     public static interface AUDIO_CHANGED {
         /**
          */
-        public void audioChanged(PlayBin2 element, Pointer user_data);
+        public void audioChanged(PlayBin2 element);
     }
     /**
      * Adds a listener for the <code>audio-changed</code> signal
@@ -361,8 +359,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final AUDIO_CHANGED listener) {
         connect(AUDIO_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, Pointer user_data) {
-                listener.audioChanged(elem, user_data);
+            public void callback(PlayBin2 elem) {
+                listener.audioChanged(elem);
             }
         });
     }
@@ -382,7 +380,7 @@ public class PlayBin2 extends Pipeline {
     public static interface TEXT_CHANGED {
         /**
          */
-        public void textChanged(PlayBin2 element, Pointer user_data);
+        public void textChanged(PlayBin2 element);
     }
     /**
      * Adds a listener for the <code>audio-changed</code> signal
@@ -390,8 +388,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final TEXT_CHANGED listener) {
         connect(TEXT_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, Pointer user_data) {
-                listener.textChanged(elem, user_data);
+            public void callback(PlayBin2 elem) {
+                listener.textChanged(elem);
             }
         });
     }
@@ -412,7 +410,7 @@ public class PlayBin2 extends Pipeline {
         /**
          * @param stream stream index with changed tags
          */
-        public void videoTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+        public void videoTagsChanged(PlayBin2 element, int stream);
     }
     /**
      * Adds a listener for the <code>video-tags-changed</code> signal
@@ -420,8 +418,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final VIDEO_TAGS_CHANGED listener) {
         connect(VIDEO_TAGS_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
-                listener.videoTagsChanged(elem, stream, user_data);
+            public void callback(PlayBin2 elem, int stream) {
+                listener.videoTagsChanged(elem, stream);
             }
         });
     }
@@ -442,7 +440,7 @@ public class PlayBin2 extends Pipeline {
         /**
          * @param stream stream index with changed tags
          */
-        public void audioTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+        public void audioTagsChanged(PlayBin2 element, int stream);
     }
     /**
      * Adds a listener for the <code>audio-tags-changed</code> signal
@@ -450,8 +448,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final AUDIO_TAGS_CHANGED listener) {
         connect(AUDIO_TAGS_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
-                listener.audioTagsChanged(elem, stream, user_data);
+            public void callback(PlayBin2 elem, int stream) {
+                listener.audioTagsChanged(elem, stream);
             }
         });
     }
@@ -472,7 +470,7 @@ public class PlayBin2 extends Pipeline {
         /**
          * @param stream stream index with changed tags
          */
-        public void textTagsChanged(PlayBin2 element, int stream, Pointer user_data);
+        public void textTagsChanged(PlayBin2 element, int stream);
     }
     /**
      * Adds a listener for the <code>audio-tags-changed</code> signal
@@ -480,8 +478,8 @@ public class PlayBin2 extends Pipeline {
     public void connect(final TEXT_TAGS_CHANGED listener) {
         connect(TEXT_TAGS_CHANGED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(PlayBin2 elem, int stream, Pointer user_data) {
-                listener.textTagsChanged(elem, stream, user_data);
+            public void callback(PlayBin2 elem, int stream) {
+                listener.textTagsChanged(elem, stream);
             }
         });
     }

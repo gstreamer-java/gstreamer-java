@@ -22,8 +22,6 @@ import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
-import com.sun.jna.Pointer;
-
 /**
  * Utility {@link Element} to identify media types in the stream.
  */
@@ -53,7 +51,7 @@ public final class TypeFind extends Element {
     public void connect(final HAVE_TYPE listener) {
         connect("have-type", HAVE_TYPE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(Element elem, int probability, Caps caps, Pointer user_data) {
+            public void callback(Element elem, int probability, Caps caps) {
                 listener.typeFound(elem, probability, caps);
             }
         });

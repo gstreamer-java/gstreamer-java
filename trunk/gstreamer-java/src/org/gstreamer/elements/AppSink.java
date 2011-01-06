@@ -22,7 +22,6 @@
 
 package org.gstreamer.elements;
 
-import com.sun.jna.Pointer;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.lowlevel.AppAPI;
@@ -128,11 +127,9 @@ public class AppSink extends BaseSink {
      */
     public static interface EOS {
         /**
-         *
          * @param elem
-         * @param userData
          */
-        public void eos(AppSink elem, Pointer userData);
+        public void eos(AppSink elem);
     }
     /**
      * Adds a listener for the <code>eos</code> signal.
@@ -142,8 +139,8 @@ public class AppSink extends BaseSink {
     public void connect(final EOS listener) {
         connect(EOS.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSink elem, Pointer userData) {
-                listener.eos(elem, userData);
+            public void callback(AppSink elem) {
+                listener.eos(elem);
             }
         });
     }
@@ -163,9 +160,8 @@ public class AppSink extends BaseSink {
         /**
          *
          * @param elem
-         * @param userData
          */
-        public void newPreroll(AppSink elem, Pointer userData);
+        public void newPreroll(AppSink elem);
     }
     /**
      * Adds a listener for the <code>new-preroll</code> signal. If a blocking
@@ -178,8 +174,8 @@ public class AppSink extends BaseSink {
     public void connect(final NEW_PREROLL listener) {
         connect(NEW_PREROLL.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSink elem, Pointer userData) {
-                listener.newPreroll(elem, userData);
+            public void callback(AppSink elem) {
+                listener.newPreroll(elem);
             }
         });
     }
@@ -199,9 +195,8 @@ public class AppSink extends BaseSink {
         /**
          *
          * @param elem
-         * @param userData
          */
-        public void newBuffer(AppSink elem, Pointer userData);
+        public void newBuffer(AppSink elem);
     }
     /**
      * Adds a listener for the <code>new-buffer</code> signal. If a blocking
@@ -214,8 +209,8 @@ public class AppSink extends BaseSink {
     public void connect(final NEW_BUFFER listener) {
         connect(NEW_BUFFER.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSink elem, Pointer userData) {
-                listener.newBuffer(elem, userData);
+            public void callback(AppSink elem) {
+                listener.newBuffer(elem);
             }
         });
     }
@@ -235,9 +230,8 @@ public class AppSink extends BaseSink {
         /**
          *
          * @param elem
-         * @param userData
          */
-        public void newBufferList(AppSink elem, Pointer userData);
+        public void newBufferList(AppSink elem);
     }
     /**
      * Adds a listener for the <code>new-buffer-list</code> signal.
@@ -247,8 +241,8 @@ public class AppSink extends BaseSink {
     public void connect(final NEW_BUFFER_LIST listener) {
         connect(NEW_BUFFER_LIST.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSink elem, Pointer userData) {
-                listener.newBufferList(elem, userData);
+            public void callback(AppSink elem) {
+                listener.newBufferList(elem);
             }
         });
     }

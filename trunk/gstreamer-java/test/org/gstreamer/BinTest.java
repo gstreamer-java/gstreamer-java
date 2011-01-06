@@ -37,8 +37,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.sun.jna.Pointer;
-
 /**
  *
  * @author wayne
@@ -123,7 +121,7 @@ public class BinTest {
         final AtomicInteger added = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENT_ADDED() {
-            public void elementAdded(Bin bin, Element elem, Pointer user_data) {
+            public void elementAdded(Bin bin, Element elem) {
                 if (elem == e1 || elem == e2) {
                     added.incrementAndGet();
                 }
@@ -141,7 +139,7 @@ public class BinTest {
         final AtomicInteger removed = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENT_ADDED() {
-            public void elementAdded(Bin bin, Element elem, Pointer user_data) {
+            public void elementAdded(Bin bin, Element elem) {
                 if (elem == e1 || elem == e2) {
                     removed.incrementAndGet();
                 }

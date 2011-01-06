@@ -72,7 +72,6 @@ public interface GstClockAPI extends com.sun.jna.Library {
          * @param clock The clock that triggered the callback
          * @param time The time it was triggered
          * @param id The {@link ClockID} that expired
-         * @param user_data user data passed in the gst_clock_id_wait_async() function
          * @return currently unused.
          */
         boolean callback(Clock clock, ClockTime time, ClockID id, Pointer user_data);

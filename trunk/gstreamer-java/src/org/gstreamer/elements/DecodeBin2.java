@@ -22,10 +22,8 @@ import org.gstreamer.Bin;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.Pad;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
-
-import com.sun.jna.Pointer;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 /**
  * Utility {@link org.gstreamer.Element} to automatically identify media stream types and hook
@@ -55,7 +53,7 @@ public class DecodeBin2 extends Bin {
          * @param pad the new Pad.
          * @param last (unknown)
          */
-        public void newDecodedPad(DecodeBin2 element, Pad pad, boolean last, Pointer user_data);
+        public void newDecodedPad(DecodeBin2 element, Pad pad, boolean last);
     }
     /**
      * Adds a listener for the <code>new-decoded-pad</code> signal
@@ -66,8 +64,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final NEW_DECODED_PAD listener) {
         connect(NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin2 elem, Pad pad, boolean last, Pointer user_data) {
-                listener.newDecodedPad(elem, pad, last, user_data);
+            public void callback(DecodeBin2 elem, Pad pad, boolean last) {
+                listener.newDecodedPad(elem, pad, last);
             }
         });
     }
@@ -90,7 +88,7 @@ public class DecodeBin2 extends Bin {
          * @param element The element which has the new Pad.
          * @param pad the new Pad.
          */
-        public void removedDecodedPad(DecodeBin2 element, Pad pad, Pointer user_data);
+        public void removedDecodedPad(DecodeBin2 element, Pad pad);
     }
     /**
      * Adds a listener for the <code>removed-decoded-pad</code> signal
@@ -101,8 +99,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final REMOVED_DECODED_PAD listener) {
         connect(REMOVED_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin2 elem, Pad pad, Pointer user_data) {
-                listener.removedDecodedPad(elem, pad, user_data);
+            public void callback(DecodeBin2 elem, Pad pad) {
+                listener.removedDecodedPad(elem, pad);
             }
         });
     }
@@ -124,7 +122,7 @@ public class DecodeBin2 extends Bin {
          * @param pad the new Pad.
          * @param caps the caps of the pad that cannot be resolved.
          */
-        public void unknownType(DecodeBin2 element, Pad pad, Caps caps, Pointer user_data);
+        public void unknownType(DecodeBin2 element, Pad pad, Caps caps);
     }
     /**
      * Adds a listener for the <code>unknown-type</code> signal
@@ -135,8 +133,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final UNKNOWN_TYPE listener) {
         connect(UNKNOWN_TYPE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(DecodeBin2 elem, Pad pad, Caps caps, Pointer user_data) {
-                listener.unknownType(elem, pad, caps, user_data);
+            public void callback(DecodeBin2 elem, Pad pad, Caps caps) {
+                listener.unknownType(elem, pad, caps);
             }
         });
     }
@@ -158,7 +156,7 @@ public class DecodeBin2 extends Bin {
          * @param pad the new Pad.
          * @param caps the caps of the pad that cannot be resolved.
          */
-        public boolean autoplugContinue(DecodeBin2 element, Pad pad, Caps caps, Pointer user_data);
+        public boolean autoplugContinue(DecodeBin2 element, Pad pad, Caps caps);
     }
     /**
      * Adds a listener for the <code>autoplug-continue</code> signal
@@ -169,8 +167,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final AUTOPLUG_CONTINUE listener) {
         connect(AUTOPLUG_CONTINUE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public boolean callback(DecodeBin2 elem, Pad pad, Caps caps, Pointer user_data) {
-                return listener.autoplugContinue(elem, pad, caps, user_data);
+            public boolean callback(DecodeBin2 elem, Pad pad, Caps caps) {
+                return listener.autoplugContinue(elem, pad, caps);
             }
         });
     }
@@ -197,7 +195,7 @@ public class DecodeBin2 extends Bin {
          * @param pad the new Pad.
          * @param caps the caps of the pad that cannot be resolved.
          */
-        public GValueArray autoplugFactories(DecodeBin2 element, Pad pad, Caps caps, Pointer user_data);
+        public GValueArray autoplugFactories(DecodeBin2 element, Pad pad, Caps caps);
     }
     /**
      * Adds a listener for the <code>autoplug-factories</code> signal
@@ -208,8 +206,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final AUTOPLUG_FACTORIES listener) {
         connect(AUTOPLUG_FACTORIES.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public GValueArray callback(DecodeBin2 elem, Pad pad, Caps caps, Pointer user_data) {
-                return listener.autoplugFactories(elem, pad, caps, user_data);
+            public GValueArray callback(DecodeBin2 elem, Pad pad, Caps caps) {
+                return listener.autoplugFactories(elem, pad, caps);
             }
         });
     }
@@ -237,7 +235,7 @@ public class DecodeBin2 extends Bin {
          * @param caps the caps of the pad that cannot be resolved.
          * @param factories A GValueArray of possible GstElementFactory to use.
          */
-        public GValueArray autoplugSort(DecodeBin2 element, Pad pad, Caps caps, GValueArray factories, Pointer user_data);
+        public GValueArray autoplugSort(DecodeBin2 element, Pad pad, Caps caps, GValueArray factories);
     }
     /**
      * Adds a listener for the <code>autoplug-sort</code> signal
@@ -248,8 +246,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final AUTOPLUG_SORT listener) {
         connect(AUTOPLUG_SORT.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public GValueArray callback(DecodeBin2 elem, Pad pad, Caps caps, GValueArray factories, Pointer user_data) {
-                return listener.autoplugSort(elem, pad, caps, factories, user_data);
+            public GValueArray callback(DecodeBin2 elem, Pad pad, Caps caps, GValueArray factories) {
+                return listener.autoplugSort(elem, pad, caps, factories);
             }
         });
     }
@@ -269,7 +267,7 @@ public class DecodeBin2 extends Bin {
         /**
          * @param element The element
          */
-        public GValueArray drained(DecodeBin2 element, Pointer user_data);
+        public GValueArray drained(DecodeBin2 element);
     }
     /**
      * Adds a listener for the <code>drained</code> signal
@@ -280,8 +278,8 @@ public class DecodeBin2 extends Bin {
     public void connect(final DRAINED listener) {
         connect(DRAINED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public GValueArray callback(DecodeBin2 elem, Pointer user_data) {
-                return listener.drained(elem, user_data);
+            public GValueArray callback(DecodeBin2 elem) {
+                return listener.drained(elem);
             }
         });
     }
@@ -293,6 +291,4 @@ public class DecodeBin2 extends Bin {
     public void disconnect(DRAINED listener) {
         disconnect(DRAINED.class, listener);
     }
-
-
 }
