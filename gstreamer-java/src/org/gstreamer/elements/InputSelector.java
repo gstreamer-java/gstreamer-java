@@ -7,7 +7,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import com.sun.jna.ptr.LongByReference;
 
 public class InputSelector extends Element {
-	public static final String GST_NAME = "input-selector";
+    public static final String GST_NAME = "input-selector";
 
     public InputSelector(String name) {
         this(makeRawElement(GST_NAME, name));
