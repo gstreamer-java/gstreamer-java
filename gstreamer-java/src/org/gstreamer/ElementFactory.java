@@ -33,6 +33,7 @@ import org.gstreamer.elements.FakeSrc;
 import org.gstreamer.elements.FileSink;
 import org.gstreamer.elements.FileSrc;
 import org.gstreamer.elements.Identity;
+import org.gstreamer.elements.InputSelector;
 import org.gstreamer.elements.MultiQueue;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
@@ -77,6 +78,7 @@ public class ElementFactory extends PluginFeature {
 			put(FileSink.GST_NAME, FileSink.class);
 			put(FileSrc.GST_NAME, FileSrc.class);
 			put(Identity.GST_NAME, Identity.class);
+			put(InputSelector.GST_NAME, InputSelector.class);
 			put(MultiQueue.GST_NAME, MultiQueue.class);
 			//put(OSXVideoSink.GST_NAME, OSXVideoSink.class);
 			put(Pipeline.GST_NAME, Pipeline.class);
