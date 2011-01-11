@@ -66,7 +66,7 @@ public class RGBDataSink extends Bin {
         StringBuilder caps = new StringBuilder("video/x-raw-rgb, bpp=32, depth=24, endianness=(int)4321, ");
         // JNA creates ByteBuffer using native byte order, set masks according to that.
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
-        	caps.append("red_mask=(int)0xFF00, green_mask=(int)0xFF0000, blue_mask=(int)0xFF000000");
+          caps.append("red_mask=(int)0xFF00, green_mask=(int)0xFF0000, blue_mask=(int)0xFF000000");
         else
           caps.append("red_mask=(int)0xFF0000, green_mask=(int)0xFF00, blue_mask=(int)0xFF");
         videofilter.setCaps(new Caps(caps.toString()));
