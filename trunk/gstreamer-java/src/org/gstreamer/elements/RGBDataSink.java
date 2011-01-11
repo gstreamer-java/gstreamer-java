@@ -68,7 +68,7 @@ public class RGBDataSink extends Bin {
         if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
         	caps.append("red_mask=(int)0xFF00, green_mask=(int)0xFF0000, blue_mask=(int)0xFF000000");
         else
-        	caps.append("red_mask=(int)0xFF0000, green_mask=(int)0xFF00, blue_mask=(int)0xFF");
+          caps.append("red_mask=(int)0xFF0000, green_mask=(int)0xFF00, blue_mask=(int)0xFF");
         videofilter.setCaps(new Caps(caps.toString()));
         addMany(conv, videofilter, videosink);
         Element.linkMany(conv, videofilter, videosink);
