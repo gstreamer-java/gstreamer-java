@@ -75,6 +75,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowHandle(this);
 		enableX11Events(enableX11Events);
+		expose();
 	}
 	
 	/**
