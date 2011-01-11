@@ -18,6 +18,7 @@
 
 package org.gstreamer.elements;
 
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
 import org.gstreamer.Bin;
@@ -31,6 +32,14 @@ import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
+/**
+ * Class to allows to pull out buffers from the GStreamer pipeline into
+ * the application. It is almost identical to RGBDataSink, the only
+ * difference is that RGBDataSink uses a fakesink as the sink element,
+ * while RGBDataAppSink uses an appsink.
+ * 
+ * @param name The name used to identify this pipeline.
+ */
 public class RGBDataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private boolean passDirectBuffer = false;
@@ -55,7 +64,13 @@ public class RGBDataAppSink extends Bin {
         //
         Element conv = ElementFactory.make("ffmpegcolorspace", "ColorConverter");
         Element videofilter = ElementFactory.make("capsfilter", "ColorFilter");
-        videofilter.setCaps(new Caps("video/x-raw-rgb, bpp=32, depth=24"));
+        StringBuilder caps = new StringBuilder("video/x-raw-rgb, bpp=32, depth=24, endianness=(int)4321, ");
+        // JNA creates ByteBuffer using native byte order, set masks according to that.
+        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
+          caps.append("red_mask=(int)0xFF00, green_mask=(int)0xFF0000, blue_mask=(int)0xFF000000");
+        else
+          caps.append("red_mask=(int)0xFF0000, green_mask=(int)0xFF00, blue_mask=(int)0xFF");
+        videofilter.setCaps(new Caps(caps.toString()));
         addMany(conv, videofilter, sink);
         Element.linkMany(conv, videofilter, sink);
 
