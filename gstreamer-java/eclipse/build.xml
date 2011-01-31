@@ -14,7 +14,7 @@
 		</fileset>
 	</path>		
 	
-	<property name="javaVersion" value="1.5s"/>
+	<property name="javaVersion" value="1.5"/>
 	
 	<property name="libraryName"  value="gstreamer-java"/>
 	
