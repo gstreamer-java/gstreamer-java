@@ -173,9 +173,18 @@ public class RGBDataFileSink extends Bin {
      * Sets the state of the pipeline to PAUSED.
      *
      */
+    public void pause()
+    {
+        setState(State.PAUSED);        
+    }    
+    
+    /**
+     * Sets the state of the pipeline to NULL and closes the stream.
+     *
+     */
     public void stop()
     {
-        setState(State.PAUSED);
+        setState(State.NULL);        
         source.endOfStream();
     }
 
