@@ -49,8 +49,8 @@ public class RGBDataFileSink extends Bin {
     private final AppSrcNeedDataListener needDataListener;
     private final AppSrcEnoughDataListener enoughDataListener;
     private final BufferDispatcher bufferDispatcher;
-    //private final int FPS;
-    //private final int NANOS_PER_FRAME;
+    private final int FPS;
+    private final int NANOS_PER_FRAME;
     private final int sourceWidth;
     private final int sourceHeight;
 
@@ -81,8 +81,8 @@ public class RGBDataFileSink extends Bin {
 
         sourceWidth = width;
         sourceHeight = height;
-        //FPS = fps;
-        //NANOS_PER_FRAME = (int)(1e9 / FPS);
+        FPS = fps;
+        NANOS_PER_FRAME = (int)(1e9 / FPS);
 
         videoCaps = Caps.fromString("video/x-raw-rgb,width=" + width + ",height=" + height + "," +
                                     "bpp=32,endianness=4321,depth=24,red_mask=65280,green_mask=16711680,blue_mask=-16777216," +
@@ -278,21 +278,10 @@ public class RGBDataFileSink extends Bin {
                 Buffer buf = bufferList.remove(0);
                 frameCount++;
 
+                long f = (long)frameCount * NANOS_PER_FRAME;
                 buf.setCaps(videoCaps);
-                
-                // For some reason this duration and timestamp setting works 
-                // with all encoders I tried so far (theora, x264, dirac),
-                // although doesn't make much sense (frame duration 1 nano?)...
-                buf.setTimestamp(ClockTime.fromNanos(frameCount));
-                buf.setDuration(ClockTime.fromNanos(1));
-                
-                // ... this other one, which is logically correc, doesn't work for
-                // theora (frames are dropped for no apparent reason each 
-                // two seconds):
-                //long f = frameCount * NANOS_PER_FRAME;
-                //buf.setTimestamp(ClockTime.fromNanos(f));
-                //buf.setDuration(ClockTime.fromNanos(NANOS_PER_FRAME));
-                
+                buf.setTimestamp(ClockTime.fromNanos(f));
+                buf.setDuration(ClockTime.fromNanos(NANOS_PER_FRAME));
                 source.pushBuffer(buf);
                 buf.dispose();
             }
