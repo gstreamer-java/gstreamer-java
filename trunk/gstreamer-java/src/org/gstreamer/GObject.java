@@ -669,8 +669,12 @@ public abstract class GObject extends RefCountedObject {
     		return new GObjectAPI.GParamSpecBoolean(ptr);
     	else if(type.equals(GType.LONG))
     		return new GObjectAPI.GParamSpecLong(ptr);
+    	else if(type.equals(GType.ULONG))
+        return new GObjectAPI.GParamSpecLong(ptr);    	
     	else if(type.equals(GType.INT64))
     		return new GObjectAPI.GParamSpecInt64(ptr);
+      else if(type.equals(GType.UINT64))
+        return new GObjectAPI.GParamSpecInt64(ptr);    	
     	else if(type.equals(GType.FLOAT))
     		return new GObjectAPI.GParamSpecFloat(ptr);
     	else if(type.equals(GType.DOUBLE))
