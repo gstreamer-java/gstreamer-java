@@ -35,9 +35,9 @@ import org.gstreamer.lowlevel.GstNative;
 
 public class RGBDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
+    private final BaseSink videosink;    
     private boolean passDirectBuffer = false;
-    private final Listener listener;
-    private final BaseSink videosink;
+    private Listener listener;
     
     public static interface Listener {
         void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb);
@@ -101,6 +101,15 @@ public class RGBDataSink extends Bin {
         }
     }
 
+    /**
+     * Sets the listener to null. This should be used when disposing 
+     * the parent object that contains the listener method, to make sure
+     * that no dangling references remain to the parent.
+     */    
+    public void removeListener() {
+      this.listener = null;
+    }    
+    
     /**
      * Indicate whether the {@link RGBDataSink} should pass the native {@link java.nio.IntBuffer}
      * to the listener, or should copy it to a heap buffer.  The default is to pass

@@ -42,10 +42,10 @@ import org.gstreamer.lowlevel.GstNative;
  */
 public class RGBDataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
-    private boolean passDirectBuffer = false;
-    private final Listener listener;
     private final AppSink sink;
-
+    private boolean passDirectBuffer = false;
+    private Listener listener;
+    
     public static interface Listener {
         void rgbFrame(int width, int height, IntBuffer rgb);
     }
@@ -53,7 +53,7 @@ public class RGBDataAppSink extends Bin {
     public RGBDataAppSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-
+       
         sink = (AppSink) ElementFactory.make("appsink", "VideoSink");
         sink.set("emit-signals", true);
         sink.set("sync", true);
@@ -92,6 +92,15 @@ public class RGBDataAppSink extends Bin {
         sink.connect(new AppSinkNewBufferListener());
     }
 
+    /**
+     * Sets the listener to null. This should be used when disposing 
+     * the parent object that contains the listener method, to make sure
+     * that no dangling references remain to the parent.
+     */    
+    public void removeListener() {
+      this.listener = null;
+    }
+    
     /**
      * Indicate whether the {@link RGBDataAppSink} should pass the native {@link java.nio.IntBuffer}
      * to the listener, or should copy it to a heap buffer.  The default is to pass
@@ -145,8 +154,9 @@ public class RGBDataAppSink extends Bin {
                 rgb = IntBuffer.allocate(width * height);
                 rgb.put(buffer.getByteBuffer().asIntBuffer()).flip();
             }
+            
             listener.rgbFrame(width, height, rgb);
-
+            
             //
             // Dispose of the gstreamer buffer immediately to avoid more being
             // allocated before the java GC kicks in
