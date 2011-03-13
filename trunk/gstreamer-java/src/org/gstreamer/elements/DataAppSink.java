@@ -18,9 +18,6 @@
 
 package org.gstreamer.elements;
 
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
@@ -31,62 +28,55 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Class that allows to pull out buffers from the GStreamer pipeline into
- * the application. It is almost identical to RGBDataSink, the only
- * difference is that RGBDataSink uses a fakesink as the sink element,
- * while RGBDataAppSink uses an appsink.
+ * the application, using an appsink. The buffers are NOT converted into 
+ * 32bit RGB.
  * 
  * @param name The name used to identify this pipeline.
  */
-public class RGBDataAppSink extends Bin {
+public class DataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private final AppSink sink;
     private boolean passDirectBuffer = false;
     private Listener listener;
     
     public static interface Listener {
-        void rgbFrame(int width, int height, IntBuffer rgb);
+        void dataFrame(Caps caps, int size, ByteBuffer data);
     }
 
-    public RGBDataAppSink(String name, Listener listener) {
+    public DataAppSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
        
-        sink = (AppSink) ElementFactory.make("appsink", "VideoSink");
+        sink = (AppSink) ElementFactory.make("appsink", "DataSink");
         sink.set("emit-signals", true);
         sink.set("sync", true);
         sink.connect(new AppSinkNewBufferListener());
         
         //
-        // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
+        // Adding identity element
         //
-        Element conv = ElementFactory.make("ffmpegcolorspace", "ColorConverter");
-        Element videofilter = ElementFactory.make("capsfilter", "ColorFilter");
-        StringBuilder caps = new StringBuilder("video/x-raw-rgb, bpp=32, depth=24, endianness=(int)4321, ");
-        // JNA creates ByteBuffer using native byte order, set masks according to that.
-        if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN)
-          caps.append("red_mask=(int)0xFF00, green_mask=(int)0xFF0000, blue_mask=(int)0xFF000000");
-        else
-          caps.append("red_mask=(int)0xFF0000, green_mask=(int)0xFF00, blue_mask=(int)0xFF");
-        videofilter.setCaps(new Caps(caps.toString()));
-        addMany(conv, videofilter, sink);
-        Element.linkMany(conv, videofilter, sink);
+        Element conv = ElementFactory.make("identity", "Data");        
+        addMany(conv, sink);
+        Element.linkMany(conv, sink);
 
         //
         // Link the ghost pads on the bin to the sink pad on the convertor
         //
-        addPad(new GhostPad("sink", conv.getStaticPad("sink")));
+        addPad(new GhostPad("sink", conv.getStaticPad("sink")));        
     }
 
-    public RGBDataAppSink(String name, Pipeline pipeline, Listener listener) {
+    public DataAppSink(String name, Pipeline pipeline, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
         // cannot be casted to AppSink.
-        sink = (AppSink) pipeline.getElementByName("VideoSink");
+        sink = (AppSink) pipeline.getElementByName("DataSink");
         sink.set("emit-signals", true);
         sink.set("sync", true);
         sink.connect(new AppSinkNewBufferListener());
@@ -140,23 +130,22 @@ public class RGBDataAppSink extends Bin {
             Buffer buffer = sink.pullBuffer();
 
             Caps caps = buffer.getCaps();
-            Structure struct = caps.getStructure(0);
-
-            int width = struct.getInteger("width");
-            int height = struct.getInteger("height");
-            if (width < 1 || height < 1) {
+            int n = buffer.getSize();
+            
+            if (n < 1) {
                 return;
             }
-            IntBuffer rgb;
+            
+            ByteBuffer data;
             if (passDirectBuffer) {
-                rgb = buffer.getByteBuffer().asIntBuffer();
+                data = buffer.getByteBuffer();
             } else {
-                rgb = IntBuffer.allocate(width * height);
-                rgb.put(buffer.getByteBuffer().asIntBuffer()).flip();
+                data = ByteBuffer.allocate(n);
+                data.put(buffer.getByteBuffer()).flip();
             }
             
-            listener.rgbFrame(width, height, rgb);
-            
+            listener.dataFrame(caps, n, data);
+
             //
             // Dispose of the gstreamer buffer immediately to avoid more being
             // allocated before the java GC kicks in
