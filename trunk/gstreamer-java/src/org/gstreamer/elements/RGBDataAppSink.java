@@ -84,12 +84,18 @@ public class RGBDataAppSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
-        // cannot be casted to AppSink.
-        sink = (AppSink) pipeline.getElementByName("VideoSink");
-        sink.set("emit-signals", true);
-        sink.set("sync", true);
-        sink.connect(new AppSinkNewBufferListener());
+        Element element = pipeline.getElementByName("VideoSink");
+        if (element != null) {            
+            // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
+            // cannot be casted to AppSink.
+            sink = (AppSink) element;
+            sink.set("emit-signals", true);
+            sink.set("sync", true);
+            sink.connect(new AppSinkNewBufferListener());
+        } else {
+          sink = null;
+          throw new RuntimeException("Element with name VideoSink not found in the pipeline");
+        }        
     }
 
     /**
