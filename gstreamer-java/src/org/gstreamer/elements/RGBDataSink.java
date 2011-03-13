@@ -86,8 +86,8 @@ public class RGBDataSink extends Bin {
         Element element = pipeline.getElementByName("VideoSink");
         if (element != null) {
             
-            // This should be (FakeSink) element, but the cast fails,
-            // maybe there it a problem with getElementByName? 
+            // TODO: Fix. This doesn't work as it should. getElementByName() returns a 
+            // BaseSink which cannot be casted to FakeSink.
             videosink = (BaseSink) element;
             
             videosink.set("signal-handoffs", true);
