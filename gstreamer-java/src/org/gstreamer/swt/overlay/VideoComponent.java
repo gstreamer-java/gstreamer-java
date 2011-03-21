@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Event;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
-import org.gstreamer.GstException;
 import org.gstreamer.Message;
 import org.gstreamer.MessageType;
 import org.gstreamer.Structure;
@@ -41,7 +40,6 @@ import com.sun.jna.platform.unix.X11.Display;
 import com.sun.jna.platform.unix.X11.Window;
 import com.sun.jna.platform.unix.X11.XCrossingEvent;
 import com.sun.jna.platform.unix.X11.XEvent;
-//import com.sun.jna.platform.unix.X11.XMotionEvent;
 
 /**
  * VideoComponent which use OS's overlay video component 
@@ -66,16 +64,20 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 */
 	public VideoComponent(final Composite parent, int style, boolean enableX11Events) {
 		super(parent, style | SWT.EMBEDDED);
-		String name = Platform.isLinux() ? "xvimagesink" : 
-					  Platform.isWindows() ? "d3dvideosink" : 
-					  Platform.isMac() ? "osxvideosink" : null;
-		if (name == null)
-			throw new GstException("Platform not supported");
-		videosink = ElementFactory.make(name, "OverlayVideoComponent" + counter++);
+		videosink = ElementFactory.make(SWTOverlay.getNativeOverlayElement(), "OverlayVideoComponent" + counter++);
 		overlay = SWTOverlay.wrap(videosink);
 		overlay.setWindowHandle(this);
 		enableX11Events(enableX11Events);
 		expose();
+	}
+	
+	/**
+	 * Overlay VideoComponent
+	 * @param parent
+	 * @param style
+	 */
+	public VideoComponent(final Composite parent, int style) {
+		this(parent, style, false);
 	}
 	
 	/**
@@ -147,15 +149,6 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 			}.start();
 			addDisposeListener(this);
 		}
-	}
-	
-	/**
-	 * Overlay VideoComponent
-	 * @param parent
-	 * @param style
-	 */
-	public VideoComponent(final Composite parent, int style) {
-		this(parent, style, false);
 	}
 	
 	public void widgetDisposed(DisposeEvent arg0) {
