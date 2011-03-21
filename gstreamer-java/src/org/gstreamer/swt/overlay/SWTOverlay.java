@@ -71,6 +71,24 @@ public class SWTOverlay extends XOverlay {
     }
     
     /**
+     * Helper function to get the proper handle for a given SWT Control on Windows.
+     *
+     * @param control the SWT control for what i like to get the handle.
+     * @return the handle of the control or 0 if the handle is not available.
+     */
+    public static long getWindowsHandle(Composite composite)
+             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Class<? extends Composite> compositeClass = composite.getClass();
+        Field embedHandleField = compositeClass.getField("window_handle");
+        Class<?> t = embedHandleField.getType();
+        if (t.equals(long.class))
+            return embedHandleField.getLong(composite);
+        else if (t.equals(int.class))
+            return embedHandleField.getInt(composite);
+        return 0L;
+    }
+    
+    /**
      * Helper function to get the proper handle for a given SWT Composite.
      *
      * @param composite the SWT Composite for what i like to get the handle.
@@ -80,14 +98,14 @@ public class SWTOverlay extends XOverlay {
         // Composite style must be embedded
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             return 0L;
-        if (Platform.isWindows())
-            return composite.handle;
-        else if (Platform.isLinux())
-            try {
+        try {
+	        if (Platform.isWindows())
+	            return getWindowsHandle(composite);
+	        else if (Platform.isLinux())
             	return getLinuxHandle(composite);
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
         return 0L;
     }
 
@@ -101,16 +119,16 @@ public class SWTOverlay extends XOverlay {
         // composite style must be embedded
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
-        if (Platform.isWindows())
-            setWindowHandle(composite.handle);
-        else if (Platform.isLinux())
-            try {
+        try {
+	        if (Platform.isWindows())
+	            setWindowHandle(getWindowsHandle(composite));
+	        else if (Platform.isLinux())
                 setWindowHandle(getLinuxHandle(composite));
-            } catch (Exception e) {
-                throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
-            }
-        else
-            throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
+	        else
+	            throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
+        } catch (Exception e) {
+            throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
+        }
     }
     /**
      * Sets the native window for the {@link Element} to use to display video.
