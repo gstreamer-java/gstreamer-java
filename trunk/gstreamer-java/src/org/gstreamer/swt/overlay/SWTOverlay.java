@@ -51,6 +51,18 @@ public class SWTOverlay extends XOverlay {
     private SWTOverlay(Element element) {
         super(element);
     }
+    
+    /**
+     * Gives the native overlay element's name.
+     */
+    public static String getNativeOverlayElement() {
+        String name = Platform.isLinux() ? "xvimagesink" : 
+                      Platform.isWindows() ? "d3dvideosink" : 
+                      Platform.isMac() ? "osxvideosink" : null;
+        if (name == null)
+            throw new GstException("Platform not supported");
+        return name;    	
+    }
 
     /**
      * Helper function to get the proper handle for a given SWT Control on Linux.
@@ -61,30 +73,12 @@ public class SWTOverlay extends XOverlay {
     public static long getLinuxHandle(Composite composite) 
              throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         Class<? extends Composite> compositeClass = composite.getClass();
-        Field embedHandleField = compositeClass.getField("embeddedHandle");
-        Class<?> t = embedHandleField.getType();
+        Field handleField = compositeClass.getField("embeddedHandle");
+        Class<?> t = handleField.getType();
         if (t.equals(long.class))
-            return embedHandleField.getLong(composite);
+            return handleField.getLong(composite);
         else if (t.equals(int.class))
-            return embedHandleField.getInt(composite);
-        return 0L;
-    }
-    
-    /**
-     * Helper function to get the proper handle for a given SWT Control on Windows.
-     *
-     * @param control the SWT control for what i like to get the handle.
-     * @return the handle of the control or 0 if the handle is not available.
-     */
-    public static long getWindowsHandle(Composite composite)
-             throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Class<? extends Composite> compositeClass = composite.getClass();
-        Field embedHandleField = compositeClass.getField("window_handle");
-        Class<?> t = embedHandleField.getType();
-        if (t.equals(long.class))
-            return embedHandleField.getLong(composite);
-        else if (t.equals(int.class))
-            return embedHandleField.getInt(composite);
+            return handleField.getInt(composite);
         return 0L;
     }
     
@@ -99,10 +93,10 @@ public class SWTOverlay extends XOverlay {
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             return 0L;
         try {
-	        if (Platform.isWindows())
-	            return getWindowsHandle(composite);
-	        else if (Platform.isLinux())
-            	return getLinuxHandle(composite);
+            if (Platform.isWindows())
+                return composite.handle;
+            else if (Platform.isLinux())
+                return getLinuxHandle(composite);
         } catch (Exception e) {
             //e.printStackTrace();
         }
@@ -120,14 +114,14 @@ public class SWTOverlay extends XOverlay {
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
         try {
-	        if (Platform.isWindows())
-	            setWindowHandle(getWindowsHandle(composite));
-	        else if (Platform.isLinux())
+            if (Platform.isWindows())
+                setWindowHandle(composite.handle);
+            else if (Platform.isLinux())
                 setWindowHandle(getLinuxHandle(composite));
-	        else
-	            throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
+            else
+                throw new GstException("Cannot set window ID, in XOverlay interface: not supported sink element on platform");
         } catch (Exception e) {
-            throw new GstException("Cannot set window ID, in XOverlay interface, can't get embeddedHandle. " + e.getLocalizedMessage());
+            throw new GstException("Cannot set window ID, in XOverlay interface, can't get the handle field. " + e.getLocalizedMessage());
         }
     }
     /**

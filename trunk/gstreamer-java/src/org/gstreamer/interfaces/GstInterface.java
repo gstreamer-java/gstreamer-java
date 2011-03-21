@@ -35,7 +35,7 @@ import static org.gstreamer.lowlevel.GstInterfacesAPI.GSTINTERFACES_API;
 /**
  * Base type for all gstreamer interface proxies
  */
-public abstract class GstInterface extends NativeValue {
+public class GstInterface extends NativeValue {
     protected final Pointer handle;
     protected final Element element;
     protected GstInterface(Element element, GType type) {
@@ -47,6 +47,9 @@ public abstract class GstInterface extends NativeValue {
     }
     protected Object nativeValue() {
         return handle;
+    }
+    public Element getElement() {
+    	return element;
     }
     
     protected interface ListElementCreator<E> {
