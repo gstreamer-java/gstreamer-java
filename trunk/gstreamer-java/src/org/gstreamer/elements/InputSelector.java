@@ -19,11 +19,13 @@ public class InputSelector extends Element {
 
     /**
      * Block all sink pads in preparation for a switch. 
-     * 
-     * @return the stop time of the current switch segment, as a running time, or 0 
-     * if there is no current active pad or the current active pad never received data.
      */
     public static interface BLOCK {
+    	/**
+        * 
+        * @return the stop time of the current switch segment, as a running time, or 0 
+        * if there is no current active pad or the current active pad never received data.
+        */
     	public long block(InputSelector inputselector); 
     }
     /**
@@ -73,7 +75,6 @@ public class InputSelector extends Element {
     	 * 			the running time of the previously active sink pad
     	 * @param start_time running time at which to start the new segment, or -1 to use the 
     	 * 			running time of the newly active sink pad
-    	 * @return
     	 */
     	public void Switch(InputSelector inputselector, Pad pad, long stop_time, long start_time); 
     }

@@ -47,7 +47,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onByeSsrc(RTPBin bin, int session, int ssrc);
+        public void onByeSsrc(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-bye-ssrc</code> signal on this RTPBin
@@ -57,8 +57,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_BYE_SSRC listener) {
         connect(ON_BYE_SSRC.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onByeSsrc(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onByeSsrc(rtpbin, session, ssrc);
             }
         });
     }    
@@ -83,7 +83,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onByeTimeout(RTPBin bin, int session, int ssrc);
+        public void onByeTimeout(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-bye-timeout</code> signal on this RTPBin
@@ -93,8 +93,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_BYE_TIMEOUT listener) {
         connect(ON_BYE_TIMEOUT.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onByeTimeout(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onByeTimeout(rtpbin, session, ssrc);
             }
         });
     }    
@@ -119,7 +119,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onNewSsrc(RTPBin bin, int session, int ssrc);
+        public void onNewSsrc(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-new-ssrc</code> signal on this RTPBin
@@ -129,8 +129,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_NEW_SSRC listener) {
         connect(ON_NEW_SSRC.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onNewSsrc(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onNewSsrc(rtpbin, session, ssrc);
             }
         });
     }    
@@ -155,7 +155,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onNptStop(RTPBin bin, int session, int ssrc);
+        public void onNptStop(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-npt-stop</code> signal on this RTPBin
@@ -165,8 +165,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_NPT_STOP listener) {
         connect(ON_NPT_STOP.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onNptStop(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onNptStop(rtpbin, session, ssrc);
             }
         });
     }    
@@ -191,7 +191,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onSenderTimeout(RTPBin bin, int session, int ssrc);
+        public void onSenderTimeout(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-sender-timeout</code> signal on this RTPBin
@@ -201,8 +201,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_SENDER_TIMEOUT listener) {
         connect(ON_SENDER_TIMEOUT.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onSenderTimeout(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onSenderTimeout(rtpbin, session, ssrc);
             }
         });
     }    
@@ -227,7 +227,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onSsrcActive(RTPBin bin, int session, int ssrc);
+        public void onSsrcActive(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-ssrc-active</code> signal on this RTPBin
@@ -237,8 +237,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_SSRC_ACTIVE listener) {
         connect(ON_SSRC_ACTIVE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onSsrcActive(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onSsrcActive(rtpbin, session, ssrc);
             }
         });
     }    
@@ -263,7 +263,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onSsrcCollision(RTPBin bin, int session, int ssrc);
+        public void onSsrcCollision(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-ssrc-collision</code> signal on this RTPBin
@@ -273,8 +273,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_SSRC_COLLISION listener) {
         connect(ON_SSRC_COLLISION.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onSsrcCollision(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onSsrcCollision(rtpbin, session, ssrc);
             }
         });
     }    
@@ -299,7 +299,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onSsrcSdes(RTPBin bin, int session, int ssrc);
+        public void onSsrcSdes(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-ssrc-sdes</code> signal on this RTPBin
@@ -309,8 +309,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_SSRC_SDES listener) {
         connect(ON_SSRC_SDES.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onSsrcSdes(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onSsrcSdes(rtpbin, session, ssrc);
             }
         });
     }    
@@ -335,7 +335,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onSsrcValidated(RTPBin bin, int session, int ssrc);
+        public void onSsrcValidated(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-ssrc-validated</code> signal on this RTPBin
@@ -345,8 +345,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_SSRC_VALIDATED listener) {
         connect(ON_SSRC_VALIDATED.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onSsrcValidated(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onSsrcValidated(rtpbin, session, ssrc);
             }
         });
     }    
@@ -371,7 +371,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param ssrc the SSRC
          */
-        public void onTimeout(RTPBin bin, int session, int ssrc);
+        public void onTimeout(RTPBin rtpbin, int session, int ssrc);
     }
     /**
      * Add a listener for the <code>on-timeout</code> signal on this RTPBin
@@ -381,8 +381,8 @@ public class RTPBin extends Bin {
     public void connect(final ON_TIMEOUT listener) {
         connect(ON_TIMEOUT.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int ssrc) {
-                listener.onTimeout(bin, session, ssrc);
+            public void callback(RTPBin rtpbin, int session, int ssrc) {
+                listener.onTimeout(rtpbin, session, ssrc);
             }
         });
     }    
@@ -407,7 +407,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param pt the pt
          */
-        public Caps requestPtMap(RTPBin bin, int session, int pt);
+        public Caps requestPtMap(RTPBin rtpbin, int session, int pt);
     }
     /**
      * Add a listener for the <code>request-pt-map</code> signal on this RTPBin
@@ -417,8 +417,8 @@ public class RTPBin extends Bin {
     public void connect(final REQUEST_PT_MAP listener) {
         connect(REQUEST_PT_MAP.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public Caps callback(RTPBin bin, int session, int pt) {
-                return listener.requestPtMap(bin, session, pt);
+            public Caps callback(RTPBin rtpbin, int session, int pt) {
+                return listener.requestPtMap(rtpbin, session, pt);
             }
         });
     }    
@@ -443,7 +443,7 @@ public class RTPBin extends Bin {
          * @param session the session
          * @param pt the pt
          */
-        public void payloadTypeChange(RTPBin bin, int session, int pt);
+        public void payloadTypeChange(RTPBin rtpbin, int session, int pt);
     }
     /**
      * Add a listener for the <code>payload-type-change</code> signal on this RTPBin
@@ -453,8 +453,8 @@ public class RTPBin extends Bin {
     public void connect(final PAYLOAD_TYPE_CHANGE listener) {
         connect(PAYLOAD_TYPE_CHANGE.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(RTPBin bin, int session, int pt) {
-                listener.payloadTypeChange(bin, session, pt);
+            public void callback(RTPBin rtpbin, int session, int pt) {
+                listener.payloadTypeChange(rtpbin, session, pt);
             }
         });
     }    
