@@ -109,7 +109,7 @@ public class SWTOverlay extends XOverlay {
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
      */
-    public void setWindowHandle(Composite composite) {
+    public void setWindow(Composite composite) {
         // composite style must be embedded
         if (composite == null || ((composite.getStyle() | SWT.EMBEDDED) == 0))
             throw new GstException("Cannot set window ID, in XOverlay interface, composite is null or not SWT.EMBEDDED");
@@ -129,10 +129,10 @@ public class SWTOverlay extends XOverlay {
      *
      * @param window A native window to use to display video, or <tt>null</tt> to
      * stop using the previously set window.
-     * @deprecated use {@link #setWindowHandle(Composite)} instead
+     * @deprecated use {@link #setWindow(Composite)} instead
      */
     @Deprecated
     public void setWindowID(Composite composite) {
-    	setWindowHandle(composite);
+    	setWindow(composite);
     }
 }
