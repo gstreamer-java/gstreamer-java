@@ -66,7 +66,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		super(parent, style | SWT.EMBEDDED);
 		videosink = ElementFactory.make(SWTOverlay.getNativeOverlayElement(), "OverlayVideoComponent" + counter++);
 		overlay = SWTOverlay.wrap(videosink);
-		overlay.setWindowHandle(this);
+		overlay.setWindow(this);
 		enableX11Events(enableX11Events);
 		expose();
 	}
@@ -207,7 +207,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		Structure s = message.getStructure();
 		if (s == null || !s.hasName("prepare-xwindow-id"))
 			return BusSyncReply.PASS;
-		overlay.setWindowHandle(this);
+		overlay.setWindow(this);
 		return BusSyncReply.DROP;
 	}
 }
