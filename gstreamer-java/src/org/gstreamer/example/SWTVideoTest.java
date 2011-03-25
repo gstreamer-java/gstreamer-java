@@ -25,7 +25,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.swt.overlay.VideoComponent;
 
 
@@ -35,7 +34,6 @@ public class SWTVideoTest {
 
 		Pipeline pipe = new Pipeline("SWT Overlay Test");
 		Element src = ElementFactory.make("videotestsrc", "videotest");
-		Element id = ElementFactory.make("identity", "id");
 		
 		try {
 			Display display = new Display();
@@ -53,14 +51,15 @@ public class SWTVideoTest {
 
 			shell.open();
 
-			pipe.addMany(src, id, sink);
-			Element.linkMany(src, id, sink);
-			pipe.setState(State.PLAYING);
+			pipe.addMany(src, sink);
+			Element.linkMany(src, sink);
+			pipe.play();
 			
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
 					display.sleep();
 			}
+			pipe.stop();
 			display.dispose();
 
 		} catch (Exception e) {
