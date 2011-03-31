@@ -42,6 +42,7 @@ public interface GObjectAPI extends Library {
 			}});
 
     GType g_object_get_type();
+    void g_param_value_validate(GParamSpec spec, GValue data);
     void g_object_set_property(GObject obj, String property, GValue data);
     void g_object_get_property(GObject obj, String property, GValue data);
     void g_object_set(GObject obj, String propertyName, Object... data);

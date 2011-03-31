@@ -147,6 +147,7 @@ public abstract class GObject extends RefCountedObject {
             GOBJECT_API.g_object_set(this, property, data);
             return;
         }
+        GOBJECT_API.g_param_value_validate(propertySpec, propValue); 
         GOBJECT_API.g_object_set_property(this, property, propValue);
         GVALUE_API.g_value_unset(propValue); // Release any memory
     }
