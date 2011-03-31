@@ -238,7 +238,7 @@ public class PlayBin2 extends Pipeline {
      * @param volume value between 0.0 and 1.0 with 1.0 being full volume.
      */
     public void setVolume(double volume) {
-        set("volume", volume);
+        set("volume", Math.max(Math.min(volume, 1d), 0d));
     }
 
     /**
