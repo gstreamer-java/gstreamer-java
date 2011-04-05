@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-
 import org.gstreamer.Element;
 import org.gstreamer.GstException;
 import org.gstreamer.interfaces.XOverlay;
@@ -56,11 +55,11 @@ public class SWTOverlay extends XOverlay {
      * Helper function to get the proper handle for a given SWT Composite.
      *
      * @param composite the SWT Composite for what i like to get the handle. 
-     * The type can't be Control since only Composite has embeddedHandle.  
+     * The type can't be Control since only Composite has embeddedHandle and
+     * the Composite's style must be embedded.  
      * @return the handle of the Composite or 0 if the handle is not available.
      */
     public static long getNativeHandle(Composite composite) {
-        // Composite style must be embedded
         if (composite != null && ((composite.getStyle() | SWT.EMBEDDED) != 0))
 	        try {
 	            Class<? extends Composite> compositeClass = composite.getClass();

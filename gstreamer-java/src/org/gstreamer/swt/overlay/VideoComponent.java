@@ -90,7 +90,6 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 					videosink = (BaseSink)element;
 					for (Map.Entry<String, Object> e : properties.entrySet())
 						videosink.set(e.getKey(), e.getValue());
-					nativeHandle = SWTOverlay.getNativeHandle(VideoComponent.this);
 					Bus bus = videosink.getBus();
 					oldSyncHandler = bus.getSyncHandler();
 					bus.setSyncHandler(VideoComponent.this); // for prepare-xwindow-id
@@ -122,6 +121,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		getDisplay().syncExec(new Runnable() {
 			public void run() {
 				if(!isDisposed()) {
+					nativeHandle = SWTOverlay.getNativeHandle(VideoComponent.this);
 					overlay = SWTOverlay.wrap(videosink);
 					overlay.setWindowHandle(nativeHandle);
 					enableX11Events();
