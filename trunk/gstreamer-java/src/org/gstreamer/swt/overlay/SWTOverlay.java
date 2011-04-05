@@ -20,7 +20,6 @@ package org.gstreamer.swt.overlay;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.gstreamer.Element;
 import org.gstreamer.GstException;
@@ -60,7 +59,7 @@ public class SWTOverlay extends XOverlay {
      * @return the handle of the Composite or 0 if the handle is not available.
      */
     public static long getNativeHandle(Composite composite) {
-        if (composite != null && ((composite.getStyle() | SWT.EMBEDDED) != 0))
+        if (composite != null /*&& ((composite.getStyle() | SWT.EMBEDDED) != 0)*/)
 	        try {
 	            Class<? extends Composite> compositeClass = composite.getClass();
 	            Field handleField = Platform.isLinux() ? compositeClass.getField("embeddedHandle") : compositeClass.getField("handle");

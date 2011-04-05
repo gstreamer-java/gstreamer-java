@@ -49,9 +49,8 @@ public class SWTVideoTest {
 
 			pipe.addMany(src, sink);
 			Element.linkMany(src, sink);
-
 			pipe.play();
-			
+
 			shell.open();
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())

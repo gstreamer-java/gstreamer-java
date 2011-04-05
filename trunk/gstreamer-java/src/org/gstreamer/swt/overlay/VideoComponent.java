@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.gstreamer.Bin;
-import org.gstreamer.Bus;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
@@ -59,7 +58,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	private final Bin autosink;	
 	private SWTOverlay overlay;
 	private BaseSink videosink;
-	private BusSyncHandler oldSyncHandler;
+//	private BusSyncHandler oldSyncHandler;
 	private Map<String, Object> properties = new HashMap<String, Object>();
 
 	private boolean x11Events;
@@ -79,9 +78,11 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	public VideoComponent(final Composite parent, int style, boolean enableX11Events) {
 		super(parent, style | SWT.EMBEDDED);
 		x11Events = enableX11Events;
+		if (x11Events)
+			addDisposeListener(this);
 //		String name = Platform.isLinux() ? "xvimagesink" :
-//					Platform.isWindows() ? "d3dvideosink" :
-//						Platform.isMac() ? "osxvideosink" : null;
+//                    Platform.isWindows() ? "d3dvideosink" :
+//                    Platform.isMac() ? "osxvideosink" : null;
 //		videosink = (BaseSink)ElementFactory.make(name, "VideoComponent" + counter++);
 		autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
 		autosink.connect(new ELEMENT_ADDED() {
@@ -90,9 +91,16 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 					videosink = (BaseSink)element;
 					for (Map.Entry<String, Object> e : properties.entrySet())
 						videosink.set(e.getKey(), e.getValue());
-					Bus bus = videosink.getBus();
-					oldSyncHandler = bus.getSyncHandler();
-					bus.setSyncHandler(VideoComponent.this); // for prepare-xwindow-id
+					// according to gstreamer docs:
+					// http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstxoverlay.html
+					// the overlay should have to be set from bus's SyncHandler,
+					// but we use autosink and in element-added the pipe already 
+					// created so the windows must be prepared so we simple call
+					// the setOverlay and not the comment code bellow 
+//					Bus bus = videosink.getBus();
+//					oldSyncHandler = bus.getSyncHandler();
+//					bus.setSyncHandler(VideoComponent.this); // for prepare-xwindow-id
+					setOverlay();
 					autosink.disconnect(this);               // from element-added
 				}
 			}
@@ -108,6 +116,16 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	}
 	
 	/**
+	 * Set the overlay for this composite.
+	 */
+	private void setOverlay() {
+		nativeHandle = SWTOverlay.getNativeHandle(this);
+		overlay = SWTOverlay.wrap(videosink);
+		overlay.setWindowHandle(nativeHandle);
+		handleX11Events();
+		overlay.expose();		
+	}
+	/**
 	 * Implements the BusSyncHandler interface
 	 * @param message
 	 * @return
@@ -118,18 +136,8 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		Structure s = message.getStructure();
 		if (s == null || !s.hasName("prepare-xwindow-id"))
 			return BusSyncReply.PASS;
-		getDisplay().syncExec(new Runnable() {
-			public void run() {
-				if(!isDisposed()) {
-					nativeHandle = SWTOverlay.getNativeHandle(VideoComponent.this);
-					overlay = SWTOverlay.wrap(videosink);
-					overlay.setWindowHandle(nativeHandle);
-					enableX11Events();
-					overlay.expose();
-				}
-			}
-		});
-		videosink.getBus().setSyncHandler(oldSyncHandler);
+		setOverlay();
+//		videosink.getBus().setSyncHandler(oldSyncHandler);
 		return BusSyncReply.DROP;
 	}
 
@@ -197,7 +205,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 *
 	 * @param enableX11Events true if X11 event should have to be grabbed (mouse move, enter and leave event on Linux).
 	 */
-    private synchronized void enableX11Events() {
+    private void handleX11Events() {
 		if (x11Events && Platform.isLinux()) {
 			videosink.set("handle-events", !x11Events);
 			overlay.handleEvent(!x11Events);
@@ -259,7 +267,6 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 					}
 				}
 			}.start();
-			addDisposeListener(this);
 		}
 	}
 
