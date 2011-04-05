@@ -31,10 +31,6 @@ import org.gstreamer.swt.overlay.VideoComponent;
 public class SWTVideoTest {
 	public static void main(String[] args) {
 		args = Gst.init("SWTVideoTest", args);
-
-		Pipeline pipe = new Pipeline("SWT Overlay Test");
-		Element src = ElementFactory.make("videotestsrc", "videotest");
-		
 		try {
 			Display display = new Display();
 			Shell shell = new Shell(display);
@@ -42,19 +38,21 @@ public class SWTVideoTest {
 			shell.setLayout(new GridLayout(1, false));
 
 			shell.setText("SWT Video Test");
-			final VideoComponent component = new VideoComponent(shell, SWT.NONE);
+
+			Pipeline pipe = new Pipeline("SWT Overlay Test");
+			Element src = ElementFactory.make("videotestsrc", "videotest");
+			VideoComponent component = new VideoComponent(shell, SWT.NONE, true);
 			component.getElement().setName("video");
 			component.setKeepAspect(true);
 			component.setLayoutData(new GridData(GridData.FILL_BOTH));
-
 			Element sink = component.getElement();
-
-			shell.open();
 
 			pipe.addMany(src, sink);
 			Element.linkMany(src, sink);
+
 			pipe.play();
 			
+			shell.open();
 			while (!shell.isDisposed()) {
 				if (!display.readAndDispatch())
 					display.sleep();
@@ -63,6 +61,7 @@ public class SWTVideoTest {
 			display.dispose();
 
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

@@ -671,16 +671,17 @@ public class Bus extends GstObject {
         return gst.gst_bus_post(this, message);
     }
     
-    
-    public void setSyncHandler(BusSyncHandler handler) {
-        syncHandler = handler;
-    }
-
     private BusSyncHandler syncHandler = new BusSyncHandler() {
         public BusSyncReply syncMessage(Message msg) {
             return BusSyncReply.PASS;
         }
     };
+    public BusSyncHandler getSyncHandler() {
+        return syncHandler;
+    }
+    public void setSyncHandler(BusSyncHandler handler) {
+        syncHandler = handler;
+    }
     private static GstCallback syncCallback = new GstCallback() {
         @SuppressWarnings("unused")
         public int callback(final Bus bus, final Message msg, Pointer data) {
