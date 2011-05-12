@@ -43,7 +43,7 @@ public class BufferDataAppSink extends Bin {
     private boolean autoDisposeBuffer = true;
     
     public static interface Listener {
-        void rgbFrame(int width, int height, Buffer rgb);
+        void bufferFrame(int width, int height, Buffer rgb);
     }
 
     public BufferDataAppSink(String name, Listener listener) {
@@ -159,7 +159,7 @@ public class BufferDataAppSink extends Bin {
                 return;
             }
             
-            listener.rgbFrame(width, height, buffer);
+            listener.bufferFrame(width, height, buffer);
             
             //
             // Dispose of the gstreamer buffer immediately to avoid more being
