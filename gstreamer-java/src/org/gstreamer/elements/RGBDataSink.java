@@ -51,7 +51,7 @@ public class RGBDataSink extends Bin {
     public RGBDataSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-        videosink = (FakeSink) ElementFactory.make("fakesink", "VideoSink");
+        videosink = (FakeSink) ElementFactory.make("fakesink", name);
         videosink.set("signal-handoffs", true);
         videosink.set("sync", true);
         videosink.set("preroll-queue-len", 1);
@@ -83,7 +83,7 @@ public class RGBDataSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        Element element = pipeline.getElementByName("VideoSink");
+        Element element = pipeline.getElementByName(name);
         if (element != null) {
             
             // TODO: Fix. This doesn't work as it should. getElementByName() returns a 

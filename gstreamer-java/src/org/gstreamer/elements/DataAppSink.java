@@ -50,7 +50,7 @@ public class DataAppSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
        
-        sink = (AppSink) ElementFactory.make("appsink", "DataSink");
+        sink = (AppSink) ElementFactory.make("appsink", name);
         sink.set("emit-signals", true);
         sink.set("sync", true);
         sink.connect(new AppSinkNewBufferListener());
@@ -72,7 +72,7 @@ public class DataAppSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        Element element = pipeline.getElementByName("DataSink");
+        Element element = pipeline.getElementByName(name);
         if (element != null) {                
             // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
             // cannot be casted to AppSink.

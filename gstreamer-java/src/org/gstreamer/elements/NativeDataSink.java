@@ -25,8 +25,10 @@ import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
+import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
+import org.gstreamer.elements.DataSink.DataHandoffListener;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
@@ -38,9 +40,9 @@ import org.gstreamer.lowlevel.GstNative;
  * 
  * @param name The name used to identify this pipeline.
  */
-public class NativeDataAppSink extends Bin {
+public class NativeDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
-    private AppSink sink;    
+    private BaseSink sink;   
     private Listener listener;
     private boolean autoDisposeBuffer = true;
     
@@ -48,7 +50,7 @@ public class NativeDataAppSink extends Bin {
         void rgbFrame(int width, int height, Buffer rgb);
     }
 
-    public NativeDataAppSink(String name, Listener listener) {
+    public NativeDataSink(String name, Listener listener) {
       super(initializer(gst.ptr_gst_bin_new(name)));
       this.listener = listener;
       // JNA creates ByteBuffer using native byte order, set masks according to that.
@@ -61,24 +63,28 @@ public class NativeDataAppSink extends Bin {
       initSink(name, mask);      
     }
     
-    public NativeDataAppSink(String name, String mask, Listener listener) {
+    public NativeDataSink(String name, String mask, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;       
         initSink(name, mask);        
     }
 
-    public NativeDataAppSink(String name, Pipeline pipeline, Listener listener) {
+    public NativeDataSink(String name, Pipeline pipeline, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         Element element = pipeline.getElementByName(name);
-        if (element != null) {            
-            // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
-            // cannot be casted to AppSink.
-            sink = (AppSink) element;
-            sink.set("emit-signals", true);
+        if (element != null) {    
+          
+            // TODO: Fix. This doesn't work as it should. getElementByName() returns a 
+            // BaseSink which cannot be casted to FakeSink.
+            sink = (BaseSink) element;
+            
+            sink.set("signal-handoffs", true);
             sink.set("sync", true);
-            sink.connect(new AppSinkNewBufferListener());
+            sink.set("preroll-queue-len", 1);
+            sink.connect((BaseSink.HANDOFF) new SinkNewBufferListener());
+            sink.connect((BaseSink.PREROLL_HANDOFF) new SinkNewBufferListener());
         } else {
           sink = null;
           throw new RuntimeException("Element with name VideoSink not found in the pipeline");
@@ -86,10 +92,13 @@ public class NativeDataAppSink extends Bin {
     }
 
     private void initSink(String name, String mask) {
-      sink = (AppSink) ElementFactory.make("appsink", name);
-      sink.set("emit-signals", true);
+      sink = (FakeSink) ElementFactory.make("fakesink", name);
+      
+      sink.set("signal-handoffs", true);
       sink.set("sync", true);
-      sink.connect(new AppSinkNewBufferListener());
+      sink.set("preroll-queue-len", 1);
+      sink.connect((BaseSink.HANDOFF) new SinkNewBufferListener());
+      sink.connect((BaseSink.PREROLL_HANDOFF) new SinkNewBufferListener());
       
       //
       // Convert the input into 32bit RGB so it can be fed directly to a BufferedImage
@@ -135,22 +144,19 @@ public class NativeDataAppSink extends Bin {
     }
 
     /**
-     * Gets the <tt>Caps</tt> configured on this <tt>data sink</tt>
-     *
-     * @return The caps configured on this <tt>sink</tt>
-     */
-    public Caps getCaps() {
-        return sink.getCaps();
-    }
-
-    /**
      * A listener class that handles the new-buffer signal from the AppSink element.
      *
      */
-    class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(AppSink elem)
-        {
-            Buffer buffer = sink.pullBuffer();
+    class SinkNewBufferListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
+      public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+        doHandoff(buffer, pad, false);
+      }
+      
+      public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad) {
+        doHandoff(buffer, pad, true);
+      }        
+      
+      private void doHandoff(Buffer buffer, Pad pad, boolean isPrerollFrame) {
 
             Caps caps = buffer.getCaps();
             Structure struct = caps.getStructure(0);

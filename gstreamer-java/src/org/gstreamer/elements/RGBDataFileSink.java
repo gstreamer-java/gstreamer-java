@@ -42,7 +42,7 @@ import org.gstreamer.lowlevel.GstNative;
 public class RGBDataFileSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
 
-    private final LinkedList<Buffer> bufferList;
+    private final LinkedList<Buffer> preQueue;
     private final AppSrc source;
     private final Caps videoCaps;
 
@@ -54,9 +54,12 @@ public class RGBDataFileSink extends Bin {
     private final int sourceWidth;
     private final int sourceHeight;
 
+    private int PRE_QUEUE_SIZE;    
+    private int SRC_QUEUE_SIZE;
+    private int numDroppedFrames;
+        
     private boolean sendingData;
     private int frameCount;
-    private int QUEUED_FRAMES;
     private ScheduledExecutorService executor;
 
     /**
@@ -75,10 +78,17 @@ public class RGBDataFileSink extends Bin {
     public RGBDataFileSink(String name, int width, int height, int fps, String encoderStr, String[] encoderPropertyNames, Object[] encoderPropertyData, String muxerStr, File file) {
         super(initializer(gst.ptr_gst_bin_new(name)));
 
-        bufferList = new LinkedList<Buffer>();
+        preQueue = new LinkedList<Buffer>();
  
-        QUEUED_FRAMES = 30;
+        // Maximum number of frames that can be buffered before the entering into the
+        // encoding queue in gstreamer. 0 means no limit.   
+        PRE_QUEUE_SIZE = 0;
+        
+        // Maximum number of frames that can be enqueued in the endcoding pipeline.
+        SRC_QUEUE_SIZE = 30;
 
+        numDroppedFrames = 0;
+        
         sourceWidth = width;
         sourceHeight = height;
         FPS = fps;
@@ -103,7 +113,7 @@ public class RGBDataFileSink extends Bin {
         source.setLatency(-1, 0);
         source.setSize(-1);
         source.setCaps(videoCaps);
-        source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
+        source.setMaxBytes(SRC_QUEUE_SIZE * sourceWidth * sourceHeight * 4);
 
         needDataListener = new AppSrcNeedDataListener();
         enoughDataListener = new AppSrcEnoughDataListener();
@@ -142,7 +152,7 @@ public class RGBDataFileSink extends Bin {
     /**
      * Pushes a buffer down the pipeline.
      *
-     * @param buf The buffer to push. Actually, it is not immediatelly pushed into
+     * @param buf The buffer to push. Actually, it is not immediately pushed into
      * the gst pipeline, but it is added to a fifo linked list that holds the buffer
      * temporarily until the AppSrc requests more data for its internal queue.
      *
@@ -187,37 +197,64 @@ public class RGBDataFileSink extends Bin {
         setState(State.NULL);        
         source.endOfStream();
     }
-
+    
+    /**
+     * Sets the size of the pre-encoding queue, which is stored on the Java side.
+     *
+     * @param nFrames Size of the buffer expressed in number of frames.
+     */
+    public void setPreQueueSize(int nFrames)
+    {
+        PRE_QUEUE_SIZE = nFrames;
+    }
+    
+    /**
+     * Returns the size of the pre-encoding queue.
+     *
+     */
+    public int getPreQueueSize()
+    {
+        return PRE_QUEUE_SIZE;
+    }
+    
+    /**
+     * Returns the number of frames currently stored in pre-encoding
+     * queue, still not sent to the encoding pipeline.
+     *
+     */
+    public int getNumQueuedFrames()
+    {
+        return preQueue.size();
+    }
+    
     /**
      * Sets the size of the AppSrc queue.
      *
      * @param nFrames Size of the queue expressed in number of frames.
      */
-    public void setQueueSize(int nFrames)
+    public void setSrcQueueSize(int nFrames)
     {
-        QUEUED_FRAMES = nFrames;
-        source.setMaxBytes(QUEUED_FRAMES * sourceWidth * sourceHeight * 4);
+        SRC_QUEUE_SIZE = nFrames;
+        source.setMaxBytes(SRC_QUEUE_SIZE * sourceWidth * sourceHeight * 4);
     }
 
     /**
      * Returns the current size of the AppSrc queue.
      *
      */
-    public int getQueueSize()
+    public int getSrcQueueSize()
     {
-        return QUEUED_FRAMES;
+        return SRC_QUEUE_SIZE;
     }
 
     /**
-     * Returns the number of buffers currently stored in the fifo linked list (still
-     * not pushed down the pipeline).
+     * Returns the number of dropped frames until now.
      *
-     */
-    public int getNumQueuedFrames()
-    {
-        return bufferList.size();
+     */    
+    public int getNumDroppedFrames() {
+      return numDroppedFrames;
     }
-
+    
     /**
      * A listener class that handles the need-data signal from the AppSrc element.
      *
@@ -260,8 +297,13 @@ public class RGBDataFileSink extends Bin {
      *
      */
     private void addBuffer(Buffer buf)
-    {
-        bufferList.add(buf);
+    {       
+        if (PRE_QUEUE_SIZE <= 0 || (preQueue.size() + 1 < PRE_QUEUE_SIZE)) 
+        {
+            preQueue.add(buf);
+        } else {
+            numDroppedFrames++;          
+        }
     }
 
     /**
@@ -271,11 +313,11 @@ public class RGBDataFileSink extends Bin {
     private void pushBuffer()
     {
         if (sendingData)
-            if (0 < bufferList.size())
+            if (0 < preQueue.size())
             {
                 // There are buffers available in the fifo list to be sent to the
                 // appsrc queue.
-                Buffer buf = bufferList.remove(0);
+                Buffer buf = preQueue.remove(0);
                 frameCount++;
 
                 long f = (long)frameCount * NANOS_PER_FRAME;
