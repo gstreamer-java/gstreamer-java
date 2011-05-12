@@ -28,7 +28,6 @@ import org.gstreamer.GhostPad;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
-import org.gstreamer.elements.ByteDataSink.DataHandoffListener;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
