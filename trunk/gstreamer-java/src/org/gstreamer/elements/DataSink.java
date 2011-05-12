@@ -48,7 +48,7 @@ public class DataSink extends Bin {
     public DataSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-        sink = (FakeSink) ElementFactory.make("fakesink", "DataSink");
+        sink = (FakeSink) ElementFactory.make("fakesink", name);
         sink.set("signal-handoffs", true);
         sink.set("sync", true);
         sink.set("preroll-queue-len", 1);
@@ -72,7 +72,7 @@ public class DataSink extends Bin {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
-        Element element = pipeline.getElementByName("DataSink");
+        Element element = pipeline.getElementByName(name);
         if (element != null) {
             
             // TODO: Fix. This doesn't work as it should. getElementByName() returns a 
