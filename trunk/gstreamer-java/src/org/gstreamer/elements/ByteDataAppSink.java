@@ -41,7 +41,7 @@ public class ByteDataAppSink extends Bin {
     private Listener listener;
     
     public static interface Listener {
-        void dataFrame(Caps caps, int size, ByteBuffer data);
+        void byteFrame(Caps caps, int size, ByteBuffer data);
     }
 
     public ByteDataAppSink(String name, Listener listener) {
@@ -146,7 +146,7 @@ public class ByteDataAppSink extends Bin {
                 data.put(buffer.getByteBuffer()).flip();
             }
             
-            listener.dataFrame(caps, n, data);
+            listener.byteFrame(caps, n, data);
 
             //
             // Dispose of the gstreamer buffer immediately to avoid more being

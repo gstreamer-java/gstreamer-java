@@ -42,7 +42,7 @@ public class ByteDataSink extends Bin {
     private Listener listener;
     
     public static interface Listener {
-        void dataFrame(boolean isPrerollFrame, Caps caps, int size, ByteBuffer data);
+        void byteFrame(boolean isPrerollFrame, Caps caps, int size, ByteBuffer data);
     }
     
     /**
@@ -150,7 +150,7 @@ public class ByteDataSink extends Bin {
                 data.put(buffer.getByteBuffer()).flip();
             }
             
-            listener.dataFrame(isPrerollFrame, caps, n, data);
+            listener.byteFrame(isPrerollFrame, caps, n, data);
             
             //
             // Dispose of the gstreamer buffer immediately to avoid more being 
