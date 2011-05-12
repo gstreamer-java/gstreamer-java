@@ -101,7 +101,7 @@ public class RGBDataSink extends Bin {
             videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
         } else {
           videosink = null;
-          throw new RuntimeException("Element with name VideoSink not found in the pipeline");
+          throw new RuntimeException("Element with name " + name + " not found in the pipeline");
         }
     }
 
