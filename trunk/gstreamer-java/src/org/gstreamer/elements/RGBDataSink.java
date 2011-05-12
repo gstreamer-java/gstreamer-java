@@ -33,6 +33,10 @@ import org.gstreamer.Structure;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
+/**
+ * Class that allows to pull out buffers from the GStreamer pipeline into
+ * the application.
+ */
 public class RGBDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private final BaseSink videosink;    

@@ -32,13 +32,11 @@ import org.gstreamer.lowlevel.GstNative;
 
 /**
  * Class that allows to pull out native buffers from the GStreamer pipeline into
- * the application. It is almost identical to NativeDataSink, the only
- * difference is that NativeDataSink uses a fakesink as the sink element,
- * while NativeDataAppSink uses an appsink.
- * 
- * @param name The name used to identify this pipeline.
+ * the application. It is almost identical to BufferDataSink, the only
+ * difference is that BufferDataSink uses a fakesink as the sink element,
+ * while BufferDataAppSink uses an appsink.
  */
-public class NativeDataAppSink extends Bin {
+public class BufferDataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private AppSink sink;    
     private Listener listener;
@@ -48,7 +46,7 @@ public class NativeDataAppSink extends Bin {
         void rgbFrame(int width, int height, Buffer rgb);
     }
 
-    public NativeDataAppSink(String name, Listener listener) {
+    public BufferDataAppSink(String name, Listener listener) {
       super(initializer(gst.ptr_gst_bin_new(name)));
       this.listener = listener;
       // JNA creates ByteBuffer using native byte order, set masks according to that.
@@ -61,13 +59,13 @@ public class NativeDataAppSink extends Bin {
       initSink(name, mask);      
     }
     
-    public NativeDataAppSink(String name, String mask, Listener listener) {
+    public BufferDataAppSink(String name, String mask, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;       
         initSink(name, mask);        
     }
 
-    public NativeDataAppSink(String name, Pipeline pipeline, Listener listener) {
+    public BufferDataAppSink(String name, Pipeline pipeline, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
