@@ -80,7 +80,7 @@ public class ByteDataAppSink extends Bin {
             sink.connect(new AppSinkNewBufferListener());
         } else {
           sink = null;
-          throw new RuntimeException("Element with name DataSink not found in the pipeline");
+          throw new RuntimeException("Element with name " + name + " not found in the pipeline");
         }
     }
 
