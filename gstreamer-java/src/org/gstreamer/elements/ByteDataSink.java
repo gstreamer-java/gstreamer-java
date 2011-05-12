@@ -30,6 +30,11 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
+/**
+ * Class that allows to pull out buffers from the GStreamer pipeline into
+ * the application, using an appsink. The buffers are NOT converted into 
+ * 32bit RGB.
+ */
 public class ByteDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
     private final BaseSink sink;    

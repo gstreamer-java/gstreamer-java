@@ -32,9 +32,7 @@ import java.nio.ByteBuffer;
 /**
  * Class that allows to pull out buffers from the GStreamer pipeline into
  * the application, using an appsink. The buffers are NOT converted into 
- * 32bit RGB.
- * 
- * @param name The name used to identify this pipeline.
+ * 32bit RGB. It uses an appsink as the sink element.
  */
 public class ByteDataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);

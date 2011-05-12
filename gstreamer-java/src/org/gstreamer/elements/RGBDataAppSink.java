@@ -37,8 +37,6 @@ import org.gstreamer.lowlevel.GstNative;
  * the application. It is almost identical to RGBDataSink, the only
  * difference is that RGBDataSink uses a fakesink as the sink element,
  * while RGBDataAppSink uses an appsink.
- * 
- * @param name The name used to identify this pipeline.
  */
 public class RGBDataAppSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
