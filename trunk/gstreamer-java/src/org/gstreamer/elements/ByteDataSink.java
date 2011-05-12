@@ -1,6 +1,6 @@
-/*
+/* 
  * Copyright (c) 2011 Andres Colubri
- *
+ * 
  * This file is part of gstreamer-java.
  *
  * This code is free software: you can redistribute it and/or modify it under
@@ -18,42 +18,42 @@
 
 package org.gstreamer.elements;
 
+import java.nio.ByteBuffer;
 import org.gstreamer.Bin;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
+import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
-import java.nio.ByteBuffer;
 
-/**
- * Class that allows to pull out buffers from the GStreamer pipeline into
- * the application, using an appsink. The buffers are NOT converted into 
- * 32bit RGB.
- * 
- * @param name The name used to identify this pipeline.
- */
-public class DataAppSink extends Bin {
+public class ByteDataSink extends Bin {
     private static final GstBinAPI gst = GstNative.load(GstBinAPI.class);
-    private final AppSink sink;
+    private final BaseSink sink;    
     private boolean passDirectBuffer = false;
     private Listener listener;
     
     public static interface Listener {
-        void dataFrame(Caps caps, int size, ByteBuffer data);
+        void dataFrame(boolean isPrerollFrame, Caps caps, int size, ByteBuffer data);
     }
-
-    public DataAppSink(String name, Listener listener) {
+    
+    /**
+     * Creates a new instance of RGBDataSink with the given name.
+     * 
+     * @param name The name used to identify this pipeline.
+     */
+    public ByteDataSink(String name, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
-       
-        sink = (AppSink) ElementFactory.make("appsink", name);
-        sink.set("emit-signals", true);
+        sink = (FakeSink) ElementFactory.make("fakesink", name);
+        sink.set("signal-handoffs", true);
         sink.set("sync", true);
-        sink.connect(new AppSinkNewBufferListener());
+        sink.set("preroll-queue-len", 1);
+        sink.connect((BaseSink.HANDOFF) new DataHandoffListener());
+        sink.connect((BaseSink.PREROLL_HANDOFF) new DataHandoffListener());
         
         //
         // Adding identity element
@@ -65,24 +65,28 @@ public class DataAppSink extends Bin {
         //
         // Link the ghost pads on the bin to the sink pad on the convertor
         //
-        addPad(new GhostPad("sink", conv.getStaticPad("sink")));        
+        addPad(new GhostPad("sink", conv.getStaticPad("sink")));  
     }
 
-    public DataAppSink(String name, Pipeline pipeline, Listener listener) {
+    public ByteDataSink(String name, Pipeline pipeline, Listener listener) {
         super(initializer(gst.ptr_gst_bin_new(name)));
         this.listener = listener;
 
         Element element = pipeline.getElementByName(name);
-        if (element != null) {                
-            // TODO: Fix. This doesn't work. getElementByName() returns a BaseSink which 
-            // cannot be casted to AppSink.
-            sink = (AppSink) element;
-            sink.set("emit-signals", true);
+        if (element != null) {
+            
+            // TODO: Fix. This doesn't work as it should. getElementByName() returns a 
+            // BaseSink which cannot be casted to FakeSink.
+            sink = (BaseSink) element;
+            
+            sink.set("signal-handoffs", true);
             sink.set("sync", true);
-            sink.connect(new AppSinkNewBufferListener());
+            sink.set("preroll-queue-len", 1);
+            sink.connect((BaseSink.HANDOFF) new DataHandoffListener());
+            sink.connect((BaseSink.PREROLL_HANDOFF) new DataHandoffListener());
         } else {
           sink = null;
-          throw new RuntimeException("Element with name DataSink not found in the pipeline");
+          throw new RuntimeException("Element with name VideoSink not found in the pipeline");
         }
     }
 
@@ -93,51 +97,44 @@ public class DataAppSink extends Bin {
      */    
     public void removeListener() {
       this.listener = null;
-    }
+    }    
     
     /**
-     * Indicate whether the {@link RGBDataAppSink} should pass the native {@link java.nio.IntBuffer}
+     * Indicate whether the {@link RGBDataSink} should pass the native {@link java.nio.IntBuffer}
      * to the listener, or should copy it to a heap buffer.  The default is to pass
      * a heap {@link java.nio.IntBuffer} copy of the data
-     * @param passThru If true, pass through the native IntBuffer instead of
+     * @param passThru If true, pass through the native IntBuffer instead of 
      * copying it to a heap IntBuffer.
      */
     public void setPassDirectBuffer(boolean passThru) {
         this.passDirectBuffer = passThru;
     }
-
+    
     /**
      * Gets the actual gstreamer sink element.
-     *
-     * @return a AppSink
+     * 
+     * @return a BaseSink
      */
     public BaseSink getSinkElement() {
         return sink;
     }
 
-    /**
-     * Gets the <tt>Caps</tt> configured on this <tt>data sink</tt>
-     *
-     * @return The caps configured on this <tt>sink</tt>
-     */
-    public Caps getCaps() {
-        return sink.getCaps();
-    }
-
-    /**
-     * A listener class that handles the new-buffer signal from the AppSink element.
-     *
-     */
-    class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(AppSink elem)
-        {
-            Buffer buffer = sink.pullBuffer();
-
+    class DataHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
+        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+        	doHandoff(buffer, pad, false);
+        }
+        
+        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad) {
+        	doHandoff(buffer, pad, true);
+    	  }        
+        
+        private void doHandoff(Buffer buffer, Pad pad, boolean isPrerollFrame) {
+        	
             Caps caps = buffer.getCaps();
             int n = buffer.getSize();
             
             if (n < 1) {
-                return;
+              return;
             }
             
             ByteBuffer data;
@@ -148,10 +145,10 @@ public class DataAppSink extends Bin {
                 data.put(buffer.getByteBuffer()).flip();
             }
             
-            listener.dataFrame(caps, n, data);
-
+            listener.dataFrame(isPrerollFrame, caps, n, data);
+            
             //
-            // Dispose of the gstreamer buffer immediately to avoid more being
+            // Dispose of the gstreamer buffer immediately to avoid more being 
             // allocated before the java GC kicks in
             //
             buffer.dispose();
