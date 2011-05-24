@@ -159,6 +159,17 @@ public class Element extends GstObject {
     }
     
     /**
+     * Locks the state of an element, so state changes of the parent don't affect this element anymore.
+     *
+     * @param locked_state true to lock the element's {@link State}.
+     * @return true if the state was changed, false if bad parameters were 
+     * given or the elements state-locking needed no change.
+     */
+    public boolean setLockedState(boolean locked_state) {
+        return gst.gst_element_set_locked_state(this, locked_state);
+    }
+    
+    /**
      * Sets the {@link Caps} on this Element.
      * 
      * @param caps the new Caps to set.
