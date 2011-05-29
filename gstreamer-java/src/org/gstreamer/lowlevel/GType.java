@@ -19,13 +19,17 @@
 package org.gstreamer.lowlevel;
 
 import com.sun.jna.FromNativeContext;
-import com.sun.jna.NativeLong;
+import com.sun.jna.IntegerType;
+import com.sun.jna.Native;
 
 /**
  *
  */
 @SuppressWarnings("serial")
-public class GType extends NativeLong {
+public class GType extends IntegerType {
+    /** Size of a native <code>GType</code>, in bytes. */
+    public static final int SIZE = Native.SIZE_T_SIZE;
+
     private static final GType[] cache;
     static {
         cache = new GType[21];
@@ -63,7 +67,7 @@ public class GType extends NativeLong {
     }
     
     public GType(long t, String description) {
-    	super(t);
+    	super(SIZE, t);
     	this.description = description;
     }
     
