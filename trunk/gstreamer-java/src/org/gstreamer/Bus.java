@@ -354,7 +354,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(EOS listener) {
-        super.disconnect(EOS.class, listener);
+        disconnect(EOS.class, listener);
     }
     
     /**
@@ -381,7 +381,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(ERROR listener) {
-        super.disconnect(ERROR.class, listener);
+        disconnect(ERROR.class, listener);
     }
     
     /**
@@ -408,7 +408,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(WARNING listener) {
-        super.disconnect(WARNING.class, listener);
+        disconnect(WARNING.class, listener);
     }
     
     /**
@@ -435,7 +435,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(INFO listener) {
-        super.disconnect(INFO.class, listener);
+        disconnect(INFO.class, listener);
     }
     
     /**
@@ -461,7 +461,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(STATE_CHANGED listener) {
-        super.disconnect(STATE_CHANGED.class, listener);
+        disconnect(STATE_CHANGED.class, listener);
     }
     /**
      * Add a listener for new media tags.
@@ -486,7 +486,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(TAG listener) {
-        super.disconnect(TAG.class, listener);
+        disconnect(TAG.class, listener);
     }
     
     /**
@@ -511,7 +511,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(BUFFERING listener) {
-        super.disconnect(BUFFERING.class, listener);
+        disconnect(BUFFERING.class, listener);
     }
     
     /**
@@ -537,7 +537,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(DURATION listener) {
-        super.disconnect(DURATION.class, listener);
+        disconnect(DURATION.class, listener);
     }
     
     /**
@@ -563,7 +563,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(SEGMENT_START listener) {
-        super.disconnect(SEGMENT_START.class, listener);
+        disconnect(SEGMENT_START.class, listener);
     }
     
     /**
@@ -589,7 +589,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(SEGMENT_DONE listener) {
-        super.disconnect(SEGMENT_DONE.class, listener);
+        disconnect(SEGMENT_DONE.class, listener);
     }
     
     /**
@@ -613,7 +613,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(ASYNC_DONE listener) {
-        super.disconnect(ASYNC_DONE.class, listener);
+        disconnect(ASYNC_DONE.class, listener);
     }
 
     /**
@@ -657,7 +657,7 @@ public class Bus extends GstObject {
      * @param listener The listener that was registered to receive the message.
      */
     public void disconnect(MESSAGE listener) {
-        super.disconnect(MESSAGE.class, listener);
+        disconnect(MESSAGE.class, listener);
     }
     
     /**
