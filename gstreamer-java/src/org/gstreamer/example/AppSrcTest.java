@@ -35,7 +35,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.AppSrc;
 import org.gstreamer.swing.VideoComponent;
@@ -97,7 +96,7 @@ public class AppSrcTest {
                 frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
-                pipeline.setState(State.PLAYING);
+                pipeline.play();
             }
         });
         

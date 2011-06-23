@@ -33,7 +33,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.Version;
 import org.gstreamer.swing.VideoComponent;
 import org.gstreamer.swing.VideoPlayer;
@@ -102,7 +101,7 @@ public class Main {
                 frame.setVisible(true);
 
                 // Start the pipeline processing
-                pipe.setState(State.PLAYING);
+                pipe.play();
                 System.out.println(PREFIX + "pipeline set to PLAYING state");
                 System.out.flush();
             }

@@ -33,7 +33,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -72,7 +71,7 @@ public class VideoTest {
                 frame.setVisible(true);
                 
                 // Start the pipeline processing
-                pipe.setState(State.PLAYING);
+                pipe.play();
             }
         });
     }

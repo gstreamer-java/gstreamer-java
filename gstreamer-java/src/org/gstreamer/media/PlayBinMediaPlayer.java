@@ -104,7 +104,7 @@ public class PlayBinMediaPlayer extends PipelineMediaPlayer {
      */
     public void setURI(URI uri) {
         State old = playbin.getState();
-        playbin.setState(State.READY);
+        playbin.ready();
         playbin.setURI(uri);
         playbin.setState(old);
     }

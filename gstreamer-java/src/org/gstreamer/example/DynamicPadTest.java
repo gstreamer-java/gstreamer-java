@@ -27,7 +27,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 
 /**
  *
@@ -59,7 +58,7 @@ public class DynamicPadTest {
         });
         
         /* start the pipeline */
-        pipeline.setState(State.PLAYING);
+        pipeline.play();
         Gst.main();
     }
 }

@@ -27,7 +27,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.elements.TypeFind;
 
 /**
@@ -62,7 +61,7 @@ public class TypeFindTest {
         });
         
         /* start the pipeline */
-        pipeline.setState(State.PLAYING);
+        pipeline.play();
         
         Gst.main();
     }

@@ -31,7 +31,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
-import org.gstreamer.State;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.FakeSink;
@@ -81,7 +80,7 @@ public class TagFinder {
         //
         pipe.getBus().connect(new Bus.ASYNC_DONE() {
             public void asyncDone(GstObject source) {
-                pipe.setState(State.NULL);
+                pipe.stop();
                 done.countDown();
             }
         });
@@ -93,7 +92,7 @@ public class TagFinder {
         //
         BaseSink.HANDOFF handoff = new BaseSink.HANDOFF() {
             public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
-                pipe.setState(State.NULL);
+                pipe.stop();
                 done.countDown();
             }
         };
@@ -101,11 +100,11 @@ public class TagFinder {
         video.connect(handoff);
         
         // Start the pipeline playing
-        pipe.setState(State.PAUSED);
+        pipe.pause();
         try {
             done.await();
         } catch (InterruptedException ex) {
         }
-        pipe.setState(State.NULL);
+        pipe.stop();
     }
 }

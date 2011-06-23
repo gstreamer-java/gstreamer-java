@@ -26,7 +26,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 
 /**
  * A simple pipeline, demonstrating linking elements together
@@ -51,8 +50,8 @@ public class SimplePipeline {
         src.link(sink);
         
         // Start the pipeline playing
-        pipe.setState(State.PLAYING);
+        pipe.play();
         Gst.main();
-        pipe.setState(State.NULL);
+        pipe.stop();
     }
 }
