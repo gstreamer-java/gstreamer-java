@@ -386,34 +386,4 @@ public class Pipeline extends Bin {
         GstQueryAPI.GSTQUERY_API.gst_query_parse_segment(qry, rate, fmt, start_value, stop_value);
         return new Segment(rate[0], fmt[0], start_value[0], stop_value[0]);
     }
-
-    /**
-     * Tests if the Pipeline is currently playing.
-     * 
-     * @return true if the Pipeline is currently playing
-     */
-    public boolean isPlaying() {
-        return getState() == State.PLAYING;
-    }
-    
-    /**
-     * Tells the Pipeline to start playing the media stream.
-     */
-    public void play() {
-        setState(State.PLAYING);
-    }
-    
-    /**
-     * Tells the Pipeline to pause playing the media stream.
-     */
-    public void pause() {
-        setState(State.PAUSED);
-    }
-    
-    /**
-     * Tells the Pipeline to pause playing the media stream.
-     */
-    public void stop() {
-        setState(State.NULL);
-    }
 }

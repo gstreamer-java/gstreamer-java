@@ -125,6 +125,7 @@ public class Element extends GstObject {
         System.arraycopy(elems, 0, list, 1, elems.length);
         return linkMany(list);
     }
+
     /**
      * Unlinks all source pads of this source element with all sink pads
      * of the sink element to which they are linked.
@@ -138,6 +139,36 @@ public class Element extends GstObject {
         gst.gst_element_unlink(this, dest);
     }
     
+    /**
+     * Tests if the Element is currently playing.
+     * 
+     * @return true if the Element is currently playing
+     */
+    public boolean isPlaying() {
+        return getState() == State.PLAYING;
+    }
+    
+    /**
+     * Tells the Element to start playing the media stream.
+     */
+    public StateChangeReturn play() {
+        return setState(State.PLAYING);
+    }
+    
+    /**
+     * Tells the Element to pause playing the media stream.
+     */
+    public StateChangeReturn pause() {
+    	return setState(State.PAUSED);
+    }
+    
+    /**
+     * Tells the Element to pause playing the media stream.
+     */
+    public StateChangeReturn stop() {
+    	return setState(State.NULL);
+    }
+
     /**
      * Sets the state of the element. 
      * <p>
@@ -167,6 +198,81 @@ public class Element extends GstObject {
      */
     public boolean setLockedState(boolean locked_state) {
         return gst.gst_element_set_locked_state(this, locked_state);
+    }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
+     * This method will wait until any async state change has completed.
+     * 
+     * @return The {@link State} the Element is currently in.
+     */
+    public State getState() {
+        return getState(-1);
+    }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @param timeout the amount of time to wait.
+     * @param units the units of the <tt>timeout</tt>.
+     * @return The {@link State} the Element is currently in.
+     *
+     */
+    public State getState(long timeout, TimeUnit units) {
+        State[] state = new State[1];
+        gst.gst_element_get_state(this, state, null, units.toNanos(timeout));
+        return state[0];
+    }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @param timeout The amount of time in nanoseconds to wait.
+     * @return The {@link State} the Element is currently in.
+     *
+     */
+    public State getState(long timeout) {
+        State[] state = new State[1];
+        gst.gst_element_get_state(this, state, null, timeout);
+        return state[0];
+    }
+    
+    /**
+     * Gets the state of the element.
+     * <p>
+     * For elements that performed an ASYNC state change, as reported by
+     * {@link #setState}, this function will block up to the
+     * specified timeout value for the state change to complete.
+     * 
+     * @param timeout The amount of time in nanoseconds to wait.
+     * @param states an array to store the states in.  Must be of sufficient size
+     * to hold two elements.
+     *
+     */
+    public void getState(long timeout, State[] states) {
+        State[] state = new State[1];
+        State[] pending = new State[1];
+        gst.gst_element_get_state(this, state, pending, timeout);
+        states[0] = state[0];
+        states[1] = pending[0];
+    }
+    
+    /**
+     * Tries to change the state of the element to the same as its parent.
+     * If this function returns false, the state of element is undefined.
+     * @return true, if the element's state could be synced to the parent's state. MT safe.
+     */
+    public boolean syncStateWithParent() {
+    	return gst.gst_element_sync_state_with_parent(this);
     }
     
     /**
@@ -284,81 +390,6 @@ public class Element extends GstObject {
      */
     public boolean removePad(Pad pad) {
         return gst.gst_element_remove_pad(this, pad);
-    }
-    
-    /**
-     * Gets the state of the element.
-     * <p>
-     * This method will wait until any async state change has completed.
-     * 
-     * @return The {@link State} the Element is currently in.
-     */
-    public State getState() {
-        return getState(-1);
-    }
-    
-    /**
-     * Gets the state of the element.
-     * <p>
-     * For elements that performed an ASYNC state change, as reported by
-     * {@link #setState}, this function will block up to the
-     * specified timeout value for the state change to complete.
-     * 
-     * @param timeout the amount of time to wait.
-     * @param units the units of the <tt>timeout</tt>.
-     * @return The {@link State} the Element is currently in.
-     *
-     */
-    public State getState(long timeout, TimeUnit units) {
-        State[] state = new State[1];
-        gst.gst_element_get_state(this, state, null, units.toNanos(timeout));
-        return state[0];
-    }
-    
-    /**
-     * Gets the state of the element.
-     * <p>
-     * For elements that performed an ASYNC state change, as reported by
-     * {@link #setState}, this function will block up to the
-     * specified timeout value for the state change to complete.
-     * 
-     * @param timeout The amount of time in nanoseconds to wait.
-     * @return The {@link State} the Element is currently in.
-     *
-     */
-    public State getState(long timeout) {
-        State[] state = new State[1];
-        gst.gst_element_get_state(this, state, null, timeout);
-        return state[0];
-    }
-    
-    /**
-     * Gets the state of the element.
-     * <p>
-     * For elements that performed an ASYNC state change, as reported by
-     * {@link #setState}, this function will block up to the
-     * specified timeout value for the state change to complete.
-     * 
-     * @param timeout The amount of time in nanoseconds to wait.
-     * @param states an array to store the states in.  Must be of sufficient size
-     * to hold two elements.
-     *
-     */
-    public void getState(long timeout, State[] states) {
-        State[] state = new State[1];
-        State[] pending = new State[1];
-        gst.gst_element_get_state(this, state, pending, timeout);
-        states[0] = state[0];
-        states[1] = pending[0];
-    }
-    
-    /**
-     * Tries to change the state of the element to the same as its parent.
-     * If this function returns false, the state of element is undefined.
-     * @return true, if the element's state could be synced to the parent's state. MT safe.
-     */
-    public boolean syncStateWithParent() {
-    	return gst.gst_element_sync_state_with_parent(this);
     }
     
     /**

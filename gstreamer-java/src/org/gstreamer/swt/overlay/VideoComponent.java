@@ -34,6 +34,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Message;
 import org.gstreamer.MessageType;
+import org.gstreamer.State;
 import org.gstreamer.Structure;
 import org.gstreamer.Bin.ELEMENT_ADDED;
 import org.gstreamer.elements.BaseSink;
@@ -78,8 +79,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	public VideoComponent(final Composite parent, int style, boolean enableX11Events) {
 		super(parent, style | SWT.EMBEDDED);
 		x11Events = enableX11Events;
-		if (x11Events)
-			addDisposeListener(this);
+		addDisposeListener(this);
 //		String name = Platform.isLinux() ? "xvimagesink" :
 //                    Platform.isWindows() ? "d3dvideosink" :
 //                    Platform.isMac() ? "osxvideosink" : null;
@@ -142,8 +142,11 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	}
 
 	public void widgetDisposed(DisposeEvent arg0) {
-		watcherRunning = false;
 		removeDisposeListener(this);
+		if (x11Events)
+			watcherRunning = false;
+		if (videosink != null && !videosink.getState().equals(State.NULL))
+			throw new IllegalStateException("");
 	}	
 	
 	/**
