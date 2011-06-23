@@ -31,7 +31,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.gstreamer.Gst;
-import org.gstreamer.State;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.swing.VideoComponent;
 
@@ -76,7 +75,7 @@ public class VideoPlayer {
                 playbin.setVideoSink(videoComponent.getElement());
                 
                 // Start the pipeline playing
-                playbin.setState(State.PLAYING);
+                playbin.play();
                 
                 //
                 // Initialise the top-level frame and add the video component
@@ -94,6 +93,6 @@ public class VideoPlayer {
         // Wait until Gst.quit() is called.
         //
         Gst.main();
-        playbin.setState(State.NULL);
+        playbin.stop();
     }
 }

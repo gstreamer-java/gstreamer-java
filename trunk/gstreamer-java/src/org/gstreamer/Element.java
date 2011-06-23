@@ -156,6 +156,13 @@ public class Element extends GstObject {
     }
     
     /**
+     * Tells the Element to set ready the media stream.
+     */
+    public StateChangeReturn ready() {
+        return setState(State.READY);
+    }
+    
+    /**
      * Tells the Element to pause playing the media stream.
      */
     public StateChangeReturn pause() {

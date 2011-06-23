@@ -37,7 +37,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.BaseSrc;
 import org.gstreamer.elements.FakeSrc;
@@ -109,7 +108,7 @@ public class FakeSrcTest {
                 frame.pack();
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.setVisible(true);
-                pipeline.setState(State.PLAYING);
+                pipeline.play();
             }
         });
         

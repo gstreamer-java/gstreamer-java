@@ -36,7 +36,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.swing.VideoComponent;
 
 /**
@@ -105,7 +104,7 @@ public class NavigationTest {
                 System.out.println("Adding elements to pipeline");
                 pipeline.addMany(fakesrc, flt, navtest, videosink);
                 Element.linkMany(fakesrc, flt, navtest, videosink);
-                pipeline.setState(State.PLAYING);
+                pipeline.play();
 
                 frame.setSize(width, height);
                 //frame.getRootPane().setDoubleBuffered(false);

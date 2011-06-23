@@ -38,7 +38,6 @@ import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.Structure;
 import org.gstreamer.elements.DecodeBin2;
 import org.gstreamer.swing.VideoComponent;
@@ -120,7 +119,7 @@ public class DecodeBinPlayer {
         bus.connect(new Bus.EOS() {
 
             public void endOfStream(GstObject source) {
-                pipe.setState(State.NULL);
+                pipe.stop();
                 System.exit(0);
             }
 

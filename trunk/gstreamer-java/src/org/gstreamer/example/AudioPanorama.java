@@ -31,7 +31,6 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.elements.PlayBin2;
 
 /**
@@ -70,12 +69,12 @@ public class AudioPanorama {
         Gst.getScheduledExecutorService().scheduleAtFixedRate(new Panner(sink),
                 100, PERIOD / 100, TimeUnit.MILLISECONDS);
         // Start the pipeline playing
-        pipe.setState(State.PLAYING);
+        pipe.play();
 
         Gst.main();
 
         // Clean up (gstreamer requires elements to be in State.NULL before disposal)
-        pipe.setState(State.NULL);
+        pipe.stop();
     }
     
     private static final class PanoramaSink extends Bin {

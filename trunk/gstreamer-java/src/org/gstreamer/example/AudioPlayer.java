@@ -26,7 +26,6 @@ import java.io.File;
 
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
-import org.gstreamer.State;
 import org.gstreamer.elements.PlayBin2;
 
 /**
@@ -57,10 +56,10 @@ public class AudioPlayer {
         playbin.setInputFile(new File(args[0]));
         
         // Start the pipeline playing
-        playbin.setState(State.PLAYING);
+        playbin.play();
         Gst.main();
         
         // Clean up (gstreamer requires elements to be in State.NULL before disposal)
-        playbin.setState(State.NULL);
+        playbin.stop();
     }
 }

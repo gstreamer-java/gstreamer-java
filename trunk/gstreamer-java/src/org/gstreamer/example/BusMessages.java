@@ -100,10 +100,10 @@ public class BusMessages {
         });
         
         // Start the pipeline playing
-        playbin.setState(State.PLAYING);
+        playbin.play();
         Gst.main();
         // Clean up (gstreamer requires elements to be in State.NULL before disposal)
-        playbin.setState(State.NULL);
+        playbin.stop();
         Gst.deinit();
     }
 }

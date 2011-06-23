@@ -28,7 +28,6 @@ import org.gstreamer.Bus;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.GstObject;
-import org.gstreamer.State;
 import org.gstreamer.TagList;
 import org.gstreamer.elements.PlayBin2;
 
@@ -74,10 +73,10 @@ public class AudioPlayerMetadata {
         });
         
         // Start the pipeline playing
-        playbin.setState(State.PLAYING);
+        playbin.play();
         Gst.main();
         
         // Clean up (gstreamer requires elements to be in State.NULL before disposal)
-        playbin.setState(State.NULL);
+        playbin.stop();
     }
 }

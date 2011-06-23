@@ -27,7 +27,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.interfaces.Tuner;
 import org.gstreamer.interfaces.TunerChannel;
 import org.gstreamer.interfaces.TunerNorm;
@@ -44,7 +43,7 @@ public class TunerTest {
 		pipe.addMany(videosrc, videosink);
 		Element.linkMany(videosrc, videosink);
 						
-		pipe.setState(State.PLAYING);
+		pipe.play();
 
 		Tuner tun = Tuner.wrap(videosrc);
 

@@ -27,7 +27,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 
 /**
  * Test consequtive Gst.main/Gst.quit call sequences
@@ -60,11 +59,11 @@ public class DoubleQuit {
                 }
             }, 1, TimeUnit.SECONDS);
             // Start the pipeline playing
-            pipe.setState(State.PLAYING);
+            pipe.play();
             System.out.println("Running main loop " + i);
             Gst.main();
             // Clean up (gstreamer requires elements to be in State.NULL before disposal)
-            pipe.setState(State.NULL);
+            pipe.stop();
         }
     }
 }

@@ -28,7 +28,6 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
-import org.gstreamer.State;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.interfaces.VideoOrientation;
 
@@ -44,7 +43,7 @@ public class ColorBalance {
 		pipe.addMany(videosrc, videosink);
 		Element.linkMany(videosrc, videosink);
 
-		pipe.setState(State.PLAYING);
+		pipe.play();
 
 		try {
 			Thread.sleep(1000);
