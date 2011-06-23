@@ -31,7 +31,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Format;
 import org.gstreamer.Gst;
-import org.gstreamer.State;
+import org.gstreamer.StateChangeReturn;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 
@@ -173,29 +173,21 @@ public class RGBDataFileSink extends Bin {
      * Sets the state of the pipeline to PLAYING.
      *
      */
-    public void start()
+    public StateChangeReturn start()
     {
         frameCount = 0;
-        setState(State.PLAYING);
+        return play();
     }
 
-    /**
-     * Sets the state of the pipeline to PAUSED.
-     *
-     */
-    public void pause()
-    {
-        setState(State.PAUSED);        
-    }    
     
     /**
      * Sets the state of the pipeline to NULL and closes the stream.
      *
      */
-    public void stop()
+    public StateChangeReturn stop()
     {
-        setState(State.NULL);        
         source.endOfStream();
+    	return super.stop();        
     }
     
     /**
