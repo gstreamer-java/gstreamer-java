@@ -86,17 +86,17 @@ public class ElementTest {
     public void setState() {
         Element element = ElementFactory.make("fakesrc", "fs");
         // This should exercise EnumMapper.intValue()
-        element.setState(State.PLAYING);
-        element.setState(State.NULL);
+        element.play();
+        element.stop();
     }
     @Test 
     public void getState() {
         Element element = ElementFactory.make("fakesrc", "fs");
         // This should exercise EnumMapper.intValue()
-        element.setState(State.PLAYING);
+        element.play();
         State state = element.getState(-1);
         assertEquals("Element state not set correctly", State.PLAYING, state);
-        element.setState(State.NULL);
+        element.stop();
     }
     @Test public void postMessage() {
         final TestPipe pipe = new TestPipe();

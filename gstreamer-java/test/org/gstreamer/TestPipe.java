@@ -68,7 +68,7 @@ class TestPipe {
     }
 
     public void dispose() {
-        pipe.setState(State.NULL);
+        pipe.stop();
     }
 
     protected void finalize() {
