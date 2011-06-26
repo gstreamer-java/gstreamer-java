@@ -156,7 +156,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	public void expose() {
 		getDisplay().asyncExec(new Runnable() {
 			public void run() {
-				if(!isDisposed())
+				if(!isDisposed() && (overlay != null))
 					overlay.expose();
 			}
 		});
