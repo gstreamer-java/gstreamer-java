@@ -3,7 +3,7 @@
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
 Version:	1.5
-Release:	0%{?dist}
+Release:	1%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
