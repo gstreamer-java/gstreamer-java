@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <groupId>net.java.dev.jna</groupId>
+  <artifactId>platform</artifactId>
+  <version>3.2.5</version>
+  <versioning>
+    <versions>
+      <version>3.2.5</version>
+    </versions>
+    <lastUpdated>20101201140156</lastUpdated>
+  </versioning>
+</metadata>
