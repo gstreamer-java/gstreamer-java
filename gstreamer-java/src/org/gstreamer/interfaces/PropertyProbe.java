@@ -151,15 +151,11 @@ public class PropertyProbe extends GstInterface {
             // specified property.
             return null;
         }
-        if (valueArray != null)
+        Object[] objectArray = new Object[valueArray.n_values];
+        for (int i = 0; i < valueArray.n_values; i++)
         {
-            Object[] objectArray = new Object[valueArray.n_values];
-            for (int i = 0; i < valueArray.n_values; i++)
-            {
-                objectArray[i] = valueArray.getValue(i);
-            }
-            return objectArray;
+            objectArray[i] = valueArray.getValue(i);
         }
-        else return null;
+        return objectArray;
     }
 }

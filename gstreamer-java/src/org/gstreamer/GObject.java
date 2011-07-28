@@ -85,7 +85,7 @@ public abstract class GObject extends RefCountedObject {
     public void set(String property, Object data) {
         logger.entering("GObject", "set", new Object[] { property, data });
         GObjectAPI.GParamSpec propertySpec = findProperty(property);
-        if (propertySpec == null) {
+        if (propertySpec == null || data == null) {
             throw new IllegalArgumentException("Unknown property: " + property);
         }
         final GType propType = propertySpec.value_type;
@@ -281,13 +281,8 @@ public abstract class GObject extends RefCountedObject {
 
         PointerByReference refPtr = new PointerByReference();
         GOBJECT_API.g_object_get(this, property, refPtr, null);
-
-        if (refPtr != null) {
-            Pointer ptr = refPtr.getValue();
-            return ptr;
-        } else {
-            throw new IllegalArgumentException("Got NULL pointer for property="+property);
-        }
+        Pointer ptr = refPtr.getValue();
+        return ptr;
     }
     
     private static GValue transform(GValue src, GType dstType) {
@@ -561,7 +556,7 @@ public abstract class GObject extends RefCountedObject {
             // Ensure the native callback is removed
             disconnect();
         }
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked","rawtypes"})
         public Object callback(Object[] parameters) {
             
             try {
