@@ -118,7 +118,7 @@ public final class GNative {
         public Object toNative(Object value) {
             return value != null ? EnumMapper.getInstance().intValue((Enum<?>) value) : 0;
         }
-        @SuppressWarnings(value = "unchecked")
+        @SuppressWarnings({"unchecked","rawtypes"})
         public Object fromNative(Object value, Class javaType) {
             return EnumMapper.getInstance().valueOf((Integer) value, javaType);
         }
@@ -133,7 +133,7 @@ public final class GNative {
         public Object toNative(Object value) {
             return value != null ? Boolean.TRUE.equals(value) ? 1 : 0 : 0;
         }
-        @SuppressWarnings(value = "unchecked")
+        @SuppressWarnings("rawtypes")
         public Object fromNative(Object value, Class javaType) {
             return value != null ? ((Integer) value).intValue() != 0 : 0;
         }

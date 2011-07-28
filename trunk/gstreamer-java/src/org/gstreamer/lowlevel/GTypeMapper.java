@@ -151,8 +151,8 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return Integer.class;
         }
 
-        @SuppressWarnings("unchecked")
-        public Object toNative(Object arg, ToNativeContext context) {
+        @SuppressWarnings("rawtypes")
+		public Object toNative(Object arg, ToNativeContext context) {
             if (arg == null) {
                 return null;
             }
@@ -268,7 +268,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return String.class;
         }
     };
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 	public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;              
@@ -286,7 +286,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
         return super.getFromNativeConverter(type);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
 	public ToNativeConverter getToNativeConverter(Class type) {
         if (NativeObject.class.isAssignableFrom(type)) {
             return nativeObjectConverter;
