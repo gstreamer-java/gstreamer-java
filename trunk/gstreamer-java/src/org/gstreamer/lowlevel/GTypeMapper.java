@@ -152,7 +152,7 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
         }
 
         @SuppressWarnings("rawtypes")
-		public Object toNative(Object arg, ToNativeContext context) {
+        public Object toNative(Object arg, ToNativeContext context) {
             if (arg == null) {
                 return null;
             }
