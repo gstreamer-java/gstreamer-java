@@ -619,7 +619,7 @@ public abstract class GObject extends RefCountedObject {
         }
         Map<Closure, ClosureProxy> map = signals.get(signal);
         if (map != null) {
-            ClosureProxy cb = map.remove(signal);
+            ClosureProxy cb = map.remove(closure);
             if (cb != null) {
                 cb.disconnect();
             }
