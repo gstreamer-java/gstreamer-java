@@ -10,7 +10,7 @@ Evaluate options for improved performance:
 
   * BridJ: http://code.google.com/p/bridj/
 
-  * JNA's direct mapping: https://jna.dev.java.net/#direct
+  * JNA's direct mapping: https://github.com/twall/jna/blob/master/www/DirectMapping.md
 
   * Java Abstracted Foreign Function Layer: http://github.com/wmeissner/jaffl  
 
