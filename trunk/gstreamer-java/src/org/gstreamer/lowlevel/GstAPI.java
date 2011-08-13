@@ -35,6 +35,7 @@ public interface GstAPI extends Library {
     int GST_PADDING = 4;
     int GST_PADDING_LARGE = 20;
         
+    GType gst_type_find_get_type();
     @CallerOwnsReturn String gst_version_string();
     void gst_version(long[] major, long[] minor, long[] micro, long[] nano);
     boolean gst_init(IntByReference argc, PointerByReference argv);

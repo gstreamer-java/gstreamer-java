@@ -32,7 +32,7 @@ public class GType extends IntegerType {
 
     private static final GType[] cache;
     static {
-        cache = new GType[21];
+        cache = new GType[22];
         for (int i = 0; i < cache.length; ++i) {
             cache[i] = new GType(i << 2);
         }        
@@ -59,6 +59,7 @@ public class GType extends IntegerType {
     public static final GType BOXED = init(18, "BOXED");
     public static final GType PARAM = init(19, "PARAM");
     public static final GType OBJECT = init(20, "OBJECT");
+    public static final GType VARIANT = init(21, "VARIANT");
 
     private final String description;
 

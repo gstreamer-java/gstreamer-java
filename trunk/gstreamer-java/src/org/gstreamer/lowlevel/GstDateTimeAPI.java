@@ -38,6 +38,7 @@ import com.sun.jna.Pointer;
 public interface GstDateTimeAPI extends com.sun.jna.Library {
 	GstDateTimeAPI GSTDATETIME_API = GstNative.load(GstDateTimeAPI.class);
 
+	GType	gst_date_get_type();
 	int	gst_date_time_get_year(Pointer datetime);
 	int	gst_date_time_get_month(Pointer datetime);
 	int	gst_date_time_get_day(Pointer datetime);

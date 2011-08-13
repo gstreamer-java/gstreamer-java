@@ -69,28 +69,34 @@ public class ElementFactory extends PluginFeature {
     static Level DEBUG = Level.FINE;
 	private static final Map<String, Class<? extends Element>> typeMap
 		= new HashMap<String, Class<? extends Element>>() {{
-			put(AppSink.GST_NAME, AppSink.class);
-			put(AppSrc.GST_NAME, AppSrc.class);
-			put(DecodeBin.GST_NAME, DecodeBin.class);
-			put(DecodeBin2.GST_NAME, DecodeBin2.class);
-			put(FakeSink.GST_NAME, FakeSink.class);
-			put(FakeSrc.GST_NAME, FakeSrc.class);
-			put(FileSink.GST_NAME, FileSink.class);
-			put(FileSrc.GST_NAME, FileSrc.class);
-			put(Identity.GST_NAME, Identity.class);
+			put(AppSink.GST_NAME,       AppSink.class);
+			put(AppSrc.GST_NAME,        AppSrc.class);
+			put(Bin.GST_NAME,           Bin.class);
+			//put(CapsFilter.GST_NAME,    CapsFilter.class);
+			put(DecodeBin.GST_NAME,     DecodeBin.class);
+			put(DecodeBin2.GST_NAME,    DecodeBin2.class);
+			put(FakeSink.GST_NAME,      FakeSink.class);
+			put(FakeSrc.GST_NAME,       FakeSrc.class);
+			//put(FdSink.GST_NAME,        FdSink.class);
+			//put(FdSrc.GST_NAME,         FdSrc.class);
+			put(FileSink.GST_NAME,      FileSink.class);
+			put(FileSrc.GST_NAME,       FileSrc.class);
+			//put(Funnel.GST_NAME,        Funnel.class);
+			put(Identity.GST_NAME,      Identity.class);
 			put(InputSelector.GST_NAME, InputSelector.class);
-			put(MultiQueue.GST_NAME, MultiQueue.class);
-			//put(OSXVideoSink.GST_NAME, OSXVideoSink.class);
-			put(Pipeline.GST_NAME, Pipeline.class);
-			put(PlayBin.GST_NAME, PlayBin.class);
-			put(PlayBin2.GST_NAME, PlayBin2.class);
-			put(Queue.GST_NAME, Queue.class);
-			put(Queue2.GST_NAME, Queue2.class);
-			put(Tee.GST_NAME, Tee.class);
-			put(TypeFind.GST_NAME, TypeFind.class);
-
-			put(RTPBin.GST_NAME, RTPBin.class);
-			put(RTSPSrc.GST_NAME, RTSPSrc.class);
+			put(MultiQueue.GST_NAME,    MultiQueue.class);
+			//put(OSXVideoSink.GST_NAME,  OSXVideoSink.class);
+			//put(OutputSelector.GST_NAME, OutputSelector.class);
+			put(Pipeline.GST_NAME,      Pipeline.class);
+			put(PlayBin.GST_NAME,       PlayBin.class);
+			put(PlayBin2.GST_NAME,      PlayBin2.class);
+			put(Queue.GST_NAME,         Queue.class);
+			put(Queue2.GST_NAME,        Queue2.class);
+			put(Tee.GST_NAME,           Tee.class);
+			put(TypeFind.GST_NAME,      TypeFind.class);			
+			// good
+			put(RTPBin.GST_NAME,        RTPBin.class);
+			put(RTSPSrc.GST_NAME,       RTSPSrc.class);
 		}};
     
     /**

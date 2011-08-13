@@ -28,6 +28,7 @@ import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
+import org.gstreamer.Element.PAD_ADDED;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
@@ -88,9 +89,9 @@ public class InputStreamSrcTest {
         
         pipe.add(audioBin);
 
-        decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
-            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean last) {
-                  /* only link once */
+        decodeBin.connect(new PAD_ADDED() {
+			public void padAdded(Element element, Pad pad) {
+                /* only link once */
                 Pad audioPad = audioBin.getStaticPad("sink");
                 if (pad.isLinked()) {
                     return;
@@ -104,9 +105,8 @@ public class InputStreamSrcTest {
                     /* link'n'play */
                     pad.link(audioPad);  
                 }
-                
-            }
-        });
+			}
+		});
         Bus bus = pipe.getBus();
         bus.connect(new Bus.TAG() {
             public void tagsFound(GstObject source, TagList tagList) {

@@ -59,6 +59,7 @@ import com.sun.jna.Pointer;
  *
  */
 public class Bin extends Element {
+	public static final String GST_NAME = "bin";
 	private static interface API extends GstBinAPI, GstParseAPI {
 		@CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
 	}

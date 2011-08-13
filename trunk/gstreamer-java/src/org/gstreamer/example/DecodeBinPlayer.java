@@ -32,6 +32,7 @@ import org.gstreamer.Bin;
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
+import org.gstreamer.Element.PAD_ADDED;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Gst;
@@ -80,10 +81,8 @@ public class DecodeBinPlayer {
         Element.linkMany(conv, resample, sink);
         audioBin.addPad(new GhostPad("sink", conv.getStaticPad("sink")));
         pipe.add(audioBin);
-        
-        decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
-            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean last) {
-                
+        decodeBin.connect(new PAD_ADDED() {
+			public void padAdded(Element element, Pad pad) {
                 /* only link once */
                 if (pad.isLinked()) {
                     return;
@@ -107,8 +106,8 @@ public class DecodeBinPlayer {
                 } else {
                     System.out.println("Unknown pad [" + struct.getName() + "]");
                 }
-            }
-        });
+			}
+		});
         Bus bus = pipe.getBus();
         
         bus.connect(new Bus.ERROR() {
