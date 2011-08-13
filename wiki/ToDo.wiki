@@ -6,6 +6,8 @@
 
 Evaluate options for improved performance:
 
+  * JavaCPP: http://code.google.com/p/javacpp/
+
   * BridJ: http://code.google.com/p/bridj/
 
   * JNA's direct mapping: https://jna.dev.java.net/#direct
