@@ -47,6 +47,7 @@ public class DecodeBin2 extends Bin {
     /**
      * Signal emitted when this {@link DecodeBin2} decodes a new pad.
      */
+    @Deprecated
     public static interface NEW_DECODED_PAD {
         /**
          * @param element The element which has the new Pad.
@@ -61,6 +62,7 @@ public class DecodeBin2 extends Bin {
      * @param listener Listener to be called when a new {@link Pad} is encountered
      * on the {@link Element}
      */
+    @Deprecated
     public void connect(final NEW_DECODED_PAD listener) {
         connect(NEW_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
@@ -74,6 +76,7 @@ public class DecodeBin2 extends Bin {
      * 
      * @param listener The listener that was previously added.
      */
+    @Deprecated
     public void disconnect(NEW_DECODED_PAD listener) {
         disconnect(NEW_DECODED_PAD.class, listener);
     }
@@ -82,6 +85,7 @@ public class DecodeBin2 extends Bin {
     /**
      * Signal emitted when this {@link DecodeBin2} decodes a removed pad.
      */
+    @Deprecated
     public static interface REMOVED_DECODED_PAD {
         /**
          * 
@@ -96,6 +100,7 @@ public class DecodeBin2 extends Bin {
      * @param listener Listener to be called when a new {@link Pad} is encountered
      * on the {@link Element}
      */
+    @Deprecated
     public void connect(final REMOVED_DECODED_PAD listener) {
         connect(REMOVED_DECODED_PAD.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
@@ -109,6 +114,7 @@ public class DecodeBin2 extends Bin {
      * 
      * @param listener The listener that was previously added.
      */
+    @Deprecated
     public void disconnect(REMOVED_DECODED_PAD listener) {
         disconnect(REMOVED_DECODED_PAD.class, listener);
     }

@@ -39,11 +39,12 @@ import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GObjectAPI;
 import org.gstreamer.lowlevel.GSignalAPI;
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GObjectAPI.GObjectStruct;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
-import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
@@ -74,7 +75,19 @@ public abstract class GObject extends RefCountedObject {
             }
         }
     }
-    
+        
+    /**
+     * Gives the type value.
+     */
+    public GType getType() {
+    	return new GType(new GObjectStruct(this).g_type_instance.g_class.getNativeLong(0).longValue());
+    }
+    /**
+     * Gives the type name.
+     */
+    public String getTypeName() {
+    	return GOBJECT_API.g_type_name(getType());
+    }
     /**
      * Sets the value of a <tt>GObject</tt> property.
      *
@@ -245,13 +258,11 @@ public abstract class GObject extends RefCountedObject {
             return GVALUE_API.g_value_get_int64(transform(propValue, GType.INT64));
         } else if (propValue.checkHolds(GType.BOXED)) {
                 Class<? extends NativeObject> cls = GstTypes.classFor(propType);
-
                 if (cls != null) {
                     Pointer ptr = GVALUE_API.g_value_get_boxed(propValue);
                     return NativeObject.objectFor(ptr, cls, -1, true);
                 }
-        }
-        
+        }      
         throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
     }
 
@@ -439,7 +450,7 @@ public abstract class GObject extends RefCountedObject {
             }
         }
         @Override
-	synchronized protected void disconnect() {
+        synchronized protected void disconnect() {
             GOBJECT_API.g_signal_handler_disconnect(GObject.this, id);
         }
     }
@@ -458,12 +469,12 @@ public abstract class GObject extends RefCountedObject {
     
     protected synchronized <T> void  addCallback(Class<T> listenerClass, T listener, GCallback cb) {
         final Map<Class<?>, Map<Object, GCallback>> signals = getCallbackMap();
-        Map<Object, GCallback> m = signals.get(listenerClass);
-        if (m == null) {
-            m = new HashMap<Object, GCallback>();
-            signals.put(listenerClass, m);
+        Map<Object, GCallback> map = signals.get(listenerClass);
+        if (map == null) {
+            map = new HashMap<Object, GCallback>();
+            signals.put(listenerClass, map);
         }
-        m.put(listener, cb);
+        map.put(listener, cb);
     }
     
     public synchronized <T> void removeCallback(Class<T> listenerClass, T listener) {

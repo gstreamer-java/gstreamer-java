@@ -95,26 +95,25 @@ public class OutputStreamSinkTest {
         
         pipe.add(audioBin);
 
-        decodeBin.connect(new DecodeBin2.NEW_DECODED_PAD() {
-            public void newDecodedPad(DecodeBin2 elem, Pad pad, boolean last) {
-                System.out.println("newDecodedPad");
-                  /* only link once */
-                Pad audioPad = audioBin.getStaticPad("sink");
-                if (pad.isLinked()) {
-                    return;
-                }
-  
-                /* check media type */
-                Caps caps = pad.getCaps();
-                Structure struct = caps.getStructure(0);
-                if (struct.getName().startsWith("audio/")) {
-                    System.out.println("Got audio pad");
-                    /* link'n'play */
-                    pad.link(audioPad);  
-                }
-                
-            }
-        });
+        decodeBin.connect(new Element.PAD_ADDED() {
+			public void padAdded(Element element, Pad pad) {
+				System.out.println("newDecodedPad");
+				/* only link once */
+				Pad audioPad = audioBin.getStaticPad("sink");
+				if (pad.isLinked()) {
+					return;
+				}
+
+				/* check media type */
+				Caps caps = pad.getCaps();
+				Structure struct = caps.getStructure(0);
+				if (struct.getName().startsWith("audio/")) {
+					System.out.println("Got audio pad");
+					/* link'n'play */
+					pad.link(audioPad);
+				}
+			}
+		});
         Bus bus = pipe.getBus();
         bus.connect(new Bus.TAG() {
             public void tagsFound(GstObject source, TagList tagList) {

@@ -20,13 +20,7 @@
 
 package org.gstreamer.lowlevel;
 
-import static org.gstreamer.lowlevel.BaseSrcAPI.BASESRC_API;
-import static org.gstreamer.lowlevel.BaseSinkAPI.BASESINK_API;
-import static org.gstreamer.lowlevel.BaseTransformAPI.BASETRANSFORM_API;
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
-import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
-import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
-import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,10 +44,14 @@ import org.gstreamer.Plugin;
 import org.gstreamer.PluginFeature;
 import org.gstreamer.Query;
 import org.gstreamer.Registry;
+import org.gstreamer.elements.AppSink;
+import org.gstreamer.elements.AppSrc;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.elements.BaseSrc;
 import org.gstreamer.elements.BaseTransform;
 import org.gstreamer.elements.TypeFind;
+import org.gstreamer.elements.good.RTPBin;
+import org.gstreamer.elements.good.RTSPSrc;
 import org.gstreamer.glib.GDate;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.interfaces.MixerTrack;
@@ -83,8 +81,7 @@ public class GstTypes {
     }
     public static final Class<? extends NativeObject> classFor(Pointer ptr) {
         Pointer g_class = ptr.getPointer(0);
-        Class<? extends NativeObject> cls;
-        cls = gTypeInstanceMap.get(g_class);
+        Class<? extends NativeObject> cls = gTypeInstanceMap.get(g_class);
         if (cls != null) {
             return cls;
         }
@@ -92,7 +89,7 @@ public class GstTypes {
         GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
         logger.finer("Type of " + ptr + " = " + type);
         while (cls == null && !type.equals(GType.OBJECT) && !type.equals(GType.INVALID)) {
-            cls = getTypeMap().get(type);
+            cls = getTypeMap().get(GOBJECT_API.g_type_name(type));
             if (cls != null) {
                 logger.finer("Found type of " + ptr + " = " + cls);
                 gTypeInstanceMap.put(g_class, cls);
@@ -103,100 +100,80 @@ public class GstTypes {
         return cls;
     }
     public static final Class<? extends NativeObject> classFor(GType type) {
-        return getTypeMap().get(type);
+        return getTypeMap().get(GOBJECT_API.g_type_name(type));
     }
     public static final GType typeFor(Class<? extends NativeObject> cls) {
-        for (Map.Entry<GType, Class<? extends NativeObject>> e : getTypeMap().entrySet()) {
+        for (Map.Entry<String, Class<? extends NativeObject>> e : getTypeMap().entrySet()) {
             if (e.getValue().equals(cls)) {
-                return e.getKey();
+                return GOBJECT_API.g_type_from_name(e.getKey());
             }
         }
         return GType.INVALID;
     }
-    private static final Map<GType, Class<? extends NativeObject>> getTypeMap() {
+    private static final Map<String, Class<? extends NativeObject>> getTypeMap() {
         return StaticData.typeMap;
     }
     private static final Map<Pointer, Class<? extends NativeObject>> gTypeInstanceMap
             = new ConcurrentHashMap<Pointer, Class<? extends NativeObject>>();
     
-    public static interface API extends com.sun.jna.Library {
-        GType gst_base_src_get_type();
-        GType gst_base_sink_get_type();
-
-        GType gst_bin_get_type();
-        GType gst_buffer_get_type();
-        GType gst_bus_get_type();
-        GType gst_caps_get_type();
-        GType gst_child_proxy_get_type();
-        GType gst_clock_get_type();
-        GType gst_date_get_type();
-        GType gst_element_get_type();
-        GType gst_element_factory_get_type();
-        GType gst_event_get_type();
-        GType gst_g_error_get_type();
-        GType gst_ghost_pad_get_type();
-        GType gst_index_get_type();
-        GType gst_index_entry_get_type();
-        GType gst_index_factory_get_type();
-        GType gst_message_get_type();
-        GType gst_mini_object_get_type();
-        GType gst_object_get_type();
-        GType gst_pad_get_type();
-        GType gst_pad_template_get_type();
-        GType gst_pipeline_get_type();
-        GType gst_plugin_get_type();
-        GType gst_plugin_feature_get_type();
-        GType gst_query_get_type();
-        GType gst_registry_get_type();
-        GType gst_segment_get_type();
-        GType gst_static_pad_template_get_type();        
-        GType gst_static_caps_get_type();
-        GType gst_system_clock_get_type();
-        GType gst_structure_get_type();
-        GType gst_tag_get_type(String tag);
-        GType gst_tag_list_get_type();
-        GType gst_tag_setter_get_type();
-        GType gst_task_get_type();
-        GType gst_type_find_get_type();
-        GType gst_type_find_factory_get_type();
-        GType gst_uri_handler_get_type();
-    }
-    public static final API GST_API = GstNative.load(API.class);
-    
     private static class StaticData {
-		private static final Map<GType, Class<? extends NativeObject>> typeMap =
-			new HashMap<GType, Class<? extends NativeObject>>() {
+		private static final Map<String, Class<? extends NativeObject>> typeMap =
+			new HashMap<String, Class<? extends NativeObject>>() {
 			{
 				// GObject types
-				put(GSTCOLORBALANCE_API.gst_color_balance_channel_get_type(), ColorBalanceChannel.class);
-				put(GSTMIXER_API.gst_mixer_track_get_type(), MixerTrack.class);
-				put(GSTTUNER_API.gst_tuner_channel_get_type(), TunerChannel.class);
-				put(GSTTUNER_API.gst_tuner_norm_get_type(), TunerNorm.class);
+				put("GstColorBalanceChannel", ColorBalanceChannel.class);
+				put("GstMixerTrack",          MixerTrack.class);
+				put("GstTunerChannel",        TunerChannel.class);
+				put("GstTunerNorm",           TunerNorm.class);
 				// GstObject types
-				put(GST_API.gst_element_get_type(), Element.class);
-				put(GST_API.gst_clock_get_type(), Clock.class);
-				put(GST_API.gst_caps_get_type(), Caps.class);
-				put(GST_API.gst_date_get_type(), GDate.class);
-				put(GST_API.gst_pipeline_get_type(), Pipeline.class);
-				put(GST_API.gst_bus_get_type(), Bus.class);
-				put(GST_API.gst_pad_get_type(), Pad.class);
-				put(GST_API.gst_pad_template_get_type(), PadTemplate.class);
-				put(GST_API.gst_ghost_pad_get_type(), GhostPad.class);
-				put(GST_API.gst_plugin_get_type(), Plugin.class);
-				put(GST_API.gst_plugin_feature_get_type(), PluginFeature.class);
-				put(GST_API.gst_registry_get_type(), Registry.class);
+				put("GstBus",                 Bus.class);
+				put("GstCaps",                Caps.class);
+				put("GstClock",               Clock.class);
+				put("GstElement",             Element.class);
+				put("GstElementFactory",      ElementFactory.class);
+				put("GstDate",                GDate.class);
+				put("GstGhostPad",            GhostPad.class);
+				put("GstPad",                 Pad.class);
+				put("GstPadTemplate",         PadTemplate.class);
+				put("GstPlugin",              Plugin.class);
+				put("GstPluginFeature",       PluginFeature.class);
+				put("GstRegistry",            Registry.class);
 				// GstMiniObject types
-				put(GST_API.gst_buffer_get_type(), Buffer.class);
-				put(GST_API.gst_event_get_type(), Event.class);
-				put(GST_API.gst_message_get_type(), Message.class);
-				put(GST_API.gst_query_get_type(), Query.class);
+				put("GstBuffer",              Buffer.class);
+				put("GstEvent",               Event.class);
+				put("GstMessage",             Message.class);
+				put("GstQuery",               Query.class);
 				// Element types
-				put(BASESRC_API.gst_base_src_get_type(), BaseSrc.class);
-				put(BASESINK_API.gst_base_sink_get_type(), BaseSink.class);
-				put(BASETRANSFORM_API.gst_base_transform_get_type(), BaseTransform.class);
-				put(GST_API.gst_type_find_get_type(), TypeFind.class);
-				put(GST_API.gst_element_factory_get_type(), ElementFactory.class);
-				put(GST_API.gst_bin_get_type(), Bin.class);
+				put("GstAppSink",             AppSink.class);
+				put("GstAppSrc",              AppSrc.class);
+				put("GstBaseSrc",             BaseSrc.class);
+				put("GstBaseSink",            BaseSink.class);
+				put("GstBaseTransform",       BaseTransform.class);
+				put("GstBin",                 Bin.class);
+				//put("CapsFilter",             CapsFilter.class);
+				//put("GstDecodeBin",           DecodeBin.class);
+				//put("GstDecodeBin2",          DecodeBin2.class);
+				//put("GstFakeSink",            FakeSink.class);
+				//put("GstFakeSrc",             FakeSrc.class);
+				//put("GstFdSink",              FdSink.class);
+				//put("GstFdSrc",               FdSrc.class);
+				//put("GstFileSink",            FileSink.class);
+				//put("GstFileSrc",             FileSrc.class);
+				//put("GstFunnel",              Funnel.class);
+				//put("GstIdentity",            Identity.class);
+				//put("GstInputSelector",       InputSelector.class);
+				//put("GstMultiQueue",          MultiQueue.class);
+				//put("_GstOSXVideoSink",       OSXVideoSink.class);
+				//put("GstOutputSelector",      OutputSelector.class);
+				put("GstPipeline",            Pipeline.class);
+				//put("GstPlayBin",             PlayBin.class);
+				//put("GstPlayBin2",            PlayBin2.class);
+				//put("GstQueue",               Queue.class);
+				//put("GstQueue2",              Queue2.class);
+				//put("GstTee",                 Tee.class);
+				put("GstTypeFind",            TypeFind.class);
+				put("GstRtpBin",              RTPBin.class);
+				put("GstRTSPSrc",             RTSPSrc.class);
 			}
 		};
     }

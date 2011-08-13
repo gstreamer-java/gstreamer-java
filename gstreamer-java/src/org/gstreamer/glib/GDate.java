@@ -18,9 +18,10 @@
 
 package org.gstreamer.glib;
 
+import static org.gstreamer.lowlevel.GstDateTimeAPI.GSTDATETIME_API;
+
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GlibAPI;
-import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
@@ -33,7 +34,7 @@ public class GDate extends NativeObject {
     	return new GDate(GlibAPI.GLIB_API.g_date_new_julian(julian_day), false, true);
     }
     
-    public static final GType GTYPE = GstTypes.GST_API.gst_date_get_type();
+    public static final GType GTYPE = GSTDATETIME_API.gst_date_get_type();
 
     public GDate(Initializer init) {
         super(init);

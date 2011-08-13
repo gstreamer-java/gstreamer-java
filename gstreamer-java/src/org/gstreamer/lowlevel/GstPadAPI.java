@@ -43,6 +43,7 @@ public interface GstPadAPI extends com.sun.jna.Library {
     static GstPadAPI GSTPAD_API = GstNative.load(GstPadAPI.class);
     
     GType gst_pad_get_type();
+    GType gst_ghost_pad_get_type();
     @CallerOwnsReturn Pad gst_pad_new(String name, PadDirection direction);
     @CallerOwnsReturn Pad gst_pad_new_from_template(PadTemplate templ, String name);
     @FreeReturnValue String gst_pad_get_name(Pad pad);
