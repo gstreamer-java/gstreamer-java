@@ -35,8 +35,8 @@ import org.gstreamer.Pipeline;
 import org.gstreamer.StreamInfo;
 import org.gstreamer.Video;
 import org.gstreamer.lowlevel.GValueAPI;
-import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
+import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
 
@@ -248,7 +248,8 @@ import com.sun.jna.Pointer;
  */
 @Deprecated
 public class PlayBin extends Pipeline {
-	public static final String GST_NAME = "playbin";
+    public static final String GST_NAME = "playbin";
+    public static final String GTYPE_NAME = "GstPlayBin";
     
     /**
      * Creates a new PlayBin.

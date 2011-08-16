@@ -20,6 +20,7 @@
 package org.gstreamer.lowlevel;
 
 import org.gstreamer.MiniObject;
+import org.gstreamer.lowlevel.GObjectAPI.GTypeInstance;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 

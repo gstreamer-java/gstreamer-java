@@ -25,15 +25,16 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * Java representation of gstreamer gstrtpbin
  */
 public class RTPBin extends Bin {
-	public static final String GST_NAME = "gstrtpbin";
+    public static final String GST_NAME = "gstrtpbin";
+    public static final String GTYPE_NAME = "GstRtpBin";
 	
-	public RTPBin(String name) {
-		this(makeRawElement(GST_NAME, name));
-	}
+    public RTPBin(String name) {
+        this(makeRawElement(GST_NAME, name));
+    }
 
-	public RTPBin(Initializer init) {
-		super(init);
-	}
+    public RTPBin(Initializer init) {
+        super(init);
+    }
 
 	/**
      * Signal emitted when an SSRC that became inactive because of a BYE packet.

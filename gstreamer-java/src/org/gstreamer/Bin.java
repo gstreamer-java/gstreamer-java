@@ -22,12 +22,12 @@
 package org.gstreamer;
 import java.util.List;
 
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstBinAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstParseAPI;
 import org.gstreamer.lowlevel.GstTypes;
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -59,11 +59,13 @@ import com.sun.jna.Pointer;
  *
  */
 public class Bin extends Element {
-	public static final String GST_NAME = "bin";
-	private static interface API extends GstBinAPI, GstParseAPI {
-		@CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
-	}
-	private static final API gst = GstNative.load(API.class);
+    public static final String GST_NAME = "bin";
+    public static final String GTYPE_NAME = "GstBin";
+
+    private static interface API extends GstBinAPI, GstParseAPI {
+        @CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
+    }
+    private static final API gst = GstNative.load(API.class);
     
     public static final int DEBUG_GRAPH_SHOW_MEDIA_TYPE         = (1<<0);
     public static final int DEBUG_GRAPH_SHOW_CAPS_DETAILS       = (1<<1);

@@ -26,6 +26,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 public class MultiQueue extends Element {
 	public static final String GST_NAME = "multiqueue";
+    public static final String GTYPE_NAME = "GstMultiQueue";
 
     public MultiQueue(String name) {
         this(makeRawElement(GST_NAME, name));

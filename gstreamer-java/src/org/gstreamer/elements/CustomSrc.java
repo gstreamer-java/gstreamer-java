@@ -52,7 +52,9 @@ import com.sun.jna.ptr.LongByReference;
 
 abstract public class CustomSrc extends BaseSrc {
     private final static Logger logger = Logger.getLogger(CustomSrc.class.getName());
-    private static final Map<Class<? extends CustomSrc>, CustomSrcInfo>  customSubclasses = new ConcurrentHashMap<Class<? extends CustomSrc>, CustomSrcInfo>();
+    
+    private static final Map<Class<? extends CustomSrc>, CustomSrcInfo>  customSubclasses 
+    	= new ConcurrentHashMap<Class<? extends CustomSrc>, CustomSrcInfo>();
 
     @SuppressWarnings("unused")
     private static class CustomSrcInfo {

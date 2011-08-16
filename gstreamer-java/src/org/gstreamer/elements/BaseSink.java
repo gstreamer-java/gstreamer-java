@@ -33,7 +33,9 @@ import org.gstreamer.lowlevel.GstAPI;
 import com.sun.jna.Pointer;
 
 public class BaseSink extends Element {
-	private static final BaseSinkAPI gst() { return BaseSinkAPI.BASESINK_API; }
+    public static final String GTYPE_NAME = "GstBaseSink";
+
+    private static final BaseSinkAPI gst() { return BaseSinkAPI.BASESINK_API; }
 	
     public BaseSink(Initializer init) {
         super(init);

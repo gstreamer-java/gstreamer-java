@@ -25,9 +25,10 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * A gstreamer element for data queue.
  */
 public class Queue extends Element {
-	public static final String GST_NAME = "queue";
+    public static final String GST_NAME = "queue";
+    public static final String GTYPE_NAME = "GstQueue";
 
-	public Queue(String name) {
+    public Queue(String name) {
         this(makeRawElement(GST_NAME, name));
     }  
 

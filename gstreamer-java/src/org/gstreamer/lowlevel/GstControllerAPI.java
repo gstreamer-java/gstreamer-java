@@ -80,7 +80,7 @@ public interface GstControllerAPI extends Library {
 
 	GValue gst_controller_get(Controller self, String property_name, ClockTime timestamp);
 	boolean gst_controller_get_value_arrays(Controller self, ClockTime timestamp, GSList value_arrays);
-	//boolean gst_controller_get_value_array(Controller self, ClockTime timestamp, GstValueArray * value_array);
+	//boolean gst_controller_get_value_array(Controller self, ClockTime timestamp, ValueArray * value_array);
 
 	/* GObject convenience functions */
 	Controller gst_object_control_properties(GObject ... object) /*G_GNUC_NULL_TERMINATED*/;
@@ -96,7 +96,7 @@ public interface GstControllerAPI extends Library {
 	ControlSource gst_object_get_control_source(GObject object, String property_name);
 
 	boolean gst_object_get_value_arrays(GObject object, ClockTime timestamp, GSList value_arrays);
-	//boolean gst_object_get_value_array(GObject object, ClockTime timestamp, GstValueArray * value_array);
+	//boolean gst_object_get_value_array(GObject object, ClockTime timestamp, ValueArray * value_array);
 
 	ClockTime gst_object_get_control_rate(GObject object);
 	void gst_object_set_control_rate(GObject object, ClockTime control_rate);

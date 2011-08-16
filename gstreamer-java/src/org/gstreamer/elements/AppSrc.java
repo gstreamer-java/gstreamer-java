@@ -32,9 +32,11 @@ import com.sun.jna.ptr.LongByReference;
  * Enables an application to feed buffers into a pipeline.
  */
 public class AppSrc extends BaseSrc {
-    private static final AppAPI gst() { return AppAPI.APP_API; }
     public static final String GST_NAME = "appsrc";
+    public static final String GTYPE_NAME = "GstAppSrc";
     
+    private static final AppAPI gst() { return AppAPI.APP_API; }
+
     public enum Type {
         STREAM,
         SEEKABLE,

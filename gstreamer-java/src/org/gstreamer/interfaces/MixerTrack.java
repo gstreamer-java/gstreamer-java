@@ -19,16 +19,19 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
+
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstMixerAPI;
-import com.sun.jna.Pointer;
 
-import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
+import com.sun.jna.Pointer;
 
 /**
  *
  */
 public class MixerTrack extends GObject {
+    public static final String GTYPE_NAME = "GstMixerTrack";
+
     private final GstMixerAPI.MixerTrackStruct struct;
     private final Mixer mixer;
     

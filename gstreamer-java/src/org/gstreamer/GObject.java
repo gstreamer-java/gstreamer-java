@@ -58,7 +58,9 @@ import com.sun.jna.ptr.PointerByReference;
 public abstract class GObject extends RefCountedObject {
     private static final Logger logger = Logger.getLogger(GObject.class.getName());
     private static final Level LIFECYCLE = Level.FINE;
+    
     private static final Map<GObject, Boolean> strongReferences = new ConcurrentHashMap<GObject, Boolean>();
+    
     private Map<Class<?>, Map<Object, GCallback>> callbackListeners;
     private Map<String, Map<Closure, ClosureProxy>> signalClosures;
     

@@ -21,15 +21,15 @@
 package org.gstreamer;
 import java.util.concurrent.TimeUnit;
 
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.GstElementAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstParseAPI;
 import org.gstreamer.lowlevel.GstPipelineAPI;
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
+import org.gstreamer.lowlevel.GstQueryAPI;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
-import org.gstreamer.lowlevel.GstQueryAPI;
 
 /**
  * A {@code Pipeline} is a special {@link Bin} used as the toplevel container for
@@ -86,11 +86,13 @@ import org.gstreamer.lowlevel.GstQueryAPI;
  * seek succeeded.
  */
 public class Pipeline extends Bin {
+    public static final String GST_NAME = "pipeline";
+    public static final String GTYPE_NAME = "GstPipeline";
+
     private static interface API extends GstElementAPI, GstPipelineAPI, GstParseAPI {
         @CallerOwnsReturn Pointer ptr_gst_pipeline_new(String name);
     }
     private static final API gst = GstNative.load(API.class);
-	public static final String GST_NAME = "pipeline";
     
     public Pipeline(Initializer init) { 
         super(init);

@@ -24,7 +24,8 @@ import org.gstreamer.Element;
  * A gstreamer element for data queue.
  */
 public class Tee extends Element {
-	public static final String GST_NAME = "tee";
+    public static final String GST_NAME = "tee";
+    public static final String GTYPE_NAME = "GstTee";
 
     public Tee(String name) {
         this(makeRawElement(GST_NAME, name));

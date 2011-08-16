@@ -18,8 +18,6 @@
 
 package org.gstreamer.controller;
 
-import java.util.logging.Logger;
-
 import org.gstreamer.GObject;
 
 import com.sun.jna.Pointer;
@@ -28,8 +26,10 @@ import com.sun.jna.Pointer;
  * The ControlSource is a base class for control value sources that could be used by Controller to get timestamp-value pairs.
  */
 public class ControlSource extends GObject {
-	static Logger logger = Logger.getLogger(ControlSource.class.getName());
+	//private static Logger logger = Logger.getLogger(ControlSource.class.getName());
+	
     //private static final GstControllerAPI gst = GstNative.load(GstControllerAPI.class);
+	
     /**
      * For internal gstreamer-java use only
      *

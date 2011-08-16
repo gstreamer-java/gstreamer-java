@@ -21,9 +21,9 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadAPI;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstPadAPI.PadBlockCallback;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
@@ -67,6 +67,8 @@ import com.sun.jna.Pointer;
  * @see Event
  */
 public class Pad extends GstObject {
+    public static final String GTYPE_NAME = "GstPad";
+
     private static interface API extends GstPadAPI {
         @CallerOwnsReturn Pointer ptr_gst_pad_new(String name, PadDirection direction);
         @CallerOwnsReturn Pointer ptr_gst_pad_new_from_template(PadTemplate templ, String name);

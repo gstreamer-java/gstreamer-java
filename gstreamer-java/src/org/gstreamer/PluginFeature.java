@@ -20,8 +20,6 @@
 
 package org.gstreamer;
 
-import java.util.logging.Logger;
-
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPluginFeatureAPI;
 
@@ -32,9 +30,9 @@ import org.gstreamer.lowlevel.GstPluginFeatureAPI;
  * @see Plugin
  */
 public class PluginFeature extends GstObject {
+    public static final String GTYPE_NAME = "GstPluginFeature";
+
     private static final GstPluginFeatureAPI gst = GstNative.load(GstPluginFeatureAPI.class);
-    @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(PluginFeature.class.getName());
     
     /** Creates a new instance of PluginFeature */
     public PluginFeature(Initializer init) { 

@@ -25,7 +25,9 @@ import com.sun.jna.Pointer;
 /**
  */
 public class DateTime extends NativeObject {
-    private static final GstDateTimeAPI gst = GstNative.load(GstDateTimeAPI.class);
+	public static final String GTYPE_NAME = "GstDateTime";
+
+	private static final GstDateTimeAPI gst = GstNative.load(GstDateTimeAPI.class);
     
     public static DateTime createInstanceLocalEpoch(long secs) {
     	return new DateTime(gst.gst_date_time_new_from_unix_epoch_local_time(secs), false, true);

@@ -27,6 +27,8 @@ import org.gstreamer.lowlevel.annotations.HasSubtype;
  */
 @HasSubtype
 public class Query extends MiniObject {
+    public static final String GTYPE_NAME = "GstQuery";
+
     private static interface API extends com.sun.jna.Library, GstMiniObjectAPI {
         Structure gst_query_get_structure(Query query);
     }

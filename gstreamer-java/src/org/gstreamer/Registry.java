@@ -24,13 +24,12 @@ package org.gstreamer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPluginAPI;
 import org.gstreamer.lowlevel.GstRegistryAPI;
-import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Pointer;
 
@@ -98,6 +97,8 @@ import com.sun.jna.Pointer;
  * removed at the end of intitialization.
  */
 public class Registry extends GstObject {
+    public static final String GTYPE_NAME = "GstRegistry";
+
     private static interface API extends GstPluginAPI, GstRegistryAPI {
         void gst_plugin_feature_list_free(GList list);
         GList gst_registry_get_plugin_list(Registry registry);
@@ -110,9 +111,6 @@ public class Registry extends GstObject {
     }
     
     private static final API gst = GstNative.load(API.class);
-    
-    @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(Registry.class.getName());
     
     public static interface PluginFilter {
         public boolean accept(Plugin plugin);

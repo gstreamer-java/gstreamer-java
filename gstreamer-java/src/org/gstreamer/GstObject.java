@@ -25,11 +25,9 @@ import java.util.EventListener;
 import java.util.EventListenerProxy;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.GstObjectAPI;
 
 import com.sun.jna.Pointer;
@@ -43,10 +41,9 @@ import com.sun.jna.Pointer;
  *
  */
 public class GstObject extends GObject {
-    private static final GstObjectAPI gst = GstNative.load(GstObjectAPI.class);
     private static Logger logger = Logger.getLogger(GstObject.class.getName());
-    static Level DEBUG = Level.FINE;
-    static Level LIFECYCLE = NativeObject.LIFECYCLE;
+
+    private static final GstObjectAPI gst = GstNative.load(GstObjectAPI.class);
     
     /**
      * Wraps an underlying C GstObject with a Java proxy

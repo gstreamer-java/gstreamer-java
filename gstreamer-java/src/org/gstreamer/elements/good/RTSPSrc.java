@@ -24,6 +24,7 @@ import org.gstreamer.Bin;
  */
 public class RTSPSrc extends Bin {
 	public static final String GST_NAME = "rtspsrc";
+	public static final String GTYPE_NAME = "GstRTSPSrc";
 	
 	public RTSPSrc(String name) {
 		this(makeRawElement(GST_NAME, name));

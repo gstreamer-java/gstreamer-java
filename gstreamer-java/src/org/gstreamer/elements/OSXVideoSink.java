@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.gstreamer.Bus;
-import org.gstreamer.ElementFactory;
 import org.gstreamer.Message;
 import org.gstreamer.Structure;
 import org.gstreamer.swing.OSXVideoComponent;
@@ -18,10 +17,8 @@ import com.sun.jna.Pointer;
  *
  */
 public class OSXVideoSink extends BaseSink {
-	public static final String GST_NAME = "osxvideosink";
-    static {
-    	ElementFactory.registerElement(OSXVideoSink.class, GST_NAME);
-    }
+    public static final String GST_NAME = "osxvideosink";
+    public static final String GTYPE_NAME = "GstOSXVideoSink";
 
     public OSXVideoSink(String name) {
         this(makeRawElement(GST_NAME, name));

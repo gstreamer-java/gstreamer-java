@@ -22,7 +22,9 @@ import org.gstreamer.lowlevel.GValueAPI;
 import org.gstreamer.lowlevel.GstValueAPI;
 
 public class ValueList {
-    private GValueAPI.GValue value;
+	public static final String GTYPE_NAME = "GstValueList";
+
+	private GValueAPI.GValue value;
 
     ValueList(GValueAPI.GValue value) {
         this.value = value;

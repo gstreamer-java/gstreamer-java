@@ -39,7 +39,7 @@ import com.sun.jna.Pointer;
  */
 public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     private static final Logger logger = Logger.getLogger(NativeObject.class.getName());
-    public static final Level LIFECYCLE = Level.FINE;
+    private static final Level LIFECYCLE = Level.FINE;
     
     // Use this to propagate low level pointer arguments up the constructor chain
     protected static class Initializer {

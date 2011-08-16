@@ -18,16 +18,16 @@
 
 package org.gstreamer.controller;
 
-import java.util.logging.Logger;
-
 import com.sun.jna.Pointer;
 
 /**
  * The ControlSource is a base class for control value sources that could be used by Controller to get timestamp-value pairs.
  */
 public class InterpolationControlSource extends ControlSource {
-	static Logger logger = Logger.getLogger(InterpolationControlSource.class.getName());
+	//private static Logger logger = Logger.getLogger(InterpolationControlSource.class.getName());
+
     //private static final GstInterpolationControlSourceAPI gst = GstNative.load(GstInterpolationControlSourceAPI.class);
+
     /**
      * For internal gstreamer-java use only
      *

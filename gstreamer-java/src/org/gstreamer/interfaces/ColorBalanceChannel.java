@@ -19,14 +19,16 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
+
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstColorBalanceAPI;
 
 import com.sun.jna.Pointer;
 
-import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
-
 public class ColorBalanceChannel extends GObject {
+	public static final String GTYPE_NAME = "GstColorBalanceChannel";
+
 	private final GstColorBalanceAPI.ColorBalanceChannelStruct struct;
 	private final ColorBalance colorBalance;
 

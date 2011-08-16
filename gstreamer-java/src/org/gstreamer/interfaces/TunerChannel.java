@@ -20,6 +20,8 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
+
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstTunerAPI;
@@ -27,12 +29,12 @@ import org.gstreamer.lowlevel.GstTunerAPI;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 
-import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
-
 /**
  *
  */
 public class TunerChannel extends GObject {
+    public static final String GTYPE_NAME = "GstTunerChannel";
+
     private final GstTunerAPI.TunerChannelStruct struct;
     private final Tuner tuner;
     

@@ -18,13 +18,15 @@
 
 package org.gstreamer.elements;
 
+
 /**
  *
  */
 public class FakeSink extends BaseSink {
-	public static final String GST_NAME = "fakesink";
+    public static final String GST_NAME = "fakesink";
+    public static final String GTYPE_NAME = "GstFakeSink";
 
-	public FakeSink(String name) {
+    public FakeSink(String name) {
         this(makeRawElement(GST_NAME, name));
     }
 

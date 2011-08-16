@@ -99,10 +99,8 @@ public class ColorBalance extends GstInterface {
 	public void connect(final VALUE_CHANGED listener) {
 		element.connect(VALUE_CHANGED.class, listener, new GstCallback() {
 			@SuppressWarnings("unused")
-			public boolean callback(Pointer colorBalance,
-					ColorBalanceChannel channel, int value) {
-				listener.colorBalanceValueChanged(ColorBalance.this, channel,
-						value);
+			public boolean callback(Pointer colorBalance, ColorBalanceChannel channel, int value) {
+				listener.colorBalanceValueChanged(ColorBalance.this, channel, value);
 				return true;
 			}
 		});

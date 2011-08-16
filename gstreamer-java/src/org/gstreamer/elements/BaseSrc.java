@@ -28,7 +28,9 @@ import org.gstreamer.lowlevel.BaseSrcAPI;
 import org.gstreamer.lowlevel.GstAPI;
 
 public class BaseSrc extends Element {
-	private static final BaseSrcAPI gst() { return BaseSrcAPI.BASESRC_API; }
+    public static final String GTYPE_NAME = "GstBaseSrc";
+
+    private static final BaseSrcAPI gst() { return BaseSrcAPI.BASESRC_API; }
 
     public BaseSrc(Initializer init) {
         super(init);

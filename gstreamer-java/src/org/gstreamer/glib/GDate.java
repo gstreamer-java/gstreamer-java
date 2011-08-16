@@ -27,6 +27,9 @@ import org.gstreamer.lowlevel.NativeObject;
 import com.sun.jna.Pointer;
 
 public class GDate extends NativeObject {
+	// it's by desing GstDate and not GDate see gstreamer source
+	public static final String GTYPE_NAME = "GstDate";
+
     public static GDate createInstance(int day, int month, int year) {
     	return new GDate(GlibAPI.GLIB_API.g_date_new_dmy(day, month , year), false, true);
     }

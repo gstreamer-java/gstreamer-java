@@ -29,7 +29,10 @@ import org.gstreamer.lowlevel.GstValueAPI;
  *
  */
 public class Range {
-    private static final GstValueAPI gst = GstNative.load(GstValueAPI.class);
+	// there are multiple native types
+	//public static final String GTYPE_NAME = "GstDoubleRange";
+
+	private static final GstValueAPI gst = GstNative.load(GstValueAPI.class);
 	private GValueAPI.GValue value; 
 	
 	Range(GValueAPI.GValue value) {

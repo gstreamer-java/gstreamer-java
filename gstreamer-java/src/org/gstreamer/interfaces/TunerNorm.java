@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.GstTunerAPI;
  *
  */
 public class TunerNorm extends GObject {
+    public static final String GTYPE_NAME = "GstTunerNorm";
+
     private final GstTunerAPI.TunerNormStruct struct;
     public TunerNorm(Initializer init) {
         super(init);

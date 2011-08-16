@@ -51,6 +51,7 @@ import com.sun.jna.Pointer;
  */
 abstract public class CustomSink extends BaseSink {
     private final static Logger logger = Logger.getLogger(CustomSink.class.getName());
+    
     @SuppressWarnings("unused")
     private static class CustomSinkInfo {
         GType type;

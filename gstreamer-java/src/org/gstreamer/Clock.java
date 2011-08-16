@@ -91,7 +91,10 @@ import org.gstreamer.lowlevel.GstNative;
  * calibration is performed.
  */
 public class Clock extends GstObject {
+    public static final String GTYPE_NAME = "GstClock";
+    
     private static final GstClockAPI gst = GstNative.load(GstClockAPI.class);
+    
     public Clock(Initializer init) {
         super(init); 
     }
