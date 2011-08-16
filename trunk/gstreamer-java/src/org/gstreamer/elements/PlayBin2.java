@@ -112,7 +112,8 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * </p>
 */
 public class PlayBin2 extends Pipeline {
-	public static final String GST_NAME = "playbin2";
+    public static final String GST_NAME = "playbin2";
+    public static final String GTYPE_NAME = "GstPlayBin2";
 
     /**
      * Creates a new PlayBin2.

@@ -53,16 +53,17 @@ import com.sun.jna.Pointer;
  * <ul>
  */
 public class Controller extends GObject {
-	static Logger logger = Logger.getLogger(Controller.class.getName());
+    private static Logger logger = Logger.getLogger(Controller.class.getName());
+    
     private static final GstControllerAPI gst = GstNative.load(GstControllerAPI.class);
-	static {
-		NativeArgs argv = new NativeArgs("gstreamer-java", new String[] {});
-		if (!gst.gst_controller_init(argv.argcRef, argv.argvRef)) {
+    
+    static {
+        NativeArgs argv = new NativeArgs("gstreamer-java", new String[] {});
+        if (!gst.gst_controller_init(argv.argcRef, argv.argvRef)) {
             throw new GstException("Can't initialize GstController");
-        }
-        
+        }       
         logger.fine("after gst_init, argc=" + argv.argcRef.getValue());
-	}
+    }
     /**
      * For internal gstreamer-java use only
      *

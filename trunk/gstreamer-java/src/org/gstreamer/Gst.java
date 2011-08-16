@@ -19,6 +19,8 @@
 package org.gstreamer;
 
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,11 +35,45 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gstreamer.elements.AppSink;
+import org.gstreamer.elements.AppSrc;
+import org.gstreamer.elements.BaseSink;
+import org.gstreamer.elements.BaseSrc;
+import org.gstreamer.elements.BaseTransform;
+import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
+import org.gstreamer.elements.FakeSink;
+import org.gstreamer.elements.FakeSrc;
+import org.gstreamer.elements.FileSink;
+import org.gstreamer.elements.FileSrc;
+import org.gstreamer.elements.Identity;
+import org.gstreamer.elements.InputSelector;
+import org.gstreamer.elements.MultiQueue;
+import org.gstreamer.elements.OSXVideoSink;
+import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
+import org.gstreamer.elements.Queue;
+import org.gstreamer.elements.Queue2;
+import org.gstreamer.elements.Tee;
+import org.gstreamer.elements.TypeFind;
+import org.gstreamer.elements.good.RTPBin;
+import org.gstreamer.elements.good.RTSPSrc;
+import org.gstreamer.glib.GDate;
 import org.gstreamer.glib.MainContextExecutorService;
-import org.gstreamer.lowlevel.GstAPI;
+import org.gstreamer.interfaces.ColorBalanceChannel;
+import org.gstreamer.interfaces.MixerTrack;
+import org.gstreamer.interfaces.TunerChannel;
+import org.gstreamer.interfaces.TunerNorm;
 import org.gstreamer.lowlevel.GMainContext;
-import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
+import org.gstreamer.lowlevel.GValueAPI.GValueArray;
+import org.gstreamer.lowlevel.GstAPI;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
+import org.gstreamer.lowlevel.GstControlSourceAPI.TimedValue;
+import org.gstreamer.lowlevel.GstControlSourceAPI.ValueArray;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstTypes;
+import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
@@ -48,8 +84,10 @@ import com.sun.jna.ptr.PointerByReference;
  * Media library supporting arbitrary formats and filter graphs.
  * 
  */
+@SuppressWarnings("deprecation")
 public final class Gst {
-    static Logger logger = Logger.getLogger(Gst.class.getName());
+	private static Logger logger = Logger.getLogger(Gst.class.getName());
+    
     private static ScheduledExecutorService executorService;
     private static volatile CountDownLatch quit = new CountDownLatch(1);
     private static GMainContext mainContext;
@@ -292,6 +330,7 @@ public final class Gst {
             executorService = Executors.newSingleThreadScheduledExecutor(threadFactory);
         }
         quit = new CountDownLatch(1);
+        loadAllClasses();
         return argv.toStringArray();
     }
     
@@ -389,5 +428,99 @@ public final class Gst {
             t.setPriority(Thread.NORM_PRIORITY);
             return t;
         }
+    };
+
+    private static String getField(Class<? extends NativeObject> cls, String name) 
+            throws SecurityException, IllegalArgumentException {
+        try {
+            Field f = cls.getDeclaredField(name);
+            int mod = f.getModifiers();
+            if (Modifier.isStatic(mod) && Modifier.isFinal(mod) && f.getType().equals(String.class)) {
+                f.setAccessible(true);
+                return (String)f.get(null);
+            }
+        } catch (NoSuchFieldException e) {
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static synchronized void loadAllClasses() {
+        for(Class<? extends NativeObject> cls : nativeClasses) {
+            String value = null;
+            value = getField(cls, "GTYPE_NAME");
+            if (value != null)
+                GstTypes.registerType(cls, value);
+            value = getField(cls, "GST_NAME");
+            if (Element.class.isAssignableFrom(cls) && value != null)
+                ElementFactory.registerElement((Class<? extends Element>)cls, value);					
+        }
+    }
+    // to generate the list we use:
+    // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null |egrep -v .svn
+    // even though the best would be all subclasses of NativeObject
+    @SuppressWarnings("rawtypes")
+    private static Class[] nativeClasses = {
+    GDate.class,
+    GValue.class,
+    GValueArray.class,
+    TimedValue.class,
+    ValueList.class,
+    ValueArray.class,
+	// ----------- Interfaces -------------
+	ColorBalanceChannel.class,
+	MixerTrack.class,
+	TunerChannel.class,
+	TunerNorm.class,
+	// ----------- Base -------------
+	Bus.class,
+	Caps.class,
+	Clock.class,
+	DateTime.class,
+	Element.class,
+	ElementFactory.class,
+	GhostPad.class,
+	Pad.class,
+	PadTemplate.class,
+	Plugin.class,
+	PluginFeature.class,
+	Registry.class,
+	Buffer.class,
+	Event.class,
+	Message.class,
+	Query.class,
+	// ----------- Elements -------------
+	AppSink.class,
+	AppSrc.class,
+	BaseSrc.class,
+	BaseSink.class,
+	BaseTransform.class,
+	Bin.class,
+	//CapsFilter.class;
+	DecodeBin.class,
+	DecodeBin2.class,
+	FakeSink.class,
+	FakeSrc.class,
+	//FdSink.class,
+	//FdSrc.class,
+	FileSink.class,
+	FileSrc.class,
+	//Funnel.class,
+	Identity.class,
+	InputSelector.class,
+	MultiQueue.class,
+	OSXVideoSink.class,
+	//OutputSelector.class,
+	Pipeline.class,
+	PlayBin.class,
+	PlayBin2.class,
+	Queue.class,
+	Queue2.class,
+	Tee.class,
+	TypeFind.class,
+	RTPBin.class,
+	RTSPSrc.class,
     };
 }

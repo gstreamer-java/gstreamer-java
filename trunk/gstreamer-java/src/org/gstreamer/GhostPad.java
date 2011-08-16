@@ -47,7 +47,10 @@ import org.gstreamer.lowlevel.GstNative;
  * @see Pad
  */
 public class GhostPad extends Pad {
+    public static final String GTYPE_NAME = "GstGhostPad";
+    
     private static final GstGhostPadAPI gst = GstNative.load(GstGhostPadAPI.class);
+    
     /**
      * Creates a new instance of GhostPad
      */

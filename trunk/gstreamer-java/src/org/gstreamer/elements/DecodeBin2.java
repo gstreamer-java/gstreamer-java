@@ -31,6 +31,8 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 public class DecodeBin2 extends Bin {
 	public static final String GST_NAME = "decodebin2";
+    public static final String GTYPE_NAME = "GstDecodeBin2";
+
     /**
      * Creates a new DecodeBin2.
      * 

@@ -32,7 +32,9 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  */
 @Deprecated
 public class DecodeBin extends Bin {
-	public static final String GST_NAME = "decodebin";
+    public static final String GST_NAME = "decodebin";
+    public static final String GTYPE_NAME = "GstDecodeBin";
+
     /**
      * Creates a new DecodeBin.
      * 

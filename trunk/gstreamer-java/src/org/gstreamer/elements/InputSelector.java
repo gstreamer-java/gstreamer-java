@@ -8,6 +8,7 @@ import com.sun.jna.ptr.LongByReference;
 
 public class InputSelector extends Element {
     public static final String GST_NAME = "input-selector";
+    public static final String GTYPE_NAME = "GstInputSelector";
 
     public InputSelector(String name) {
         this(makeRawElement(GST_NAME, name));

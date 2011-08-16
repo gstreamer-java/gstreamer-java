@@ -20,9 +20,10 @@
 
 package org.gstreamer;
 
+import org.gstreamer.lowlevel.GstCapsAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.RefCountedObject;
-import org.gstreamer.lowlevel.GstCapsAPI;
+
 import com.sun.jna.Pointer;
 
 /**
@@ -58,7 +59,10 @@ import com.sun.jna.Pointer;
  * @see Structure
  */
 public class Caps extends RefCountedObject {
+    public static final String GTYPE_NAME = "GstCaps";
+    
     private static final GstCapsAPI gst = GstNative.load(GstCapsAPI.class);
+    
     /**
      * Creates a new Caps that is empty.  
      * That is, the returned Caps contains no media formats.

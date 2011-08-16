@@ -23,9 +23,9 @@ package org.gstreamer;
 import java.nio.ByteBuffer;
 
 import org.gstreamer.lowlevel.GstBufferAPI;
+import org.gstreamer.lowlevel.GstBufferAPI.BufferStruct;
 import org.gstreamer.lowlevel.GstMiniObjectAPI;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstBufferAPI.BufferStruct;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;
@@ -88,6 +88,8 @@ import com.sun.jna.Pointer;
  * <p>
  */
 public class Buffer extends MiniObject {
+    public static final String GTYPE_NAME = "GstBuffer";
+
     private static interface API extends GstBufferAPI, GstMiniObjectAPI {
         @CallerOwnsReturn Pointer ptr_gst_buffer_new();
         @CallerOwnsReturn Pointer ptr_gst_buffer_new_and_alloc(int size);

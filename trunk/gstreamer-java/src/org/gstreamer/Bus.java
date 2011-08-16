@@ -19,6 +19,8 @@
 
 package org.gstreamer;
 
+import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,19 +30,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.gstreamer.event.BusSyncHandler;
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstBusAPI;
+import org.gstreamer.lowlevel.GstBusAPI.BusCallback;
 import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.GstMiniObjectAPI;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
-import org.gstreamer.lowlevel.GstBusAPI.BusCallback;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
-
-import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 
 /**
  * The {@link Bus} is an object responsible for delivering {@link Message}s in
@@ -74,6 +74,8 @@ import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
 public class Bus extends GstObject {
     static final Logger log = Logger.getLogger(Bus.class.getName());
     static final Level LOG_DEBUG = Level.FINE;
+
+    public static final String GTYPE_NAME = "GstBus";
     
     // Create an API with just the subset needed.
     private static interface API extends GstBusAPI, GstMessageAPI, GstMiniObjectAPI {}
@@ -808,7 +810,6 @@ public class Bus extends GstObject {
         }
         return signalListeners;
     }
-    
     
     private Map<Class<?>, Map<Object, MessageProxy>> signalListeners;
     private List<MessageProxy> messageProxies = new CopyOnWriteArrayList<MessageProxy>();

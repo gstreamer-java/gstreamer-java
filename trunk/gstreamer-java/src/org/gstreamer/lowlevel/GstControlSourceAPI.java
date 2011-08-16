@@ -33,11 +33,14 @@ public interface GstControlSourceAPI extends Library {
 	GstControlSourceAPI GSTCONTROLSOURCE_API = GstNative.load("gstcontroller", GstControlSourceAPI.class);
     int GST_PADDING = GstAPI.GST_PADDING;
 	
-	public static final class GstTimedValue extends com.sun.jna.Structure {
+	public static final class TimedValue extends com.sun.jna.Structure {
+    	public static final String GTYPE_NAME = "GstTimedValue";
 		public volatile ClockTime timestamp;
 		public volatile GValue value;
 	}
-	public static final class GstValueArray extends com.sun.jna.Structure {
+	public static final class ValueArray extends com.sun.jna.Structure {
+    	public static final String GTYPE_NAME = "GstValueArray";
+		
 		public volatile String property_name;
 		public volatile int nbsamples;
 		public volatile ClockTime sample_interval;
@@ -48,7 +51,7 @@ public interface GstControlSourceAPI extends Library {
         public boolean callback(ControlSource self, ClockTime timestamp, GValue value);
     }
 	public static interface GstControlSourceGetValueArray extends Callback {
-        public boolean callback(ControlSource self, ClockTime timestamp, GstValueArray value_array);
+        public boolean callback(ControlSource self, ClockTime timestamp, ValueArray value_array);
     }
 	public static interface GstControlSourceBind extends Callback {
         public boolean callback(ControlSource self, GParamSpec pspec);
@@ -79,6 +82,6 @@ public interface GstControlSourceAPI extends Library {
 
 	/* Functions */
 	boolean gst_control_source_get_value(ControlSource self, ClockTime timestamp, GValue value);
-	boolean gst_control_source_get_value_array(ControlSource self, ClockTime timestamp, GstValueArray value_array);
+	boolean gst_control_source_get_value_array(ControlSource self, ClockTime timestamp, ValueArray value_array);
 	boolean gst_control_source_bind(ControlSource self, GParamSpec pspec);
 }

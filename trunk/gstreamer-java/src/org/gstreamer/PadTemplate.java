@@ -21,8 +21,6 @@
 
 package org.gstreamer;
 
-import java.util.logging.Logger;
-
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadTemplateAPI;
 
@@ -38,9 +36,10 @@ import org.gstreamer.lowlevel.GstPadTemplateAPI;
  * creation.
  */
 public class PadTemplate extends GstObject {
-    private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
-    static Logger logger = Logger.getLogger(PadTemplate.class.getName());
+    public static final String GTYPE_NAME = "GstPadTemplate";
     
+    private static final GstPadTemplateAPI gst = GstNative.load(GstPadTemplateAPI.class);
+
     /** 
      * Creates a new proxy for PadTemplate.
      * <p> This is only for internal use.

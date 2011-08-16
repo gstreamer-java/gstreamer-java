@@ -21,7 +21,8 @@ import org.gstreamer.Buffer;
 import org.gstreamer.lowlevel.GstAPI;
 
 public class Identity extends BaseTransform {
-	public static final String GST_NAME = "identity";
+    public static final String GST_NAME = "identity";
+    public static final String GTYPE_NAME = "GstIdentity";
 
     public Identity(String name) {
         this(makeRawElement(GST_NAME, name));

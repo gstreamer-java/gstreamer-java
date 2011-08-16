@@ -26,7 +26,8 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * Utility {@link Element} to identify media types in the stream.
  */
 public final class TypeFind extends Element {
-	public static final String GST_NAME = "typefind";
+    public static final String GST_NAME = "typefind";
+    public static final String GTYPE_NAME = "GstTypeFind";
 
     public TypeFind(String name) {
         this(makeRawElement(GST_NAME, name));

@@ -18,10 +18,11 @@
 package org.gstreamer.elements;
 
 import org.gstreamer.Element;
-//import org.gstreamer.lowlevel.BaseTransformAPI;
 
 public class BaseTransform extends Element {
-	//private static final BaseTransformAPI gst() { return BaseTransformAPI.BASETRANSFORM_API; }
+    public static final String GTYPE_NAME = "GstBaseTransform";
+
+    //private static final BaseTransformAPI gst() { return BaseTransformAPI.BASETRANSFORM_API; }
 
     public BaseTransform(Initializer init) {
         super(init);

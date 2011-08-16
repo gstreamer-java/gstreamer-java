@@ -25,11 +25,10 @@ import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstElementAPI;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 /**
  * Abstract base class for all pipeline elements.
@@ -64,11 +63,10 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  *
  */
 public class Element extends GstObject {
+    public static final String GTYPE_NAME = "GstElement";
+    
     private static final GstElementAPI gst = GstNative.load(GstElementAPI.class);
 
-    @SuppressWarnings("unused")    
-    private static Logger logger = Logger.getLogger(Element.class.getName());
-    
     /** 
      * Creates a new instance of Element.  This constructor is used internally.
      * 

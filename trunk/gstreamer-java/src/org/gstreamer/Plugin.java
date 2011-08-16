@@ -21,8 +21,6 @@
 
 package org.gstreamer;
 
-import java.util.logging.Logger;
-
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPluginAPI;
 
@@ -56,9 +54,9 @@ import org.gstreamer.lowlevel.GstPluginAPI;
  * @see ElementFactory
  */
 public class Plugin extends GstObject {
+    public static final String GTYPE_NAME = "GstPlugin";
+
     private static final GstPluginAPI gst = GstNative.load(GstPluginAPI.class);
-    @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(Plugin.class.getName());
     
     /** 
      * Creates a new instance of GstElement 

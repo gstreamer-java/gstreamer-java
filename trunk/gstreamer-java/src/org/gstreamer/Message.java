@@ -50,6 +50,8 @@ import org.gstreamer.lowlevel.annotations.HasSubtype;
  */
 @HasSubtype
 public class Message extends MiniObject {
+    public static final String GTYPE_NAME = "GstMessage";
+
     static interface API extends GstMessageAPI, GstMiniObjectAPI {}
     static final API gst = GstNative.load(API.class);
     protected GstMessageAPI.MessageStruct messageStruct;

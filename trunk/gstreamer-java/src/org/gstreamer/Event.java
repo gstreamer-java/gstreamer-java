@@ -40,6 +40,8 @@ import org.gstreamer.lowlevel.annotations.HasSubtype;
  */
 @HasSubtype
 public class Event extends MiniObject {
+    public static final String GTYPE_NAME = "GstEvent";
+
     private static interface API extends com.sun.jna.Library {
         Structure gst_event_get_structure(Event event);
     }
