@@ -26,11 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import org.gstreamer.elements.DecodeBin;
-import org.gstreamer.elements.DecodeBin2;
-import org.gstreamer.elements.PlayBin;
-import org.gstreamer.elements.PlayBin2;
-import org.gstreamer.elements.TypeFind;
+import org.gstreamer.elements.*;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
