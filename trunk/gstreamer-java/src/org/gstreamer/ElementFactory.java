@@ -30,6 +30,7 @@ import org.gstreamer.lowlevel.GstElementFactoryAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GstPadTemplateAPI.GstStaticPadTemplate;
+import org.gstreamer.lowlevel.GstPluginAPI;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.NativeObject;
 
@@ -51,8 +52,8 @@ public class ElementFactory extends PluginFeature {
 
     public static final String GTYPE_NAME = "GstElementFactory";
     
-    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI {}
-    private static final API gst = GstNative.load(API.class);
+    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI {}
+	private static final API gst = GstNative.load(API.class);
     
     /**
      * Register a new class into the typeMap.
@@ -88,6 +89,35 @@ public class ElementFactory extends PluginFeature {
     public static Element make(String factoryName, String name) {        
         logger.entering("ElementFactory", "make", new Object[] { factoryName, name});
         return elementFor(makeRawElement(factoryName, name), factoryName);
+    }
+
+    /**
+     * Get a list of factories that match the given type. Only elements with a
+     * rank greater or equal to minrank will be returned. The list of factories
+     * is returned by decreasing rank.
+     * 
+     * @param type
+     *            a {@link ElementFactoryListType}
+     * @param minrank
+     *            Minimum rank
+     * @return a List of ElementFactory elements.
+     */
+    static List<ElementFactory> listGetElement(ElementFactoryListType type, Rank minrank) {
+        GList glist = gst.gst_element_factory_list_get_elements(type.getValue(), minrank.getValue());
+        List<ElementFactory> list = new ArrayList<ElementFactory>();
+
+        GList next = glist;
+        while (next != null) {
+            if (next.data != null) {
+                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
+                list.add(fact);
+            }
+            next = next.next();
+        }
+
+        gst.gst_plugin_list_free(glist);
+
+        return list;
     }
 
     static Pointer makeRawElement(String factoryName, String name) {
@@ -192,5 +222,41 @@ public class ElementFactory extends PluginFeature {
             next = next.next();
         }
         return templates;
+    }
+
+    public enum ElementFactoryListType {
+        DECODER((long) 1 << 0),
+        ENCODER((long) 1 << 1),
+        SINK((long)1 << 2),
+        SRC((long)1 << 3),
+        MUXER((long)1 << 4),
+        DEMUXER((long)1 << 5),
+        PARSER((long)1 << 6),
+        PAYLOADER((long)1 << 7),
+        DEPAYLOADER((long)1 << 8),
+        FORMATTER((long)1 << 9),
+        MAX_ELEMENTS((long)1 << 48),
+        ANY((((long)1) << 49) - 1),
+
+        MEDIA_ANY(~((long) 0) << 48),
+        MEDIA_VIDEO((long)1 << 49),
+        MEDIA_AUDIO((long)1 << 50),
+        MEDIA_IMAGE((long)1 << 51),
+        MEDIA_SUBTITLE((long)1 << 52),
+        MEDIA_METADATA((long)1 << 53),
+        VIDEO_ENCODER(ENCODER.getValue() | MEDIA_VIDEO.getValue() | MEDIA_IMAGE.getValue()),
+        AUDIO_ENCODER(ENCODER.getValue() | MEDIA_AUDIO.getValue()),
+        AUDIOVIDEO_SINKS(SINK.getValue() | MEDIA_AUDIO.getValue() | MEDIA_VIDEO.getValue() | MEDIA_IMAGE.getValue()),
+        DECODABLE(ENCODER.getValue() | DEMUXER.getValue() | DEPAYLOADER.getValue() | PARSER.getValue());
+
+        private long value;
+
+        private ElementFactoryListType(long value) {
+            this.value = value;
+        }
+
+        public long getValue() {
+            return value;
+        }
     }
 }
