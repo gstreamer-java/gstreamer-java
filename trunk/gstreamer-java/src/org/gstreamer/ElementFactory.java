@@ -53,7 +53,7 @@ public class ElementFactory extends PluginFeature {
 
     public static final String GTYPE_NAME = "GstElementFactory";
     
-    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI {}
+    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI, GlibAPI {}
     private static final API gst = GstNative.load(API.class);
     
     /**
