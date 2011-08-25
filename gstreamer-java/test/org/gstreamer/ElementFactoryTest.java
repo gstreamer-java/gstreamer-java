@@ -218,4 +218,19 @@ public class ElementFactoryTest {
         }
         System.out.println("<<<");
     }
+
+    @Test
+    public void filterList2() {
+        List<ElementFactory> list = ElementFactory.listGetElementFilter(
+                ElementFactoryListType.ENCODER, Rank.GST_RANK_NONE, new Caps("video/x-h263"),
+                PadDirection.SRC, false);
+        assertNotNull("List of factories is null", list);
+        assertTrue("No factories found", !list.isEmpty());
+
+        System.out.println("Factories >>>");
+        for (ElementFactory fact : list) {
+            System.out.println(fact.getName());
+        }
+        System.out.println("<<<");
+    }
 }
