@@ -22,6 +22,7 @@ package org.gstreamer.lowlevel;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.PadDirection;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Const;
@@ -50,9 +51,10 @@ public interface GstElementFactoryAPI extends com.sun.jna.Library {
     GList gst_element_factory_get_static_pad_templates(ElementFactory factory);
 
     GList gst_element_factory_list_get_elements(long type, int minrank);
+    GList gst_element_factory_list_filter(GList list, @Const Caps caps, PadDirection direction,
+            boolean subsetonly);
     
     /* util elementfactory functions */
     boolean gst_element_factory_can_src_caps(ElementFactory factory, @Const Caps caps);
     boolean gst_element_factory_can_sink_caps(ElementFactory factory, @Const Caps caps);
-
 }
