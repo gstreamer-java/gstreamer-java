@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.gstreamer.lowlevel.GlibAPI;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GstCapsAPI;
 import org.gstreamer.lowlevel.GstElementFactoryAPI;
@@ -53,7 +54,7 @@ public class ElementFactory extends PluginFeature {
     public static final String GTYPE_NAME = "GstElementFactory";
     
     private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI {}
-	private static final API gst = GstNative.load(API.class);
+    private static final API gst = GstNative.load(API.class);
     
     /**
      * Register a new class into the typeMap.
@@ -118,6 +119,97 @@ public class ElementFactory extends PluginFeature {
         gst.gst_plugin_list_free(glist);
 
         return list;
+    }
+
+    /**
+     * Filter out all the elementfactories in list that can handle caps in the
+     * given direction.
+     * 
+     * If subsetonly is true, then only the elements whose pads templates are a
+     * complete superset of caps will be returned. Else any element whose pad
+     * templates caps can intersect with caps will be returned.
+     * 
+     * @param list
+     *            a {@link List} of {@link ElementFactory} to filter
+     * @param caps
+     *            a {@link Caps}
+     * @param direction
+     *            a {@link PadDirection} to filter on
+     * @param subsetonly
+     *            whether to filter on caps subsets or not.
+     * @return a {@link List} of {@link ElementFactory} elements that match the
+     *         given requisits.
+     */
+    static List<ElementFactory> listFilter(List<ElementFactory> list, Caps caps,
+            PadDirection direction, boolean subsetonly) {
+        GList glist = null;
+        List<ElementFactory> filterList = new ArrayList<ElementFactory>();
+
+        for (ElementFactory fact : list) {
+            fact.ref();
+            glist = gst.g_list_append(glist, fact.handle());
+        }
+
+        GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
+
+        GList next = gFilterList;
+        while (next != null) {
+            if (next.data != null) {
+                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
+                filterList.add(fact);
+            }
+            next = next.next();
+        }
+
+        gst.gst_plugin_list_free(glist);
+        gst.gst_plugin_list_free(gFilterList);
+
+        return filterList;
+    }
+
+    /**
+     * Get a list of factories that match the given parameter.
+     *
+     * It is a combination of {@link listGetElement} and {@link listFilter}
+     * passing all the results of the first call to the second.
+     *
+     * This method improves performance because there is no need to map to java
+     * list the elements returned by the first call.
+     *
+     * @param type
+     *            a {@link ElementFactoryListType}
+     * @param minrank
+     *            Minimum rank
+     * @param caps
+     *            a {@link Caps}
+     * @param direction
+     *            a {@link PadDirection} to filter on
+     * @param subsetonly
+     *            whether to filter on caps subsets or not.
+     * @return a {@link List} of {@link ElementFactory} elements that match the
+     *         given requisits.
+     */
+    static List<ElementFactory> listGetElementFilter(ElementFactoryListType type, Rank minrank,
+            Caps caps, PadDirection direction, boolean subsetonly) {
+        List<ElementFactory> filterList = new ArrayList<ElementFactory>();
+
+        GList glist = gst.gst_element_factory_list_get_elements(type.getValue(), minrank.getValue());
+
+        GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
+
+        GList next = gFilterList;
+        while (next != null) {
+            if (next.data != null) {
+                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
+                filterList.add(fact);
+            }
+            next = next.next();
+        }
+
+        gst.gst_plugin_list_free(glist);
+        gst.gst_plugin_list_free(gFilterList);
+
+        return filterList;
     }
 
     static Pointer makeRawElement(String factoryName, String name) {
