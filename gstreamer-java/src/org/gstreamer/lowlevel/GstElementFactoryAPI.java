@@ -48,6 +48,8 @@ public interface GstElementFactoryAPI extends com.sun.jna.Library {
     int gst_element_factory_get_num_pad_templates(ElementFactory factory);
     int gst_element_factory_get_uri_type(ElementFactory factory);
     GList gst_element_factory_get_static_pad_templates(ElementFactory factory);
+
+    GList gst_element_factory_list_get_elements(long type, int minrank);
     
     /* util elementfactory functions */
     boolean gst_element_factory_can_src_caps(ElementFactory factory, @Const Caps caps);

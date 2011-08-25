@@ -34,6 +34,23 @@ public class PluginFeature extends GstObject {
 
     private static final GstPluginFeatureAPI gst = GstNative.load(GstPluginFeatureAPI.class);
     
+    public enum Rank {
+        GST_RANK_NONE(0),
+        GST_RANK_MARGINAL(64),
+        GST_RANK_SECONDARY(128),
+        GST_RANK_PRIMARY(256);
+
+        private int value;
+
+        private Rank(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
+
     /** Creates a new instance of PluginFeature */
     public PluginFeature(Initializer init) { 
         super(init); 

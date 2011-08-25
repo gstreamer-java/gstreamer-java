@@ -26,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import org.gstreamer.ElementFactory.ElementFactoryListType;
+import org.gstreamer.PluginFeature.Rank;
 import org.gstreamer.elements.*;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -202,5 +204,18 @@ public class ElementFactoryTest {
         StaticPadTemplate t = templates.get(0);
         assertEquals("Not a sink", "sink", t.getName());
         assertEquals("Not a sink", PadDirection.SINK, t.getDirection());
+    }
+
+    @Test
+    public void listGetElement() {
+        List<ElementFactory> list = ElementFactory.listGetElement(ElementFactoryListType.ANY,
+                Rank.GST_RANK_NONE);
+        assertNotNull("List of factories is null", list);
+        assertTrue("No factories found", !list.isEmpty());
+        System.out.println("Factories >>>");
+        for (ElementFactory fact : list) {
+            System.out.println(fact.getName());
+        }
+        System.out.println("<<<");
     }
 }

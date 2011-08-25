@@ -20,6 +20,7 @@
 package org.gstreamer.lowlevel;
 
 import org.gstreamer.Plugin;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 /**
@@ -47,5 +48,5 @@ public interface GstPluginAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Plugin gst_plugin_load(Plugin plugin);
     @CallerOwnsReturn Plugin gst_plugin_load_by_name(String name);
 
-    
+    void gst_plugin_list_free(GList list);
 }
