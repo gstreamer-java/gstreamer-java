@@ -171,7 +171,7 @@ public class AppSrc extends BaseSrc {
          * @param elem
          * @param position
          */
-        public void seekData(AppSrc elem, long position);
+        public boolean seekData(AppSrc elem, long position);
     }
     /**
      * Adds a listener for the <code>seek-data</code> signal
@@ -185,8 +185,8 @@ public class AppSrc extends BaseSrc {
     public void connect(final SEEK_DATA listener) {
         connect(SEEK_DATA.class, listener, new GstCallback() {
             @SuppressWarnings("unused")
-            public void callback(AppSrc elem, long position) {
-                listener.seekData(elem, position);
+            public boolean callback(AppSrc elem, long position) {
+                return listener.seekData(elem, position);
             }
         });
     }
