@@ -263,6 +263,11 @@ public class Structure extends NativeObject {
         gst.gst_structure_set(this, field, 
                 gst.gst_double_range_get_type(), min, max);
     }
+
+    public void setFraction(String field, Integer numerator, Integer denominator) {
+        gst.gst_structure_set(this, field,
+                gst.gst_fraction_get_type(), numerator, denominator);
+    }
     
     /**
      * Get the name of @structure as a string.

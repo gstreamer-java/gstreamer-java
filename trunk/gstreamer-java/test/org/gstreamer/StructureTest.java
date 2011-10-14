@@ -69,4 +69,18 @@ public class StructureTest {
 		structure.setDouble("double", -9.0);		
 		assertEquals(-9.0, structure.getDouble("double"), 0);				
 	}
+
+	@Test
+	public void testFraction() {
+		structure.setFraction("fraction", 10, 1);
+
+		assertEquals(true, structure.hasField("fraction"));
+
+		assertEquals(10, structure.getFraction("fraction").getNumerator());
+		assertEquals(1, structure.getFraction("fraction").getDenominator());
+
+		structure.setFraction("fraction", 17, 10);
+		assertEquals(17, structure.getFraction("fraction").getNumerator());
+		assertEquals(10, structure.getFraction("fraction").getDenominator());
+	}
 }
