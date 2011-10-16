@@ -8,7 +8,7 @@ Questions such as "what pipeline elements should I use to achieve X" may better 
 
 = Before asking for help =
 == Test your gstreamer installation ==
-Run a few simple pipeline from the command-line.
+Run a few simple pipelines from the command-line.
 
 For example:
 {{{
