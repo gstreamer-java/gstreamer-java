@@ -262,7 +262,7 @@ public abstract class GObject extends RefCountedObject {
                 Class<? extends NativeObject> cls = GstTypes.classFor(propType);
                 if (cls != null) {
                     Pointer ptr = GVALUE_API.g_value_get_boxed(propValue);
-                    return NativeObject.objectFor(ptr, cls, -1, true);
+                    return objectFor(ptr, cls, -1, true);
                 }
         }      
         throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
@@ -587,7 +587,7 @@ public abstract class GObject extends RefCountedObject {
                         javaParam = ClockTime.valueOf((Long) nativeParam, 
                                 TimeUnit.NANOSECONDS);
                     } else if (NativeObject.class.isAssignableFrom(paramType)) {
-                        javaParam = NativeObject.objectFor((Pointer) nativeParam, 
+                        javaParam = objectFor((Pointer) nativeParam, 
                                 paramType, 1, true);
                     } else if (Enum.class.isAssignableFrom(paramType)) {
                         javaParam = EnumMapper.getInstance().valueOf((Integer) nativeParam, 
@@ -653,9 +653,9 @@ public abstract class GObject extends RefCountedObject {
     	GSIGNAL_API.g_signal_emit_by_name(this, signal, arguments);
     }
     
-    public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
-        return GObject.objectFor(ptr, defaultClass, true);
-    }
+//    public static <T extends GObject> T objectFor(Pointer ptr, Class<T> defaultClass) {
+//        return objectFor(ptr, defaultClass, true);
+//    }
     
     private GObjectAPI.GParamSpec findProperty(String propertyName) {
         Pointer ptr = GOBJECT_API.g_object_class_find_property(handle().getPointer(0), propertyName);
