@@ -32,15 +32,24 @@ import org.gstreamer.elements.CustomSink;
 public class WriteableByteChannelSink extends CustomSink {
     
     private WritableByteChannel channel;
+    private boolean autoFlushBuffer = false; 
     
     public WriteableByteChannelSink(final WritableByteChannel channel, String name) {
         super(WriteableByteChannelSink.class, name);
         this.channel = channel;
     }
     
+    public void setAutoFlushBuffer(boolean value) {
+    	autoFlushBuffer = value;
+    }
+    
     @Override
     protected final FlowReturn sinkRender(Buffer buffer) throws IOException {
         channel.write(buffer.getByteBuffer());
+        
+        //Dispose immediate to avoid GC Delay
+        if (autoFlushBuffer && (buffer != null) && (buffer.getAddress() != null))
+       		buffer.dispose(); 
         return FlowReturn.OK;
     }   
 }
