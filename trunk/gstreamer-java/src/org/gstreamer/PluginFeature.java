@@ -92,6 +92,9 @@ public class PluginFeature extends GstObject {
     public void setRank(int rank) {
         gst.gst_plugin_feature_set_rank(this, rank);
     }
+    public void setRank(Rank rank) {
+    	setRank(rank.getValue());
+    }
     
     /**
      * Gets the rank of a plugin feature.
