@@ -29,14 +29,15 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.gstreamer.Bin;
+import org.gstreamer.Bin.ELEMENT_ADDED;
 import org.gstreamer.BusSyncReply;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.GhostPad;
 import org.gstreamer.Message;
 import org.gstreamer.MessageType;
 import org.gstreamer.State;
 import org.gstreamer.Structure;
-import org.gstreamer.Bin.ELEMENT_ADDED;
 import org.gstreamer.elements.BaseSink;
 import org.gstreamer.event.BusSyncHandler;
 
@@ -50,13 +51,11 @@ import com.sun.jna.platform.unix.X11.XEvent;
 
 /**
  * VideoComponent which use OS's overlay video component 
- * @author lfarkas
- *
  */
 public class VideoComponent extends Canvas implements BusSyncHandler, DisposeListener {
 	private static int counter = 0;
 	
-	private final Bin autosink;	
+	private final Bin sink = new Bin();
 	private SWTOverlay overlay;
 	private BaseSink videosink;
 //	private BusSyncHandler oldSyncHandler;
@@ -80,11 +79,14 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		super(parent, style | SWT.EMBEDDED);
 		x11Events = enableX11Events;
 		addDisposeListener(this);
-//		String name = Platform.isLinux() ? "xvimagesink" :
-//                    Platform.isWindows() ? "d3dvideosink" :
-//                    Platform.isMac() ? "osxvideosink" : null;
-//		videosink = (BaseSink)ElementFactory.make(name, "VideoComponent" + counter++);
-		autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
+
+		Element colorspace = ElementFactory.make("ffmpegcolorspace", "colorspace" + counter);
+		final Bin autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
+		sink.add(colorspace);
+		sink.addPad(new GhostPad("colorspace_sink_ghostpad", colorspace.getSinkPads().get(0)));
+		sink.add(autosink);
+		Element.linkMany(colorspace, autosink);
+		
 		autosink.connect(new ELEMENT_ADDED() {
 			public void elementAdded(Bin bin, Element element) {
 				if (element instanceof BaseSink) {
@@ -106,6 +108,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 			}
 		});
 	}
+
 	/**
 	 * Overlay VideoComponent
 	 * @param parent
@@ -114,6 +117,17 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	public VideoComponent(final Composite parent, int style) {
 		this(parent, style, false);
 	}
+
+	/**
+	 * Dispose this Widget
+	 */
+	public void widgetDisposed(DisposeEvent arg0) {
+		removeDisposeListener(this);
+		if (x11Events)
+			watcherRunning = false;
+		if (videosink != null && !videosink.getState().equals(State.NULL))
+			throw new IllegalStateException("");
+	}	
 	
 	/**
 	 * Set the overlay for this composite.
@@ -125,6 +139,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		handleX11Events();
 		expose();		
 	}
+
 	/**
 	 * Implements the BusSyncHandler interface
 	 * @param message
@@ -141,14 +156,6 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		return BusSyncReply.DROP;
 	}
 
-	public void widgetDisposed(DisposeEvent arg0) {
-		removeDisposeListener(this);
-		if (x11Events)
-			watcherRunning = false;
-		if (videosink != null && !videosink.getState().equals(State.NULL))
-			throw new IllegalStateException("");
-	}	
-	
 	/**
      * Tell an overlay that it has been exposed. This will redraw the current frame
      * in the drawable even if the pipeline is PAUSED.
@@ -173,6 +180,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		if (videosink != null)
 			videosink.set(property, data);
 	}
+
 	/**
 	 * Set to keep aspect ratio
 	 * 
@@ -188,7 +196,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 * @return element
 	 */
 	public Element getElement() {
-		return autosink;
+		return sink;
 	}
 	
 	/**
@@ -272,5 +280,4 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 			}.start();
 		}
 	}
-
 }
