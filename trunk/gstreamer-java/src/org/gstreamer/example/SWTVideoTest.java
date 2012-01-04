@@ -55,6 +55,8 @@ public class SWTVideoTest {
 					Thread thread = new Thread(new Runnable() {
 						public void run() {
 							pipeline.play();
+//							pipeline.getState();
+//							pipeline.debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL, "swt_video_test_pipeline");
 						}
 					});
 					threads.add(thread);
