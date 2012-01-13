@@ -38,6 +38,8 @@ public class ReadableByteChannelSrc extends CustomSrc {
     private final ReadableByteChannel channel;
     private FileChannel fileChannel;
     private long channelPosition = 0;
+    private StreamLock lock = null;
+
     public ReadableByteChannelSrc(ReadableByteChannel src, String name) {
         super(ReadableByteChannelSrc.class, name);  
         this.channel = src;
@@ -59,7 +61,6 @@ public class ReadableByteChannelSrc extends CustomSrc {
             } else {
                 n = channel.read(dstBuffer);
             }
-//            System.out.println("Read in " + n + " bytes");
             if (n < 0) {
                 if (total < 1) { 
                     throw new EOFException();
@@ -78,24 +79,21 @@ public class ReadableByteChannelSrc extends CustomSrc {
     
     @Override
     protected FlowReturn srcFillBuffer(long offset, int size, Buffer buffer) {        
-//        System.out.println("InputStreamSrc.srcFillBuffer(offset=" + offset + ", size=" + size + ")");
         try {            
             readFully(offset, size, buffer);
             return FlowReturn.OK;
         } catch (IOException ex) {
-//            System.out.println(ex);
+            signalError();
             return FlowReturn.UNEXPECTED;
         }        
     }
     @Override
     public boolean srcIsSeekable() {
-//        System.out.println("InputStreamSrc.isSeekable");
         return fileChannel != null;
     }
     
     @Override
     protected boolean srcSeek(GstSegmentStruct segment) {            
-//        System.out.println("Seeking to " + segment);
         if (fileChannel != null) {
             try {
                 fileChannel.position(segment.start);
@@ -104,6 +102,7 @@ public class ReadableByteChannelSrc extends CustomSrc {
                 segment.write();
                 return true;
             } catch (IOException ex) {
+                signalError();
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, null, ex);
                 return false;
             }
@@ -119,6 +118,7 @@ public class ReadableByteChannelSrc extends CustomSrc {
             try {
                 return fileChannel.size();
             } catch (IOException ex) {
+                signalError();
                 Logger.getLogger(ReadableByteChannelSrc.class.getName()).log(Level.SEVERE, null, ex);
                 return -1;
             }
@@ -126,4 +126,14 @@ public class ReadableByteChannelSrc extends CustomSrc {
         // We can't figure out the size of non-filechannel files
         return -1;
     }
+    
+	private void signalError() {
+		if (null != lock) {
+			lock.setDone();
+		}
+	}
+
+	public void setNotifyOnError(StreamLock lock) {
+		this.lock = lock;
+	}
 }
