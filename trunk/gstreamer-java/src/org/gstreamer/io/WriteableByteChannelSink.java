@@ -24,6 +24,7 @@ import java.nio.channels.WritableByteChannel;
 import org.gstreamer.Buffer;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.elements.CustomSink;
+import org.gstreamer.io.StreamLock;
 
 /**
  *
@@ -32,7 +33,8 @@ import org.gstreamer.elements.CustomSink;
 public class WriteableByteChannelSink extends CustomSink {
     
     private WritableByteChannel channel;
-    private boolean autoFlushBuffer = false; 
+    private boolean autoFlushBuffer = false;
+    private StreamLock lock = null;
     
     public WriteableByteChannelSink(final WritableByteChannel channel, String name) {
         super(WriteableByteChannelSink.class, name);
@@ -42,14 +44,32 @@ public class WriteableByteChannelSink extends CustomSink {
     public void setAutoFlushBuffer(boolean value) {
     	autoFlushBuffer = value;
     }
+
+    public void setNotifyOnError(StreamLock sl) {
+        lock = sl;
+    }
+
+    private void signalError() {
+        if (null != lock)
+            lock.setDone();
+    }
     
     @Override
     protected final FlowReturn sinkRender(Buffer buffer) throws IOException {
-        channel.write(buffer.getByteBuffer());
-        
-        //Dispose immediate to avoid GC Delay
-        if (autoFlushBuffer && (buffer != null) && (buffer.getAddress() != null))
-       		buffer.dispose(); 
-        return FlowReturn.OK;
+        try {
+            channel.write(buffer.getByteBuffer());
+            return FlowReturn.OK;
+        } catch(IOException ex) {
+            signalError();
+            return FlowReturn.ERROR;
+        } finally {
+            //Dispose immediate to avoid GC Delay
+            if (autoFlushBuffer && (buffer != null) && (buffer.getAddress() != null))
+                try {
+         	        buffer.dispose();
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+        }
     }   
 }
