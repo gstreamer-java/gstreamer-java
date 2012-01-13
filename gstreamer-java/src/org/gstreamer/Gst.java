@@ -111,12 +111,12 @@ public final class Gst {
             //
             // Insert the program name as argv[0]
             //
-            Memory arg = new Memory(progname.length() + 4);
+            Memory arg = new Memory(progname.getBytes().length + 4);
             arg.setString(0, progname, false);
             argsCopy[0] = arg;
             
             for (int i = 0; i < args.length; i++) {
-                arg = new Memory(args[i].length() + 1);
+                arg = new Memory(args[i].getBytes().length + 1);
                 arg.setString(0, args[i], false);
                 argsCopy[i + 1] = arg;
             }
