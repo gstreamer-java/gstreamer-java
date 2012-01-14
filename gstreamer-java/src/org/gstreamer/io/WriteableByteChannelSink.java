@@ -65,11 +65,7 @@ public class WriteableByteChannelSink extends CustomSink {
         } finally {
             //Dispose immediate to avoid GC Delay
             if (autoFlushBuffer && (buffer != null) && (buffer.getAddress() != null))
-                try {
-         	        buffer.dispose();
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
+       	        buffer.dispose();
         }
     }   
 }
