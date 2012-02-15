@@ -75,15 +75,23 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>3.2.5</version>
+      <version>3.4.0</version>
     </dependency>
 
-    <dependency> 
-      <groupId>net.java.dev.jna</groupId> 
-      <artifactId>platform</artifactId> 
-      <version>3.2.5</version> 
-    </dependency> 
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>platform</artifactId>
+      <version>3.4.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.apple</groupId>
+      <artifactId>AppleJavaExtensions</artifactId>
+      <version>1.4</version>
+    </dependency>
+
   </dependencies>
+
   <build>
     <sourceDirectory>src</sourceDirectory>
     <resources>
@@ -111,9 +119,6 @@
 	  <source>1.5</source>
 	  <target>1.5</target>
 	  <encoding>UTF-8</encoding>
-	  <excludes>
-	    <exclude>**/OSX*.java</exclude>
-	  </excludes>
 	</configuration>
       </plugin>
       <plugin>
@@ -211,7 +216,7 @@
 	<activeByDefault>false</activeByDefault>
 	<os>
 	  <name>Linux</name>
-	  <arch>x86_64</arch>
+	  <arch>amd64</arch>
 	</os>
       </activation>
       <dependencies>
@@ -266,12 +271,4 @@
       </build>
     </profile>
   </profiles>
-
-  <repositories>
-    <repository>
-      <id>project-local-repo</id>
-      <url>file://${basedir}/maven-repo</url>
-    </repository>
-  </repositories>
-
 </project>
