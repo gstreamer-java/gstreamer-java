@@ -36,7 +36,6 @@ import org.gstreamer.StreamInfo;
 import org.gstreamer.Video;
 import org.gstreamer.lowlevel.GValueAPI;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
-import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
 
