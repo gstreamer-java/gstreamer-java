@@ -20,15 +20,15 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
+
 import java.util.List;
 
 import org.gstreamer.Element;
-import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
+import org.gstreamer.lowlevel.NativeObject;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstTunerAPI.GSTTUNER_API;
 
 /**
  * Interface for elements providing tuner operations
@@ -76,7 +76,7 @@ public class Tuner extends GstInterface {
     public List<TunerNorm> getNormList() {
         return objectList(GSTTUNER_API.gst_tuner_list_norms(this), new ListElementCreator<TunerNorm>() {
             public TunerNorm create(Pointer pointer) {
-                return GObject.objectFor(pointer, TunerNorm.class, true);
+                return NativeObject.objectFor(pointer, TunerNorm.class, true);
             }
         });
     }

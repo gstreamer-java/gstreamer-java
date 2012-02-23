@@ -417,10 +417,6 @@ public abstract class GObject extends RefCountedObject {
         return GOBJECT_API.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
 
-/*    private GList objectFor(Pointer ptr) {
-        return GList.valueOf(ptr);
-    }*/
-
     abstract protected class GCallback {
         protected final Callback cb;
         protected final NativeLong id;
