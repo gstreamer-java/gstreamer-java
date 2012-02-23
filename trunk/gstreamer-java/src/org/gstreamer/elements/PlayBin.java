@@ -414,7 +414,7 @@ public class PlayBin extends Pipeline {
            * GValueAPI.g_value_get_object()
            */
           Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
-          streamInfo = NativeObject.objectFor(p, StreamInfo.class, -1, true);
+          streamInfo = objectFor(p, StreamInfo.class, -1, true);
         }
         list.add(streamInfo);
       }
