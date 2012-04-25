@@ -19,8 +19,7 @@
 
 package org.gstreamer.lowlevel;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.HashMap;
 
@@ -28,6 +27,7 @@ import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
+import org.gstreamer.lowlevel.GValueAPI.GValueArray;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -73,6 +73,72 @@ public class GValueTest {
 
     @After
     public void tearDown() {
+    }
+
+    @Test public void testGValueArray() throws Exception {
+        testGValueArray(new GValueArray());
+        testGValueArray(new GValueArray(2));
+        testGValueArray(new GValueArray(5));
+    }
+    
+    private void testGValueArray(GValueArray gva) throws Exception {
+        
+        gva.append(new GValue(GType.INT, 5));        
+        gva.append(new GValue(GType.DOUBLE, 5.0));        
+        gva.append(new GValue(GType.STRING, "omanipadmihoom"));
+        
+        assertEquals("vrong n_value", 3, gva.getNValues());
+        
+        assertEquals("value mismatch", 5, gva.getValue(0));
+        assertEquals("value mismatch", 5.0, gva.getValue(1));
+        assertEquals("value mismatch", "omanipadmihoom", gva.getValue(2));
+    }
+    
+    @Test public void testInitSet() throws Exception {
+        
+        GValue v = new GValue(GType.INT);
+        
+        assertEquals("type mismatch", GType.INT, v.getType());  
+        
+        try {
+            v.setValue(null);
+            fail("IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException e) {}
+                
+        try {
+            v.setValue(0.2);
+            fail("IllegalArgumentException should have been thrown");
+        } catch (ClassCastException e) {}
+        
+
+        v.setValue(42);
+        
+        assertEquals("wrong value", 42, v.getValue());
+        
+    }
+
+    @Test public void testInitValue() throws Exception {
+        
+        GValue v;
+        
+        
+        try {
+            v = new GValue(GType.INT, null);
+            fail("IllegalArgumentException should have been thrown");
+        } catch (IllegalArgumentException e) {}
+                
+        try {
+            v = new GValue(GType.INT, 0.2);
+            fail("IllegalArgumentException should have been thrown");
+        } catch (ClassCastException e) {}
+        
+        v = new GValue(GType.DOUBLE, 42.0);
+        
+        assertEquals("type mismatch", GType.DOUBLE, v.getType());  
+
+        
+        assertEquals("wrong value", 42.0, v.getValue());
+        
     }
 
     @Test public void testInt() throws Exception {

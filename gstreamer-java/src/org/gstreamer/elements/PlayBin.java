@@ -401,9 +401,12 @@ public class PlayBin extends Pipeline {
       GValueArray garray = new GValueArray(ptr);
       List<StreamInfo> list = new ArrayList<StreamInfo>(garray.getNValues());
 
-      for (GValueAPI.GValue value : garray.values) {
-        StreamInfo streamInfo;
-        { /*
+      final int len = garray.getNValues();
+      
+      for (int i = 0; i < len; ++i) {
+          GValueAPI.GValue value = garray.nth(i);
+          StreamInfo streamInfo;
+          { /*
            * this is a work-around gst_stream_info_get_type() symbols not
            * available in one of the top-level shared objects (libgstreamer or
            * libgstbase). As a result, StreamInfo.class can not be registered in
@@ -412,11 +415,12 @@ public class PlayBin extends Pipeline {
            * JNA type mapping that would occur had we called
            * GValueAPI.g_value_get_object()
            */
-          Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
-          streamInfo = objectFor(p, StreamInfo.class, -1, true);
-        }
-        list.add(streamInfo);
+              Pointer p = GValueAPI.GVALUE_NOMAPPER_API.g_value_get_object(value);
+              streamInfo = objectFor(p, StreamInfo.class, -1, true);
+          }
+          list.add(streamInfo);
       }
+      
       return list;
     }
     return null;

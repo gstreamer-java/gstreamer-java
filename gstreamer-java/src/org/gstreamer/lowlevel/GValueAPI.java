@@ -69,6 +69,16 @@ public interface GValueAPI extends Library {
         }
         public volatile GValueData data[] = new GValueData[2];
 
+        public GValue(GType type) {
+            this();
+            GVALUE_API.g_value_init(this, type);
+        }
+        
+        public GValue(GType type, Object val) {
+            this(type);            
+            setValue(val);
+        }
+        
         public GValue()
         {
             super();
@@ -77,6 +87,45 @@ public interface GValueAPI extends Library {
         {
             useMemory(ptr);
             read();
+        }
+        
+        private <T> T validateVal(Object val, Class<T> clazz) {
+            return validateVal(val, clazz, false);
+        }
+        
+        private <T> T validateVal(Object val, Class<T> clazz, boolean allowNull) {
+            
+            if (val == null) {
+                if (allowNull) {
+                    return null;
+                } else {
+                    throw new IllegalArgumentException("null value not allowed for GType." + g_type);
+                }
+            }
+            
+            return clazz.cast(val);
+
+        }
+        
+        public void setValue(Object val) {
+            
+            if (g_type.equals(GType.INT)) { GVALUE_API.g_value_set_int(this, validateVal(val, Integer.class));
+            } else if (g_type.equals(GType.UINT)) { GVALUE_API.g_value_set_uint(this, validateVal(val, Integer.class));
+            } else if (g_type.equals(GType.CHAR)) { GVALUE_API.g_value_set_char(this, validateVal(val, Byte.class));
+            } else if (g_type.equals(GType.UCHAR)) { GVALUE_API.g_value_set_uchar(this, validateVal(val, Byte.class));
+            } else if (g_type.equals(GType.LONG)) { GVALUE_API.g_value_set_long(this, validateVal(val, NativeLong.class));
+            } else if (g_type.equals(GType.ULONG)) { GVALUE_API.g_value_set_ulong(this, validateVal(val, NativeLong.class));
+            } else if (g_type.equals(GType.INT64)) { GVALUE_API.g_value_set_int64(this, validateVal(val, Long.class));
+            } else if (g_type.equals(GType.UINT64)) { GVALUE_API.g_value_set_uint64(this, validateVal(val, Long.class));
+            } else if (g_type.equals(GType.BOOLEAN)) { GVALUE_API.g_value_set_boolean(this, validateVal(val, Boolean.class));
+            } else if (g_type.equals(GType.FLOAT)) { GVALUE_API.g_value_set_float(this, validateVal(val, Float.class));
+            } else if (g_type.equals(GType.DOUBLE)) { GVALUE_API.g_value_set_double(this, validateVal(val, Double.class));
+            } else if (g_type.equals(GType.STRING)) { GVALUE_API.g_value_set_string(this, validateVal(val, String.class));
+            } else if (g_type.equals(GType.OBJECT)) { GVALUE_API.g_value_set_object(this, validateVal(val, GObject.class, true));
+            } else if (g_type.equals(GType.POINTER)) { GVALUE_API.g_value_set_pointer(this, validateVal(val, Pointer.class));            
+            } else {
+                throw new IllegalStateException("setValue() not supported yet for GType." + g_type);
+            }            
         }
         
         public boolean checkHolds(GType type) {
@@ -173,25 +222,26 @@ public interface GValueAPI extends Library {
     	public static final String GTYPE_NAME = "GValueArray";
 
     	public volatile int n_values;
-        public volatile GValue[] values;
-        //public volatile Pointer values;
+        public volatile Pointer values;
         //< private >
         public volatile int n_prealloced;
 
-        public GValueArray() {
-            clear();
-        }
-        public GValueArray(Pointer pointer) {
-            n_values = pointer.getInt(0);
+        private boolean ownsMemory;
 
-            if (n_values > 0) {
-                Pointer pointerToArray = pointer.getPointer(GType.SIZE);
-                GValue val = new GValue(pointerToArray);
-                values = (GValue[]) val.toArray(n_values);
-            } else {
-                values = new GValue[0];
-            }
+        public GValueArray() {
+            this(0);
         }
+        
+        public GValueArray(int n_prealloced) {
+            this(GVALUE_API.g_value_array_new(n_prealloced));
+            ownsMemory = true;
+        }
+        
+        public GValueArray(Pointer pointer) {
+            super(pointer);
+            n_values = pointer.getInt(0);
+        }
+        
         @SuppressWarnings("unused")
         private static GValueArray valueOf(Pointer ptr) {
             return ptr != null ? new GValueArray(ptr) : null;
@@ -201,8 +251,45 @@ public interface GValueAPI extends Library {
             return n_values;
         }
 
-        public Object getValue(int i) {
-            return values[i].getValue();
+        public GValueArray prepend(GValue value) {            
+            GVALUE_API.g_value_array_prepend(this, value);
+            return this;
+        }
+        
+        public GValueArray append(GValue value) {            
+            GVALUE_API.g_value_array_append(this, value);
+            return this;
+        }
+        
+        public GValueArray insert(int index, GValue value) {            
+            GVALUE_API.g_value_array_insert(this, index, value);
+            return this;
+        }
+        
+        public GValueArray remove(int index) {            
+            GVALUE_API.g_value_array_remove(this, index);
+            return this;
+        }
+        
+        public GValue nth(int i) {
+            return GVALUE_API.g_value_array_get_nth(this, i);
+        }
+        
+        public Object getValue(int i) {            
+            GValue v = nth(i);            
+            return v == null ? null : v.getValue();
+        }
+        
+        @Override
+        protected void finalize() throws Throwable {
+            free();
+        }
+
+        public void free() {
+            if (ownsMemory) {
+                GVALUE_API.g_value_array_free(this);  
+                ownsMemory = false;
+            }
         }
     }
     
@@ -237,6 +324,7 @@ public interface GValueAPI extends Library {
     void g_value_set_static_string (GValue value, String v_string);
     String g_value_get_string(GValue value);
     Pointer g_value_get_pointer(GValue value);
+    void g_value_set_pointer(GValue value, Pointer pointer);
     boolean g_value_type_compatible(GType src_type, GType dest_type);
     boolean g_value_type_transformable(GType src_type, GType dest_type);
     boolean g_value_transform(GValue src_value, GValue dest_value);
