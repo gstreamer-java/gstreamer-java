@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.googlecode.gstreamer-java</groupId>
   <artifactId>gstreamer-java</artifactId>
@@ -60,9 +60,9 @@
     </license>
   </licenses>
   <scm>
-    <url>http://code.google.com/p/gstreamer-java/source/browse</url>   
-    <connection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</connection> 
-    <developerConnection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</developerConnection> 
+    <url>http://code.google.com/p/gstreamer-java/source/browse</url>
+    <connection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</connection>
+    <developerConnection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</developerConnection>
   </scm>
   <dependencies>
     <dependency>
@@ -96,43 +96,43 @@
     <sourceDirectory>src</sourceDirectory>
     <resources>
       <resource>
-	<directory>src</directory>
-	<excludes>
-	  <exclude>**/*.java</exclude>
-	</excludes>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
       </resource>
     </resources>
     <testSourceDirectory>test</testSourceDirectory>
     <testResources>
       <testResource>
-	<directory>test</directory>
-	<excludes>
-	  <exclude>**/*.java</exclude>
-	</excludes>
+        <directory>test</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
       </testResource>
     </testResources>
     <plugins>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<configuration>
-	  <source>1.5</source>
-	  <target>1.5</target>
-	  <encoding>UTF-8</encoding>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-release-plugin</artifactId>
-	<version>2.2.2</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.2.2</version>
       </plugin>
       <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-resources-plugin</artifactId>
-	<version>2.2</version>
-	<configuration>
-	  <encoding>UTF-8</encoding>
-	</configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -149,33 +149,19 @@
   </build>
   <distributionManagement>
 
-    <!-- maintainer note: Run following to stage on sonatype (replace xxx):
-    
-    Have the following in your ~/.m2/settings.xml:
-    =====================================
-      <servers>
-        <server>
-          <id>sonatype-nexus-staging</id>
-          <username>my-sonatype-nexus-username</username>
-          <password>my-sonatype-nexus-passwd</password>
-        </server>
-      </servers>
-    =====================================
-
-    Then from a shell in the gstreamer-java subdir:
-    ============================================================================================
-    tanaka> LANG=en_GB.UTF-8  mvn -Dgpg.Dkeyname=xxx@example.com \
-    -Dgpg.passphrase=xxxx \
-    -Darguments="-Dgpg.passphrase=xxxx" \
-    -DconnectionUrl=scm:svn:https://gstreamer-java.googlecode.com/svn/branches/maven-release-1.x \
-    release:perform
-    ============================================================================================
-    -->
-    <repository> 
-      <id>sonatype-nexus-staging</id> 
-      <name>Nexus Release Repository</name> 
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url> 
-    </repository> 
+    <!-- maintainer note: Run following to stage on sonatype (replace xxx): 
+         Have the following in your ~/.m2/settings.xml: ===================================== 
+         <servers> <server> <id>sonatype-nexus-staging</id> <username>my-sonatype-nexus-username</username> 
+         <password>my-sonatype-nexus-passwd</password> </server> </servers> ===================================== 
+         Then from a shell in the gstreamer-java subdir: ============================================================================================ 
+         tanaka> LANG=en_GB.UTF-8 mvn -Dgpg.Dkeyname=xxx@example.com \ -Dgpg.passphrase=xxxx 
+         \ -Darguments="-Dgpg.passphrase=xxxx" \ -DconnectionUrl=scm:svn:https://gstreamer-java.googlecode.com/svn/branches/maven-release-1.x 
+         \ release:perform ============================================================================================ -->
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
     <snapshotRepository>
       <id>sonatype-nexus-snapshots</id>
       <name>Nexus Snapshot Repository</name>
@@ -192,67 +178,67 @@
     <profile>
       <id>mac</id>
       <activation>
-	<activeByDefault>false</activeByDefault>
-	<os>
-	  <family>mac</family>
-	</os>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <family>mac</family>
+        </os>
       </activation>
       <dependencies>
-	<dependency>
-	  <groupId>org.eclipse.swt.carbon</groupId>
-	  <artifactId>macosx</artifactId>
-	  <version>3.3.0-v3346</version>
-	</dependency>
+        <dependency>
+          <groupId>org.eclipse.swt.carbon</groupId>
+          <artifactId>macosx</artifactId>
+          <version>3.3.0-v3346</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
       <id>windows</id>
       <activation>
-	<activeByDefault>false</activeByDefault>
-	<os>
-	  <family>windows</family>
-	</os>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <family>windows</family>
+        </os>
       </activation>
       <dependencies>
-	<dependency>
-	  <groupId>org.eclipse.swt.win32.win32</groupId>
-	  <artifactId>x86</artifactId>
-	  <version>3.3.0-v3346</version>
-	</dependency>
+        <dependency>
+          <groupId>org.eclipse.swt.win32.win32</groupId>
+          <artifactId>x86</artifactId>
+          <version>3.3.0-v3346</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
       <id>linux-x64</id>
       <activation>
-	<activeByDefault>false</activeByDefault>
-	<os>
-	  <name>Linux</name>
-	  <arch>amd64</arch>
-	</os>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <name>Linux</name>
+          <arch>amd64</arch>
+        </os>
       </activation>
       <dependencies>
-	<dependency>
-	  <groupId>org.eclipse.swt.gtk.linux</groupId>
-	  <artifactId>x86_64</artifactId>
-	  <version>3.3.0-v3346</version>
-	</dependency>
+        <dependency>
+          <groupId>org.eclipse.swt.gtk.linux</groupId>
+          <artifactId>x86_64</artifactId>
+          <version>3.3.0-v3346</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
       <id>linux</id>
       <activation>
-	<activeByDefault>false</activeByDefault>
-	<os>
-	  <name>Linux</name>
-	  <arch>i386</arch>
-	</os>
+        <activeByDefault>false</activeByDefault>
+        <os>
+          <name>Linux</name>
+          <arch>i386</arch>
+        </os>
       </activation>
       <dependencies>
-	<dependency>
-	  <groupId>org.eclipse.swt.gtk.linux</groupId>
-	  <artifactId>x86</artifactId>
-	  <version>3.3.0-v3346</version>
-	</dependency>
+        <dependency>
+          <groupId>org.eclipse.swt.gtk.linux</groupId>
+          <artifactId>x86</artifactId>
+          <version>3.3.0-v3346</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
