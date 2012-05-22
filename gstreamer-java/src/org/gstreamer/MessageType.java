@@ -138,6 +138,10 @@ public enum MessageType implements IntegerEnum {
      * Quality of Service reasons.
      */
     QOS(1 << 24),
+    /**
+     * A progress message. Since: 0.10.33 
+     */
+    PROGRESS(1 << 25),
 
     ANY(~0);
     
