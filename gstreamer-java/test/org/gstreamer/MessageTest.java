@@ -92,6 +92,7 @@ public class MessageTest {
                 pipe.quit();
             }
         });
+        pipe.play();
         GstElementAPI.GSTELEMENT_API.gst_element_post_message(pipe.sink, new EOSMessage(pipe.sink));
         pipe.run();
 
