@@ -1,4 +1,4 @@
-================= ./libgstapp-0.10.so.0.24.0 =================
+================= ./libgstapp-0.10.so.0.25.0 =================
 gst_app_buffer_get_type
 gst_app_buffer_new
 gst_app_sink_get_caps
@@ -32,8 +32,9 @@ gst_app_src_set_max_bytes
 gst_app_src_set_size
 gst_app_src_set_stream_type
 gst_app_stream_type_get_type
-================= ./libgstaudio-0.10.so.0.24.0 =================
+================= ./libgstaudio-0.10.so.0.25.0 =================
 
+_gst_audio_decoder_error
 gst_audio_buffer_clip
 gst_audio_channel_position_get_type
 gst_audio_check_channel_positions
@@ -44,14 +45,73 @@ gst_audio_clock_invalidate
 gst_audio_clock_new
 gst_audio_clock_new_full
 gst_audio_clock_reset
+gst_audio_decoder_finish_frame
+gst_audio_decoder_get_audio_info
+gst_audio_decoder_get_byte_time
+gst_audio_decoder_get_delay
+gst_audio_decoder_get_drainable
+gst_audio_decoder_get_latency
+gst_audio_decoder_get_max_errors
+gst_audio_decoder_get_min_latency
+gst_audio_decoder_get_needs_format
+gst_audio_decoder_get_parse_state
+gst_audio_decoder_get_plc
+gst_audio_decoder_get_plc_aware
+gst_audio_decoder_get_tolerance
+gst_audio_decoder_get_type
+gst_audio_decoder_set_byte_time
+gst_audio_decoder_set_drainable
+gst_audio_decoder_set_latency
+gst_audio_decoder_set_max_errors
+gst_audio_decoder_set_min_latency
+gst_audio_decoder_set_needs_format
+gst_audio_decoder_set_plc
+gst_audio_decoder_set_plc_aware
+gst_audio_decoder_set_tolerance
 gst_audio_default_registry_mixer_filter
 gst_audio_duration_from_pad_buffer
+gst_audio_encoder_finish_frame
+gst_audio_encoder_get_audio_info
+gst_audio_encoder_get_drainable
+gst_audio_encoder_get_frame_max
+gst_audio_encoder_get_frame_samples_max
+gst_audio_encoder_get_frame_samples_min
+gst_audio_encoder_get_hard_min
+gst_audio_encoder_get_hard_resync
+gst_audio_encoder_get_latency
+gst_audio_encoder_get_lookahead
+gst_audio_encoder_get_mark_granule
+gst_audio_encoder_get_perfect_timestamp
+gst_audio_encoder_get_tolerance
+gst_audio_encoder_get_type
+gst_audio_encoder_merge_tags
+gst_audio_encoder_proxy_getcaps
+gst_audio_encoder_set_drainable
+gst_audio_encoder_set_frame_max
+gst_audio_encoder_set_frame_samples_max
+gst_audio_encoder_set_frame_samples_min
+gst_audio_encoder_set_hard_min
+gst_audio_encoder_set_hard_resync
+gst_audio_encoder_set_latency
+gst_audio_encoder_set_lookahead
+gst_audio_encoder_set_mark_granule
+gst_audio_encoder_set_perfect_timestamp
+gst_audio_encoder_set_tolerance
 gst_audio_filter_class_add_pad_templates
 gst_audio_filter_get_type
 gst_audio_fixate_channel_positions
 gst_audio_frame_byte_size
 gst_audio_frame_length
 gst_audio_get_channel_positions
+gst_audio_iec61937_frame_size
+gst_audio_iec61937_payload
+gst_audio_info_clear
+gst_audio_info_convert
+gst_audio_info_copy
+gst_audio_info_free
+gst_audio_info_from_caps
+gst_audio_info_init
+gst_audio_info_to_caps
 gst_audio_is_buffer_framed
 gst_audio_set_caps_channel_positions_list
 gst_audio_set_channel_positions
@@ -60,10 +120,14 @@ gst_audio_sink_get_type
 gst_audio_src_get_type
 gst_audio_structure_set_int
 gst_base_audio_sink_create_ringbuffer
+gst_base_audio_sink_get_alignment_threshold
+gst_base_audio_sink_get_discont_wait
 gst_base_audio_sink_get_drift_tolerance
 gst_base_audio_sink_get_provide_clock
 gst_base_audio_sink_get_slave_method
 gst_base_audio_sink_get_type
+gst_base_audio_sink_set_alignment_threshold
+gst_base_audio_sink_set_discont_wait
 gst_base_audio_sink_set_drift_tolerance
 gst_base_audio_sink_set_provide_clock
 gst_base_audio_sink_set_slave_method
@@ -108,7 +172,7 @@ gst_ring_buffer_set_sample
 gst_ring_buffer_start
 gst_ring_buffer_state_get_type
 gst_ring_buffer_stop
-================= ./libgstbase-0.10.so.0.29.0 =================
+================= ./libgstbase-0.10.so.0.30.0 =================
 
 
 
@@ -140,6 +204,7 @@ gst_base_parse_set_average_bitrate
 gst_base_parse_set_duration
 gst_base_parse_set_frame_rate
 gst_base_parse_set_has_timing_info
+gst_base_parse_set_latency
 gst_base_parse_set_min_frame_size
 gst_base_parse_set_passthrough
 gst_base_parse_set_syncable
@@ -177,6 +242,7 @@ gst_base_src_new_seamless_segment
 gst_base_src_query_latency
 gst_base_src_set_blocksize
 gst_base_src_set_do_timestamp
+gst_base_src_set_dynamic_size
 gst_base_src_set_format
 gst_base_src_set_live
 gst_base_src_wait_playing
@@ -319,6 +385,30 @@ gst_byte_writer_put_uint8
 gst_byte_writer_reset
 gst_byte_writer_reset_and_get_buffer
 gst_byte_writer_reset_and_get_data
+gst_collect_pads2_add_pad
+gst_collect_pads2_add_pad_full
+gst_collect_pads2_available
+gst_collect_pads2_collect
+gst_collect_pads2_collect_range
+gst_collect_pads2_flush
+gst_collect_pads2_get_type
+gst_collect_pads2_is_active
+gst_collect_pads2_new
+gst_collect_pads2_peek
+gst_collect_pads2_pop
+gst_collect_pads2_read
+gst_collect_pads2_read_buffer
+gst_collect_pads2_remove_pad
+gst_collect_pads2_set_buffer_function
+gst_collect_pads2_set_clip_function
+gst_collect_pads2_set_compare_function
+gst_collect_pads2_set_event_function
+gst_collect_pads2_set_flushing
+gst_collect_pads2_set_function
+gst_collect_pads2_set_waiting
+gst_collect_pads2_start
+gst_collect_pads2_stop
+gst_collect_pads2_take_buffer
 gst_collect_pads_add_pad
 gst_collect_pads_add_pad_full
 gst_collect_pads_available
@@ -357,12 +447,8 @@ gst_type_find_helper_for_buffer
 gst_type_find_helper_for_extension
 gst_type_find_helper_get_range
 gst_type_find_helper_get_range_ext
-================= ./libgstbasecamerabinsrc-0.10.so.0.0.0 =================
-
+================= ./libgstbasecamerabinsrc-0.10.so.23.0.0 =================
 gst_base_camera_src_finish_capture
-gst_base_camera_src_get_allowed_input_caps
-gst_base_camera_src_get_color_balance
-gst_base_camera_src_get_photography
 gst_base_camera_src_get_type
 gst_base_camera_src_post_preview
 gst_base_camera_src_set_mode
@@ -373,7 +459,9 @@ gst_camerabin_destroy_preview_pipeline
 gst_camerabin_mode_get_type
 gst_camerabin_preview_pipeline_post
 gst_camerabin_preview_set_caps
-================= ./libgstbasevideo-0.10.so.0.0.0 =================
+gst_camerabin_preview_set_filter
+================= ./libgstbasevideo-0.10.so.23.0.0 =================
+_gst_base_video_decoder_error
 gst_base_video_codec_free_frame
 gst_base_video_codec_get_type
 gst_base_video_codec_new_frame
@@ -381,38 +469,51 @@ gst_base_video_decoder_add_to_frame
 gst_base_video_decoder_alloc_src_buffer
 gst_base_video_decoder_alloc_src_frame
 gst_base_video_decoder_class_set_capture_pattern
-gst_base_video_decoder_end_of_stream
+gst_base_video_decoder_drop_frame
 gst_base_video_decoder_finish_frame
 gst_base_video_decoder_get_frame
-gst_base_video_decoder_get_height
 gst_base_video_decoder_get_max_decode_time
 gst_base_video_decoder_get_oldest_frame
 gst_base_video_decoder_get_state
 gst_base_video_decoder_get_type
-gst_base_video_decoder_get_width
 gst_base_video_decoder_have_frame
 gst_base_video_decoder_lost_sync
 gst_base_video_decoder_set_src_caps
-gst_base_video_decoder_set_state
 gst_base_video_decoder_set_sync_point
-gst_base_video_decoder_skip_frame
 gst_base_video_encoded_video_convert
-gst_base_video_encoder_end_of_stream
 gst_base_video_encoder_finish_frame
-gst_base_video_encoder_get_height
 gst_base_video_encoder_get_oldest_frame
 gst_base_video_encoder_get_state
 gst_base_video_encoder_get_type
-gst_base_video_encoder_get_width
+gst_base_video_encoder_set_headers
 gst_base_video_encoder_set_latency
 gst_base_video_encoder_set_latency_fields
 gst_base_video_rawvideo_convert
+gst_surface_buffer_create_converter
+gst_surface_buffer_get_type
+gst_surface_converter_get_type
+gst_surface_converter_upload
+gst_video_context_iface_get_type
+gst_video_context_message_parse_prepare
+gst_video_context_prepare
+gst_video_context_query_get_supported_types
+gst_video_context_query_new
+gst_video_context_query_parse_value
+gst_video_context_query_set_object
+gst_video_context_query_set_pointer
+gst_video_context_query_set_string
+gst_video_context_query_set_value
+gst_video_context_run_query
+gst_video_context_set_context
+gst_video_context_set_context_object
+gst_video_context_set_context_pointer
+gst_video_context_set_context_string
 gst_video_state_get_timestamp
-================= ./libgstcdda-0.10.so.0.24.0 =================
+================= ./libgstcdda-0.10.so.0.25.0 =================
 gst_cdda_base_src_add_track
 gst_cdda_base_src_get_type
 gst_cdda_base_src_mode_get_type
-================= ./libgstcheck-0.10.so.0.29.0 =================
+================= ./libgstcheck-0.10.so.0.30.0 =================
 _fail_unless
 _gst_check_run_test_func
 _mark_point
@@ -473,7 +574,51 @@ tr_lno
 tr_msg
 tr_rtype
 tr_tcname
-================= ./libgstcontroller-0.10.so.0.29.0 =================
+================= ./libgstcodecparsers-0.10.so.23.0.0 =================
+
+gst_h263_parse
+gst_h264_nal_parser_free
+gst_h264_nal_parser_new
+gst_h264_parse_pps
+gst_h264_parse_sps
+gst_h264_parser_identify_nalu
+gst_h264_parser_identify_nalu_avc
+gst_h264_parser_identify_nalu_unchecked
+gst_h264_parser_parse_nal
+gst_h264_parser_parse_pps
+gst_h264_parser_parse_sei
+gst_h264_parser_parse_slice_hdr
+gst_h264_parser_parse_sps
+gst_mpeg4_parse
+gst_mpeg4_parse_group_of_vop
+gst_mpeg4_parse_video_object_layer
+gst_mpeg4_parse_video_object_plane
+gst_mpeg4_parse_video_packet_header
+gst_mpeg4_parse_video_plane_short_header
+gst_mpeg4_parse_visual_object
+gst_mpeg4_parse_visual_object_sequence
+gst_mpeg_video_parse
+gst_mpeg_video_parse_gop
+gst_mpeg_video_parse_picture_extension
+gst_mpeg_video_parse_picture_header
+gst_mpeg_video_parse_quant_matrix_extension
+gst_mpeg_video_parse_sequence_extension
+gst_mpeg_video_parse_sequence_header
+gst_vc1_bitplanes_ensure_size
+gst_vc1_bitplanes_free
+gst_vc1_bitplanes_free_1
+gst_vc1_bitplanes_new
+gst_vc1_identify_next_bdu
+gst_vc1_parse_entry_point_header
+gst_vc1_parse_field_header
+gst_vc1_parse_frame_header
+gst_vc1_parse_frame_layer
+gst_vc1_parse_sequence_header
+gst_vc1_parse_sequence_header_struct_a
+gst_vc1_parse_sequence_header_struct_b
+gst_vc1_parse_sequence_header_struct_c
+gst_vc1_parse_sequence_layer
+================= ./libgstcontroller-0.10.so.0.30.0 =================
 
 gst_control_source_bind
 gst_control_source_get_type
@@ -526,7 +671,7 @@ gst_object_set_controller
 gst_object_suggest_next_sync
 gst_object_sync_values
 gst_object_uncontrol_properties
-================= ./libgstdataprotocol-0.10.so.0.29.0 =================
+================= ./libgstdataprotocol-0.10.so.0.30.0 =================
 gst_dp_buffer_from_header
 gst_dp_caps_from_packet
 gst_dp_crc
@@ -628,7 +773,7 @@ fs_transmitter_list_available
 fs_transmitter_new
 fs_transmitter_new_stream_transmitter
 
-================= ./libgstfft-0.10.so.0.24.0 =================
+================= ./libgstfft-0.10.so.0.25.0 =================
 gst_fft_f32_fft
 gst_fft_f32_free
 gst_fft_f32_inverse_fft
@@ -650,7 +795,7 @@ gst_fft_s32_free
 gst_fft_s32_inverse_fft
 gst_fft_s32_new
 gst_fft_s32_window
-================= ./libgstinterfaces-0.10.so.0.24.0 =================
+================= ./libgstinterfaces-0.10.so.0.25.0 =================
 
 
 
@@ -780,7 +925,7 @@ gst_x_overlay_prepare_xwindow_id
 gst_x_overlay_set_render_rectangle
 gst_x_overlay_set_window_handle
 gst_x_overlay_set_xwindow_id
-================= ./libgstnet-0.10.so.0.29.0 =================
+================= ./libgstnet-0.10.so.0.30.0 =================
 
 gst_net_client_clock_get_type
 gst_net_client_clock_new
@@ -790,7 +935,7 @@ gst_net_time_packet_send
 gst_net_time_packet_serialize
 gst_net_time_provider_get_type
 gst_net_time_provider_new
-================= ./libgstnetbuffer-0.10.so.0.24.0 =================
+================= ./libgstnetbuffer-0.10.so.0.25.0 =================
 gst_netaddress_equal
 gst_netaddress_get_address_bytes
 gst_netaddress_get_ip4_address
@@ -802,7 +947,7 @@ gst_netaddress_set_ip6_address
 gst_netaddress_to_string
 gst_netbuffer_get_type
 gst_netbuffer_new
-================= ./libgstpbutils-0.10.so.0.24.0 =================
+================= ./libgstpbutils-0.10.so.0.25.0 =================
 
 gst_codec_utils_aac_caps_set_level_and_profile
 gst_codec_utils_aac_get_level
@@ -810,6 +955,7 @@ gst_codec_utils_aac_get_profile
 gst_codec_utils_aac_get_sample_rate_from_index
 gst_codec_utils_h264_caps_set_level_and_profile
 gst_codec_utils_h264_get_level
+gst_codec_utils_h264_get_level_idc
 gst_codec_utils_h264_get_profile
 gst_codec_utils_mpeg4video_caps_set_level_and_profile
 gst_codec_utils_mpeg4video_get_level
@@ -817,6 +963,7 @@ gst_codec_utils_mpeg4video_get_profile
 gst_discoverer_audio_info_get_bitrate
 gst_discoverer_audio_info_get_channels
 gst_discoverer_audio_info_get_depth
+gst_discoverer_audio_info_get_language
 gst_discoverer_audio_info_get_max_bitrate
 gst_discoverer_audio_info_get_sample_rate
 gst_discoverer_audio_info_get_type
@@ -835,6 +982,7 @@ gst_discoverer_info_get_seekable
 gst_discoverer_info_get_stream_info
 gst_discoverer_info_get_stream_list
 gst_discoverer_info_get_streams
+gst_discoverer_info_get_subtitle_streams
 gst_discoverer_info_get_tags
 gst_discoverer_info_get_type
 gst_discoverer_info_get_uri
@@ -851,6 +999,8 @@ gst_discoverer_stream_info_get_stream_type_nick
 gst_discoverer_stream_info_get_tags
 gst_discoverer_stream_info_get_type
 gst_discoverer_stream_info_list_free
+gst_discoverer_subtitle_info_get_language
+gst_discoverer_subtitle_info_get_type
 gst_discoverer_video_info_get_bitrate
 gst_discoverer_video_info_get_depth
 gst_discoverer_video_info_get_framerate_denom
@@ -873,6 +1023,7 @@ gst_encoding_container_profile_new
 gst_encoding_list_all_targets
 gst_encoding_list_available_categories
 gst_encoding_profile_find
+gst_encoding_profile_from_discoverer
 gst_encoding_profile_get_description
 gst_encoding_profile_get_format
 gst_encoding_profile_get_input_caps
@@ -940,7 +1091,7 @@ gst_pb_utils_get_source_description
 gst_pb_utils_init
 gst_plugins_base_version
 gst_plugins_base_version_string
-================= ./libgstphotography-0.10.so.0.0.0 =================
+================= ./libgstphotography-0.10.so.23.0.0 =================
 gst_colour_tone_mode_get_type
 gst_flash_mode_get_type
 gst_flicker_reduction_mode_get_type
@@ -981,7 +1132,7 @@ gst_photography_set_white_balance_mode
 gst_photography_set_zoom
 gst_scene_mode_get_type
 gst_white_balance_mode_get_type
-================= ./libgstreamer-0.10.so.0.29.0 =================
+================= ./libgstreamer-0.10.so.0.30.0 =================
 GST_CAT_AUTOPLUG
 GST_CAT_AUTOPLUG_ATTEMPT
 GST_CAT_BUFFER
@@ -1032,41 +1183,6 @@ _gst_element_error_printf
 _gst_event_initialize
 _gst_format_initialize
 _gst_message_initialize
-_gst_parse_launch
-_gst_parse_yy_create_buffer
-_gst_parse_yy_delete_buffer
-_gst_parse_yy_flush_buffer
-_gst_parse_yy_scan_buffer
-_gst_parse_yy_scan_bytes
-_gst_parse_yy_scan_string
-_gst_parse_yy_switch_to_buffer
-_gst_parse_yyalloc
-_gst_parse_yyfree
-_gst_parse_yyget_column
-_gst_parse_yyget_debug
-_gst_parse_yyget_extra
-_gst_parse_yyget_in
-_gst_parse_yyget_leng
-_gst_parse_yyget_lineno
-_gst_parse_yyget_lval
-_gst_parse_yyget_out
-_gst_parse_yyget_text
-_gst_parse_yylex
-_gst_parse_yylex_destroy
-_gst_parse_yylex_init
-_gst_parse_yylex_init_extra
-_gst_parse_yyparse
-_gst_parse_yypop_buffer_state
-_gst_parse_yypush_buffer_state
-_gst_parse_yyrealloc
-_gst_parse_yyrestart
-_gst_parse_yyset_column
-_gst_parse_yyset_debug
-_gst_parse_yyset_extra
-_gst_parse_yyset_in
-_gst_parse_yyset_lineno
-_gst_parse_yyset_lval
-_gst_parse_yyset_out
 _gst_plugin_initialize
 _gst_plugin_loader_client_run
 _gst_plugin_register_static
@@ -1121,6 +1237,7 @@ gst_buffer_copy_metadata
 gst_buffer_create_sub
 gst_buffer_flag_get_type
 gst_buffer_get_caps
+gst_buffer_get_qdata
 gst_buffer_get_type
 gst_buffer_is_metadata_writable
 gst_buffer_is_span_fast
@@ -1150,6 +1267,7 @@ gst_buffer_merge
 gst_buffer_new
 gst_buffer_new_and_alloc
 gst_buffer_set_caps
+gst_buffer_set_qdata
 gst_buffer_span
 gst_buffer_stamp
 gst_buffer_try_new_and_alloc
@@ -1198,7 +1316,9 @@ gst_caps_is_empty
 gst_caps_is_equal
 gst_caps_is_equal_fixed
 gst_caps_is_fixed
+gst_caps_is_strictly_equal
 gst_caps_is_subset
+gst_caps_is_subset_structure
 gst_caps_load_thyself
 gst_caps_make_writable
 gst_caps_merge
@@ -1322,6 +1442,7 @@ gst_element_abort_state
 gst_element_add_pad
 gst_element_change_state
 gst_element_class_add_pad_template
+gst_element_class_add_static_pad_template
 gst_element_class_get_pad_template
 gst_element_class_get_pad_template_list
 gst_element_class_install_std_props
@@ -1471,14 +1592,21 @@ gst_fourcc_get_type
 gst_fraction_get_type
 gst_fraction_range_get_type
 gst_g_error_get_type
+gst_ghost_pad_activate_pull_default
+gst_ghost_pad_activate_push_default
 gst_ghost_pad_construct
 gst_ghost_pad_get_target
 gst_ghost_pad_get_type
+gst_ghost_pad_internal_activate_pull_default
+gst_ghost_pad_internal_activate_push_default
+gst_ghost_pad_link_default
 gst_ghost_pad_new
 gst_ghost_pad_new_from_template
 gst_ghost_pad_new_no_target
 gst_ghost_pad_new_no_target_from_template
 gst_ghost_pad_set_target
+gst_ghost_pad_setcaps_default
+gst_ghost_pad_unlink_default
 gst_implements_interface_cast
 gst_implements_interface_check
 gst_implements_interface_get_type
@@ -1628,6 +1756,8 @@ gst_mini_object_new
 gst_mini_object_ref
 gst_mini_object_replace
 gst_mini_object_unref
+gst_mini_object_weak_ref
+gst_mini_object_weak_unref
 gst_object_check_uniqueness
 gst_object_default_deep_notify
 gst_object_default_error
@@ -1848,6 +1978,7 @@ gst_poll_set_flushing
 gst_poll_wait
 gst_poll_write_control
 gst_preset_delete_preset
+gst_preset_get_app_dir
 gst_preset_get_meta
 gst_preset_get_preset_names
 gst_preset_get_property_names
@@ -1855,11 +1986,27 @@ gst_preset_get_type
 gst_preset_load_preset
 gst_preset_rename_preset
 gst_preset_save_preset
+gst_preset_set_app_dir
 gst_preset_set_meta
 gst_print_element_args
 gst_print_pad_caps
 gst_progress_type_get_type
+gst_proxy_pad_acceptcaps_default
+gst_proxy_pad_bufferalloc_default
+gst_proxy_pad_chain_default
+gst_proxy_pad_chain_list_default
+gst_proxy_pad_checkgetrange_default
+gst_proxy_pad_event_default
+gst_proxy_pad_fixatecaps_default
+gst_proxy_pad_get_internal
 gst_proxy_pad_get_type
+gst_proxy_pad_getcaps_default
+gst_proxy_pad_getrange_default
+gst_proxy_pad_iterate_internal_links_default
+gst_proxy_pad_query_default
+gst_proxy_pad_query_type_default
+gst_proxy_pad_setcaps_default
+gst_proxy_pad_unlink_default
 gst_qos_type_get_type
 gst_query_add_buffering_range
 gst_query_get_n_buffering_ranges
@@ -1967,6 +2114,7 @@ gst_static_pad_template_get_type
 gst_stream_error_get_type
 gst_stream_error_quark
 gst_stream_status_type_get_type
+gst_structure_can_intersect
 gst_structure_change_type_get_type
 gst_structure_copy
 gst_structure_empty_new
@@ -2010,6 +2158,9 @@ gst_structure_id_set
 gst_structure_id_set_valist
 gst_structure_id_set_value
 gst_structure_id_take_value
+gst_structure_intersect
+gst_structure_is_equal
+gst_structure_is_subset
 gst_structure_map_in_place
 gst_structure_n_fields
 gst_structure_new
@@ -2081,12 +2232,15 @@ gst_tag_list_get_ulong_index
 gst_tag_list_get_value_index
 gst_tag_list_insert
 gst_tag_list_is_empty
+gst_tag_list_is_equal
 gst_tag_list_merge
 gst_tag_list_new
+gst_tag_list_new_from_string
 gst_tag_list_new_full
 gst_tag_list_new_full_valist
 gst_tag_list_peek_string_index
 gst_tag_list_remove_tag
+gst_tag_list_to_string
 gst_tag_merge_mode_get_type
 gst_tag_merge_strings_with_comma
 gst_tag_merge_use_first
@@ -2249,7 +2403,7 @@ gst_xml_parse_memory
 gst_xml_write
 gst_xml_write_file
 
-================= ./libgstriff-0.10.so.0.24.0 =================
+================= ./libgstriff-0.10.so.0.25.0 =================
 gst_riff_create_audio_caps
 gst_riff_create_audio_template_caps
 gst_riff_create_iavs_caps
@@ -2265,7 +2419,7 @@ gst_riff_parse_strf_iavs
 gst_riff_parse_strf_vids
 gst_riff_parse_strh
 gst_riff_read_chunk
-================= ./libgstrtp-0.10.so.0.24.0 =================
+================= ./libgstrtp-0.10.so.0.25.0 =================
 
 gst_base_rtp_audio_payload_flush
 gst_base_rtp_audio_payload_get_adapter
@@ -2402,7 +2556,7 @@ gst_rtp_buffer_validate
 gst_rtp_buffer_validate_data
 gst_rtp_payload_info_for_name
 gst_rtp_payload_info_for_pt
-================= ./libgstrtsp-0.10.so.0.24.0 =================
+================= ./libgstrtsp-0.10.so.0.25.0 =================
 
 gst_rtsp_auth_method_get_type
 gst_rtsp_base64_decode_ip
@@ -2519,24 +2673,42 @@ gst_rtsp_watch_write_data
 
 _fini
 _init
+gst_rtsp_auth_check
+gst_rtsp_auth_get_type
+gst_rtsp_auth_make_basic
+gst_rtsp_auth_new
+gst_rtsp_auth_set_basic
+gst_rtsp_auth_setup_auth
 gst_rtsp_client_accept
+gst_rtsp_client_get_auth
 gst_rtsp_client_get_media_mapping
+gst_rtsp_client_get_server
 gst_rtsp_client_get_session_pool
 gst_rtsp_client_get_type
 gst_rtsp_client_new
+gst_rtsp_client_set_auth
 gst_rtsp_client_set_media_mapping
+gst_rtsp_client_set_server
 gst_rtsp_client_set_session_pool
 gst_rtsp_media_factory_collect_streams
 gst_rtsp_media_factory_construct
+gst_rtsp_media_factory_get_auth
 gst_rtsp_media_factory_get_launch
 gst_rtsp_media_factory_get_type
 gst_rtsp_media_factory_is_eos_shutdown
 gst_rtsp_media_factory_is_shared
 gst_rtsp_media_factory_new
+gst_rtsp_media_factory_set_auth
 gst_rtsp_media_factory_set_eos_shutdown
 gst_rtsp_media_factory_set_launch
 gst_rtsp_media_factory_set_shared
+gst_rtsp_media_factory_uri_get_type
+gst_rtsp_media_factory_uri_get_uri
+gst_rtsp_media_factory_uri_new
+gst_rtsp_media_factory_uri_set_uri
+gst_rtsp_media_get_auth
 gst_rtsp_media_get_protocols
+gst_rtsp_media_get_range_string
 gst_rtsp_media_get_stream
 gst_rtsp_media_get_type
 gst_rtsp_media_is_eos_shutdown
@@ -2552,6 +2724,7 @@ gst_rtsp_media_new
 gst_rtsp_media_prepare
 gst_rtsp_media_remove_elements
 gst_rtsp_media_seek
+gst_rtsp_media_set_auth
 gst_rtsp_media_set_eos_shutdown
 gst_rtsp_media_set_protocols
 gst_rtsp_media_set_reusable
@@ -2567,6 +2740,7 @@ gst_rtsp_sdp_from_media
 gst_rtsp_server_attach
 gst_rtsp_server_create_watch
 gst_rtsp_server_get_address
+gst_rtsp_server_get_auth
 gst_rtsp_server_get_backlog
 gst_rtsp_server_get_io_channel
 gst_rtsp_server_get_media_mapping
@@ -2576,6 +2750,7 @@ gst_rtsp_server_get_type
 gst_rtsp_server_io_func
 gst_rtsp_server_new
 gst_rtsp_server_set_address
+gst_rtsp_server_set_auth
 gst_rtsp_server_set_backlog
 gst_rtsp_server_set_media_mapping
 gst_rtsp_server_set_service
@@ -2610,7 +2785,8 @@ gst_rtsp_session_stream_set_callbacks
 gst_rtsp_session_stream_set_keepalive
 gst_rtsp_session_stream_set_transport
 gst_rtsp_session_touch
-================= ./libgstsdp-0.10.so.0.24.0 =================
+rtsp_funnel_get_type
+================= ./libgstsdp-0.10.so.0.25.0 =================
 gst_sdp_address_is_multicast
 gst_sdp_media_add_attribute
 gst_sdp_media_add_bandwidth
@@ -2688,10 +2864,10 @@ gst_sdp_message_set_version
 gst_sdp_message_times_len
 gst_sdp_message_uninit
 gst_sdp_message_zones_len
-================= ./libgstsignalprocessor-0.10.so.0.0.0 =================
+================= ./libgstsignalprocessor-0.10.so.23.0.0 =================
 gst_signal_processor_class_add_pad_template
 gst_signal_processor_get_type
-================= ./libgsttag-0.10.so.0.24.0 =================
+================= ./libgsttag-0.10.so.0.25.0 =================
 
 gst_tag_demux_get_type
 gst_tag_demux_result_get_type
@@ -2699,18 +2875,28 @@ gst_tag_freeform_string_to_utf8
 gst_tag_from_id3_tag
 gst_tag_from_id3_user_tag
 gst_tag_from_vorbis_tag
+gst_tag_get_id3v2_tag_size
 gst_tag_get_language_code_iso_639_1
 gst_tag_get_language_code_iso_639_2B
 gst_tag_get_language_code_iso_639_2T
 gst_tag_get_language_codes
 gst_tag_get_language_name
+gst_tag_get_license_description
+gst_tag_get_license_flags
+gst_tag_get_license_jurisdiction
+gst_tag_get_license_nick
+gst_tag_get_license_title
+gst_tag_get_license_version
+gst_tag_get_licenses
 gst_tag_id3_genre_count
 gst_tag_id3_genre_get
 gst_tag_image_data_to_image_buffer
 gst_tag_image_type_get_type
+gst_tag_license_flags_get_type
 gst_tag_list_add_id3_image
 gst_tag_list_from_exif_buffer
 gst_tag_list_from_exif_buffer_with_tiff_header
+gst_tag_list_from_id3v2_tag
 gst_tag_list_from_vorbiscomment_buffer
 gst_tag_list_from_xmp_buffer
 gst_tag_list_new_from_id3v1
@@ -2719,6 +2905,7 @@ gst_tag_list_to_exif_buffer_with_tiff_header
 gst_tag_list_to_vorbiscomment_buffer
 gst_tag_list_to_xmp_buffer
 gst_tag_list_to_xmp_buffer_full
+gst_tag_mux_get_type
 gst_tag_parse_extended_comment
 gst_tag_register_musicbrainz_tags
 gst_tag_to_id3_tag
@@ -2733,13 +2920,78 @@ gst_tag_xmp_writer_remove_all_schemas
 gst_tag_xmp_writer_remove_schema
 gst_tag_xmp_writer_tag_list_to_xmp_buffer
 gst_vorbis_tag_add
-================= ./libgstvideo-0.10.so.0.24.0 =================
+================= ./libgstvdp-0.10.so.23.0.0 =================
 
+gst_base_video_decoder_finish_frame
+gst_base_video_decoder_get_state
+gst_base_video_decoder_get_type
+gst_base_video_decoder_have_frame
+gst_base_video_decoder_lost_sync
+gst_base_video_decoder_set_src_caps
+gst_base_video_decoder_set_state
+gst_base_video_decoder_skip_frame
+gst_vdp_buffer_get_type
+gst_vdp_buffer_pool_get_buffer
+gst_vdp_buffer_pool_get_caps
+gst_vdp_buffer_pool_get_device
+gst_vdp_buffer_pool_get_max_buffers
+gst_vdp_buffer_pool_get_type
+gst_vdp_buffer_pool_put_buffer
+gst_vdp_buffer_pool_set_caps
+gst_vdp_buffer_pool_set_max_buffers
+gst_vdp_buffer_revive
+gst_vdp_buffer_set_buffer_pool
+gst_vdp_caps_to_rgba_format
+gst_vdp_decoder_get_type
+gst_vdp_decoder_init_decoder
+gst_vdp_decoder_post_error
+gst_vdp_decoder_render
+gst_vdp_device_get_type
+gst_vdp_get_device
+gst_vdp_init
+gst_vdp_output_buffer_calculate_size
+gst_vdp_output_buffer_download
+gst_vdp_output_buffer_get_allowed_caps
+gst_vdp_output_buffer_get_template_caps
+gst_vdp_output_buffer_get_type
+gst_vdp_output_buffer_new
+gst_vdp_output_buffer_pool_get_type
+gst_vdp_output_buffer_pool_new
+gst_vdp_output_src_pad_alloc_buffer
+gst_vdp_output_src_pad_get_type
+gst_vdp_output_src_pad_new
+gst_vdp_output_src_pad_push
+gst_vdp_video_buffer_calculate_size
+gst_vdp_video_buffer_download
+gst_vdp_video_buffer_get_allowed_caps
+gst_vdp_video_buffer_get_caps
+gst_vdp_video_buffer_get_type
+gst_vdp_video_buffer_new
+gst_vdp_video_buffer_pool_get_type
+gst_vdp_video_buffer_pool_new
+gst_vdp_video_buffer_upload
+gst_vdp_video_src_pad_alloc_buffer
+gst_vdp_video_src_pad_get_type
+gst_vdp_video_src_pad_new
+gst_vdp_video_src_pad_push
+gst_vdp_video_to_output_caps
+gst_vdp_yuv_to_video_caps
+gst_video_frame_get_type
+gst_video_frame_new
+================= ./libgstvideo-0.10.so.0.25.0 =================
+
+gst_video_buffer_get_overlay_composition
+gst_video_buffer_set_overlay_composition
 gst_video_calculate_display_ratio
 gst_video_convert_frame
 gst_video_convert_frame_async
+gst_video_event_is_force_key_unit
+gst_video_event_new_downstream_force_key_unit
 gst_video_event_new_still_frame
+gst_video_event_new_upstream_force_key_unit
+gst_video_event_parse_downstream_force_key_unit
 gst_video_event_parse_still_frame
+gst_video_event_parse_upstream_force_key_unit
 gst_video_filter_get_type
 gst_video_format_convert
 gst_video_format_from_fourcc
@@ -2763,6 +3015,24 @@ gst_video_format_parse_caps_interlaced
 gst_video_format_to_fourcc
 gst_video_frame_rate
 gst_video_get_size
+gst_video_get_size_from_caps
+gst_video_overlay_composition_add_rectangle
+gst_video_overlay_composition_blend
+gst_video_overlay_composition_copy
+gst_video_overlay_composition_get_rectangle
+gst_video_overlay_composition_get_seqnum
+gst_video_overlay_composition_get_type
+gst_video_overlay_composition_make_writable
+gst_video_overlay_composition_n_rectangles
+gst_video_overlay_composition_new
+gst_video_overlay_rectangle_copy
+gst_video_overlay_rectangle_get_pixels_argb
+gst_video_overlay_rectangle_get_pixels_unscaled_argb
+gst_video_overlay_rectangle_get_render_rectangle
+gst_video_overlay_rectangle_get_seqnum
+gst_video_overlay_rectangle_get_type
+gst_video_overlay_rectangle_new_argb
+gst_video_overlay_rectangle_set_render_rectangle
 gst_video_parse_caps_chroma_site
 gst_video_parse_caps_color_matrix
 gst_video_parse_caps_framerate
