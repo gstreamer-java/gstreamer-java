@@ -212,11 +212,11 @@ public class ElementFactoryTest {
                 Rank.GST_RANK_NONE);
         assertNotNull("List of factories is null", list);
         assertTrue("No factories found", !list.isEmpty());
-        System.out.println("Factories >>>");
-        for (ElementFactory fact : list) {
-            System.out.println(fact.getName());
-        }
-        System.out.println("<<<");
+//        System.out.println("Factories >>>");
+//        for (ElementFactory fact : list) {
+//            System.out.println(fact.getName());
+//        }
+//        System.out.println("<<<");
     }
 
     @Test
@@ -230,11 +230,11 @@ public class ElementFactoryTest {
 
         assertNotNull("List of factories is null", filterList);
         assertTrue("No factories found", !filterList.isEmpty());
-        System.out.println("Filtered factories >>>");
-        for (ElementFactory fact : filterList) {
-            System.out.println(fact.getName());
-        }
-        System.out.println("<<<");
+//        System.out.println("Filtered factories >>>");
+//        for (ElementFactory fact : filterList) {
+//            System.out.println(fact.getName());
+//        }
+//        System.out.println("<<<");
     }
 
     @Test
@@ -245,10 +245,10 @@ public class ElementFactoryTest {
         assertNotNull("List of factories is null", list);
         assertTrue("No factories found", !list.isEmpty());
 
-        System.out.println("Factories >>>");
-        for (ElementFactory fact : list) {
-            System.out.println(fact.getName());
-        }
-        System.out.println("<<<");
+//        System.out.println("Factories >>>");
+//        for (ElementFactory fact : list) {
+//            System.out.println(fact.getName());
+//        }
+//        System.out.println("<<<");
     }
 }

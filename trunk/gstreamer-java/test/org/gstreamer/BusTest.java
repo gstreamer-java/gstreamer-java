@@ -80,6 +80,7 @@ public class BusTest {
             }
             
         };
+        pipe.play();
         pipe.getBus().connect(eosSignal);
         //
         // For the pipeline to post an EOS message, all sink elements must post it
