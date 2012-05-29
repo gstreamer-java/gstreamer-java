@@ -83,11 +83,11 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     boolean gst_caps_is_equal_fixed(Caps caps1,  Caps caps2);
     boolean gst_caps_can_intersect(Caps caps1, Caps caps2);
 
-    public class GPtrArray extends com.sun.jna.Structure {
+    public static final class GPtrArray extends com.sun.jna.Structure {
     	public volatile Pointer pdata;
     	public volatile int     len;    	
     }
-    public class GstCapsStruct extends com.sun.jna.Structure {
+    public static final class GstCapsStruct extends com.sun.jna.Structure {
 
         public volatile GType type;
         public volatile int refcount;
@@ -104,7 +104,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     }
 
     
-    class GstStaticCapsStruct extends com.sun.jna.Structure {
+    public static final class GstStaticCapsStruct extends com.sun.jna.Structure {
     	/*< public >*/
         public volatile GstCapsStruct caps;
         public volatile String string;

@@ -52,14 +52,14 @@ public interface GValueAPI extends Library {
     			put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
     		}});
 
-    public static class GValue extends com.sun.jna.Structure {
+    public static final class GValue extends com.sun.jna.Structure {
     	public static final String GTYPE_NAME = "GValue";
 
         /*< private >*/
         public volatile GType g_type;
 
         /* public for GTypeValueTable methods */
-        public static class GValueData extends com.sun.jna.Union {
+        public static final class GValueData extends com.sun.jna.Union {
             public volatile int v_int;
             public volatile long v_long;
             public volatile long v_int64;
@@ -218,7 +218,7 @@ public interface GValueAPI extends Library {
         }
     }
 
-    public static class GValueArray extends com.sun.jna.Structure {
+    public static final class GValueArray extends com.sun.jna.Structure {
     	public static final String GTYPE_NAME = "GValueArray";
 
     	public volatile int n_values;

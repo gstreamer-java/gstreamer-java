@@ -51,7 +51,7 @@ public interface GstObjectAPI extends com.sun.jna.Library {
     Pointer gst_implements_interface_cast(GstObject obj, NativeLong gtype);    
     boolean gst_implements_interface_check(GstObject from, NativeLong type);
     
-    public final static class GstObjectStruct extends com.sun.jna.Structure {        
+    public static final class GstObjectStruct extends com.sun.jna.Structure {        
         public GObjectAPI.GObjectStruct object;
         public volatile int refcount;
         public volatile Pointer lock;
@@ -62,7 +62,7 @@ public interface GstObjectAPI extends com.sun.jna.Library {
         public volatile Pointer _gst_reserved;
     }
     
-    public final static class GstObjectClass extends com.sun.jna.Structure {
+    public static final class GstObjectClass extends com.sun.jna.Structure {
         public GObjectAPI.GObjectClass parent_class;
         public volatile Pointer path_string_separator;
         public volatile Pointer signal_object;

@@ -92,7 +92,7 @@ public interface GstEventAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Event gst_event_new_latency(ClockTime latency);
     void gst_event_parse_latency(Event event, ClockTime[] latency);
     
-    public static class EventStruct extends com.sun.jna.Structure {
+    public static final class EventStruct extends com.sun.jna.Structure {
         public volatile GstMiniObjectAPI.MiniObjectStruct mini_object;
         public volatile int type;
         public EventStruct(Pointer ptr) {

@@ -48,7 +48,7 @@ public interface GstControllerAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING - 1];
 	}
 	
-	public final static class GstControllerClass extends com.sun.jna.Structure {
+	public static final class GstControllerClass extends com.sun.jna.Structure {
 		public GstControllerClass() {}
         public GstControllerClass(Pointer ptr) {
             useMemory(ptr);

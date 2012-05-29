@@ -66,7 +66,7 @@ public interface GstAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
     };
     
-    public class GErrorStruct extends com.sun.jna.Structure {
+    public static final class GErrorStruct extends com.sun.jna.Structure {
         public volatile int domain; /* GQuark */
         public volatile int code;
         public volatile String message;

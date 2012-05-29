@@ -36,10 +36,10 @@ import com.sun.jna.Pointer;
  */
 @SuppressWarnings("serial")
 public interface GObjectAPI extends Library {
-	GObjectAPI GOBJECT_API = GNative.loadLibrary("gobject-2.0", GObjectAPI.class,
-			new HashMap<String, Object>() {{
-				put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
-			}});
+    GObjectAPI GOBJECT_API = GNative.loadLibrary("gobject-2.0", GObjectAPI.class,
+        new HashMap<String, Object>() {{
+            put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
+        }});
 
     GType g_object_get_type();
     void g_param_value_validate(GParamSpec spec, GValue data);
@@ -117,7 +117,7 @@ public interface GObjectAPI extends Library {
         public volatile Pointer g_class;
     }                  
     
-    static class GObjectStruct extends com.sun.jna.Structure {
+    public static final class GObjectStruct extends com.sun.jna.Structure {
         public volatile GTypeInstance g_type_instance;
         public volatile int ref_count;
         public volatile Pointer qdata;
@@ -127,7 +127,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static public class GObjectConstructParam {
+    public static final class GObjectConstructParam {
         public volatile Pointer spec;
         public volatile Pointer value;
     }
@@ -215,14 +215,14 @@ public interface GObjectAPI extends Library {
         public volatile /* GTypeValueTable */ Pointer value_table;                
     }
 
-    static abstract class GParamSpecTypeSpecific extends com.sun.jna.Structure {
+    public static abstract class GParamSpecTypeSpecific extends com.sun.jna.Structure {
     	public abstract Object getMinimum();
     	public abstract Object getMaximum();
     	public abstract Object getDefault();
     	
         public GParamSpecTypeSpecific() { clear(); }
     }
-    static class GParamSpecBoolean extends GParamSpecTypeSpecific {
+    public static final class GParamSpecBoolean extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile boolean default_value;
     	
@@ -235,7 +235,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecInt extends GParamSpecTypeSpecific {
+    public static final class GParamSpecInt extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile int minimum;
     	public volatile int maximum;
@@ -250,7 +250,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecUInt extends GParamSpecTypeSpecific {
+    public static final class GParamSpecUInt extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile int minimum;
     	public volatile int maximum;
@@ -265,7 +265,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecChar extends GParamSpecTypeSpecific {
+    public static final class GParamSpecChar extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile byte minimum;
     	public volatile byte maximum;
@@ -280,7 +280,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecUChar extends GParamSpecTypeSpecific {
+    public static final class GParamSpecUChar extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile byte minimum;
     	public volatile byte maximum;
@@ -295,7 +295,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecLong extends GParamSpecTypeSpecific {
+    public static final class GParamSpecLong extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile NativeLong minimum;
     	public volatile NativeLong maximum;
@@ -310,7 +310,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecInt64 extends GParamSpecTypeSpecific {
+    public static final class GParamSpecInt64 extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile long minimum;
     	public volatile long maximum;
@@ -325,7 +325,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecFloat extends GParamSpecTypeSpecific {
+    public static final class GParamSpecFloat extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile float minimum;
     	public volatile float maximum;
@@ -341,7 +341,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecDouble extends GParamSpecTypeSpecific {
+    public static final class GParamSpecDouble extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile double minimum;
     	public volatile double maximum;
@@ -357,7 +357,7 @@ public interface GObjectAPI extends Library {
             read();
         }
     }
-    static class GParamSpecString extends GParamSpecTypeSpecific {
+    public static final class GParamSpecString extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
     	public volatile String default_value;
     	public volatile String cset_first;
@@ -376,7 +376,7 @@ public interface GObjectAPI extends Library {
         }
     }
     
-    static class GParamSpec extends com.sun.jna.Structure {
+    public static final class GParamSpec extends com.sun.jna.Structure {
         public volatile GTypeInstance g_type_instance;
         public volatile String g_name;
         public volatile /* GParamFlags */ int g_flags;

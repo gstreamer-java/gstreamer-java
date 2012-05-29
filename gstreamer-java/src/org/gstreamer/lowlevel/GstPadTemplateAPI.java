@@ -34,7 +34,7 @@ import com.sun.jna.Pointer;
  * GstPadTemplate functions
  */
 public interface GstPadTemplateAPI extends com.sun.jna.Library {
-	GstPadTemplateAPI GSTPADTEMPLATE_API = GstNative.load(GstPadTemplateAPI.class);
+    GstPadTemplateAPI GSTPADTEMPLATE_API = GstNative.load(GstPadTemplateAPI.class);
 
     /* element class pad templates */
     void gst_element_class_add_pad_template(Pointer klass, PadTemplate templ);
@@ -53,11 +53,12 @@ public interface GstPadTemplateAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Caps gst_pad_template_get_caps(PadTemplate template);
     void gst_pad_template_pad_created(PadTemplate templ, Pad pad);
     
-    public class GstStaticPadTemplate extends com.sun.jna.Structure {
+    public static final class GstStaticPadTemplate extends com.sun.jna.Structure {
         public volatile String name_template;
         public volatile PadDirection direction;
         public volatile PadPresence presence;
         public volatile GstStaticCapsStruct static_caps;
+        
         public GstStaticPadTemplate(Pointer memory) {
             useMemory(memory);
             read();

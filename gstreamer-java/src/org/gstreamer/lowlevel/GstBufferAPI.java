@@ -52,7 +52,7 @@ public interface GstBufferAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Buffer gst_buffer_merge(Buffer buf1, Buffer buf2);
     @CallerOwnsReturn Buffer gst_buffer_join(@Invalidate Buffer buf1, @Invalidate Buffer buf2);
     
-    public final class BufferStruct extends com.sun.jna.Structure {
+    public static final class BufferStruct extends com.sun.jna.Structure {
         volatile public MiniObjectStruct mini_object;
         public Pointer data;
         public int size;
