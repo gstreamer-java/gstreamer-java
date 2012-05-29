@@ -41,7 +41,7 @@ public interface BaseTransformAPI extends Library {
     int GST_PADDING = GstAPI.GST_PADDING;
     int GST_PADDING_LARGE = GstAPI.GST_PADDING_LARGE;
     
-    public final static class GstBaseTransformStruct extends com.sun.jna.Structure {
+    public static final class GstBaseTransformStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
 
         /*< protected >*/
@@ -115,7 +115,7 @@ public interface BaseTransformAPI extends Library {
         public boolean callback(BaseTransform trans, PadDirection direction, Caps caps);
     }
     
-    public final static class GstBaseTransformClass extends com.sun.jna.Structure {
+    public static final class GstBaseTransformClass extends com.sun.jna.Structure {
         public GstBaseTransformClass() {}
         public GstBaseTransformClass(Pointer ptr) {
             useMemory(ptr);

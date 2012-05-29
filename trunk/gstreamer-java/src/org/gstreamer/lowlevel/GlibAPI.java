@@ -114,7 +114,7 @@ public interface GlibAPI extends Library {
 
     GList g_list_append(GList list, Pointer data);
 
-    public final static class GList extends com.sun.jna.Structure {
+    public static final class GList extends com.sun.jna.Structure {
         public volatile Pointer data;
         public volatile Pointer _next;
         public volatile Pointer _prev;
@@ -136,7 +136,7 @@ public interface GlibAPI extends Library {
             return valueOf(_prev);
         }
     }
-    public final static class GSList extends com.sun.jna.Structure {
+    public static final class GSList extends com.sun.jna.Structure {
         public volatile Pointer data;
         public volatile Pointer _next;
         public GSList() {

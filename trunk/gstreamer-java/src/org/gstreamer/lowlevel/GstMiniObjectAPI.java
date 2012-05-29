@@ -42,7 +42,7 @@ public interface GstMiniObjectAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Pointer ptr_gst_mini_object_make_writable(@Invalidate MiniObject mini_object);
     @CallerOwnsReturn MiniObject gst_mini_object_make_writable(@Invalidate MiniObject mini_object);
     
-    public class MiniObjectStruct extends com.sun.jna.Structure {
+    public static final class MiniObjectStruct extends com.sun.jna.Structure {
         public volatile GTypeInstance instance;
         public volatile int refcount;
         public volatile int flags;

@@ -44,7 +44,7 @@ public interface BaseSrcAPI extends Library {
     int GST_PADDING = GstAPI.GST_PADDING;
     int GST_PADDING_LARGE = GstAPI.GST_PADDING_LARGE;
     
-    public final static class GstBaseSrcStruct extends com.sun.jna.Structure {
+    public static final class GstBaseSrcStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
 
         /*< protected >*/
@@ -82,12 +82,12 @@ public interface BaseSrcAPI extends Library {
         public volatile Pointer /* GstBaseSrcPrivate */ priv;
     }
     
-    public final static class GstBaseSrcAbiData extends Union {
+    public static final class GstBaseSrcAbiData extends Union {
         public volatile GstBaseSrcAbi abi;
         public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
     }
 
-    public final static class GstBaseSrcAbi extends com.sun.jna.Structure {
+    public static final class GstBaseSrcAbi extends com.sun.jna.Structure {
         public volatile boolean typefind;
         public volatile boolean running;
         public volatile Pointer /* GstEvent */ pending_seek;
@@ -130,7 +130,7 @@ public interface BaseSrcAPI extends Library {
     public static interface PrepareSeek extends Callback {
         boolean callback(BaseSrc src, Event seek, GstSegmentStruct segment);
     }
-    public final static class GstBaseSrcClass extends com.sun.jna.Structure {
+    public static final class GstBaseSrcClass extends com.sun.jna.Structure {
         public GstBaseSrcClass() {}
         public GstBaseSrcClass(Pointer ptr) {
             useMemory(ptr);

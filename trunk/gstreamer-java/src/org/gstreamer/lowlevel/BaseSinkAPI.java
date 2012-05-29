@@ -46,7 +46,7 @@ public interface BaseSinkAPI extends Library {
     int GST_PADDING = GstAPI.GST_PADDING;
     int GST_PADDING_LARGE = GstAPI.GST_PADDING_LARGE;
     
-    public final static class GstBaseSinkStruct extends com.sun.jna.Structure {
+    public static final class GstBaseSinkStruct extends com.sun.jna.Structure {
         public GstElementStruct element;
         
         /*< protected >*/
@@ -85,12 +85,12 @@ public interface BaseSinkAPI extends Library {
         public volatile Pointer /* GstBaseSinkPrivate */ priv;
     }
 
-    public final static class GstBaseSinkAbiData extends Union {
+    public static final class GstBaseSinkAbiData extends Union {
         public volatile GstBaseSinkAbi abi;
         public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
     }
 
-    public final static class GstBaseSinkAbi extends com.sun.jna.Structure {
+    public static final class GstBaseSinkAbi extends com.sun.jna.Structure {
         public volatile Pointer /* GstSegment */ clip_segment;
         public volatile long max_lateness;
         public volatile boolean running;
@@ -133,7 +133,7 @@ public interface BaseSinkAPI extends Library {
         public FlowReturn callback(BaseSink sink, GList bufferList);
     }
     
-    public final static class GstBaseSinkClass extends com.sun.jna.Structure {
+    public static final class GstBaseSinkClass extends com.sun.jna.Structure {
         public GstBaseSinkClass() {}
         public GstBaseSinkClass(Pointer ptr) {
             useMemory(ptr);

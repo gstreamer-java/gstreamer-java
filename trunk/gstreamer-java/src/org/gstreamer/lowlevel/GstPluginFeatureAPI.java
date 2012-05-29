@@ -26,13 +26,13 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
  * GstPluginFeature functions
  */
 public interface GstPluginFeatureAPI extends com.sun.jna.Library {
-	GstPluginFeatureAPI GSTPLUGINFEATURE_API = GstNative.load(GstPluginFeatureAPI.class);
+    GstPluginFeatureAPI GSTPLUGINFEATURE_API = GstNative.load(GstPluginFeatureAPI.class);
 
     /* normal GObject stuff */
     GType gst_plugin_feature_get_type();
 
     @CallerOwnsReturn PluginFeature gst_plugin_feature_load(PluginFeature feature);
-    class TypeNameData extends com.sun.jna.Structure {
+    public static final class TypeNameData extends com.sun.jna.Structure {
         public String name;
         public GType type;
     }

@@ -34,7 +34,7 @@ import com.sun.jna.Pointer;
  * GstQuery functions
  */
 public interface GstQueryAPI extends com.sun.jna.Library {
-	GstQueryAPI GSTQUERY_API = GstNative.load(GstQueryAPI.class);
+    GstQueryAPI GSTQUERY_API = GstNative.load(GstQueryAPI.class);
 
     String gst_query_type_get_name(QueryType query);
     GQuark gst_query_type_to_quark(QueryType query);
@@ -91,7 +91,7 @@ public interface GstQueryAPI extends com.sun.jna.Library {
     void gst_query_parse_formats_length(Query query, int[] n_formats);
     void gst_query_parse_formats_nth(Query query, int nth, Format[] format);
     
-    public static class QueryStruct extends com.sun.jna.Structure {
+    public static final class QueryStruct extends com.sun.jna.Structure {
         public volatile GstMiniObjectAPI.MiniObjectStruct mini_object;
         public volatile int type;
         public volatile Pointer structure;

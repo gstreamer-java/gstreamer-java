@@ -95,7 +95,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
     void gst_element_set_start_time(Element element, ClockTime time);
     ClockTime gst_element_get_start_time(Element element);
     
-    public final static class GstElementDetails extends com.sun.jna.Structure {
+    public static final class GstElementDetails extends com.sun.jna.Structure {
          /*< public > */
         public volatile String longname;
         public volatile String klass;
@@ -104,7 +104,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
         /*< private > */
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];        
     }
-    public final static class GstElementStruct extends com.sun.jna.Structure {
+    public static final class GstElementStruct extends com.sun.jna.Structure {
         public GstObjectStruct object;
         public volatile Pointer state_lock;
         public volatile Pointer state_cond;
@@ -126,7 +126,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
         // Use an array of byte as arrays of Pointer don't work
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
     }
-    public final static class GstElementClass extends com.sun.jna.Structure {
+    public static final class GstElementClass extends com.sun.jna.Structure {
         //
         // Callbacks for this class
         //
