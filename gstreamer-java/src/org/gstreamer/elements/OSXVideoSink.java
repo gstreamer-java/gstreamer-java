@@ -39,6 +39,7 @@ public class OSXVideoSink extends BaseSink {
     	return (Boolean) get("embed");
     }
     
+    //TODO: where is the disconnect pair for this connect?
     public void listenForNewViews(Bus bus) {
     	bus.connect(new Bus.MESSAGE() {
 			public void busMessage(Bus bus, Message message) {

@@ -56,6 +56,8 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	private static int counter = 0;
 	
 	private final Bin sink = new Bin();
+	private final Bin autosink;
+	private ELEMENT_ADDED sinkListener;
 	private SWTOverlay overlay;
 	private BaseSink videosink;
 //	private BusSyncHandler oldSyncHandler;
@@ -81,13 +83,13 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		addDisposeListener(this);
 
 		Element colorspace = ElementFactory.make("ffmpegcolorspace", "colorspace" + counter);
-		final Bin autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
+		autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
 		sink.add(colorspace);
 		sink.addPad(new GhostPad("colorspace_sink_ghostpad", colorspace.getSinkPads().get(0)));
 		sink.add(autosink);
 		Element.linkMany(colorspace, autosink);
 		
-		autosink.connect(new ELEMENT_ADDED() {
+		sinkListener = new ELEMENT_ADDED() {
 			public void elementAdded(Bin bin, Element element) {
 				if (element instanceof BaseSink) {
 					videosink = (BaseSink)element;
@@ -104,9 +106,11 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 //					bus.setSyncHandler(VideoComponent.this); // for prepare-xwindow-id
 					setOverlay();
 					autosink.disconnect(this);               // from element-added
+					sinkListener = null;                     // no longer needed
 				}
 			}
-		});
+		};
+		autosink.connect(sinkListener);
 	}
 
 	/**
@@ -122,6 +126,8 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	 * Dispose this Widget
 	 */
 	public void widgetDisposed(DisposeEvent arg0) {
+		if (sinkListener != null)
+			autosink.disconnect(sinkListener);
 		removeDisposeListener(this);
 		if (x11Events)
 			watcherRunning = false;

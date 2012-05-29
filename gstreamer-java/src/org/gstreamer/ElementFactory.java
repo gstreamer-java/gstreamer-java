@@ -308,15 +308,6 @@ public class ElementFactory extends PluginFeature {
         while (next != null) {
             if (next.data != null) {
                 GstStaticPadTemplate temp = new GstStaticPadTemplate(next.data);
-//                System.out.println(temp.name_template);
-//                System.out.println(temp.direction);
-//                System.out.println(temp.presence);
-//                System.out.println(temp.static_caps.string);
-//                System.out.println(temp.static_caps.caps.type);
-//                System.out.println(temp.static_caps.caps.refcount);
-//                System.out.println(temp.static_caps.caps.flags);
-//                System.out.println(temp.static_caps.caps.structs.pdata);
-//                System.out.println(temp.static_caps.caps.structs.len);
                 templates.add(new StaticPadTemplate(temp.name_template, temp.direction,
                         temp.presence, gst.gst_static_caps_get(temp.static_caps)));
             }

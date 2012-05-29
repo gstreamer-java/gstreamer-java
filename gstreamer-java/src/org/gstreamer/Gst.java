@@ -459,7 +459,7 @@ public final class Gst {
         }
     }
     // to generate the list we use:
-    // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null |egrep -v .svn
+    // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null | egrep -v ".svn|Gst.java" | sort
     // even though the best would be all subclasses of NativeObject
     @SuppressWarnings("rawtypes")
     private static Class[] nativeClasses = {
