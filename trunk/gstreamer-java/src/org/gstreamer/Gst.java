@@ -447,80 +447,84 @@ public final class Gst {
     }
 
     @SuppressWarnings("unchecked")
+    public static void registerClass(Class<? extends NativeObject> cls) {
+        String value = null;
+        value = getField(cls, "GTYPE_NAME");
+        if (value != null)
+            GstTypes.registerType(cls, value);
+        value = getField(cls, "GST_NAME");
+        if (Element.class.isAssignableFrom(cls) && value != null)
+            ElementFactory.registerElement((Class<? extends Element>)cls, value);					    	
+    }
+
     private static synchronized void loadAllClasses() {
-        for(Class<? extends NativeObject> cls : nativeClasses) {
-            String value = null;
-            value = getField(cls, "GTYPE_NAME");
-            if (value != null)
-                GstTypes.registerType(cls, value);
-            value = getField(cls, "GST_NAME");
-            if (Element.class.isAssignableFrom(cls) && value != null)
-                ElementFactory.registerElement((Class<? extends Element>)cls, value);					
-        }
+        for(Class<? extends NativeObject> cls : nativeClasses)
+        	registerClass(cls);
     }
     // to generate the list we use:
     // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null | egrep -v ".svn|Gst.java" | sort
     // even though the best would be all subclasses of NativeObject
     @SuppressWarnings("rawtypes")
-    private static Class[] nativeClasses = {
-    GDate.class,
-    GValue.class,
-    GValueArray.class,
-    TimedValue.class,
-    ValueList.class,
-    ValueArray.class,
-	// ----------- Interfaces -------------
-	ColorBalanceChannel.class,
-	MixerTrack.class,
-	TunerChannel.class,
-	TunerNorm.class,
-	// ----------- Base -------------
-	Bus.class,
-	Caps.class,
-	Clock.class,
-	DateTime.class,
-	Element.class,
-	ElementFactory.class,
-	GhostPad.class,
-	Pad.class,
-	PadTemplate.class,
-	Plugin.class,
-	PluginFeature.class,
-	Registry.class,
-	Buffer.class,
-	Event.class,
-	Message.class,
-	Query.class,
-	// ----------- Elements -------------
-	AppSink.class,
-	AppSrc.class,
-	BaseSrc.class,
-	BaseSink.class,
-	BaseTransform.class,
-	Bin.class,
-	//CapsFilter.class;
-	DecodeBin.class,
-	DecodeBin2.class,
-	FakeSink.class,
-	FakeSrc.class,
-	//FdSink.class,
-	//FdSrc.class,
-	FileSink.class,
-	FileSrc.class,
-	//Funnel.class,
-	Identity.class,
-	InputSelector.class,
-	MultiQueue.class,
-	OSXVideoSink.class,
-	//OutputSelector.class,
-	Pipeline.class,
-	PlayBin.class,
-	PlayBin2.class,
-	Queue.class,
-	Queue2.class,
-	Tee.class,
-	TypeFind.class,
-	RTPBin.class,
-	RTSPSrc.class,
-    };
+	private static Class[] nativeClasses = {
+		GDate.class,
+		GValue.class,
+		GValueArray.class,
+		TimedValue.class,
+		ValueArray.class,
+		ValueList.class,
+		// ----------- Interfaces -------------
+		ColorBalanceChannel.class,
+		MixerTrack.class,
+		TunerChannel.class,
+		TunerNorm.class,
+		// ----------- Base -------------
+		Buffer.class,
+		Bus.class,
+		Caps.class,
+		Clock.class,
+		DateTime.class,
+		Element.class,
+		ElementFactory.class,
+		Event.class,
+		GhostPad.class,
+		Message.class,
+		Pad.class,
+		PadTemplate.class,
+		Plugin.class,
+		PluginFeature.class,
+		Query.class,
+		Range.class,
+		Registry.class,
+		// ----------- Elements -------------
+		AppSink.class,
+		AppSrc.class,
+		BaseSrc.class,
+		BaseSink.class,
+		BaseTransform.class,
+		Bin.class,
+		// CapsFilter.class;
+		DecodeBin.class,
+		DecodeBin2.class,
+		FakeSink.class,
+		FakeSrc.class,
+		// FdSink.class,
+		// FdSrc.class,
+		FileSink.class,
+		FileSrc.class,
+		// Funnel.class,
+		Identity.class,
+		InputSelector.class,
+		MultiQueue.class,
+		OSXVideoSink.class,
+		// OutputSelector.class,
+		Pipeline.class,
+		PlayBin.class,
+		PlayBin2.class,
+		Queue.class,
+		Queue2.class,
+		Tee.class,
+		TypeFind.class,
+		RTPBin.class,
+		RTSPSrc.class,
+	};
 }
