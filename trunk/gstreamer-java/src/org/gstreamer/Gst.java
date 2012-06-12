@@ -447,7 +447,7 @@ public final class Gst {
     }
 
     @SuppressWarnings("unchecked")
-    public static void registerClass(Class<? extends NativeObject> cls) {
+    public static synchronized void registerClass(Class<? extends NativeObject> cls) {
         String value = null;
         value = getField(cls, "GTYPE_NAME");
         if (value != null)
@@ -457,9 +457,10 @@ public final class Gst {
             ElementFactory.registerElement((Class<? extends Element>)cls, value);					    	
     }
 
-    private static synchronized void loadAllClasses() {
-        for(Class<? extends NativeObject> cls : nativeClasses)
-        	registerClass(cls);
+    @SuppressWarnings("unchecked")
+	private static synchronized void loadAllClasses() {
+        for(Class<?> cls : nativeClasses)
+        	registerClass((Class<? extends NativeObject>)cls);
     }
     // to generate the list we use:
     // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null | egrep -v ".svn|Gst.java" | sort
