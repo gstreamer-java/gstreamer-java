@@ -48,12 +48,14 @@ import org.gstreamer.elements.FileSink;
 import org.gstreamer.elements.FileSrc;
 import org.gstreamer.elements.Identity;
 import org.gstreamer.elements.InputSelector;
+import org.gstreamer.elements.MultiFdSink;
 import org.gstreamer.elements.MultiQueue;
 import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.Queue;
 import org.gstreamer.elements.Queue2;
+import org.gstreamer.elements.TCPServerSink;
 import org.gstreamer.elements.Tee;
 import org.gstreamer.elements.TypeFind;
 import org.gstreamer.elements.good.RTPBin;
@@ -458,9 +460,9 @@ public final class Gst {
     }
 
     @SuppressWarnings("unchecked")
-	private static synchronized void loadAllClasses() {
+    private static synchronized void loadAllClasses() {
         for(Class<?> cls : nativeClasses)
-        	registerClass((Class<? extends NativeObject>)cls);
+            registerClass((Class<? extends NativeObject>)cls);
     }
     // to generate the list we use:
     // egrep -rl "GST_NAME|GTYPE_NAME" src 2>/dev/null | egrep -v ".svn|Gst.java" | sort
@@ -515,6 +517,7 @@ public final class Gst {
 		// Funnel.class,
 		Identity.class,
 		InputSelector.class,
+		MultiFdSink.class,
 		MultiQueue.class,
 		OSXVideoSink.class,
 		// OutputSelector.class,
@@ -523,6 +526,7 @@ public final class Gst {
 		PlayBin2.class,
 		Queue.class,
 		Queue2.class,
+		TCPServerSink.class,
 		Tee.class,
 		TypeFind.class,
 		RTPBin.class,
