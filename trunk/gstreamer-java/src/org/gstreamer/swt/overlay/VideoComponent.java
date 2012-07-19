@@ -66,7 +66,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 	private boolean x11Events;
 	private long nativeHandle;
 	private boolean watcherRunning = false;
-	
+
 	/**
 	 * Overlay VideoComponent
 	 * @param parent
@@ -83,11 +83,11 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		addDisposeListener(this);
 
 		Element colorspace = ElementFactory.make("ffmpegcolorspace", "colorspace" + counter);
-		autosink = (Bin)ElementFactory.make("autovideosink", "Sink4VideoComponent" + counter++);
-		sink.add(colorspace);
+		Element videoscale = ElementFactory.make("ffvideoscale", "videoscale" + counter);
+		autosink = (Bin)ElementFactory.make("autovideosink", "VideoComponent" + counter++);
+		sink.addMany(colorspace, videoscale, autosink);
+		Element.linkMany(colorspace, videoscale, autosink);
 		sink.addPad(new GhostPad("colorspace_sink_ghostpad", colorspace.getSinkPads().get(0)));
-		sink.add(autosink);
-		Element.linkMany(colorspace, autosink);
 		
 		sinkListener = new ELEMENT_ADDED() {
 			public void elementAdded(Bin bin, Element element) {
