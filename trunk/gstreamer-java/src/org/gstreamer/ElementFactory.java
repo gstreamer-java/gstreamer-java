@@ -60,8 +60,7 @@ public class ElementFactory extends PluginFeature {
      * Register a new class into the typeMap.
      */    
     public static void registerElement(Class<? extends Element> klass, String name) {
-    	if (!typeMap.containsKey(name))
-    		typeMap.put(name, klass);
+   		typeMap.put(name, klass);
     }
     
     /**
