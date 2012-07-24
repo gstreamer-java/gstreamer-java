@@ -45,8 +45,7 @@ public class GstTypes {
      * Register a new class into the gTypeNameMap.
      */
     public static void registerType(Class<? extends NativeObject> cls, String gTypeName) {
-    	if (!gTypeNameMap.containsKey(gTypeName))
-    		gTypeNameMap.put(gTypeName, cls);
+   		gTypeNameMap.put(gTypeName, cls);
     }
     /**
      * Retrieve the class of a GType
