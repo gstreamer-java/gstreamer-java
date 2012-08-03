@@ -142,6 +142,18 @@ public enum MessageType implements IntegerEnum {
      * A progress message. Since: 0.10.33 
      */
     PROGRESS(1 << 25),
+    /**
+     * A new table of contents (TOC) was found or previously found TOC was updated. Since: 0.10.37
+     */
+    TOC(1 << 26),
+    /**
+     * 
+     */
+    RESET_TIME(1 << 27),
+    /**
+     * 
+     */
+    STREAM_START(1 << 28),
 
     ANY(~0);
     
