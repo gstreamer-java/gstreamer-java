@@ -29,16 +29,27 @@ import com.sun.jna.Library;
  */
 @SuppressWarnings("serial")
 public final class GstNative {
-    private GstNative() {
-    }
+    // gstreamer library names the files one of libfoo-0.10 and libfoo-1.0
+    private static String[] nameFormats = { "%s-0.10", "%s-1.0" };
+
+    private GstNative() {}
+    
     private static final Map<String, Object> options = new HashMap<String, Object>() {{
         put(Library.OPTION_TYPE_MAPPER, new GTypeMapper());
         put(Library.OPTION_FUNCTION_MAPPER, new GFunctionMapper());
     }};
+
     public static <T extends Library> T load(Class<T> interfaceClass) {
         return load("gstreamer", interfaceClass);
     }
+
     public static <T extends Library> T load(String libraryName, Class<T> interfaceClass) {
-        return GNative.loadLibrary(libraryName + "-0.10", interfaceClass, options);
+        for (String format : nameFormats)
+            try {
+                return GNative.loadLibrary(String.format(format, libraryName), interfaceClass, options);
+            } catch (UnsatisfiedLinkError ex) {
+                continue;
+            }
+        throw new UnsatisfiedLinkError("Could not load library: " + libraryName);
     }
 }
