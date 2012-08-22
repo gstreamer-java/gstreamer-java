@@ -48,18 +48,26 @@ public class Identity extends BaseTransform {
         public void handoff(Identity identity, Buffer buffer);
     }
     
+    private static class Handoff implements GstAPI.GstCallback {
+    	final HANDOFF listener;
+    	public Handoff(final HANDOFF listener) {
+    		this.listener = listener;
+    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "Identity Handoff"));
+    	}
+        @SuppressWarnings("unused")
+        public void callback(Identity identity, Buffer buffer) {
+            listener.handoff(identity, buffer);
+//          if (last)
+//        	Native.detach(true);
+        }    	
+    }
     /**
      * Add a listener for the <code>handoff</code> signal on this element
      * 
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final HANDOFF listener) {
-        connect(HANDOFF.class, listener, new GstAPI.GstCallback() {
-            @SuppressWarnings("unused")
-            public void callback(Identity identity, Buffer buffer) {
-                listener.handoff(identity, buffer);
-            }            
-        });
+        connect(HANDOFF.class, listener, new Handoff(listener));
     }
     
     /**
