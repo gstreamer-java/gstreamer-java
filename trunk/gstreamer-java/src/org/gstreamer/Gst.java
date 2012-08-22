@@ -55,6 +55,8 @@ import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.Queue;
 import org.gstreamer.elements.Queue2;
+import org.gstreamer.elements.ShmSink;
+import org.gstreamer.elements.ShmSrc;
 import org.gstreamer.elements.TCPServerSink;
 import org.gstreamer.elements.Tee;
 import org.gstreamer.elements.TypeFind;
@@ -526,6 +528,8 @@ public final class Gst {
 		PlayBin2.class,
 		Queue.class,
 		Queue2.class,
+		ShmSink.class,
+		ShmSrc.class,
 		TCPServerSink.class,
 		Tee.class,
 		TypeFind.class,
