@@ -33,7 +33,6 @@ import com.sun.jna.Pointer;
 class Tracker {
 
     public Tracker(GObject obj) {
-        super();
         GObjectAPI.GOBJECT_API.g_object_weak_ref(obj, notify, new IntPtr(System.identityHashCode(this)));
         ref = new WeakReference<GObject>(obj);
     }
