@@ -79,12 +79,8 @@ public interface GValueAPI extends Library {
             setValue(val);
         }
         
-        public GValue()
-        {
-            super();
-        }
-        public GValue(Pointer ptr)
-        {
+        public GValue() {}
+        public GValue(Pointer ptr) {
             useMemory(ptr);
             read();
         }
