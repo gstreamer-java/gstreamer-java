@@ -32,7 +32,7 @@ import org.gstreamer.Video;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 
-/*
+/**
  * <p>
  * Playbin2 provides a stand-alone everything-in-one abstraction for an
  * audio and/or video player.
@@ -110,7 +110,7 @@ import org.gstreamer.lowlevel.GstAPI.GstCallback;
  * setting the format passed to {@link Format#TIME}. If the query was successful,
  * the duration or position will have been returned in units of nanoseconds.
  * </p>
-*/
+ */
 public class PlayBin2 extends Pipeline {
     public static final String GST_NAME = "playbin2";
     public static final String GTYPE_NAME = "GstPlayBin2";
