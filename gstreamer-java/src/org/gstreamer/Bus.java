@@ -687,15 +687,17 @@ public class Bus extends GstObject {
     private static GstCallback syncCallback = new GstCallback() {
         @SuppressWarnings("unused")
         public int callback(final Bus bus, final Message msg, Pointer data) {
-            BusSyncReply reply = bus.syncHandler.syncMessage(msg);
-            
-            if (reply != BusSyncReply.DROP) {
-                Gst.getExecutor().execute(new Runnable() {
-                    public void run() {
-                        bus.dispatchMessage(msg);
-                    }
-                });
-            }
+        	if (bus.syncHandler != null) {
+	            BusSyncReply reply = bus.syncHandler.syncMessage(msg);
+	            
+	            if (reply != BusSyncReply.DROP) {
+	                Gst.getExecutor().execute(new Runnable() {
+	                    public void run() {
+	                        bus.dispatchMessage(msg);
+	                    }
+	                });
+	            }
+        	}
             //
             // Unref the message, since we are dropping it.
             // (the normal GC will drop other refs to it)
