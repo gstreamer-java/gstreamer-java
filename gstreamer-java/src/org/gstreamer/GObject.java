@@ -27,7 +27,9 @@ import static org.gstreamer.lowlevel.GValueAPI.GVALUE_API;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -37,9 +39,10 @@ import java.util.logging.Logger;
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GObjectAPI;
+import org.gstreamer.lowlevel.GObjectAPI.GObjectStruct;
+import org.gstreamer.lowlevel.GObjectAPI.GParamSpec;
 import org.gstreamer.lowlevel.GSignalAPI;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GObjectAPI.GObjectStruct;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.IntPtr;
@@ -49,6 +52,7 @@ import org.gstreamer.lowlevel.RefCountedObject;
 import com.sun.jna.Callback;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
 /**
@@ -267,6 +271,29 @@ public abstract class GObject extends RefCountedObject {
         }      
         throw new IllegalArgumentException("Unknown conversion from GType=" + propType);
     }
+    
+	public List<String> listPropertyNames() {
+		GObjectAPI.GParamSpec[] lst = listProperties();
+		List<String> result = new ArrayList<String>(lst.length);
+		for (int i = 0; i < lst.length; i++)
+			result.add(lst[i].g_name);
+		return result;
+	}
+
+	private GObjectAPI.GParamSpec[] listProperties() {
+		IntByReference len = new IntByReference();
+		Pointer ptrs = GOBJECT_API.g_object_class_list_properties(handle().getPointer(0), len);
+		if (ptrs == null)
+			return null;
+
+		GParamSpec[] props = new GParamSpec[len.getValue()];
+		int offset = 0;
+		for (int i = 0; i < len.getValue(); i++) {
+			props[i] = new GObjectAPI.GParamSpec(ptrs.getPointer(offset));
+			offset += Pointer.SIZE;
+		}
+		return props;
+	}
 
     public GType getType(String property) {
         logger.entering("GObject", "getType", new Object[] { property });
