@@ -40,6 +40,10 @@ public class AppSink extends BaseSink {
     public AppSink(Initializer init) {
         super(init);
     }
+    
+    protected AppSink(String name) {
+    	this(makeRawElement(GST_NAME, name));
+    }
 
     /**
      * Sets the capabilities on the appsink element.
