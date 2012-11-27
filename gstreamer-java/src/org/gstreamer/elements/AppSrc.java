@@ -48,6 +48,10 @@ public class AppSrc extends BaseSrc {
         super(init);
     }
    
+    protected AppSrc(String name) {
+    	this(makeRawElement(GST_NAME, name));
+    }
+    
     @Override
     public void setCaps(Caps caps) {
         gst().gst_app_src_set_caps(this, caps);
