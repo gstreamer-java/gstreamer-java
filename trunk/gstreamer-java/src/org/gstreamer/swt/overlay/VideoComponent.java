@@ -132,7 +132,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		if (x11Events)
 			watcherRunning = false;
 		if (videosink != null && !videosink.getState().equals(State.NULL))
-			throw new IllegalStateException("");
+			throw new IllegalStateException("Wrong state on dispose: " + videosink.getState() + " -> " + videosink.getName());
 	}	
 	
 	/**
