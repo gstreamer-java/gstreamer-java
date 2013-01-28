@@ -24,6 +24,8 @@ import org.gstreamer.lowlevel.GstControlSourceAPI.GstControlSourceStruct;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstLFOControlSourceAPI extends Library {
 	GstLFOControlSourceAPI GSTLFOCONTROLSOURCE_API = GstNative.load("gstcontroller", GstLFOControlSourceAPI.class);
@@ -45,6 +47,14 @@ public interface GstLFOControlSourceAPI extends Library {
 		public volatile Pointer /* GstLFOControlSourcePrivate */ priv;
 		public volatile Pointer /* GMutex */ lock;
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "priv", "lock",
+                "_gst_reserved"
+            });
+        }
 	}
 	
 	public static final class GstLFOControlSourceClass extends com.sun.jna.Structure {
@@ -52,6 +62,13 @@ public interface GstLFOControlSourceAPI extends Library {
 		  
 		  /*< private >*/
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "_gst_reserved"
+            });
+        }
 	}
 	
 	GType gst_lfo_control_source_get_type();

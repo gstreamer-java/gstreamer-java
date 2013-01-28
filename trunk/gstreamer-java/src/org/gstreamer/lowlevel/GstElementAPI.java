@@ -42,6 +42,8 @@ import org.gstreamer.lowlevel.annotations.IncRef;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstElement methods
@@ -103,6 +105,14 @@ public interface GstElementAPI extends com.sun.jna.Library {
         public volatile String author;
         /*< private > */
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];        
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "longname", "klass", "description",
+                "author", "_gst_reserved"
+            });
+        }
     }
     public static final class GstElementStruct extends com.sun.jna.Structure {
         public GstObjectStruct object;
@@ -125,6 +135,19 @@ public interface GstElementAPI extends com.sun.jna.Library {
         public volatile int pads_cookie;
         // Use an array of byte as arrays of Pointer don't work
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "object", "state_lock", "state_cond",
+                "state_cookie", "current_state", "next_state",
+                "pending_state", "last_return", "bus",
+                "clock", "base_time", "numpads",
+                "pads", "numsrcpads", "srcpads",
+                "numsinkpads", "sinkpads", "pads_cookie",
+                "_gst_reserved"
+            });
+        }
     }
     public static final class GstElementClass extends com.sun.jna.Structure {
         //
@@ -184,5 +207,20 @@ public interface GstElementAPI extends com.sun.jna.Library {
         /*< private >*/  
         // Use an array of byte if arrays of Pointer don't work
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "details", "elementfactory",
+                "padtemplates", "numpadtemplates", "pad_templ_cookie",
+                "pad_added", "pad_removed", "no_more_pads",
+                "request_new_pad", "release_pad", "get_state",
+                "set_state", "change_state", "set_bus",
+                "provide_clock", "set_clock", "get_index",
+                "set_index", "send_event", "get_query_types",
+                "query", "_gst_reserved"
+            });       
+        }
+        
     }
 }

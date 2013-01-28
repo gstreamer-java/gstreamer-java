@@ -26,6 +26,8 @@ import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstCaps functions
@@ -86,6 +88,13 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     public static final class GPtrArray extends com.sun.jna.Structure {
     	public volatile Pointer pdata;
     	public volatile int     len;    	
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "pdata", "len"
+            });
+        }
     }
     public static final class GstCapsStruct extends com.sun.jna.Structure {
 
@@ -101,6 +110,14 @@ public interface GstCapsAPI extends com.sun.jna.Library {
 
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "type", "refcount", "flags",
+                "structs", "_gst_reserved"
+            });
+        }
     }
 
     
@@ -111,6 +128,13 @@ public interface GstCapsAPI extends com.sun.jna.Library {
 
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "caps", "string", "_gst_reserved"
+            });
+        }
     }
    
     GType gst_static_caps_get_type();

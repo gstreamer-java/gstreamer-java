@@ -31,6 +31,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstControllerAPI extends Library {
 	GstControllerAPI GSTCONTROLLER_API = GstNative.load("gstcontroller", GstControllerAPI.class);
@@ -46,6 +48,14 @@ public interface GstControllerAPI extends Library {
 		  /*< private >*/
 		public volatile /* GstControllerPrivate */ Pointer priv;
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING - 1];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "properties", "lock",
+                "object", "priv", "_gst_reserved"
+            });
+        }
 	}
 	
 	public static final class GstControllerClass extends com.sun.jna.Structure {
@@ -59,6 +69,13 @@ public interface GstControllerAPI extends Library {
 
 		/*< private >*/
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "_gst_reserved"
+            });
+        }
 	}	
 	
 	GType gst_controller_get_type();

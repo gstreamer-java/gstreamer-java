@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstMiniObject functions
@@ -54,5 +56,15 @@ public interface GstMiniObjectAPI extends com.sun.jna.Library {
             useMemory(ptr);
             read();
         }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "instance", "refcount", "flags",
+                "_gst_reserved"
+            });
+        }
+        
+        
     }
 }

@@ -31,6 +31,8 @@ import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstEvent functions
@@ -97,6 +99,13 @@ public interface GstEventAPI extends com.sun.jna.Library {
         public volatile int type;
         public EventStruct(Pointer ptr) {
             useMemory(ptr);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "mini_object", "type"
+            });
         }
     }
 }

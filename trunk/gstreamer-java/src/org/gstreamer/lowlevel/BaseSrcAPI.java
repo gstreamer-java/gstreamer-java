@@ -37,6 +37,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.Union;
 import com.sun.jna.ptr.LongByReference;
+import java.util.Arrays;
+import java.util.List;
 //import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 public interface BaseSrcAPI extends Library {
@@ -80,6 +82,19 @@ public interface BaseSrcAPI extends Library {
         /*< private >*/        
         public volatile GstBaseSrcAbiData abidata;
         public volatile Pointer /* GstBaseSrcPrivate */ priv;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[] {
+                "element", "srcpad", "live_lock",
+                "live_cond", "is_live", "live_running",
+                "blocksize", "can_activate_push", "pad_mode",
+                "seekable", "random_access", "clock_id",
+                "end_time", "segment", "need_newsegment",
+                "offset", "size", "num_buffers",
+                "num_buffers_left", "abidata", "priv"
+            });
+        }
     }
     
     public static final class GstBaseSrcAbiData extends Union {
@@ -91,6 +106,13 @@ public interface BaseSrcAPI extends Library {
         public volatile boolean typefind;
         public volatile boolean running;
         public volatile Pointer /* GstEvent */ pending_seek;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "typefind", "running", "pending_seek"
+            });
+        }
     }
     
     // -------------- Callbacks -----------------
@@ -208,6 +230,21 @@ public interface BaseSrcAPI extends Library {
         
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 6)];
+    
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[] {
+                "parent_class", "get_caps", "set_caps",
+                "negotiate", "newsegment", "start",
+                "stop", "get_times", "get_size",
+                "is_seekable", "unlock", "event",
+                "create", "seek", "query",
+                "check_get_range", "fixate", "unlock_stop",
+                "prepare_seek_segment", "_gst_reserved"
+                
+            });
+        }
+    
     }
 
     GType gst_base_src_get_type();

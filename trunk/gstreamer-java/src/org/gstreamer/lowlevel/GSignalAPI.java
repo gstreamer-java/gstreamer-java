@@ -28,6 +28,9 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import org.gstreamer.glib.GQuark;
 
 /**
@@ -52,6 +55,16 @@ public interface GSignalAPI extends Library {
         GType return_type; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
         int n_params;
         Pointer param_types; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
+
+        @Override
+        protected List getFieldOrder() {
+            return Collections.emptyList();
+//            return Arrays.asList(new String[]{
+//                "signal_id", "signal_name", "itype",
+//                "signal_flags", "return_type", "n_params",
+//                "param_types"
+//            });
+        }
     }
     
     NativeLong g_signal_connect_data(GObject obj, String signal, Callback callback, Pointer data,

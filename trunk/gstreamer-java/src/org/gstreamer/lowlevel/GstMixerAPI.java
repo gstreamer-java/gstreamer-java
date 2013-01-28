@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstMixerAPI extends Library {
 	GstMixerAPI GSTMIXER_API = GstNative.load("gstinterfaces", GstMixerAPI.class);
@@ -75,6 +77,14 @@ public interface GstMixerAPI extends Library {
         public void write() {}
         public MixerTrackStruct(Pointer ptr) {
             useMemory(ptr);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "label", "flags",
+                "num_channels", "min_volume", "max_volume"
+            });
         }
     }
 }

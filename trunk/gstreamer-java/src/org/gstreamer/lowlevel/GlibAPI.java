@@ -27,6 +27,8 @@ import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -135,6 +137,13 @@ public interface GlibAPI extends Library {
         public GList prev() {
             return valueOf(_prev);
         }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "data", "_next", "_prev"
+            });
+        }
     }
     public static final class GSList extends com.sun.jna.Structure {
         public volatile Pointer data;
@@ -152,6 +161,13 @@ public interface GlibAPI extends Library {
 
         public GSList next() {
             return valueOf(_next);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "data", "_next"
+            });
         }
     }
 }
