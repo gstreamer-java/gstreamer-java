@@ -40,6 +40,8 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.Union;
+import java.util.Arrays;
+import java.util.List;
 
 public interface BaseSinkAPI extends Library {
 	BaseSinkAPI BASESINK_API = GstNative.load("gstbase", BaseSinkAPI.class);
@@ -83,6 +85,20 @@ public interface BaseSinkAPI extends Library {
         /*< private >*/
         public volatile GstBaseSinkAbiData abidata;
         public volatile Pointer /* GstBaseSinkPrivate */ priv;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[] {
+                "element", "sinkpad", "pad_mode",
+                "offset", "can_activate_pull", "can_activate_push",
+                "preroll_queue", "preroll_queue_max_len", "preroll_queued",
+                "buffers_queued", "events_queued", "eos",
+                "eos_queued", "need_preroll", "have_preroll",
+                "playing_async", "have_newsegment", "segment",
+                "clock_id", "end_time", "sync",
+                "flushing", "abidata", "priv"
+            });
+        }
     }
 
     public static final class GstBaseSinkAbiData extends Union {
@@ -94,6 +110,13 @@ public interface BaseSinkAPI extends Library {
         public volatile Pointer /* GstSegment */ clip_segment;
         public volatile long max_lateness;
         public volatile boolean running;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "clip_segment", "max_lateness", "running"
+            });
+        }
     }
     
     // -------------- Callbacks -----------------
@@ -196,6 +219,18 @@ public interface BaseSinkAPI extends Library {
         
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-5)];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[] {
+                "parent_class", "get_caps", "set_caps",
+                "buffer_alloc", "get_times", "start",
+                "stop", "unlock", "event",
+                "preroll", "render", "async_play",
+                "activate_pull", "fixate", "unlock_stop",
+                "render_list", "_gst_reserved"
+            });
+        }
     }
     
     GType gst_base_sink_get_type();

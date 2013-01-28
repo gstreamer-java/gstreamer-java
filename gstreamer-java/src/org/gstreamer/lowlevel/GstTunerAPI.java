@@ -28,6 +28,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstTunerAPI extends Library {
     GstTunerAPI GSTTUNER_API = GstNative.load("gstinterfaces", GstTunerAPI.class);
@@ -90,6 +92,15 @@ public interface GstTunerAPI extends Library {
         public TunerChannelStruct(Pointer ptr) {
             useMemory(ptr);
         }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "label", "flags",
+                "freq_multiplicator", "min_frequency", "max_frequency",
+                "min_signal", "max_signal"
+            });
+        }
     }
     public static final class TunerNormStruct extends com.sun.jna.Structure {
         public volatile GObjectAPI.GObjectStruct parent;
@@ -105,6 +116,13 @@ public interface GstTunerAPI extends Library {
         public void write() {}
         public TunerNormStruct(Pointer ptr) {
             useMemory(ptr);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "label", "framerate"
+            });
         }
     }
 }

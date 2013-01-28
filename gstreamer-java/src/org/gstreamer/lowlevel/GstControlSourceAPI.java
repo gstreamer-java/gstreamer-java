@@ -28,6 +28,8 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstControlSourceAPI extends Library {
 	GstControlSourceAPI GSTCONTROLSOURCE_API = GstNative.load("gstcontroller", GstControlSourceAPI.class);
@@ -37,6 +39,13 @@ public interface GstControlSourceAPI extends Library {
     	public static final String GTYPE_NAME = "GstTimedValue";
 		public volatile ClockTime timestamp;
 		public volatile GValue value;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "timestamp", "value"
+            });
+        }
 	}
 	public static final class ValueArray extends com.sun.jna.Structure {
     	public static final String GTYPE_NAME = "GstValueArray";
@@ -45,6 +54,14 @@ public interface GstControlSourceAPI extends Library {
 		public volatile int nbsamples;
 		public volatile ClockTime sample_interval;
 		public volatile Pointer values;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "property_name", "nbsamples", "sample_interval",
+                "values"
+            });
+        }
 	}
 	
 	public static interface GstControlSourceGetValue extends Callback {
@@ -67,6 +84,14 @@ public interface GstControlSourceAPI extends Library {
 		/*< private >*/
 		public volatile boolean bound;
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "get_value", "get_value_array",
+                "bound", "_gst_reserved"
+            });
+        }
 	}
 	
 	public static final class GstControlSourceClass extends com.sun.jna.Structure {
@@ -76,6 +101,13 @@ public interface GstControlSourceAPI extends Library {
 
 		  /*< private >*/
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "bind", "_gst_reserved"
+            });
+        }
 	}
 	
 	GType gst_control_source_get_type();

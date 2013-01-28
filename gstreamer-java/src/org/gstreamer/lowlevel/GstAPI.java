@@ -26,6 +26,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -64,6 +66,16 @@ public interface GstAPI extends Library {
 
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "rate", "abs_rate", "format",
+                "flags", "start", "stop",
+                "time", "accum", "last_stop",
+                "duration", "applied_rate", "_gst_reserved"
+            });
+        }
     };
     
     public static final class GErrorStruct extends com.sun.jna.Structure {
@@ -81,6 +93,13 @@ public interface GstAPI extends Library {
         }
         public String getMessage() {
             return (String) readField("message");
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "domain", "code", "message"
+            });
         }
     }
     // Do nothing, but provide a base Callback class that gets automatic type conversion

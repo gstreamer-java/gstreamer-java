@@ -31,6 +31,9 @@ import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -111,12 +114,22 @@ public interface GObjectAPI extends Library {
 
         /*< private >*/
         public volatile GType g_type;
+
+        @Override
+        protected List getFieldOrder() {
+            return Collections.singletonList("g_type");
+        }
     }
 
     public static final class GTypeInstance extends com.sun.jna.Structure {
 
         /*< private >*/
         public volatile Pointer g_class;
+        
+        @Override
+        protected List getFieldOrder() {
+            return Collections.singletonList("g_class");
+        }
     }                  
     
     public static final class GObjectStruct extends com.sun.jna.Structure {
@@ -128,6 +141,14 @@ public interface GObjectAPI extends Library {
             useMemory(obj.handle());
             read();
         }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "g_type_instance", "ref_count", "qdata"
+            });
+        }
+           
     }
     public static final class GObjectConstructParam {
         public volatile Pointer spec;
@@ -170,6 +191,17 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+               "g_type_class", "construct_properties", "constructor",
+               "set_property", "get_property", "dispose",
+               "finalize", "dispatch_properties_changed", "notify",
+               "p_dummy"
+            });
+        }
+        
     }
     
     
@@ -215,6 +247,16 @@ public interface GObjectAPI extends Library {
 
         /* value handling */
         public volatile /* GTypeValueTable */ Pointer value_table;                
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "class_size", "base_init", "base_finalize",
+                "class_init", "class_finalize", "class_data",
+                "instance_size", "n_preallocs", "instance_init",
+                "value_table"
+            });
+        }
     }
 
     public static abstract class GParamSpecTypeSpecific extends com.sun.jna.Structure {
@@ -236,6 +278,13 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "default_value"
+            });           
+        }
     }
     public static final class GParamSpecInt extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
@@ -251,6 +300,15 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
+        }
+        
     }
     public static final class GParamSpecUInt extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
@@ -265,6 +323,14 @@ public interface GObjectAPI extends Library {
         public GParamSpecUInt(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
         }
     }
     public static final class GParamSpecChar extends GParamSpecTypeSpecific {
@@ -281,6 +347,14 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
+        }
     }
     public static final class GParamSpecUChar extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
@@ -295,6 +369,14 @@ public interface GObjectAPI extends Library {
         public GParamSpecUChar(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
         }
     }
     public static final class GParamSpecLong extends GParamSpecTypeSpecific {
@@ -311,6 +393,14 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
+        }
     }
     public static final class GParamSpecInt64 extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
@@ -325,6 +415,14 @@ public interface GObjectAPI extends Library {
         public GParamSpecInt64(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value"
+            });           
         }
     }
     public static final class GParamSpecFloat extends GParamSpecTypeSpecific {
@@ -342,6 +440,14 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value", "epsilon"
+            });           
+        }
     }
     public static final class GParamSpecDouble extends GParamSpecTypeSpecific {
     	public volatile GParamSpec parent_instance;
@@ -357,6 +463,14 @@ public interface GObjectAPI extends Library {
         public GParamSpecDouble(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "minimum", "maximum",
+                "default_value", "epsilon"
+            });           
         }
     }
     public static final class GParamSpecString extends GParamSpecTypeSpecific {
@@ -375,6 +489,14 @@ public interface GObjectAPI extends Library {
         public GParamSpecString(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_instance", "default_value", "cset_first",
+                "cset_nth", "substitutor", "null_fold_if_empty_ensure_non_null"
+            });           
         }
     }
     
@@ -398,6 +520,17 @@ public interface GObjectAPI extends Library {
             useMemory(ptr);
             read();
         }
+        
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "g_type_instance", "g_name", "g_flags",
+                "value_type", "owner_type", "_nick",
+                "_blurb", "qdata", "ref_count",
+                "param_id"
+            });           
+        }
+        
 /*
         public String getName() {
             return (String) readField("g_name");

@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.annotations.FreeReturnValue;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstObject functions
@@ -60,6 +62,15 @@ public interface GstObjectAPI extends com.sun.jna.Library {
         public volatile Pointer parent;
         public volatile int flags;
         public volatile Pointer _gst_reserved;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "object", "refcount", "lock",
+                "name", "name_prefix", "parent",
+                "flags", "_gst_reserved"
+            });
+        }
     }
     
     public static final class GstObjectClass extends com.sun.jna.Structure {
@@ -75,5 +86,15 @@ public interface GstObjectAPI extends com.sun.jna.Library {
         public volatile Pointer save_thyself;
         public volatile Pointer restore_thyself;
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "path_string_separator",
+                "signal_object", "lock", "parent_set",
+                "parent_unset", "object_saved", "deep_notify",
+                "save_thyself", "restore_thyself", "_gst_reserved"
+            });
+        }
     }
 }

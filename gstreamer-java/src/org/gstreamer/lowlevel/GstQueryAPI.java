@@ -29,6 +29,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstQuery functions
@@ -98,6 +100,14 @@ public interface GstQueryAPI extends com.sun.jna.Library {
         public volatile Pointer _gst_reserved;
         public QueryStruct(Pointer ptr) {
             useMemory(ptr);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "mini_object", "type", "structure",
+                "_gst_reserved"
+            });
         }
     }
 }

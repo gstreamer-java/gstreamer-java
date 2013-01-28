@@ -35,6 +35,8 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
+import java.util.Arrays;
+import java.util.List;
 
 public interface BaseTransformAPI extends Library {
 	BaseTransformAPI BASETRANSFORM_API = GstNative.load("gstbase", BaseTransformAPI.class);
@@ -73,6 +75,21 @@ public interface BaseTransformAPI extends Library {
         public volatile /* GstBaseTransformPrivate */ Pointer priv;
 
         public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "element", "sinkpad", "srcpad",
+                "passthrough", "always_in_place", "cache_caps1",
+                "cache_caps1_size", "cache_caps2", "cache_caps2_size",
+                "have_same_caps", "delay_configure", "pending_configure",
+                "negotiated", "have_newsegment", "segment",
+                "transform_lock", "priv", "_gst_reserved"
+            });
+        }
+    
+        
+    
     }
 
     
@@ -159,6 +176,18 @@ public interface BaseTransformAPI extends Library {
 
         /*< private >*/
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 3)];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "transform_caps", "fixate_caps",
+                "transform_size", "get_unit_size", "set_caps",
+                "start", "stop", "event",
+                "transform", "transform_ip", "passthrough_on_same_caps",
+                "prepare_output_buffer", "src_event", "before_transform",
+                "accept_caps", "_gst_reserved"
+            });            
+        }
     }
     
     GType gst_base_transform_get_type();

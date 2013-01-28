@@ -29,6 +29,8 @@ import org.gstreamer.lowlevel.annotations.Invalidate;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -57,6 +59,13 @@ public interface GValueAPI extends Library {
 
         /*< private >*/
         public volatile GType g_type;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "g_type", "data"
+            });
+        }
 
         /* public for GTypeValueTable methods */
         public static final class GValueData extends com.sun.jna.Union {
@@ -286,6 +295,13 @@ public interface GValueAPI extends Library {
                 GVALUE_API.g_value_array_free(this);  
                 ownsMemory = false;
             }
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "n_values", "values", "n_prealloced"
+            });
         }
     }
     

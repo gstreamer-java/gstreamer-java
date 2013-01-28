@@ -27,6 +27,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstBuffer functions
@@ -65,6 +67,15 @@ public interface GstBufferAPI extends com.sun.jna.Library {
         public BufferStruct(Pointer ptr) {
             useMemory(ptr);
             read();
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "mini_object", "data", "size",
+                "timestamp", "duration", "caps",
+                "offset", "offset_end", "malloc_data"
+            });
         }
     }
 }

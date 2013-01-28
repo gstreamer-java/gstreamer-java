@@ -25,6 +25,8 @@ import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstColorBalanceAPI extends Library {
 	GstColorBalanceAPI GSTCOLORBALANCE_API = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
@@ -59,5 +61,13 @@ public interface GstColorBalanceAPI extends Library {
 		public ColorBalanceChannelStruct(Pointer ptr) {
 			useMemory(ptr);
 		}
+
+                @Override
+                protected List getFieldOrder() {
+                    return Arrays.asList(new String[]{
+                        "parent", "label", "min_value",
+                        "max_value"
+                    });
+                }
 	}
 }

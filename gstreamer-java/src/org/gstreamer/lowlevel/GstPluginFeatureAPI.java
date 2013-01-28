@@ -19,6 +19,8 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
 import org.gstreamer.PluginFeature;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
@@ -35,6 +37,13 @@ public interface GstPluginFeatureAPI extends com.sun.jna.Library {
     public static final class TypeNameData extends com.sun.jna.Structure {
         public String name;
         public GType type;
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "name", "type"
+            });
+        }
     }
     boolean gst_plugin_feature_type_name_filter(PluginFeature feature, TypeNameData data);
 

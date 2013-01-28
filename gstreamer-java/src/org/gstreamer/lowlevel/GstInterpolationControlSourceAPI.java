@@ -27,6 +27,8 @@ import org.gstreamer.lowlevel.GlibAPI.GSList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 public interface GstInterpolationControlSourceAPI extends Library {
 	GstInterpolationControlSourceAPI GSTINTERPOLATIONCONTROLSOURCE_API 
@@ -49,6 +51,14 @@ public interface GstInterpolationControlSourceAPI extends Library {
 		public volatile Pointer /* GMutex */ lock;
 		public volatile Pointer /* GstInterpolationControlSourcePrivate */ priv;
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent", "lock", "priv",
+                "_gst_reserved"
+            });
+        }
 	}
 	
 	public static final class GstInterpolationControlSourceClass extends com.sun.jna.Structure {
@@ -56,6 +66,13 @@ public interface GstInterpolationControlSourceAPI extends Library {
 		  
 		/*< private >*/
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "parent_class", "_gst_reserved"
+            });
+        }
 	}
 	
 	GType gst_interpolation_control_source_get_type();

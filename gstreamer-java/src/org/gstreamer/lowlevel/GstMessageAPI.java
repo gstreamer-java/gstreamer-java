@@ -35,6 +35,8 @@ import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+import java.util.Arrays;
+import java.util.List;
 
 /*
  * GstMessage functions
@@ -58,6 +60,15 @@ public interface GstMessageAPI extends com.sun.jna.Library {
         }
         public MessageStruct(Pointer ptr) {
             useMemory(ptr);
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "mini_object", "lock", "cond",
+                "type", "timestamp", "src",
+                "structure"
+            });
         }
     }
     

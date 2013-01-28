@@ -29,6 +29,8 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.IncRef;
 
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * GstPadTemplate functions
@@ -62,6 +64,14 @@ public interface GstPadTemplateAPI extends com.sun.jna.Library {
         public GstStaticPadTemplate(Pointer memory) {
             useMemory(memory);
             read();
+        }
+
+        @Override
+        protected List getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "name_template", "direction", "presence",
+                "static_caps"
+            });
         }
     }  
     
