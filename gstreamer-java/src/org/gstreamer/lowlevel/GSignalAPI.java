@@ -19,19 +19,18 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.gstreamer.GObject;
+import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.GObjectAPI.GClosureNotify;
 
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import org.gstreamer.glib.GQuark;
 
 /**
  *
@@ -48,22 +47,21 @@ public interface GSignalAPI extends Library {
     public static int G_CONNECT_SWAPPED = 1 << 1;
     
     public static final class GSignalQuery extends com.sun.jna.Structure {
-        int signal_id;
-        String signal_name;
-        GType itype;
-        int /* GSignalFlags */ signal_flags;
-        GType return_type; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
-        int n_params;
-        Pointer param_types; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
+    	public int signal_id;
+    	public String signal_name;
+    	public GType itype;
+    	public int /* GSignalFlags */ signal_flags;
+    	public GType return_type; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
+    	public int n_params;
+    	public Pointer param_types; /* mangled with G_SIGNAL_TYPE_STATIC_SCOPE flag */
 
         @Override
-        protected List getFieldOrder() {
-            return Collections.emptyList();
-//            return Arrays.asList(new String[]{
-//                "signal_id", "signal_name", "itype",
-//                "signal_flags", "return_type", "n_params",
-//                "param_types"
-//            });
+        protected List<String> getFieldOrder() {
+            return Arrays.asList(new String[]{
+                "signal_id", "signal_name", "itype",
+                "signal_flags", "return_type", "n_params",
+                "param_types"
+            });
         }
     }
     

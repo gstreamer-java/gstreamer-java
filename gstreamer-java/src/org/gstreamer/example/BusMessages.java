@@ -22,7 +22,8 @@
 
 package org.gstreamer.example;
 
-import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.gstreamer.Bus;
 import org.gstreamer.ElementFactory;
@@ -36,17 +37,17 @@ import org.gstreamer.elements.PlayBin2;
  * Demonstrates capturing messages posted on the pipeline bus by elements.
  */
 public class BusMessages {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws URISyntaxException {
         //
         // Initialize the gstreamer framework, and let it interpret any command
         // line flags it is interested in.
         //
         args = Gst.init("BusMessages", args);
         
-        if (args.length < 1) {
-            System.out.println("Usage: BusMessages <file to play>");
-            System.exit(1);
-        }
+//        if (args.length < 1) {
+//            System.out.println("Usage: BusMessages <file to play>");
+//            System.exit(1);
+//        }
         //
         // Create a PlayBin2 to play the media file.  A PlayBin2 is a Pipeline that
         // creates all the needed elements and automatically links them together.
@@ -57,7 +58,8 @@ public class BusMessages {
         playbin.setVideoSink(ElementFactory.make("fakesink", "videosink"));
         
         // Set the file to play
-        playbin.setInputFile(new File(args[0]));
+        //playbin.setInputFile(new File(args[0]));
+        playbin.setURI(new URI("http://stream.sysrq.no:8000/00-nsr.ogg"));
         
         // Listen for end-of-stream (i.e. when the media has finished)
         playbin.getBus().connect(new Bus.EOS() {

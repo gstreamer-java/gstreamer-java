@@ -68,7 +68,7 @@ public interface GstAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[(Pointer.SIZE * GST_PADDING) - (Double.SIZE / 8)];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "rate", "abs_rate", "format",
                 "flags", "start", "stop",
@@ -96,7 +96,7 @@ public interface GstAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "domain", "code", "message"
             });

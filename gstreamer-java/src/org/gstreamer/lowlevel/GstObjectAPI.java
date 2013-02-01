@@ -64,7 +64,7 @@ public interface GstObjectAPI extends com.sun.jna.Library {
         public volatile Pointer _gst_reserved;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "object", "refcount", "lock",
                 "name", "name_prefix", "parent",
@@ -88,7 +88,7 @@ public interface GstObjectAPI extends com.sun.jna.Library {
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "path_string_separator",
                 "signal_object", "lock", "parent_set",

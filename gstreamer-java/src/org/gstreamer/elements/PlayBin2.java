@@ -26,6 +26,7 @@ import java.net.URI;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
 import org.gstreamer.Fraction;
+import org.gstreamer.Format;
 import org.gstreamer.Pad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Video;

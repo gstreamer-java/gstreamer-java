@@ -102,7 +102,7 @@ public interface GstEventAPI extends com.sun.jna.Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "mini_object", "type"
             });

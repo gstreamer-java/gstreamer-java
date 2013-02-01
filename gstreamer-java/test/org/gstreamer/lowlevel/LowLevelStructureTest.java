@@ -1,9 +1,7 @@
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
-import java.lang.reflect.Constructor;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -11,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import com.sun.jna.Structure;
 
 /**
  *
@@ -69,7 +69,8 @@ public class LowLevelStructureTest {
 
     }
 
-    private void testStruct(Class<? extends Structure> struct) {
+    @SuppressWarnings("unchecked")
+	private void testStruct(Class<? extends Structure> struct) {
         LOG.log(Level.INFO, "Testing {0}", struct.getName());
         Structure inst = null;
         List<String> fields = null;

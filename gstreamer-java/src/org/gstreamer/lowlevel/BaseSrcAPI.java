@@ -84,7 +84,7 @@ public interface BaseSrcAPI extends Library {
         public volatile Pointer /* GstBaseSrcPrivate */ priv;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[] {
                 "element", "srcpad", "live_lock",
                 "live_cond", "is_live", "live_running",
@@ -108,7 +108,7 @@ public interface BaseSrcAPI extends Library {
         public volatile Pointer /* GstEvent */ pending_seek;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "typefind", "running", "pending_seek"
             });
@@ -232,7 +232,7 @@ public interface BaseSrcAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 6)];
     
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[] {
                 "parent_class", "get_caps", "set_caps",
                 "negotiate", "newsegment", "start",

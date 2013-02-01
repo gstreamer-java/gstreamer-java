@@ -80,7 +80,7 @@ public interface GstMixerAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "label", "flags",
                 "num_channels", "min_volume", "max_volume"

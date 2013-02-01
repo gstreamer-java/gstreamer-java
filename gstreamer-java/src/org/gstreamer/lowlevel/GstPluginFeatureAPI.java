@@ -39,7 +39,7 @@ public interface GstPluginFeatureAPI extends com.sun.jna.Library {
         public GType type;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "name", "type"
             });

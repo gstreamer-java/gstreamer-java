@@ -32,7 +32,7 @@ public class GValueStruct extends Structure {
     }
 
     @Override
-    protected List getFieldOrder() {
+    protected List<String> getFieldOrder() {
         return Collections.singletonList("g_type");
     }
 }

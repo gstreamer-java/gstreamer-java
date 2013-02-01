@@ -50,7 +50,7 @@ public interface GstControllerAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING - 1];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "properties", "lock",
                 "object", "priv", "_gst_reserved"
@@ -71,7 +71,7 @@ public interface GstControllerAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "_gst_reserved"
             });

@@ -90,7 +90,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
     	public volatile int     len;    	
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "pdata", "len"
             });
@@ -112,7 +112,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "type", "refcount", "flags",
                 "structs", "_gst_reserved"
@@ -130,7 +130,7 @@ public interface GstCapsAPI extends com.sun.jna.Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * GstAPI.GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "caps", "string", "_gst_reserved"
             });

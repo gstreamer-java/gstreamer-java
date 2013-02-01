@@ -205,7 +205,7 @@ public class AppSrc extends BaseSrc {
         /**
          *
          * @param elem
-         * @param size
+         * @param buffer
          */
         public FlowReturn pushBuffer(AppSrc elem, Buffer buffer);
     }

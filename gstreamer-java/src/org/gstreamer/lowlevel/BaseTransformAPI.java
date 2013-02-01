@@ -77,7 +77,7 @@ public interface BaseTransformAPI extends Library {
         public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING_LARGE - 1];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "element", "sinkpad", "srcpad",
                 "passthrough", "always_in_place", "cache_caps1",
@@ -178,7 +178,7 @@ public interface BaseTransformAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE - 3)];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "transform_caps", "fixate_caps",
                 "transform_size", "get_unit_size", "set_caps",
