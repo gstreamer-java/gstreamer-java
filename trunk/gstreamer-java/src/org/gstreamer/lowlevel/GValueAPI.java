@@ -61,7 +61,7 @@ public interface GValueAPI extends Library {
         public volatile GType g_type;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "g_type", "data"
             });
@@ -298,7 +298,7 @@ public interface GValueAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "n_values", "values", "n_prealloced"
             });

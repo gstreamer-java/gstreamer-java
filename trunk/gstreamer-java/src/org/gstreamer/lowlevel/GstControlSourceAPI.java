@@ -41,7 +41,7 @@ public interface GstControlSourceAPI extends Library {
 		public volatile GValue value;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "timestamp", "value"
             });
@@ -56,7 +56,7 @@ public interface GstControlSourceAPI extends Library {
 		public volatile Pointer values;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "property_name", "nbsamples", "sample_interval",
                 "values"
@@ -86,7 +86,7 @@ public interface GstControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "get_value", "get_value_array",
                 "bound", "_gst_reserved"
@@ -103,7 +103,7 @@ public interface GstControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "bind", "_gst_reserved"
             });

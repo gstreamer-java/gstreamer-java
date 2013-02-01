@@ -67,7 +67,7 @@ public interface GstPadTemplateAPI extends com.sun.jna.Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "name_template", "direction", "presence",
                 "static_caps"

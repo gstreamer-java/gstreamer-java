@@ -169,7 +169,7 @@ public class ElementFactory extends PluginFeature {
     /**
      * Get a list of factories that match the given parameter.
      *
-     * It is a combination of {@link listGetElement} and {@link listFilter}
+     * It is a combination of listGetElement and listFilter
      * passing all the results of the first call to the second.
      *
      * This method improves performance because there is no need to map to java

@@ -20,7 +20,7 @@ import org.gstreamer.ElementFactory;
 import org.gstreamer.Gst;
 import org.gstreamer.Pipeline;
 import org.gstreamer.State;
-import org.gstreamer.swt.overlay.VideoComponent;
+import org.gstreamer.swt.VideoComponent;
 
 public class SWTVideoTest {
 
@@ -93,7 +93,15 @@ public class SWTVideoTest {
 	private static VideoComponent createComponenet(final Composite parent) {
 		Pipeline pipe = new Pipeline("SWT Overlay Test");
 		Element src = ElementFactory.make("videotestsrc", "videotest");
-		VideoComponent component = new VideoComponent(parent, SWT.NONE, true);
+		
+		//FileSrc src = new FileSrc("/tmp/pipe");
+//		Element src = ElementFactory.make("tcpclientsrc", "videotest");
+//		src.set("port", 6666);
+//		Element depay = ElementFactory.make("gdpdepay", "gdpdepay");
+//		Element caps = ElementFactory.make("capsfilter", "caps");
+//		caps.setCaps(new Caps("video/x-raw-yuv,format=YUY2,width=320,height=240,framerate=30/1"));
+		
+		VideoComponent component = new VideoComponent(parent, SWT.NONE);
 		component.getElement().setName("video");
 		component.setKeepAspect(true);
 		component.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -102,6 +110,8 @@ public class SWTVideoTest {
 		component.setData(pipe);
 		components.add(component);
 
+//		pipe.addMany(src, depay, caps, sink);
+//		Element.linkMany(src, depay, caps, sink);
 		pipe.addMany(src, sink);
 		Element.linkMany(src, sink);
 		return component;

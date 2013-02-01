@@ -116,7 +116,7 @@ public interface GObjectAPI extends Library {
         public volatile GType g_type;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Collections.singletonList("g_type");
         }
     }
@@ -127,7 +127,7 @@ public interface GObjectAPI extends Library {
         public volatile Pointer g_class;
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Collections.singletonList("g_class");
         }
     }                  
@@ -143,7 +143,7 @@ public interface GObjectAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "g_type_instance", "ref_count", "qdata"
             });
@@ -193,7 +193,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                "g_type_class", "construct_properties", "constructor",
                "set_property", "get_property", "dispose",
@@ -249,7 +249,7 @@ public interface GObjectAPI extends Library {
         public volatile /* GTypeValueTable */ Pointer value_table;                
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "class_size", "base_init", "base_finalize",
                 "class_init", "class_finalize", "class_data",
@@ -280,7 +280,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "default_value"
             });           
@@ -302,7 +302,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -326,7 +326,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -349,7 +349,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -372,7 +372,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -395,7 +395,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -418,7 +418,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value"
@@ -442,7 +442,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value", "epsilon"
@@ -466,7 +466,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "minimum", "maximum",
                 "default_value", "epsilon"
@@ -492,7 +492,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_instance", "default_value", "cset_first",
                 "cset_nth", "substitutor", "null_fold_if_empty_ensure_non_null"
@@ -522,7 +522,7 @@ public interface GObjectAPI extends Library {
         }
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "g_type_instance", "g_name", "g_flags",
                 "value_type", "owner_type", "_nick",

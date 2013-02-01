@@ -137,7 +137,6 @@ public class XOverlay extends GstInterface {
      * @param y
      * @param width
      * @param height
-     * @return
      */
     public boolean setRenderRectangle(XOverlay overlay, int x, int y, int width, int height) {
     	return GSTXOVERLAY_API.gst_x_overlay_set_render_rectangle(this, x, y, width, height);

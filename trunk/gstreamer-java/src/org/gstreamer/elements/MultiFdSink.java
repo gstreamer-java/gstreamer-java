@@ -80,7 +80,7 @@ public class MultiFdSink extends BaseSink {
      */
     public static interface CLIENT_ADDED {
         /**
-         * @param the file descriptor to add to multifdsink
+         * @param fd the file descriptor to add to multifdsink
          */
         public void clientAdded(MultiFdSink elem, int fd);
     }
@@ -112,7 +112,7 @@ public class MultiFdSink extends BaseSink {
      */
     public static interface CLIENT_REMOVED {
         /**
-         * @param the file descriptor to add to multifdsink
+         * @param fd the file descriptor to add to multifdsink
          */
         public void clientRemoved(MultiFdSink elem, int fd, ClientStatus status);
     }
@@ -144,7 +144,7 @@ public class MultiFdSink extends BaseSink {
      */
     public static interface CLIENT_FD_REMOVED {
         /**
-         * @param the file descriptor to add to multifdsink
+         * @param fd the file descriptor to add to multifdsink
          */
         public void clientRemoved(MultiFdSink elem, int fd);
     }

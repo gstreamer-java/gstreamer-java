@@ -53,7 +53,7 @@ public interface GstInterpolationControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "lock", "priv",
                 "_gst_reserved"
@@ -68,7 +68,7 @@ public interface GstInterpolationControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "_gst_reserved"
             });

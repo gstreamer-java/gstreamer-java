@@ -63,7 +63,7 @@ public interface GstColorBalanceAPI extends Library {
 		}
 
                 @Override
-                protected List getFieldOrder() {
+                protected List<String> getFieldOrder() {
                     return Arrays.asList(new String[]{
                         "parent", "label", "min_value",
                         "max_value"

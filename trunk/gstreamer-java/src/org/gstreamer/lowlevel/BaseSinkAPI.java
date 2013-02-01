@@ -87,7 +87,7 @@ public interface BaseSinkAPI extends Library {
         public volatile Pointer /* GstBaseSinkPrivate */ priv;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[] {
                 "element", "sinkpad", "pad_mode",
                 "offset", "can_activate_pull", "can_activate_push",
@@ -112,7 +112,7 @@ public interface BaseSinkAPI extends Library {
         public volatile boolean running;
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "clip_segment", "max_lateness", "running"
             });
@@ -221,7 +221,7 @@ public interface BaseSinkAPI extends Library {
         public volatile byte[] _gst_reserved = new byte[Pointer.SIZE * (GST_PADDING_LARGE-5)];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[] {
                 "parent_class", "get_caps", "set_caps",
                 "buffer_alloc", "get_times", "start",

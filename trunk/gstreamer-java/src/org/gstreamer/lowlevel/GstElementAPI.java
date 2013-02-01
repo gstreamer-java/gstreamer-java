@@ -107,7 +107,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];        
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "longname", "klass", "description",
                 "author", "_gst_reserved"
@@ -137,7 +137,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "object", "state_lock", "state_cond",
                 "state_cookie", "current_state", "next_state",
@@ -209,7 +209,7 @@ public interface GstElementAPI extends com.sun.jna.Library {
         public volatile Pointer[] _gst_reserved = new Pointer[GstAPI.GST_PADDING];
         
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "details", "elementfactory",
                 "padtemplates", "numpadtemplates", "pad_templ_cookie",

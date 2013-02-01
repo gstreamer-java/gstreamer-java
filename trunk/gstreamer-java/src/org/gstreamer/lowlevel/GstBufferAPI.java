@@ -70,7 +70,7 @@ public interface GstBufferAPI extends com.sun.jna.Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "mini_object", "data", "size",
                 "timestamp", "duration", "caps",

@@ -139,7 +139,7 @@ public interface GlibAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "data", "_next", "_prev"
             });
@@ -164,7 +164,7 @@ public interface GlibAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "data", "_next"
             });

@@ -94,7 +94,7 @@ public interface GstTunerAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "label", "flags",
                 "freq_multiplicator", "min_frequency", "max_frequency",
@@ -119,7 +119,7 @@ public interface GstTunerAPI extends Library {
         }
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "label", "framerate"
             });

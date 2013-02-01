@@ -49,7 +49,7 @@ public interface GstLFOControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent", "priv", "lock",
                 "_gst_reserved"
@@ -64,7 +64,7 @@ public interface GstLFOControlSourceAPI extends Library {
 		public volatile Pointer[] _gst_reserved = new Pointer[GST_PADDING];
 
         @Override
-        protected List getFieldOrder() {
+        protected List<String> getFieldOrder() {
             return Arrays.asList(new String[]{
                 "parent_class", "_gst_reserved"
             });
