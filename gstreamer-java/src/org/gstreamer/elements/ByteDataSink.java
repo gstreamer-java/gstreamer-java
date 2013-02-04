@@ -55,7 +55,6 @@ public class ByteDataSink extends Bin {
         this.listener = listener;
         sink = (FakeSink) ElementFactory.make("fakesink", name);
         sink.set("signal-handoffs", true);
-        sink.set("sync", true);
         sink.set("preroll-queue-len", 1);
         sink.connect((BaseSink.HANDOFF) new DataHandoffListener());
         sink.connect((BaseSink.PREROLL_HANDOFF) new DataHandoffListener());
@@ -85,7 +84,6 @@ public class ByteDataSink extends Bin {
             sink = (BaseSink) element;
             
             sink.set("signal-handoffs", true);
-            sink.set("sync", true);
             sink.set("preroll-queue-len", 1);
             sink.connect((BaseSink.HANDOFF) new DataHandoffListener());
             sink.connect((BaseSink.PREROLL_HANDOFF) new DataHandoffListener());
