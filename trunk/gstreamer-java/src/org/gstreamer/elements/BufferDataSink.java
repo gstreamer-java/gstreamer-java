@@ -78,7 +78,6 @@ public class BufferDataSink extends Bin {
             sink = (BaseSink) element;
             
             sink.set("signal-handoffs", true);
-            sink.set("sync", true);
             sink.set("preroll-queue-len", 1);
             sink.connect((BaseSink.HANDOFF) new SinkNewBufferListener());
             sink.connect((BaseSink.PREROLL_HANDOFF) new SinkNewBufferListener());
@@ -92,7 +91,6 @@ public class BufferDataSink extends Bin {
       sink = (FakeSink) ElementFactory.make("fakesink", name);
       
       sink.set("signal-handoffs", true);
-      sink.set("sync", true);
       sink.set("preroll-queue-len", 1);
       sink.connect((BaseSink.HANDOFF) new SinkNewBufferListener());
       sink.connect((BaseSink.PREROLL_HANDOFF) new SinkNewBufferListener());

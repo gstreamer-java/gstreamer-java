@@ -76,7 +76,6 @@ public class BufferDataAppSink extends Bin {
             // cannot be casted to AppSink.
             sink = (AppSink) element;
             sink.set("emit-signals", true);
-            sink.set("sync", true);
             sink.connect(new AppSinkNewBufferListener());
         } else {
           sink = null;
@@ -87,7 +86,6 @@ public class BufferDataAppSink extends Bin {
     private void initSink(String name, String mask) {
       sink = (AppSink) ElementFactory.make("appsink", name);
       sink.set("emit-signals", true);
-      sink.set("sync", true);
       sink.connect(new AppSinkNewBufferListener());
       
       //
