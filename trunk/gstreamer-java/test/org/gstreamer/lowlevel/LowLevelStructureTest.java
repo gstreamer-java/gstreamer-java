@@ -70,7 +70,7 @@ public class LowLevelStructureTest {
     }
 
     @SuppressWarnings("unchecked")
-	private void testStruct(Class<? extends Structure> struct) {
+    private void testStruct(Class<? extends Structure> struct) {
         LOG.log(Level.INFO, "Testing {0}", struct.getName());
         Structure inst = null;
         List<String> fields = null;
