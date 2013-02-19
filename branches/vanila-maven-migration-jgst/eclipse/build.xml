@@ -1,0 +1,75 @@
+<project name="GStreamer-java" default="build" basedir="../">
+	<description>
+        GStreamer-java. ant build file.
+	</description>
+	
+	<property name="libraryClasspath"  location="./lib"/>	
+	<path id="library-classpath">
+		<fileset dir="${libraryClasspath}" >		
+			<include name="jna.jar"/>
+			<include name="junit4.jar"/>
+			<include name="swt.jar"/>
+			<include name="platform.jar"/>
+			<include name="applejavaextensions.jar"/>
+		</fileset>
+	</path>		
+	
+	<property name="javaVersion" value="1.5"/>
+	
+	<property name="libraryName"  value="gstreamer-java"/>
+	
+	<property name="versionNumber"  value="1.5"/>	
+	
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+		<classpath>
+			<pathelement location="./resources/code/ant-contrib-1.0b3.jar"/>
+		</classpath>
+	</taskdef>
+	<property name="jarFile" value="${libraryName}.jar"/>
+	<property name="src" location="src"/>
+	<property name="bin" location="bin"/>
+	<property name="dist" location="dist"/>	
+	
+	<target name="init">
+	<echo>Properties initialized.
+	src path		${src}
+	bin path 		${bin}
+	libraryClasspath	${libraryClasspath}
+	java version		${javaVersion}
+	</echo>
+		<echo>building library ...</echo>
+		
+		<!-- Create the time stamp -->
+		<tstamp> 
+			<format property="date" pattern="MM/dd/yyyy" offset="0" unit="hour"/>
+		</tstamp>
+		<mkdir dir="${dist}"/>
+	</target>
+  
+	<!-- compile the library -->
+	<target name="compile" depends="init" description="compile the source" >  	
+		<mkdir dir="${bin}" />
+		<javac srcdir="${src}" destdir="${bin}" source="${javaVersion}">
+			<classpath>
+				<path refid="library-classpath"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- build the distribution of the library -->
+	<target name="build" depends="compile" description="generate the distribution" >
+  		<!-- delete the previous content of the ${dist} folder -->
+		<delete dir="${dist}" />
+  	
+		<!-- build the structure for ${dist} -->
+		<mkdir dir="${dist}" />
+		<mkdir dir="${dist}/lib" />
+		<jar jarfile="${dist}/${jarFile}" basedir="${bin}"/>
+		<copy file="${libraryClasspath}/jna.jar" todir="${dist}/lib" />
+		<copy file="${libraryClasspath}/platform.jar" todir="${dist}/lib" />
+		<copy file="${libraryClasspath}/swt.jar" todir="${dist}/lib" />
+		<copy file="${libraryClasspath}/applejavaextensions.jar" todir="${dist}/lib" />  	
+		<!-- done, finished. -->
+		<echo>done, finished.</echo>
+	 </target>
+</project>
