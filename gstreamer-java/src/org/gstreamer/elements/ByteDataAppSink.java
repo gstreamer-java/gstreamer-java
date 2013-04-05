@@ -51,6 +51,7 @@ public class ByteDataAppSink extends Bin {
        
         sink = (AppSink) ElementFactory.make("appsink", name);
         sink.set("emit-signals", true);
+        sink.set("sync", true);
         sink.connect(new AppSinkNewBufferListener());
         
         //
@@ -76,6 +77,7 @@ public class ByteDataAppSink extends Bin {
             // cannot be casted to AppSink.
             sink = (AppSink) element;
             sink.set("emit-signals", true);
+            sink.set("sync", true);
             sink.connect(new AppSinkNewBufferListener());
         } else {
           sink = null;

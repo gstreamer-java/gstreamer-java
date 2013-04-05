@@ -57,6 +57,7 @@ public class RGBDataSink extends Bin {
         this.listener = listener;
         videosink = (FakeSink) ElementFactory.make("fakesink", name);
         videosink.set("signal-handoffs", true);
+        videosink.set("sync", true);
         videosink.set("preroll-queue-len", 1);
         videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
         videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
@@ -94,6 +95,7 @@ public class RGBDataSink extends Bin {
             videosink = (BaseSink) element;
             
             videosink.set("signal-handoffs", true);
+            videosink.set("sync", true);
             videosink.set("preroll-queue-len", 1);
             videosink.connect((BaseSink.HANDOFF) new VideoHandoffListener());
             videosink.connect((BaseSink.PREROLL_HANDOFF) new VideoHandoffListener());
