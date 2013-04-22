@@ -128,11 +128,11 @@ public class BaseSink extends Element {
         public void handoff(BaseSink sink, Buffer buffer, Pad pad);
     }
 
-    private static class Handoff implements GstAPI.GstCallback {
+    private static class HandoffCallback implements GstAPI.GstCallback {
     	final HANDOFF listener;
-    	public Handoff(final HANDOFF listener) {
+    	public HandoffCallback(final HANDOFF listener) {
     		this.listener = listener;
-    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "BaseSink Handoff"));
+    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "BaseSink HandoffCallback"));
     	}
         @SuppressWarnings("unused")
         public void callback(BaseSink sink, Buffer buffer, Pad pad) {
@@ -147,7 +147,7 @@ public class BaseSink extends Element {
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final HANDOFF listener) {
-        connect(HANDOFF.class, listener, new Handoff(listener));
+        connect(HANDOFF.class, listener, new HandoffCallback(listener));
     }
     /**
      * Remove a listener for the <code>handoff</code> signal
@@ -158,11 +158,11 @@ public class BaseSink extends Element {
         disconnect(HANDOFF.class, listener);
     }   
     
-    private static class PrerollHandoff implements GstAPI.GstCallback {
+    private static class PrerollHandoffCallback implements GstAPI.GstCallback {
     	final PREROLL_HANDOFF listener;
-    	public PrerollHandoff(final PREROLL_HANDOFF listener) {
+    	public PrerollHandoffCallback(final PREROLL_HANDOFF listener) {
     		this.listener = listener;
-    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "BaseSink Preroll Handoff"));
+    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "BaseSink Preroll HandoffCallback"));
     	}
         @SuppressWarnings("unused")
         public void callback(BaseSink sink, Buffer buffer, Pad pad) {
@@ -193,7 +193,7 @@ public class BaseSink extends Element {
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final PREROLL_HANDOFF listener) {
-        connect(PREROLL_HANDOFF.class, listener, new PrerollHandoff(listener));
+        connect(PREROLL_HANDOFF.class, listener, new PrerollHandoffCallback(listener));
     }
     /**
      * Remove a listener for the <code>preroll-handoff</code> signal.

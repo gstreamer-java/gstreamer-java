@@ -48,11 +48,11 @@ public class Identity extends BaseTransform {
         public void handoff(Identity identity, Buffer buffer);
     }
     
-    private static class Handoff implements GstAPI.GstCallback {
+    private static class HandoffCallback implements GstAPI.GstCallback {
     	final HANDOFF listener;
-    	public Handoff(final HANDOFF listener) {
+    	public HandoffCallback(final HANDOFF listener) {
     		this.listener = listener;
-    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "Identity Handoff"));
+    		//Native.setCallbackThreadInitializer(this, new CallbackThreadInitializer(true, false, "Identity HandoffCallback"));
     	}
         @SuppressWarnings("unused")
         public void callback(Identity identity, Buffer buffer) {
@@ -67,7 +67,7 @@ public class Identity extends BaseTransform {
      * @param listener The listener to be called when a {@link Buffer} is ready.
      */
     public void connect(final HANDOFF listener) {
-        connect(HANDOFF.class, listener, new Handoff(listener));
+        connect(HANDOFF.class, listener, new HandoffCallback(listener));
     }
     
     /**
