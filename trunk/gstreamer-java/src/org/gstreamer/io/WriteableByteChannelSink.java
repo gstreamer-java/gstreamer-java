@@ -55,7 +55,7 @@ public class WriteableByteChannelSink extends CustomSink {
     }
     
     @Override
-    protected final FlowReturn sinkRender(Buffer buffer) throws IOException {
+    protected FlowReturn sinkRender(Buffer buffer) throws IOException {
         try {
             channel.write(buffer.getByteBuffer());
             return FlowReturn.OK;
