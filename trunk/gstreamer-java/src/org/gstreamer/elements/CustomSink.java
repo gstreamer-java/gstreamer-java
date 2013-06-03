@@ -231,6 +231,7 @@ abstract public class CustomSink extends BaseSink {
                 base.preroll = info.preroll;
                 base.start = info.start;
                 base.stop = info.stop;
+                base.set_caps = info.setCaps;
                 base.write();            
             }
         };
