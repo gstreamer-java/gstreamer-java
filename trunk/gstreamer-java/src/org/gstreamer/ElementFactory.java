@@ -53,8 +53,9 @@ public class ElementFactory extends PluginFeature {
 
     public static final String GTYPE_NAME = "GstElementFactory";
     
-    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI, GlibAPI {}
+    private static interface API extends GstElementFactoryAPI, GstCapsAPI, GstPadTemplateAPI, GstPluginAPI {}
     private static final API gst = GstNative.load(API.class);
+    private static final GlibAPI glib = GlibAPI.GLIB_API;
     
     /**
      * Register a new class into the typeMap.
@@ -146,7 +147,7 @@ public class ElementFactory extends PluginFeature {
 
         for (ElementFactory fact : list) {
             fact.ref();
-            glist = gst.g_list_append(glist, fact.handle());
+            glist = glib.g_list_append(glist, fact.handle());
         }
 
         GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
