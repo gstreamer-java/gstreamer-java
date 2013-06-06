@@ -128,6 +128,21 @@ public class Buffer extends MiniObject {
         return ptr;
     }
     
+    /** 
+     * Create a copy of the given buffer. This will also make a newly allocated 
+     * copy of the data the source buffer contains.
+     */
+    public Buffer copy(Buffer buf) {
+    	return gst.gst_buffer_copy(buf);
+    }
+    
+    /**
+     * Copies metadata into newly allocated buffer
+     */
+    public void copyMetadata(Buffer dest, Buffer src, BufferCopyFlags flags) {
+    	gst.gst_buffer_copy_metadata(dest, src, flags);
+    }
+    
     /**
      * Gets the native address of this Buffer
      * 

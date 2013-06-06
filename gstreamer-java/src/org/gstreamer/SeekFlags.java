@@ -58,4 +58,14 @@ public final class SeekFlags {
     
     /** when doing fast forward or fast reverse playback, allow elements to skip frames instead of generating all frames. Since 0.10.22. */
     public final static int SKIP = 1 << 4;
+    
+    /** go to a location before the requested position, if KEY_UNIT this means the keyframe at or before the requested position the one at or before the seek target. */
+    public final static int SNAP_BEFORE = 1 << 5;
+    
+    /** go to a location after the requested position, if KEY_UNIT this means the keyframe at of after the requested position. */
+    public final static int SNAP_AFTER  = 1 << 6;
+    
+    /** go to a position near the requested position, if KEY_UNIT this means the keyframe closest to the requested position, if both keyframes are at an equal distance, behaves like SNAP_BEFORE. */
+    public final static int SNAP_NEAREST = SNAP_BEFORE | SNAP_AFTER;
+    /* Careful to restart next flag with 1<<7 here */	
 }
