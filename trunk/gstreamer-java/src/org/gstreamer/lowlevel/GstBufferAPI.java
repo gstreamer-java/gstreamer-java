@@ -19,7 +19,11 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.Buffer;
+import org.gstreamer.BufferCopyFlags;
 import org.gstreamer.Caps;
 import org.gstreamer.ClockTime;
 import org.gstreamer.lowlevel.GstMiniObjectAPI.MiniObjectStruct;
@@ -27,8 +31,6 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GstBuffer functions
@@ -40,6 +42,8 @@ public interface GstBufferAPI extends com.sun.jna.Library {
     @CallerOwnsReturn Buffer gst_buffer_new();
     @CallerOwnsReturn Buffer gst_buffer_new_and_alloc(int size);
     @CallerOwnsReturn Buffer gst_buffer_try_new_and_alloc(int size);
+    @CallerOwnsReturn Buffer gst_buffer_copy(Buffer buf);
+    void gst_buffer_copy_metadata (Buffer dest, Buffer src, BufferCopyFlags flags);
     boolean gst_buffer_is_metadata_writable(Buffer buf);
     Buffer gst_buffer_make_metadata_writable(@Invalidate Buffer buf);
     /* creating a subbuffer */
