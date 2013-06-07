@@ -43,7 +43,7 @@ public class StreamInfoTest {
 				String.format(
 						"videotestsrc num-buffers=25 ! theoraenc ! oggmux name=mux ! filesink location=%s " +
 						"audiotestsrc num-buffers=44 !  vorbisenc ! mux."
-						, testSrc.getAbsolutePath()
+						, testSrc.getAbsolutePath().replace("\\", "\\\\")
 						)
 						);
 		
