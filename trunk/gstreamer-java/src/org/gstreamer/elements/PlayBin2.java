@@ -493,4 +493,41 @@ public class PlayBin2 extends Pipeline {
     public void disconnect(TEXT_TAGS_CHANGED listener) {
         disconnect(TEXT_TAGS_CHANGED.class, listener);
     }
+
+    /**
+     * This signal is emitted after the source element has been created, 
+     * so it can be configured by setting additional properties (e.g. 
+     * set a proxy server for an http source, or set the device and read 
+     * speed for an audio cd source). 
+     * 
+     * This is functionally equivalent to connecting to the notify::source 
+     * signal, but more convenient.
+     * 
+     * This signal is usually emitted from the context of a GStreamer streaming thread.
+     */
+    public static interface SOURCE_SETUP {
+        /**
+         * @param source source element
+         */
+        public void sourceSetup(PlayBin2 element, Element source);
+    }
+    /**
+     * Adds a listener for the <code>source-setup</code> signal
+     */
+    public void connect(final SOURCE_SETUP listener) {
+        connect(SOURCE_SETUP.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(PlayBin2 elem, Element source) {
+                listener.sourceSetup(elem, source);
+            }
+        });
+    }
+    /**
+     * Removes a listener for the <code>source-setup</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(SOURCE_SETUP listener) {
+        disconnect(SOURCE_SETUP.class, listener);
+    }
 }
