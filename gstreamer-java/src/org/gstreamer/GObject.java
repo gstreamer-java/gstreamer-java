@@ -44,6 +44,7 @@ import org.gstreamer.lowlevel.GObjectAPI.GParamSpec;
 import org.gstreamer.lowlevel.GSignalAPI;
 import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GValueAPI.GValue;
+import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
@@ -741,4 +742,47 @@ public abstract class GObject extends RefCountedObject {
             }
         }
     };
+
+    /**
+     * The notify signal is emitted on an object when one of its properties has been changed. 
+     * Note that getting this signal doesn't guarantee that the value of the property has 
+     * actually changed, it may also be emitted when the setter for the property is called 
+     * to reinstate the previous value.
+     * 
+     * @see #connect(NOTIFY)
+     * @see #disconnect(NOTIFY)
+     */
+    public static interface NOTIFY {
+        /**
+         * Called when a new {@link Pad} is added to an Element.
+         * 
+         * @param gobject the object which received the signal
+         * @param spec the property which changed
+         */
+        public void notify(GObject gobject, GParamSpec spec);
+    }
+
+    /**
+     * Add a listener for the <code>notify</code> signal
+     * 
+     * @param listener Listener to be called when one of its properties has been changed of the object.
+     */
+    public void connect(final NOTIFY listener) {
+        connect(NOTIFY.class, listener, new GstCallback() {
+            @SuppressWarnings("unused")
+            public void callback(GObject gobject, GParamSpec spec) {
+                listener.notify(gobject, spec);
+            }
+        });
+    }
+    
+    /**
+     * Remove a listener for the <code>notify</code> signal
+     * 
+     * @param listener The listener that was previously added.
+     */
+    public void disconnect(NOTIFY listener) {
+        disconnect(NOTIFY.class, listener);
+    }
+
 }
