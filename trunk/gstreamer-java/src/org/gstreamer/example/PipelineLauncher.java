@@ -56,7 +56,7 @@ public class PipelineLauncher {
         StringBuilder sb = new StringBuilder();
 
         for (String s: args) {
-            sb.append(" ");
+            sb.append(' ');
             sb.append(s);
         }
         

@@ -24,7 +24,6 @@ import java.nio.channels.WritableByteChannel;
 import org.gstreamer.Buffer;
 import org.gstreamer.FlowReturn;
 import org.gstreamer.elements.CustomSink;
-import org.gstreamer.io.StreamLock;
 
 /**
  *

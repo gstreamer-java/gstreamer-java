@@ -22,7 +22,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
 import org.gstreamer.URIType;
-import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 /**

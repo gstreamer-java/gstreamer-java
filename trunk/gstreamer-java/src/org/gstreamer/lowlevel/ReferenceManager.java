@@ -50,7 +50,6 @@ public class ReferenceManager {
         private static final ReferenceQueue<Object> queue = new ReferenceQueue<Object>();
         static {
             Thread t = new Thread(new Runnable() {
-
                 public void run() {
                     while (true) {
                         try {
@@ -63,8 +62,7 @@ public class ReferenceManager {
                         }
                     }
                 }
-            });
-            t.setName("Reference reaper");
+            }, "Reference reaper");
             t.setDaemon(true);
             t.start();
         }

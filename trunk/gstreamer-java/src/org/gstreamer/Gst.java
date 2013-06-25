@@ -239,6 +239,7 @@ public final class Gst {
                 latch.await();
             }
         } catch (InterruptedException ex) {
+			ex.printStackTrace();
         } finally {
             quit = new CountDownLatch(1);
         }
@@ -367,7 +368,9 @@ public final class Gst {
                 // Force-kill everything
                 executorService.shutdownNow();
             }
-        } catch (InterruptedException ex) { }
+        } catch (InterruptedException ex) {
+        	ex.printStackTrace();
+        }
         
         mainContext = null;
         System.gc(); // Make sure any dangling objects are unreffed before calling deinit().
@@ -444,6 +447,7 @@ public final class Gst {
                 return (String)f.get(null);
             }
         } catch (NoSuchFieldException e) {
+			e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }

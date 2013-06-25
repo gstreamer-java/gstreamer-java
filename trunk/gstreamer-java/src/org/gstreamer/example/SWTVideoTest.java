@@ -58,7 +58,7 @@ public class SWTVideoTest {
 //							pipeline.getState();
 //							pipeline.debugToDotFile(Bin.DEBUG_GRAPH_SHOW_ALL, "swt_video_test_pipeline");
 						}
-					});
+					}, "pipeline");
 					threads.add(thread);
 				}
 
