@@ -220,7 +220,7 @@ public final class ClockTime implements Comparable<ClockTime> {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof ClockTime && ((ClockTime) obj).value == value;
+        return (obj == this) || (obj instanceof ClockTime) && (((ClockTime) obj).value == value);
     }
 
     /**

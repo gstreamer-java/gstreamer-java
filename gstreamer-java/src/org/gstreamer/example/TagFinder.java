@@ -103,7 +103,8 @@ public class TagFinder {
         pipe.pause();
         try {
             done.await();
-        } catch (InterruptedException ex) {
+        } catch (InterruptedException e) {
+			e.printStackTrace();
         }
         pipe.stop();
     }

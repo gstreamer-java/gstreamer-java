@@ -412,10 +412,7 @@ public class Caps extends RefCountedObject {
     }
     @Override
     public boolean equals(Object other) {
-        if (other == null || !(other instanceof Caps)) {
-            return false;
-        }
-        return other == this || isEqual((Caps) other);
+    	return (other == this) || (other instanceof Caps) && isEqual((Caps) other);
     }
     protected void ref() {
         gst.gst_caps_ref(this);

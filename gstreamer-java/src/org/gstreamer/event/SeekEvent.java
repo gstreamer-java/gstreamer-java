@@ -97,7 +97,7 @@ public class SeekEvent extends Event {
                 flags, startType, start, stopType, stop)));
     }
     private static double sanitizeRate(double rate) {
-        if (rate == 0d) {
+        if (rate == 0.0) {
             throw new IllegalArgumentException("Cannot have rate == 0.0");
         }
         return rate;

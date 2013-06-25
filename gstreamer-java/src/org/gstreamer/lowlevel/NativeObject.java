@@ -216,7 +216,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     
     @Override
     public boolean equals(Object o) {
-        return o instanceof NativeObject && ((NativeObject) o).handle.equals(handle);
+        return (o == this) || (o instanceof NativeObject) && ((NativeObject) o).handle.equals(handle);
     }
     
     @Override
@@ -237,14 +237,13 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         ownsHandle.set(false);
     }
     
-    static {
+    private static final void shutdown() {
         //
         // Add a shutdown task to cleanup any dangling object references, so 
         // Gst.deinit() can shutdown cleanly.  Unreffing objects after gst_deinit()
         // has been called could be asking for trouble.
         //
         Gst.addStaticShutdownTask(new Runnable() {
-
             public void run() {
                 System.gc(); 
                 int gcCount = 20;
@@ -267,6 +266,13 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
             }
         });
     }
+    
+    
+    
+    
+    static {
+    	shutdown();
+    }
     private static final ConcurrentMap<Pointer, NativeRef> getInstanceMap() {
         return StaticData.instanceMap;
     }
@@ -283,34 +289,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
     private static final class StaticData {
         private static final ConcurrentMap<Pointer, NativeRef> instanceMap = new ConcurrentHashMap<Pointer, NativeRef>();
         static {
-            //
-            // Add a shutdown task to cleanup any dangling object references, so 
-            // Gst.deinit() can shutdown cleanly.  Unreffing objects after gst_deinit()
-            // has been called could be asking for trouble.
-            //
-            Gst.addStaticShutdownTask(new Runnable() {
-
-                public void run() {
-                    System.gc(); 
-                    int gcCount = 20;
-                    // Give the GC a chance to cleanup nicely
-                    while (!getInstanceMap().isEmpty() && gcCount-- > 0) {
-                        try {
-                            Thread.sleep(10);
-                            System.gc();
-                        } catch (InterruptedException ex) {
-                            break;
-                        }
-                    }
-                    for (Object o : getInstanceMap().values().toArray()) {
-                        NativeObject obj = ((NativeRef) o).get();
-                        if (obj != null && !obj.disposed.get()) {
-    //                        System.out.println("Disposing " + obj);
-                            obj.dispose();
-                        }
-                    }
-                }
-            });
+        	shutdown();
         }
     }
 }

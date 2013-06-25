@@ -47,7 +47,8 @@ public class ColorBalance {
 
 		try {
 			Thread.sleep(1000);
-		} catch (Exception e) {
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
 		VideoOrientation vo = VideoOrientation.wrap(videosrc);
@@ -65,7 +66,8 @@ public class ColorBalance {
 		for (int i = 0; i < 1000; ++i) {
 			try {
 				Thread.sleep(1000);
-			} catch (Exception e) {
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			cbcList.get(0).setValue(60000);
 			cbcList.get(1).setValue(60000);

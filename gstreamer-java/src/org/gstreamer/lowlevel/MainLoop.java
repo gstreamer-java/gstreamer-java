@@ -104,7 +104,7 @@ public class MainLoop extends RefCountedObject {
             public void run() {
                 MainLoop.this.run();
             }
-        });
+        }, "MainLoop");
         bgThread.setDaemon(true);
         bgThread.setName("gmainloop");
         bgThread.start();

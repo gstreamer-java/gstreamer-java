@@ -125,7 +125,7 @@ public final class QueryType implements Comparable<QueryType> {
      */
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof QueryType && ((QueryType) obj).value.equals(value);
+        return (obj == this) || (obj instanceof QueryType) && ((QueryType) obj).value.equals(value);
     }
 
     /**

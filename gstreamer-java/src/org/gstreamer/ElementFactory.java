@@ -121,6 +121,25 @@ public class ElementFactory extends PluginFeature {
         return list;
     }
 
+    private static List<ElementFactory> lister(GList glist, Caps caps, PadDirection direction, boolean subsetonly) {
+        List<ElementFactory> filterList = new ArrayList<ElementFactory>();
+        GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
+
+        GList next = gFilterList;
+        while (next != null) {
+            if (next.data != null) {
+                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
+                filterList.add(fact);
+            }
+            next = next.next();
+        }
+
+        gst.gst_plugin_list_free(glist);
+        gst.gst_plugin_list_free(gFilterList);
+
+        return filterList;
+    }
+    
     /**
      * Filter out all the elementfactories in list that can handle caps in the
      * given direction.
@@ -143,28 +162,11 @@ public class ElementFactory extends PluginFeature {
     public static List<ElementFactory> listFilter(List<ElementFactory> list, Caps caps,
             PadDirection direction, boolean subsetonly) {
         GList glist = null;
-        List<ElementFactory> filterList = new ArrayList<ElementFactory>();
-
         for (ElementFactory fact : list) {
             fact.ref();
             glist = glib.g_list_append(glist, fact.handle());
         }
-
-        GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
-
-        GList next = gFilterList;
-        while (next != null) {
-            if (next.data != null) {
-                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
-                filterList.add(fact);
-            }
-            next = next.next();
-        }
-
-        gst.gst_plugin_list_free(glist);
-        gst.gst_plugin_list_free(gFilterList);
-
-        return filterList;
+        return lister(glist, caps, direction, subsetonly);
     }
 
     /**
@@ -191,25 +193,8 @@ public class ElementFactory extends PluginFeature {
      */
     public static List<ElementFactory> listGetElementFilter(ElementFactoryListType type, Rank minrank,
             Caps caps, PadDirection direction, boolean subsetonly) {
-        List<ElementFactory> filterList = new ArrayList<ElementFactory>();
-
         GList glist = gst.gst_element_factory_list_get_elements(type.getValue(), minrank.getValue());
-
-        GList gFilterList = gst.gst_element_factory_list_filter(glist, caps, direction, subsetonly);
-
-        GList next = gFilterList;
-        while (next != null) {
-            if (next.data != null) {
-                ElementFactory fact = new ElementFactory(initializer(next.data, true, true));
-                filterList.add(fact);
-            }
-            next = next.next();
-        }
-
-        gst.gst_plugin_list_free(glist);
-        gst.gst_plugin_list_free(gFilterList);
-
-        return filterList;
+        return lister(glist, caps, direction, subsetonly);
     }
 
     public static Pointer makeRawElement(String factoryName, String name) {

@@ -221,8 +221,6 @@ abstract public class CustomSink extends BaseSink {
 //            } catch (NoSuchFieldException ex) {
 //            } catch (IllegalAccessException ex) {                
             }
-            
-            
         }
         info.classInit = new GClassInitFunc() {
             public void callback(Pointer g_class, Pointer class_data) {

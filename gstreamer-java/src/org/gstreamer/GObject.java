@@ -102,6 +102,7 @@ public abstract class GObject extends RefCountedObject {
      * @param data The value for the property.  This must be of the type expected
      * by gstreamer.
      */
+    // TODO: setGValue code merge
     public void set(String property, Object data) {
         logger.entering("GObject", "set", new Object[] { property, data });
         GObjectAPI.GParamSpec propertySpec = findProperty(property);
@@ -338,6 +339,7 @@ public abstract class GObject extends RefCountedObject {
         setGValue(src, type, data);
         GVALUE_API.g_value_transform(src, dst);
     }
+    // TODO: set code merge
     private static boolean setGValue(GValue value, GType type, Object data) {
         if (type.equals(GType.INT)) {
             GVALUE_API.g_value_set_int(value, intValue(data));

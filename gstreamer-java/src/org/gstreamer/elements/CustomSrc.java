@@ -293,9 +293,7 @@ abstract public class CustomSrc extends BaseSrc {
     private static final BaseSrcAPI.Fixate fixateCallback = new BaseSrcAPI.Fixate() {
 
         public void callback(BaseSrc src, Caps caps) {
-            try {
-                ((CustomSrc) src).srcFixate(caps);
-            } catch (Exception ex) {}
+            ((CustomSrc) src).srcFixate(caps);
         }
     };
     private static final BaseSrcAPI.EventNotify eventCallback = new BaseSrcAPI.EventNotify() {
