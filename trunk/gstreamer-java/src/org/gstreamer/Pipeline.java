@@ -198,7 +198,8 @@ public class Pipeline extends Bin {
      * 
      * @return The {@link Clock} currently in use.
      */
-    public Clock getClock() {
+    @Override
+	public Clock getClock() {
         return gst.gst_pipeline_get_clock(this);
     }
     

@@ -103,9 +103,8 @@ public interface GValueAPI extends Library {
             if (val == null) {
                 if (allowNull) {
                     return null;
-                } else {
-                    throw new IllegalArgumentException("null value not allowed for GType." + g_type);
                 }
+                throw new IllegalArgumentException("null value not allowed for GType." + g_type);
             }
             
             return clazz.cast(val);
@@ -218,7 +217,8 @@ public interface GValueAPI extends Library {
         	return g_type.equals(GType.POINTER) ? GVALUE_API.g_value_get_pointer(this) : null;
         }
         
-        public String toString() {
+        @Override
+		public String toString() {
         	return GVALUE_API.g_strdup_value_contents(this);
         }
     }

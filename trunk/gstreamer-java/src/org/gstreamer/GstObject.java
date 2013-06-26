@@ -114,10 +114,12 @@ public class GstObject extends GObject {
     public String toString() {
         return String.format("%s: [%s]", getClass().getSimpleName(), getName());
     }
-    protected void ref() {
+    @Override
+	protected void ref() {
         gst.gst_object_ref(this);
     }
-    protected void unref() {
+    @Override
+	protected void unref() {
         gst.gst_object_unref(this);
     }
     void sink() {

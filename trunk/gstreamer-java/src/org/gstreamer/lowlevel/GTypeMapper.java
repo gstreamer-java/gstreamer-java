@@ -176,9 +176,8 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
                     GlibAPI.GLIB_API.g_free(ptr);
                 }
                 return s;
-            } else {
-                return ((Pointer) result).getString(0);
-            }           
+            }
+            return ((Pointer) result).getString(0);
         }
 
         public Class<?> nativeType() {
@@ -268,7 +267,8 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
             return String.class;
         }
     };
-    @SuppressWarnings("rawtypes")
+    @Override
+	@SuppressWarnings("rawtypes")
 	public FromNativeConverter getFromNativeConverter(Class type) {
         if (Enum.class.isAssignableFrom(type)) {
             return enumConverter;              
@@ -286,7 +286,8 @@ public class GTypeMapper extends com.sun.jna.DefaultTypeMapper {
         return super.getFromNativeConverter(type);
     }
 
-    @SuppressWarnings("rawtypes")
+    @Override
+	@SuppressWarnings("rawtypes")
 	public ToNativeConverter getToNativeConverter(Class type) {
         if (NativeObject.class.isAssignableFrom(type)) {
             return nativeObjectConverter;

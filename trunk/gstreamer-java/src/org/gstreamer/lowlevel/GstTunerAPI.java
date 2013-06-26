@@ -87,8 +87,10 @@ public interface GstTunerAPI extends Library {
         public String getLabel() {
             return (String) readField("label");
         }
-        public void read() {}
-        public void write() {}
+        @Override
+		public void read() {}
+        @Override
+		public void write() {}
         public TunerChannelStruct(Pointer ptr) {
             useMemory(ptr);
         }
@@ -112,8 +114,10 @@ public interface GstTunerAPI extends Library {
         public String getLabel() {
             return (String) readField("label");
         }
-        public void read() {}
-        public void write() {}
+        @Override
+		public void read() {}
+        @Override
+		public void write() {}
         public TunerNormStruct(Pointer ptr) {
             useMemory(ptr);
         }

@@ -414,13 +414,16 @@ public class Caps extends RefCountedObject {
     public boolean equals(Object other) {
     	return (other == this) || (other instanceof Caps) && isEqual((Caps) other);
     }
-    protected void ref() {
+    @Override
+	protected void ref() {
         gst.gst_caps_ref(this);
     }
-    protected void unref() {
+    @Override
+	protected void unref() {
         gst.gst_caps_unref(this);
     }
-    protected void disposeNativeHandle(Pointer ptr) {
+    @Override
+	protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_caps_unref(ptr);
     }
 

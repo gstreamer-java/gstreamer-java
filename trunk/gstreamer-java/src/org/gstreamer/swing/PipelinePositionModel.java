@@ -113,7 +113,8 @@ public class PipelinePositionModel extends DefaultBoundedRangeModel {
         updating = false;
     }
     
-    public void setValue(int newValue) {
+    @Override
+	public void setValue(int newValue) {
         super.setValue(newValue);
         //
         // Only seek when the slider is being dragged, and not when updating the

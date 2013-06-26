@@ -26,23 +26,28 @@ public class IntPtr extends Number {
         this.value = Pointer.SIZE == 8 ? new Long(value) : new Integer(value);
     }
     
-    public String toString() {        
+    @Override
+	public String toString() {        
         return Integer.toHexString(intValue());
     }
 
-    public int intValue() {
+    @Override
+	public int intValue() {
         return value.intValue();
     }
     
-    public long longValue() {
+    @Override
+	public long longValue() {
         return value.longValue();
     }
 
-    public float floatValue() {
+    @Override
+	public float floatValue() {
         return value.floatValue();        
     }
 
-    public double doubleValue() {
+    @Override
+	public double doubleValue() {
         return value.doubleValue();        
     }
 }

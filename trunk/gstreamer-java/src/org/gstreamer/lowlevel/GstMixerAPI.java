@@ -73,8 +73,10 @@ public interface GstMixerAPI extends Library {
         public int getFlags() {
             return (Integer) readField("flags");
         }
-        public void read() {}
-        public void write() {}
+        @Override
+		public void read() {}
+        @Override
+		public void write() {}
         public MixerTrackStruct(Pointer ptr) {
             useMemory(ptr);
         }

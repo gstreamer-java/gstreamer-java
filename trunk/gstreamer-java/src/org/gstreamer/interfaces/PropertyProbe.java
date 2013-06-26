@@ -85,11 +85,7 @@ public class PropertyProbe extends GstInterface {
     }
 
     public boolean needsProbe(Property property) {
-        if (property != null)
-        {
-            return GSTPROPERTYPROBE_API.gst_property_probe_needs_probe(this, property.getSpec());
-        }
-        else return false;
+        return property != null ? GSTPROPERTYPROBE_API.gst_property_probe_needs_probe(this, property.getSpec()) : false;
     }
 
     public boolean needsProbe(String name) {
@@ -97,11 +93,7 @@ public class PropertyProbe extends GstInterface {
     }
 
     public Object[] getValues(Property property) {
-        if (property != null)
-        {
-            return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_get_values(this, property.getSpec()));
-        }
-        else return null;
+        return property != null ? valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_get_values(this, property.getSpec())) : null;
     }
 
     public Object[] getValues(String name) {
@@ -109,11 +101,7 @@ public class PropertyProbe extends GstInterface {
     }
 
     public Object[] probeAndGetValues(Property property) {
-        if (property != null)
-        {
-            return valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_probe_and_get_values(this, property.getSpec()));
-        }
-        else return null;
+        return property != null ? valuesArray(GSTPROPERTYPROBE_API.gst_property_probe_probe_and_get_values(this, property.getSpec())) : null;
     }
 
     public Object[] probeAndGetValues(String name) {

@@ -42,7 +42,7 @@ public class OSXVideoSink extends BaseSink {
     //TODO: where is the disconnect pair for this connect?
     public void listenForNewViews(Bus bus) {
     	bus.connect(new Bus.MESSAGE() {
-			public void busMessage(Bus bus, Message message) {
+			public void busMessage(Bus b, Message message) {
 				if (message.getSource().getNativeAddress().equals(getNativeAddress())) {
 					final Structure structure = message.getStructure();
 					if (structure != null && "have-ns-view".equals(structure.getName())) {

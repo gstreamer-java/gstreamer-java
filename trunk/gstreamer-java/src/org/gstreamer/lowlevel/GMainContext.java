@@ -39,10 +39,12 @@ public class GMainContext extends RefCountedObject {
         return new GMainContext(initializer(GLIB_API.g_main_context_default(), false, false));
     }
     
-    protected void ref() {
+    @Override
+	protected void ref() {
         GLIB_API.g_main_context_ref(handle());
     }
-    protected void unref() {
+    @Override
+	protected void unref() {
         GLIB_API.g_main_context_unref(handle());
     }
 

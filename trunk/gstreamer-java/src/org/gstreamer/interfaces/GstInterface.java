@@ -45,7 +45,8 @@ public class GstInterface extends NativeValue {
         this.element = element;
         handle = GSTINTERFACES_API.gst_implements_interface_cast(element, type);
     }
-    protected Object nativeValue() {
+    @Override
+	protected Object nativeValue() {
         return handle;
     }
     public Element getElement() {
