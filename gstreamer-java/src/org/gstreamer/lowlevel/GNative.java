@@ -23,6 +23,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.gstreamer.ClockTime;
 
@@ -37,7 +38,9 @@ import com.sun.jna.Platform;
 public final class GNative {
     // gstreamer on win32 names the dll files one of foo.dll, libfoo.dll and libfoo-0.dll
     private static String[] windowsNameFormats = { "%s", "lib%s", "lib%s-0" };
-
+    
+    private static AtomicReference<String> globalLibName;
+	
     private GNative() {}
 
     public static synchronized <T extends Library> T loadLibrary(String name, Class<T> interfaceClass, Map<String, ?> options) {
@@ -53,7 +56,7 @@ public final class GNative {
     }
 
     private static <T extends Library> T loadNativeLibrary(String name, Class<T> interfaceClass, Map<String, ?> options) {
-        T library = interfaceClass.cast(Native.loadLibrary(name, interfaceClass, options));
+        T library = interfaceClass.cast(Native.loadLibrary(globalLibName == null ? name : globalLibName.get(), interfaceClass, options));
         boolean needCustom = false;
     search:
         for (Method m : interfaceClass.getMethods())
@@ -153,7 +156,6 @@ public final class GNative {
             this.proxy = Proxy.getInvocationHandler(library);
         }
         
-        @SuppressWarnings("null")
         public Object invoke(Object self, Method method, Object[] args) throws Throwable {
             int lastArg = args != null ? args.length : 0;
             if (method.isVarArgs())
@@ -232,5 +234,20 @@ public final class GNative {
                 return longArrayIO;
             throw new IllegalArgumentException("No such conversion");
         }
+    }
+    
+    /**
+     * 
+     * Map all DLL/SO names to the a single library. This can be useful in situations when all the
+     * gstreamer code is compiled into a single object. If globalLibName is set to 'null', then you are
+     * responsible for pre-loading all necessary libraries yourself and
+     * GNative will attach Library interfaces to the current running process instead of loading a library.
+     * 
+     * This method has to be called before any other gstreamer lowlevel API Libraries are loaded.
+     *   
+     * @param name name of single library or null if all libraries are preloaded
+     */
+    public static void setGlobalLibName(String name) {
+    	globalLibName = new AtomicReference<String>(name);
     }
 }
