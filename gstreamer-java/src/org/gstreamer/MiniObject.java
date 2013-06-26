@@ -76,14 +76,17 @@ public class MiniObject extends RefCountedObject {
         gst.gst_mini_object_make_writable(this);
     }
     */
-    protected void ref() {
+    @Override
+	protected void ref() {
         gst.gst_mini_object_ref(this);
     }
-    protected void unref() {
+    @Override
+	protected void unref() {
         gst.gst_mini_object_unref(this);
     }
     
-    protected void disposeNativeHandle(Pointer ptr) {
+    @Override
+	protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_mini_object_unref(ptr);
     }
 }

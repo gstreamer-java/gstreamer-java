@@ -85,7 +85,8 @@ public class TagList extends Structure {
     public List<Object> getValues(final String tag) {
         final int size = getValueCount(tag);
         return new AbstractList<Object>() {
-            public int size() { 
+            @Override
+			public int size() { 
                 return size; 
             }
 
@@ -136,7 +137,8 @@ public class TagList extends Structure {
      * @param index which element of the array of data for this tag to retrieve.
      * @return the data for the tag.
      */
-    public String getString(String tag, int index) {
+    @Override
+	public String getString(String tag, int index) {
         return getValue(tag, index).toString();
     }
     

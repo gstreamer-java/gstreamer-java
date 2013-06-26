@@ -171,21 +171,24 @@ public class MainLoop extends RefCountedObject {
     /**
      * Increases the reference count on the native {@code GMainLoop}
      */
-    protected void ref() {
+    @Override
+	protected void ref() {
         GLIB_API.g_main_loop_ref(this);
     }
     
     /**
      * Decreases the reference count on the native {@code GMainLoop}
      */
-    protected void unref() {
+    @Override
+	protected void unref() {
         GLIB_API.g_main_loop_unref(this);
     }
     
     /**
      * Frees the native {@code GMainLoop}
      */
-    protected void disposeNativeHandle(Pointer ptr) {
+    @Override
+	protected void disposeNativeHandle(Pointer ptr) {
         GLIB_API.g_main_loop_unref(ptr);
     }
     

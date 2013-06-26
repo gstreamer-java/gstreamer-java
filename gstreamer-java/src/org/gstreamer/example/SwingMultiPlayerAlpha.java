@@ -83,7 +83,8 @@ public class SwingMultiPlayerAlpha {
 
                         private static final long serialVersionUID = 4925431893247320169L;
 
-                        protected void paintComponent(Graphics g) {
+                        @Override
+						protected void paintComponent(Graphics g) {
                             Graphics2D g2d = (Graphics2D) g.create();
                             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
                             g2d.setColor(Color.BLACK);

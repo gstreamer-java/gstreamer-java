@@ -84,7 +84,8 @@ public class NavigationTest {
                 //
                 frame.addKeyListener(new KeyAdapter() {
 
-                    public void keyPressed(KeyEvent evt) {
+                    @Override
+					public void keyPressed(KeyEvent evt) {
                         for (KeyListener l : videoComponent.getKeyListeners()) {
                             l.keyPressed(evt);
                         }

@@ -51,10 +51,12 @@ public class GSource extends RefCountedObject {
     }
     private GlibAPI.GSourceFunc callback;
     
-    protected void ref() {
+    @Override
+	protected void ref() {
         GLIB_API.g_source_ref(handle());
     }
-    protected void unref() {
+    @Override
+	protected void unref() {
         GLIB_API.g_source_unref(handle());
     }
 

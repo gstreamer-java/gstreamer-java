@@ -112,7 +112,8 @@ public class VideoPlayer extends javax.swing.JPanel {
         // Propate key events to the video component without giving it focus
         addKeyListener(new KeyAdapter() {
 
-            public void keyPressed(KeyEvent evt) {
+            @Override
+			public void keyPressed(KeyEvent evt) {
                 for (KeyListener l : videoComponent.getKeyListeners()) {
                     l.keyPressed(evt);
                 }
@@ -310,9 +311,8 @@ public class VideoPlayer extends javax.swing.JPanel {
         URL url = VideoPlayer.class.getResource(path);
         if (url != null) {
             return new ImageIcon(url);
-        } else {
-            throw new RuntimeException("Cannot locate icon for " + name);
         }
+        throw new RuntimeException("Cannot locate icon for " + name);
     }
     
     private BoundedRangeModel volumeModel = new DefaultBoundedRangeModel() {

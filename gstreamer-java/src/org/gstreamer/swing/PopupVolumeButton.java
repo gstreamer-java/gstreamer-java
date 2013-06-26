@@ -146,8 +146,7 @@ public class PopupVolumeButton extends JToggleButton {
         URL url = PopupVolumeButton.class.getResource(path);
         if (url != null) {
             return new ImageIcon(url);
-        } else {
-            throw new RuntimeException("Cannot locate icon for " + name);
         }
+        throw new RuntimeException("Cannot locate icon for " + name);
     }
 }

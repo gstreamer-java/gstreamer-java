@@ -55,8 +55,8 @@ public class ValueList {
     }
 
     public Fraction getFraction(int index) {
-        GValueAPI.GValue value = getValue(index);
-        return Fraction.objectFor(value);
+        GValueAPI.GValue v = getValue(index);
+        return Fraction.objectFor(v);
     }
 
     private GValueAPI.GValue getValue(int index) {

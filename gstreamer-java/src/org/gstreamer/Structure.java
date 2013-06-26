@@ -396,7 +396,8 @@ public class Structure extends NativeObject {
         return NativeObject.objectFor(ptr, Structure.class, needRef, ownsHandle);
     }
     //--------------------------------------------------------------------------
-    protected void disposeNativeHandle(Pointer ptr) {
+    @Override
+	protected void disposeNativeHandle(Pointer ptr) {
         gst.gst_structure_free(ptr);
     }
     

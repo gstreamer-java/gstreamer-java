@@ -184,7 +184,8 @@ public class RGBDataFileSink extends Bin {
      * Sets the state of the pipeline to NULL and closes the stream.
      *
      */
-    public StateChangeReturn stop()
+    @Override
+	public StateChangeReturn stop()
     {
         source.endOfStream();
     	return super.stop();        

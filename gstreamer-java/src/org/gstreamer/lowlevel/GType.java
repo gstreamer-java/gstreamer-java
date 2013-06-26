@@ -112,7 +112,8 @@ public class GType extends IntegerType {
         return valueOf(((Number) nativeValue).longValue(), "");
     }    
     
-    public String toString() {
+    @Override
+	public String toString() {
     	return ("[" + description + ":" + longValue() + "]");
     }
 }

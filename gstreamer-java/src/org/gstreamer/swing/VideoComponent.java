@@ -249,11 +249,13 @@ public class VideoComponent extends javax.swing.JComponent {
             videoPad.pushEvent(NavigationEvent.createKeyEvent(name, getKey(evt)));
             evt.consume();
         }
-        public void keyPressed(KeyEvent evt) {
+        @Override
+		public void keyPressed(KeyEvent evt) {
             key("key-press", evt);
         }
 
-        public void keyReleased(KeyEvent evt) {
+        @Override
+		public void keyReleased(KeyEvent evt) {
             key("key-release", evt);
         }
     };

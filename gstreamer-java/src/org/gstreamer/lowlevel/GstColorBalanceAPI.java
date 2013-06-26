@@ -56,7 +56,9 @@ public interface GstColorBalanceAPI extends Library {
 		public int getMaxValue() {
 			return (Integer) readField("max_value");
 		}
+		@Override
 		public void read() {}
+		@Override
 		public void write() {}
 		public ColorBalanceChannelStruct(Pointer ptr) {
 			useMemory(ptr);

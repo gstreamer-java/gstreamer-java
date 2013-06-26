@@ -125,11 +125,11 @@ public class ByteDataSink extends Bin {
     }
 
     class DataHandoffListener implements BaseSink.HANDOFF, BaseSink.PREROLL_HANDOFF {
-        public void handoff(BaseSink sink, Buffer buffer, Pad pad) {
+        public void handoff(BaseSink s, Buffer buffer, Pad pad) {
         	doHandoff(buffer, pad, false);
         }
         
-        public void prerollHandoff(BaseSink sink, Buffer buffer, Pad pad) {
+        public void prerollHandoff(BaseSink s, Buffer buffer, Pad pad) {
         	doHandoff(buffer, pad, true);
     	  }        
         
