@@ -19,7 +19,7 @@
 
 package org.gstreamer.lowlevel;
 
-import org.gstreamer.interfaces.XOverlay;
+import org.gstreamer.interfaces.XOverlayBase;
 
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
@@ -32,22 +32,22 @@ public interface GstXOverlayAPI extends Library {
 
 	/* virtual class function wrappers */
 	@Deprecated
-	void gst_x_overlay_set_xwindow_id(XOverlay overlay, NativeLong xwindow_id);
-	void gst_x_overlay_set_window_handle(XOverlay overlay, NativeLong xwindow_id);
+	void gst_x_overlay_set_xwindow_id(XOverlayBase overlay, NativeLong xwindow_id);
+	void gst_x_overlay_set_window_handle(XOverlayBase overlay, NativeLong xwindow_id);
 
 	@Deprecated
-	void gst_x_overlay_set_xwindow_id(XOverlay overlay, Pointer xwindow_id);
-	void gst_x_overlay_set_window_handle(XOverlay overlay, Pointer xwindow_id);
+	void gst_x_overlay_set_xwindow_id(XOverlayBase overlay, Pointer xwindow_id);
+	void gst_x_overlay_set_window_handle(XOverlayBase overlay, Pointer xwindow_id);
 
 	@Deprecated
-	void gst_x_overlay_got_xwindow_id(XOverlay overlay, NativeLong xwindow_id);
-	void gst_x_overlay_got_window_handle(XOverlay overlay, NativeLong xwindow_id);
+	void gst_x_overlay_got_xwindow_id(XOverlayBase overlay, NativeLong xwindow_id);
+	void gst_x_overlay_got_window_handle(XOverlayBase overlay, NativeLong xwindow_id);
 
-	void gst_x_overlay_prepare_xwindow_id(XOverlay overlay);
+	void gst_x_overlay_prepare_xwindow_id(XOverlayBase overlay);
 
-	void gst_x_overlay_expose(XOverlay overlay);
+	void gst_x_overlay_expose(XOverlayBase overlay);
 
-	void gst_x_overlay_handle_events(XOverlay overlay, boolean handle_events);
+	void gst_x_overlay_handle_events(XOverlayBase overlay, boolean handle_events);
 	
-	boolean	gst_x_overlay_set_render_rectangle(XOverlay overlay, int x, int y, int width, int height);
+	boolean	gst_x_overlay_set_render_rectangle(XOverlayBase overlay, int x, int y, int width, int height);
 }

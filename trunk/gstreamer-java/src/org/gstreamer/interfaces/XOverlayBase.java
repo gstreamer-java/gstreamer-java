@@ -23,24 +23,22 @@ package org.gstreamer.interfaces;
 
 import org.gstreamer.Element;
 
-import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
-import com.sun.jna.Platform;
 
 import static org.gstreamer.lowlevel.GstXOverlayAPI.GSTXOVERLAY_API;
 
 /**
  * Interface for elements providing tuner operations
  */
-public class XOverlay extends GstInterface {
+public class XOverlayBase extends GstInterface {
     /**
      * Wraps the {@link Element} in a <tt>XOverlay</tt> interface
      * 
      * @param element the element to use as a <tt>XOverlay</tt>
      * @return a <tt>XOverlay</tt> for the element
      */
-    public static XOverlay wrap(Element element) {
-        return new XOverlay(element);
+    public static XOverlayBase wrap(Element element) {
+        return new XOverlayBase(element);
     }
     
     /**
@@ -48,7 +46,7 @@ public class XOverlay extends GstInterface {
      * 
      * @param element the element that implements the tuner interface
      */
-    protected XOverlay(Element element) {
+    protected XOverlayBase(Element element) {
         super(element, GSTXOVERLAY_API.gst_x_overlay_get_type());
     }
     
@@ -71,36 +69,6 @@ public class XOverlay extends GstInterface {
     	setWindowHandle(handle);
     }
 
-    /**
-     * Sets the native window for the {@link Element} to use to display video.
-     *
-     * @param window A native window to use to display video, or <tt>null</tt> to
-     * stop using the previously set window.
-     */
-    public void setWindowHandle(java.awt.Component window) {
-        if (window == null) {
-            setWindowHandle(0);
-            return;
-        }
-        if (window.isLightweight())
-            throw new IllegalArgumentException("Component must be a native window");
-        if (Platform.isWindows())
-            GSTXOVERLAY_API.gst_x_overlay_set_window_handle(this, Native.getComponentPointer(window));
-        else
-            setWindowHandle(Native.getComponentID(window));
-    }
-    /**
-     * Sets the native window for the {@link Element} to use to display video.
-     *
-     * @param window A native window to use to display video, or <tt>null</tt> to
-     * stop using the previously set window.
-     * @deprecated use {@link #setWindowHandle(java.awt.Component)} instead
-     */
-    @Deprecated
-    public void setWindowID(java.awt.Component window) {
-    	setWindowHandle(window);
-    }
-       
     /**
      * Tell an overlay that it has been exposed. This will redraw the current frame
      * in the drawable even if the pipeline is PAUSED.
@@ -138,7 +106,7 @@ public class XOverlay extends GstInterface {
      * @param width
      * @param height
      */
-    public boolean setRenderRectangle(XOverlay overlay, int x, int y, int width, int height) {
+    public boolean setRenderRectangle(XOverlayBase overlay, int x, int y, int width, int height) {
     	return GSTXOVERLAY_API.gst_x_overlay_set_render_rectangle(this, x, y, width, height);
     }
 }
