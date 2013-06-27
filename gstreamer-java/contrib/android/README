@@ -1,0 +1,14 @@
+= Using gstreamer-java with gstreamer-sdk-android-arm =
+This is an Android activity example using gstreamer-java, JNA and the android
+pre-built binaries from gstreamer.com.
+== Setup ==
+ * Setup the basic Android/NDK environment as per the instructions provided for the gstreamer-sdk-android
+ * using Eclipse, import this directory as an existing Android source
+ * Add your gstreamer-java project to your build path - set it exportable in the 'Export Order' tab
+ * Add lib/jna-min.jar to your build path - set it exportable in the 'Export Order' tab
+== Build ==
+ * make sure your build environment is set according to instructions provided for the gstreamer-sdk-android
+ * You will need copy libjnidispatch.so to the output native libs directory. Your build command will look something like this:
+ {{{
+cd jna && ndk-build && cp ../lib/libjnidispatch.so ../libs/armeabi
+}}}
