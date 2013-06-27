@@ -107,6 +107,6 @@ public class AndroidSurfaceActivity extends Activity {
 
     static {
         System.loadLibrary("gstreamer_android");
-        System.loadLibrary("tutorial-3");
+        System.loadLibrary("android_jgst");
     }
 }
