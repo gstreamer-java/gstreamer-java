@@ -121,7 +121,7 @@ public class BinTest {
         final AtomicInteger added = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENT_ADDED() {
-            public void elementAdded(Bin bin, Element elem) {
+            public void elementAdded(Bin b, Element elem) {
                 if (elem == e1 || elem == e2) {
                     added.incrementAndGet();
                 }
@@ -139,7 +139,7 @@ public class BinTest {
         final AtomicInteger removed = new AtomicInteger(0);
         
         bin.connect(new Bin.ELEMENT_ADDED() {
-            public void elementAdded(Bin bin, Element elem) {
+            public void elementAdded(Bin b, Element elem) {
                 if (elem == e1 || elem == e2) {
                     removed.incrementAndGet();
                 }
