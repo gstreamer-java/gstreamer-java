@@ -71,6 +71,7 @@ class TestPipe {
         pipe.stop();
     }
 
+    @Override
     protected void finalize() {
         dispose();
     }

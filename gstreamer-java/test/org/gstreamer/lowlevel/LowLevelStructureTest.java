@@ -62,7 +62,7 @@ public class LowLevelStructureTest {
             StringBuilder builder = new StringBuilder("UNTESTABLE:\n");
             for (Class<? extends Structure> struct : untestable) {
                 builder.append(struct.getName());
-                builder.append("\n");
+                builder.append('\n');
             }
             LOG.log(Level.WARNING, builder.toString());
         }
