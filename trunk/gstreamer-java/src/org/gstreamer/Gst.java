@@ -447,7 +447,7 @@ public final class Gst {
                 return (String)f.get(null);
             }
         } catch (NoSuchFieldException e) {
-			e.printStackTrace();
+        	// empty by design to return null in case of missing field
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
