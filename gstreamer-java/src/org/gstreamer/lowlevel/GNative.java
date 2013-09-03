@@ -156,7 +156,8 @@ public final class GNative {
             this.proxy = Proxy.getInvocationHandler(library);
         }
         
-        public Object invoke(Object self, Method method, Object[] args) throws Throwable {
+        @SuppressWarnings("null")
+		public Object invoke(Object self, Method method, Object[] args) throws Throwable {
             int lastArg = args != null ? args.length : 0;
             if (method.isVarArgs())
                 --lastArg;
