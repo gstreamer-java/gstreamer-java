@@ -40,7 +40,7 @@ import org.gstreamer.Message;
 import org.gstreamer.Structure;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.event.BusSyncHandler;
-import org.gstreamer.interfaces.XOverlay;
+import org.gstreamer.swt.overlay.SWTOverlay;
 
 import com.sun.jna.Platform;
 
@@ -95,12 +95,12 @@ public class OverlayPlayer {
                             if (s == null || !s.hasName("prepare-xwindow-id")) {
                                 return BusSyncReply.PASS;
                             }
-                            XOverlay.wrap(videoSink).setWindowHandle(canvas);
+                            SWTOverlay.wrap(videoSink).setWindowHandle(canvas);
                             return BusSyncReply.DROP;
                         }
                     });
                 } else {
-                    XOverlay.wrap(videoSink).setWindowHandle(canvas);
+                    SWTOverlay.wrap(videoSink).setWindowHandle(canvas);
                 } 
                 player.play();       
             }  
