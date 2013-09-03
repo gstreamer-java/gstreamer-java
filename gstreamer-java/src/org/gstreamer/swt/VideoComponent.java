@@ -51,6 +51,8 @@ public class VideoComponent extends Canvas {
 	private boolean showOverlay = false;
 	private boolean showFPS = false;
 	private Color bgColor;
+	private int sizeX = 0, sizeY = 0;
+	private int newX = 0, newY = 0;
 
 	public VideoComponent(final Composite parent, int style) {
 		super(parent, style | SWT.DOUBLE_BUFFERED);
@@ -66,7 +68,8 @@ public class VideoComponent extends Canvas {
 				Point cSize = getSize();
 				if (currentImage != null) {
 					event.gc.setFont(font);
-					int newX = 0, newY = 0;
+					newX = 0;
+					newY = 0;
 					int fps = 0;
 
 					int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
@@ -75,8 +78,9 @@ public class VideoComponent extends Canvas {
 										new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
 					imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
 
+					sizeX = cSize.x;
+					sizeY = cSize.y;
 					if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
-						int sizeX = cSize.x, sizeY = cSize.y;
 						event.gc.setInterpolation(SWT.HIGH);
 						if (keepAspect) {
 							if (((float) currentImage.getWidth() / (float) cSize.x)
@@ -121,6 +125,11 @@ public class VideoComponent extends Canvas {
 			}
 		});
 	}
+
+	public int getSizeX() { return sizeX; }
+	public int getSizeY() { return sizeY; }
+	public int getNewX() { return newX; }
+	public int getNewY() { return newY; }
 
 	/**
 	 * Retrieves the Gstreamer element, representing the video component
