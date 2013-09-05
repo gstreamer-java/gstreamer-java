@@ -19,14 +19,17 @@
 
 package org.gstreamer;
 
+import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
+import static org.junit.Assert.assertEquals;
+
 import org.gstreamer.lowlevel.BaseSrcAPI;
 import org.gstreamer.lowlevel.GObjectAPI;
-import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
-import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GInstanceInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInstance;
+import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -34,9 +37,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.sun.jna.Pointer;
-
-import static org.junit.Assert.assertEquals;
-import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
 /**
  *

@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.gstreamer.lowlevel.GstMiniObjectAPI;
-import org.gstreamer.lowlevel.GstQueryAPI;
 import org.gstreamer.lowlevel.GstNative;
+import org.gstreamer.lowlevel.GstQueryAPI;
 import org.gstreamer.query.ApplicationQuery;
 import org.gstreamer.query.DurationQuery;
 import org.gstreamer.query.FormatsQuery;

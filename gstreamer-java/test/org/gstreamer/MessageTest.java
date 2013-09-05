@@ -27,8 +27,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.GstElementAPI;
+import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.GstTagListAPI;
 import org.gstreamer.message.BufferingMessage;
 import org.gstreamer.message.DurationMessage;
