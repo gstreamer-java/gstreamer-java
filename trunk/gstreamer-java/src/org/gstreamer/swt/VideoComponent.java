@@ -77,9 +77,9 @@ public class VideoComponent extends Canvas {
 										new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
 					imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
 
-					sizeX = cSize.x;
-					sizeY = cSize.y;
 					if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
+						sizeX = cSize.x;
+						sizeY = cSize.y;
 						event.gc.setInterpolation(SWT.HIGH);
 						if (keepAspect) {
 							if (((float) currentImage.getWidth() / (float) cSize.x)
