@@ -19,18 +19,18 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstInterfacesAPI.GSTINTERFACES_API;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.NativeValue;
 import org.gstreamer.lowlevel.GlibAPI.GList;
+import org.gstreamer.lowlevel.NativeValue;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstInterfacesAPI.GSTINTERFACES_API;
 
 /**
  * Base type for all gstreamer interface proxies

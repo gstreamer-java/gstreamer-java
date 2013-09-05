@@ -18,9 +18,10 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Structure;
 import java.util.Collections;
 import java.util.List;
+
+import com.sun.jna.Structure;
 
 /**
  *

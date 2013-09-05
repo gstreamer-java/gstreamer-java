@@ -19,9 +19,9 @@
 
 package org.gstreamer.message;
 
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 
 /**
  * This message is posted by element when a warning notice is required.

@@ -40,12 +40,12 @@ import org.gstreamer.FlowReturn;
 import org.gstreamer.PadDirection;
 import org.gstreamer.PadTemplate;
 import org.gstreamer.lowlevel.BaseSrcAPI;
-import org.gstreamer.lowlevel.GType;
-import org.gstreamer.lowlevel.GstPadTemplateAPI;
 import org.gstreamer.lowlevel.GObjectAPI.GBaseInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GClassInitFunc;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInfo;
+import org.gstreamer.lowlevel.GType;
 import org.gstreamer.lowlevel.GstAPI.GstSegmentStruct;
+import org.gstreamer.lowlevel.GstPadTemplateAPI;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.LongByReference;

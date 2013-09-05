@@ -20,6 +20,9 @@
 package org.gstreamer.lowlevel;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.Bus;
 import org.gstreamer.Caps;
 import org.gstreamer.Clock;
@@ -42,8 +45,6 @@ import org.gstreamer.lowlevel.annotations.IncRef;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GstElement methods

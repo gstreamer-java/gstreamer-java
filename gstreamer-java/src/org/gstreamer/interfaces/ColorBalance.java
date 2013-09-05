@@ -19,14 +19,14 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
+
 import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GstAPI.GstCallback;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstColorBalanceAPI.GSTCOLORBALANCE_API;
 
 public class ColorBalance extends GstInterface {
 	/**

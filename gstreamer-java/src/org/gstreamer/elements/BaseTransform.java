@@ -17,8 +17,8 @@ package org.gstreamer.elements;
 
 import org.gstreamer.Caps;
 import org.gstreamer.ClockTime;
-import org.gstreamer.lowlevel.BaseTransformAPI;
 import org.gstreamer.Element;
+import org.gstreamer.lowlevel.BaseTransformAPI;
 
 public class BaseTransform extends Element {
 	public static final String GTYPE_NAME = "GstBaseTransform";

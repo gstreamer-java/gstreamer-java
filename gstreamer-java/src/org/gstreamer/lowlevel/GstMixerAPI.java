@@ -19,14 +19,15 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.interfaces.Mixer;
 import org.gstreamer.interfaces.MixerTrack;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstMixerAPI extends Library {
 	GstMixerAPI GSTMIXER_API = GstNative.load("gstinterfaces", GstMixerAPI.class);

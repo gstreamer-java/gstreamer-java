@@ -18,9 +18,9 @@
 
 package org.gstreamer;
 
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
-
 import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
+
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 
 /**
  * Base gstreamer error type.

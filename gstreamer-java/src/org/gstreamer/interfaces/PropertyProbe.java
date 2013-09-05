@@ -21,16 +21,16 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstPropertyProbeAPI.GSTPROPERTYPROBE_API;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.gstreamer.Element;
-import org.gstreamer.lowlevel.GlibAPI.GList;
 import org.gstreamer.lowlevel.GValueAPI.GValueArray;
+import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Pointer;
-
-import static org.gstreamer.lowlevel.GstPropertyProbeAPI.GSTPROPERTYPROBE_API;
 
 /**
  * Interface for elements that provide mixer operations

@@ -21,8 +21,8 @@ package org.gstreamer.controller;
 import java.util.logging.Logger;
 
 import org.gstreamer.GObject;
-import org.gstreamer.GstException;
 import org.gstreamer.Gst.NativeArgs;
+import org.gstreamer.GstException;
 import org.gstreamer.lowlevel.GstControllerAPI;
 import org.gstreamer.lowlevel.GstNative;
 

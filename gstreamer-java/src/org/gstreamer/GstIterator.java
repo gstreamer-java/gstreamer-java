@@ -24,9 +24,9 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gstreamer.lowlevel.GstIteratorAPI;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.NativeObject;
-import org.gstreamer.lowlevel.GstIteratorAPI;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;

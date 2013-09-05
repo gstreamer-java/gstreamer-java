@@ -18,14 +18,15 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.controller.LFOControlSource;
 import org.gstreamer.lowlevel.GstControlSourceAPI.GstControlSourceClass;
 import org.gstreamer.lowlevel.GstControlSourceAPI.GstControlSourceStruct;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstLFOControlSourceAPI extends Library {
 	GstLFOControlSourceAPI GSTLFOCONTROLSOURCE_API = GstNative.load("gstcontroller", GstLFOControlSourceAPI.class);

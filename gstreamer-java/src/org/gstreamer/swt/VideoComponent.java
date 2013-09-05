@@ -18,11 +18,11 @@
 
 package org.gstreamer.swt;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.nio.IntBuffer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -35,7 +35,6 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.gstreamer.Element;
 import org.gstreamer.elements.RGBDataSink;
 
 public class VideoComponent extends Canvas {
@@ -136,7 +135,7 @@ public class VideoComponent extends Canvas {
 	 * 
 	 * @return element
 	 */
-	public Element getElement() {
+	public RGBDataSink getElement() {
 		return videosink;
 	}
 

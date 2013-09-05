@@ -19,10 +19,10 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstNavigationAPI.GSTNAVIGATION_API;
+
 import org.gstreamer.Element;
 import org.gstreamer.Structure;
-
-import static org.gstreamer.lowlevel.GstNavigationAPI.GSTNAVIGATION_API;
 
 public class Navigation extends GstInterface {
 	/**

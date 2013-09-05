@@ -20,7 +20,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.gstreamer.GObject;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
@@ -29,8 +31,6 @@ import org.gstreamer.lowlevel.annotations.Invalidate;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *

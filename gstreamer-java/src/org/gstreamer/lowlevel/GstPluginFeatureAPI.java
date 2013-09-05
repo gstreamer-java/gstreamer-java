@@ -21,6 +21,7 @@ package org.gstreamer.lowlevel;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.gstreamer.PluginFeature;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 

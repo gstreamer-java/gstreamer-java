@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.interfaces.Tuner;
 import org.gstreamer.interfaces.TunerChannel;
 import org.gstreamer.interfaces.TunerNorm;
@@ -28,8 +31,6 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstTunerAPI extends Library {
     GstTunerAPI GSTTUNER_API = GstNative.load("gstinterfaces", GstTunerAPI.class);

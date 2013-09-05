@@ -19,8 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Pointer;
 import static org.gstreamer.lowlevel.GlibAPI.GLIB_API;
+
+import com.sun.jna.Pointer;
 
 /**
  *

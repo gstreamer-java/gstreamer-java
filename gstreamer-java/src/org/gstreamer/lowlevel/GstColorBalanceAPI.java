@@ -19,14 +19,15 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.interfaces.ColorBalance;
 import org.gstreamer.interfaces.ColorBalanceChannel;
 import org.gstreamer.lowlevel.GlibAPI.GList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstColorBalanceAPI extends Library {
 	GstColorBalanceAPI GSTCOLORBALANCE_API = GstNative.load("gstinterfaces", GstColorBalanceAPI.class);
