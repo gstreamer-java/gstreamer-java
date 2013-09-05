@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.gstreamer.StreamInfo.StreamType;
-import org.gstreamer.elements.*;
+import org.gstreamer.elements.PlayBin;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

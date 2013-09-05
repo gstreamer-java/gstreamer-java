@@ -26,11 +26,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.lowlevel.GstBusAPI;
 import org.gstreamer.lowlevel.GstElementAPI;
 import org.gstreamer.lowlevel.GstMessageAPI;
 import org.gstreamer.lowlevel.GstNative;
-import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
 import org.gstreamer.message.EOSMessage;
 import org.gstreamer.message.StateChangedMessage;
 import org.junit.After;

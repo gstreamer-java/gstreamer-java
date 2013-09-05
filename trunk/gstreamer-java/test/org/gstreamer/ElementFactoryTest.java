@@ -28,7 +28,11 @@ import java.util.List;
 
 import org.gstreamer.ElementFactory.ElementFactoryListType;
 import org.gstreamer.PluginFeature.Rank;
-import org.gstreamer.elements.*;
+import org.gstreamer.elements.DecodeBin;
+import org.gstreamer.elements.DecodeBin2;
+import org.gstreamer.elements.PlayBin;
+import org.gstreamer.elements.PlayBin2;
+import org.gstreamer.elements.TypeFind;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
