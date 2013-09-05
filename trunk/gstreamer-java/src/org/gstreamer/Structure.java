@@ -20,11 +20,11 @@
 package org.gstreamer;
 
 import org.gstreamer.lowlevel.GType;
+import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.GstNative;
 import org.gstreamer.lowlevel.GstStructureAPI;
 import org.gstreamer.lowlevel.GstValueAPI;
 import org.gstreamer.lowlevel.NativeObject;
-import org.gstreamer.lowlevel.GValueAPI.GValue;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 import com.sun.jna.Pointer;

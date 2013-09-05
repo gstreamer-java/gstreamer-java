@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.ActivateMode;
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
@@ -37,9 +40,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.Union;
 import com.sun.jna.ptr.LongByReference;
-import java.util.Arrays;
-import java.util.List;
-//import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
 public interface BaseSrcAPI extends Library {
 	BaseSrcAPI BASESRC_API = GstNative.load("gstbase", BaseSrcAPI.class);

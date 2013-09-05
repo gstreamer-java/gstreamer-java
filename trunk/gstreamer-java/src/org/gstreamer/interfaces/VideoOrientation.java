@@ -19,9 +19,9 @@
 
 package org.gstreamer.interfaces;
 
-import org.gstreamer.Element;
-
 import static org.gstreamer.lowlevel.GstVideoOrientationAPI.GSTVIDEOORIENTATION_API;
+
+import org.gstreamer.Element;
 
 public class VideoOrientation extends GstInterface {
 	/**

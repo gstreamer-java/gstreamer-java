@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.ClockTime;
 import org.gstreamer.Format;
 import org.gstreamer.Query;
@@ -29,8 +32,6 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GstQuery functions

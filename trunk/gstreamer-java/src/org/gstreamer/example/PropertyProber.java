@@ -22,8 +22,11 @@
 
 package org.gstreamer.example;
 
-import org.gstreamer.*;
-import org.gstreamer.interfaces.*;
+import org.gstreamer.Element;
+import org.gstreamer.ElementFactory;
+import org.gstreamer.Gst;
+import org.gstreamer.interfaces.Property;
+import org.gstreamer.interfaces.PropertyProbe;
 
 public class PropertyProber {
 	public static void main(String[] args) {

@@ -19,14 +19,15 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.MiniObject;
 import org.gstreamer.lowlevel.GObjectAPI.GTypeInstance;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.Invalidate;
 
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GstMiniObject functions

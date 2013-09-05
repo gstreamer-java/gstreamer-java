@@ -18,6 +18,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.ClockTime;
 import org.gstreamer.GObject;
 import org.gstreamer.controller.ControlSource;
@@ -28,8 +31,6 @@ import org.gstreamer.lowlevel.GValueAPI.GValue;
 import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstControlSourceAPI extends Library {
 	GstControlSourceAPI GSTCONTROLSOURCE_API = GstNative.load("gstcontroller", GstControlSourceAPI.class);

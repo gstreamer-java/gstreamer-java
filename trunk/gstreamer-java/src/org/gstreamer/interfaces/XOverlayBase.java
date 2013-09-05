@@ -21,11 +21,11 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstXOverlayAPI.GSTXOVERLAY_API;
+
 import org.gstreamer.Element;
 
 import com.sun.jna.NativeLong;
-
-import static org.gstreamer.lowlevel.GstXOverlayAPI.GSTXOVERLAY_API;
 
 /**
  * Interface for elements providing tuner operations

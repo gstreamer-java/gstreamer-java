@@ -19,6 +19,7 @@
 package org.gstreamer;
 
 import static org.gstreamer.lowlevel.GstValueAPI.GSTVALUE_API;
+
 import org.gstreamer.lowlevel.GValueAPI.GValue;
 
 /**

@@ -18,6 +18,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.ClockTime;
 import org.gstreamer.controller.ControlSource;
 import org.gstreamer.controller.InterpolationControlSource;
@@ -27,8 +30,6 @@ import org.gstreamer.lowlevel.GlibAPI.GSList;
 
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 public interface GstInterpolationControlSourceAPI extends Library {
 	GstInterpolationControlSourceAPI GSTINTERPOLATIONCONTROLSOURCE_API 

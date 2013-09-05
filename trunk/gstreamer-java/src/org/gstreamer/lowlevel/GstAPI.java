@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.Format;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 
@@ -26,8 +29,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  *

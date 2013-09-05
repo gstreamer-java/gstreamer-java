@@ -20,13 +20,13 @@
 
 package org.gstreamer.interfaces;
 
+import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.gstreamer.Element;
 import org.gstreamer.lowlevel.GlibAPI.GList;
-
-import static org.gstreamer.lowlevel.GstMixerAPI.GSTMIXER_API;
 
 /**
  * Interface for elements that provide mixer operations

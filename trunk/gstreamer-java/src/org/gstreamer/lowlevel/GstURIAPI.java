@@ -18,11 +18,11 @@
 
 package org.gstreamer.lowlevel;
 
-import com.sun.jna.Library;
-import com.sun.jna.Pointer;
-
 import org.gstreamer.URIType;
 import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
+
+import com.sun.jna.Library;
+import com.sun.jna.Pointer;
 
 /**
  * The URIHandler is an interface that is implemented by Source and Sink GstElement to simplify then handling of URI.

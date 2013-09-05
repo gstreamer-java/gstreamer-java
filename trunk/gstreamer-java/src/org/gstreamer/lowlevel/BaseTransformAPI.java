@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.ClockTime;
@@ -35,8 +38,6 @@ import com.sun.jna.Callback;
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import java.util.Arrays;
-import java.util.List;
 
 public interface BaseTransformAPI extends Library {
 	BaseTransformAPI BASETRANSFORM_API = GstNative.load("gstbase", BaseTransformAPI.class);

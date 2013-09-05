@@ -20,7 +20,10 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.gstreamer.GObject;
 import org.gstreamer.glib.GQuark;
@@ -31,9 +34,6 @@ import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  *

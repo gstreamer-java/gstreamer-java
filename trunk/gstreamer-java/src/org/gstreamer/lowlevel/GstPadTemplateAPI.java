@@ -19,6 +19,9 @@
 
 package org.gstreamer.lowlevel;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.gstreamer.Caps;
 import org.gstreamer.Pad;
 import org.gstreamer.PadDirection;
@@ -29,8 +32,6 @@ import org.gstreamer.lowlevel.annotations.CallerOwnsReturn;
 import org.gstreamer.lowlevel.annotations.IncRef;
 
 import com.sun.jna.Pointer;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GstPadTemplate functions

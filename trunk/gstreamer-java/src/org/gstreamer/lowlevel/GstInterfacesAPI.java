@@ -21,6 +21,7 @@
 package org.gstreamer.lowlevel;
 
 import org.gstreamer.Element;
+
 import com.sun.jna.Library;
 import com.sun.jna.Pointer;
 
