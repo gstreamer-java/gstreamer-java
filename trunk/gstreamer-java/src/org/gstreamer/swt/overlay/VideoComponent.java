@@ -83,7 +83,7 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		addDisposeListener(this);
 
 		Element colorspace = ElementFactory.make("ffmpegcolorspace", "colorspace" + counter);
-		Element videoscale = ElementFactory.make("ffvideoscale", "videoscale" + counter);
+		Element videoscale = ElementFactory.make("videoscale", "videoscale" + counter);
 		autosink = (Bin)ElementFactory.make("autovideosink", "VideoComponent" + counter++);
 		sink.addMany(colorspace, videoscale, autosink);
 		Element.linkMany(colorspace, videoscale, autosink);
