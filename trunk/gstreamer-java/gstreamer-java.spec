@@ -2,14 +2,16 @@
 
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
-Version:	1.5
+Version:	1.6
 Release:	1%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
 URL:		http://code.google.com/p/gstreamer-java/
 # zip -r ~/rpm/SOURCES/gstreamer-java-src-1.5.zip gstreamer-java -x \*/.svn*
 Source:		http://gstreamer-java.googlecode.com/files/%{name}-src-%{version}.zip
-Patch1:		gstreamer-java-swt.patch
+#Patch1:	gstreamer-java-xxx.patch
+Patch100:	gstreamer-java-swt.patch
+Patch101:	gstreamer-java-osx.patch
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 # for ExcludeArch and no noarch see bug: 468831
 # since noarch pacakge can't contain ExcludeArch :-( imho it's an rpm bug
@@ -26,9 +28,6 @@ BuildRequires:	ant, ant-junit
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
 BuildRequires:	junit4
 %endif
-%ifarch %{arch_with_swt} noarch
-BuildRequires:	libswt3-gtk2, jna-contrib
-%endif
 
 %description
 An unofficial/alternative set of java bindings for the gstreamer multimedia
@@ -39,11 +38,20 @@ framework.
 Summary:	SWT support for %{name}
 Group:		System Environment/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	libswt3-gtk2, jna-contrib
+Requires:	jna-contrib
+BuildRequires:	jna-contrib
+%if 0%{?fedora} >= 9 || 0%{?rhel} > 5
+Requires:	eclipse-swt
+BuildRequires:	eclipse-swt
+%else
+Requires:	libswt3-gtk2
+BuildRequires:	libswt3-gtk2
+%endif
 
 %description swt
 This package contains SWT support for %{name}.
 %endif
+
 %package javadoc
 Summary:	Javadocs for %{name}
 Group:		Documentation
@@ -56,8 +64,10 @@ This package contains the API documentation for %{name}.
 
 %prep
 %setup -q -n %{name}
+#patch1 -p1 -b .xxx
 %ifarch %{arch_with_swt} noarch
-%patch1 -p1 -b .swt
+%patch100 -p1 -b .swt
+%patch101 -p1 -b .osx
 # replace included jar files with the system packaged version SWT
 sed -i -e "s,\(file.reference.swt.jar=\).*,\1$(find %{_libdir} -name swt*.jar 2>/dev/null|sort|head -1)," \
 	nbproject/project.properties
@@ -122,6 +132,25 @@ rm -rf %{buildroot}
 %{_javadocdir}/%{name}
 
 %changelog
+* Wed Jan  8 2014 Levente Farkas <lfarkas@lfarkas.org> - 1.6-1
+- 1.6 release
+
+* Fri Aug  3 2012 Levente Farkas <lfarkas@lfarkas.org> - 1.5-6
+- fir BR/R for all target
+
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.5-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.5-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Mon Oct 17 2011 Levente Farkas <lfarkas@lfarkas.org> - 1.5-3
+- Fix BR/R for all target
+- Fix OSX bits
+
+* Fri Oct 14 2011 Alexander Kurtakov <akurtako@redhat.com> 1.5-2
+- Do not use libswt3-gtk2 BR/R (gtk2 is implementation detail for swt and has been removed).
+
 * Wed Dec  1 2010 Levente Farkas <lfarkas@lfarkas.org> - 1.5-0
 - update spec and bump version to 1.5
 
