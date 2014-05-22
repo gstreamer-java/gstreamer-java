@@ -67,8 +67,8 @@ public class CapsTest {
     // public void hello() {}
     @Test
     public void capsMerge() {
-        Caps caps1 = new Caps("video/x-raw-rgb, bpp=32, depth=24");
-        Caps caps2 = new Caps("video/x-raw-rgb, width=640, height=480");
+        Caps caps1 = new Caps("video/x-raw, format=RGB, bpp=32, depth=24");
+        Caps caps2 = new Caps("video/x-raw, format=RGB, width=640, height=480");
         caps1.merge(caps2);
         // Verify that the victim caps were invalidated and cannot be used.
         try {
@@ -91,8 +91,8 @@ public class CapsTest {
     
     @Test
     public void capsAppend() {
-        Caps caps1 = new Caps("video/x-raw-rgb, bpp=32, depth=24");
-        Caps caps2 = new Caps("video/x-raw-rgb, width=640, height=480");
+        Caps caps1 = new Caps("video/x-raw, format=RGB, bpp=32, depth=24");
+        Caps caps2 = new Caps("video/x-raw, format=RGB, width=640, height=480");
         caps1.append(caps2);
         // Verify that the victim caps were invalidated and cannot be used.
         try {
@@ -113,12 +113,12 @@ public class CapsTest {
         assertTrue("height not appended", heightFound);
     }
     private static final String non_simple_caps_string =
-        "video/x-raw-yuv, format=(fourcc)I420, framerate=(fraction)[ 1/100, 100 ], "
-        + "width=(int)[ 16, 4096 ], height=(int)[ 16, 4096 ]; video/x-raw-yuv, "
+        "video/x-raw, format=(fourcc)I420, framerate=(fraction)[ 1/100, 100 ], "
+        + "width=(int)[ 16, 4096 ], height=(int)[ 16, 4096 ]; video/x-raw, "
         + "format=(fourcc)YUY2, framerate=(fraction)[ 1/100, 100 ], width=(int)[ 16, 4096 ], "
-        + "height=(int)[ 16, 4096 ]; video/x-raw-rgb, bpp=(int)8, depth=(int)8, "
+        + "height=(int)[ 16, 4096 ]; video/x-raw, format=RGB, bpp=(int)8, depth=(int)8, "
         + "endianness=(int)1234, framerate=(fraction)[ 1/100, 100 ], width=(int)[ 16, 4096 ], "
-        + "height=(int)[ 16, 4096 ]; video/x-raw-yuv, "
+        + "height=(int)[ 16, 4096 ]; video/x-raw, "
         + "format=(fourcc){ I420, YUY2, YV12 }, width=(int)[ 16, 4096 ], "
         + "height=(int)[ 16, 4096 ], framerate=(fraction)[ 1/100, 100 ]";
     @Test
@@ -128,10 +128,10 @@ public class CapsTest {
         assertTrue("Could not simplify caps", caps.simplify());
         /* check simplified caps, should be:
          *
-         * video/x-raw-rgb, bpp=(int)8, depth=(int)8, endianness=(int)1234,
+         * video/x-raw, format=RGB, bpp=(int)8, depth=(int)8, endianness=(int)1234,
          *     framerate=(fraction)[ 1/100, 100 ], width=(int)[ 16, 4096 ],
          *     height=(int)[ 16, 4096 ];
-         * video/x-raw-yuv, format=(fourcc){ YV12, YUY2, I420 },
+         * video/x-raw, format=(fourcc){ YV12, YUY2, I420 },
          *     width=(int)[ 16, 4096 ], height=(int)[ 16, 4096 ],
          *     framerate=(fraction)[ 1/100, 100 ]
          */
@@ -140,16 +140,16 @@ public class CapsTest {
         assertNotNull("Caps.getStructure(0) failed", s1);
         Structure s2 = caps.getStructure(1);
         assertNotNull("Caps.getStructure(1) failed", s2);
-        if (!s1.hasName("video/x-raw-rgb")) {
+        if (!s1.hasName("video/x-raw")) {
             Structure tmp = s1;
             s1 = s2;
             s2 = tmp;
         }
-        assertTrue("Could not locate video/x-raw-rgb structure", s1.hasName("video/x-raw-rgb"));
+        assertTrue("Could not locate video/x-raw structure", s1.hasName("video/x-raw"));
         assertEquals("bpp not retrieved", 8, s1.getInteger("bpp"));
         assertEquals("depth not retrieved", 8, s1.getInteger("depth"));
         
-        assertTrue("Could not locate video/x-raw-yuv structure", s2.hasName("video/x-raw-yuv"));
+        assertTrue("Could not locate video/x-raw structure", s2.hasName("video/x-raw"));
     }
     @Test
     public void truncate() {
@@ -163,7 +163,7 @@ public class CapsTest {
     @Test
     public void mergeANYAndSpecific() {
         /* ANY + specific = ANY */
-        Caps c1 = Caps.fromString("audio/x-raw-int,rate=44100");
+        Caps c1 = Caps.fromString("audio/x-raw,rate=44100");
         Caps c2 = Caps.anyCaps();
         c2.merge(c1);
         assertEquals("Too many structures in merged caps", 0, c2.size());
@@ -174,7 +174,7 @@ public class CapsTest {
     @Test
     public void mergeSpecificAndANY() {
         /* specific + ANY = ANY */
-        Caps c2 = Caps.fromString("audio/x-raw-int,rate=44100");
+        Caps c2 = Caps.fromString("audio/x-raw,rate=44100");
         Caps c1 = Caps.anyCaps();
         c2.merge(c1);
         assertEquals("Too many structures in merged caps", 0, c2.size());
@@ -185,7 +185,7 @@ public class CapsTest {
     @Test
     public void mergeSpecificAndEMPTY() {
         /* EMPTY + specific = specific */
-        Caps c1 = Caps.fromString("audio/x-raw-int,rate=44100");
+        Caps c1 = Caps.fromString("audio/x-raw,rate=44100");
         Caps c2 = Caps.emptyCaps();
         c2.merge(c1);
         assertEquals("Wrong number of structures in merged structure", 1, c2.size());
@@ -196,7 +196,7 @@ public class CapsTest {
     @Test
     public void mergeEMPTYAndSpecific() {
         /* specific + EMPTY = specific */
-        Caps c2 = Caps.fromString("audio/x-raw-int,rate=44100");
+        Caps c2 = Caps.fromString("audio/x-raw,rate=44100");
         Caps c1 = Caps.emptyCaps();
         c2.merge(c1);
         assertEquals("Merged Caps structure count incorrect", 1, c2.size());
@@ -207,8 +207,8 @@ public class CapsTest {
     @Test 
     public void mergeSame() {
         /* this is the same */
-        Caps c1 = Caps.fromString("audio/x-raw-int,rate=44100,channels=1");
-        Caps c2 = Caps.fromString("audio/x-raw-int,rate=44100,channels=1");
+        Caps c1 = Caps.fromString("audio/x-raw,rate=44100,channels=1");
+        Caps c2 = Caps.fromString("audio/x-raw,rate=44100,channels=1");
         c2.merge(c1);
         assertEquals("Merged Caps structure count incorrect", 1, c2.size());
         // Force cleanup to bring out any memory bugs
@@ -217,8 +217,8 @@ public class CapsTest {
     @Test 
     public void mergeSameWithDifferentOrder() {
         /* and so is this */
-        Caps c1 = Caps.fromString("audio/x-raw-int,rate=44100,channels=1");
-        Caps c2 = Caps.fromString("audio/x-raw-int,channels=1,rate=44100");
+        Caps c1 = Caps.fromString("audio/x-raw,rate=44100,channels=1");
+        Caps c2 = Caps.fromString("audio/x-raw,channels=1,rate=44100");
         c2.merge(c1);
         assertEquals("Merged Caps structure count incorrect", 1, c2.size());
         // Force cleanup to bring out any memory bugs
@@ -258,8 +258,8 @@ public class CapsTest {
     }
     @Test public void mergeSubset() {
         /* the 2nd is already covered */
-        Caps c2 = Caps.fromString("audio/x-raw-int,channels=[1,2]");
-        Caps c1 = Caps.fromString("audio/x-raw-int,channels=1");
+        Caps c2 = Caps.fromString("audio/x-raw,channels=[1,2]");
+        Caps c1 = Caps.fromString("audio/x-raw,channels=1");
         c2.merge(c1);
         assertEquals("Merged Caps structure count incorrect", 1, c2.size());
         // Force cleanup to bring out any memory bugs
@@ -267,22 +267,22 @@ public class CapsTest {
     }
     @Test public void mergeNonSubset() {
         /* here it is not */
-        Caps c2 = Caps.fromString("audio/x-raw-int,channels=1,rate=44100");
-        Caps c1 = Caps.fromString("audio/x-raw-int,channels=[1,2],rate=44100");
+        Caps c2 = Caps.fromString("audio/x-raw,channels=1,rate=44100");
+        Caps c1 = Caps.fromString("audio/x-raw,channels=[1,2],rate=44100");
         c2.merge(c1);
         assertEquals("Merged Caps structure count incorrect", 2, c2.size());
         // Force cleanup to bring out any memory bugs
         c2.dispose(); c1.dispose();
     }
     @Test public void intersect() {
-        Caps c2 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=20");
-        Caps c1 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,height=30");
+        Caps c2 = Caps.fromString("video/x-raw,format=(fourcc)I420,width=20");
+        Caps c1 = Caps.fromString("video/x-raw,format=(fourcc)I420,height=30");
 
         Caps ci1 = c2.intersect(c1);
         assertEquals("Intersected Caps structure count incorrect", 1, ci1.size());
         
         Structure s = ci1.getStructure(0);
-        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw-yuv"));
+        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw"));
         assertTrue("Intersected structure does not have 'format' field", s.hasField("format"));
         assertTrue("Intersected structure does not have 'width' field", s.hasField("width"));
         assertTrue("Intersected structure does not have 'height' field", s.hasField("height"));
@@ -291,7 +291,7 @@ public class CapsTest {
         Caps ci2 = c1.intersect(c2);
         assertEquals("Intersected Caps structure count incorrect", 1, ci2.size());
         s = ci2.getStructure(0);
-        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw-yuv"));
+        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw"));
         assertTrue("Intersected structure does not have 'format' field", s.hasField("format"));
         assertTrue("Intersected structure does not have 'width' field", s.hasField("width"));
         assertTrue("Intersected structure does not have 'height' field", s.hasField("height"));
@@ -303,13 +303,13 @@ public class CapsTest {
     @Test public void intersectUnspecified() {
         /* field not specified = any value possible, so the intersection
          * should keep fields which are only part of one set of caps */
-        Caps c2 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=20");
-        Caps c1 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420");
+        Caps c2 = Caps.fromString("video/x-raw,format=(fourcc)I420,width=20");
+        Caps c1 = Caps.fromString("video/x-raw,format=(fourcc)I420");
 
         Caps ci1 = c2.intersect(c1);
         assertEquals("Intersected Caps structure count incorrect", 1, ci1.size());
         Structure s = ci1.getStructure(0);
-        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw-yuv"));
+        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw"));
         assertTrue("Intersected structure does not have 'format' field", s.hasField("format"));
         assertTrue("Intersected structure does not have 'width' field", s.hasField("width"));
         
@@ -318,7 +318,7 @@ public class CapsTest {
         Caps ci2 = c1.intersect(c2);
         assertEquals("Intersected Caps structure count incorrect", 1, ci2.size());
         s = ci2.getStructure(0);
-        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw-yuv"));
+        assertTrue("Incorrect name on intersected structure", s.hasName("video/x-raw"));
         assertTrue("Intersected structure does not have 'format' field", s.hasField("format"));
         assertTrue("Intersected structure does not have 'width' field", s.hasField("width"));
         assertTrue("Intersection should be same in both directions", ci1.isEqual(ci2));
@@ -326,8 +326,8 @@ public class CapsTest {
         c2.dispose(); c1.dispose(); ci1.dispose(); ci2.dispose();
     }
     @Test public void intersectUnequal() {
-        Caps c2 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=20");
-        Caps c1 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=30");
+        Caps c2 = Caps.fromString("video/x-raw,format=(fourcc)I420,width=20");
+        Caps c1 = Caps.fromString("video/x-raw,format=(fourcc)I420,width=30");
 
         Caps ci1 = c2.intersect(c1);
         assertTrue("Intersection of unequal caps should be empty", ci1.isEmpty());
@@ -340,8 +340,8 @@ public class CapsTest {
     }
     
     @Test public void intersectDifferentType() {
-        Caps c2 = Caps.fromString("video/x-raw-yuv,format=(fourcc)I420,width=20");
-        Caps c1 = Caps.fromString("video/x-raw-rgb,format=(fourcc)I420,width=20");
+        Caps c2 = Caps.fromString("video/x-raw,format=(fourcc)I420,width=20");
+        Caps c1 = Caps.fromString("video/x-raw,format=RGB,width=20");
 
         Caps ci1 = c2.intersect(c1);
         assertTrue("Intersection of different type caps should be empty", ci1.isEmpty());
