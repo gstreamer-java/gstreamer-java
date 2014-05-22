@@ -37,7 +37,7 @@ public class GDate extends NativeObject {
     	return new GDate(GlibAPI.GLIB_API.g_date_new_julian(julian_day), false, true);
     }
     
-    public static final GType GTYPE = GSTDATETIME_API.gst_date_get_type();
+    public static final GType GTYPE = GSTDATETIME_API.gst_date_time_get_type();
 
     public GDate(Initializer init) {
         super(init);

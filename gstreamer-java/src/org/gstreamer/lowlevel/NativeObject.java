@@ -132,7 +132,7 @@ public abstract class NativeObject extends org.gstreamer.lowlevel.Handle {
         return handle();
     }
     protected Pointer handle() {
-        if (!valid.get()) {
+        if (!valid.get() || disposed.get()) {
             throw new IllegalStateException("Native object has been disposed");
         }
         return handle;
