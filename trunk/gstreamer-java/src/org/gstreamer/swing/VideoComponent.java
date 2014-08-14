@@ -319,11 +319,11 @@ public class VideoComponent extends javax.swing.JComponent {
                     volatileImage.flush();
                     volatileImage = null;
                 }
-                frameRendered = false;
 
                 // Stop the timer so we don't wakeup needlessly
                 resourceTimer.stop();
             }
+            frameRendered = false;
         }
     };
     public Element getElement() {
