@@ -1,10 +1,8 @@
-## gstreamer-java
-
-Automatically exported from code.google.com/p/gstreamer-java
+## gstreamer-java (0.10 compatible)
 
 An unofficial/alternative set of java bindings for the gstreamer multimedia framework.
 
-Please use the gstreamer-java google group to discuss using gstreamer-java or to ask any questions. See wiki page GettingHelp for additional information.
+Please use the [gstreamer-java google group](https://groups.google.com/forum/#!forum/gstreamer-java) to discuss using gstreamer-java or to ask any questions.
 
 Although gstreamer is commonly associated with the gnome desktop, gstreamer itself, and these bindings are portable across operating systems.
 
