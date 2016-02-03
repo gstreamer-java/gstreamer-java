@@ -41,7 +41,7 @@ public class AppSink extends BaseSink {
         super(init);
     }
     
-    protected AppSink(String name) {
+    public AppSink(String name) {
     	this(makeRawElement(GST_NAME, name));
     }
 

@@ -50,7 +50,6 @@ import org.gstreamer.elements.Identity;
 import org.gstreamer.elements.InputSelector;
 import org.gstreamer.elements.MultiFdSink;
 import org.gstreamer.elements.MultiQueue;
-import org.gstreamer.elements.OSXVideoSink;
 import org.gstreamer.elements.PlayBin;
 import org.gstreamer.elements.PlayBin2;
 import org.gstreamer.elements.Queue;
@@ -525,7 +524,7 @@ public final class Gst {
 		InputSelector.class,
 		MultiFdSink.class,
 		MultiQueue.class,
-		OSXVideoSink.class,
+		// OSXVideoSink.class,
 		// OutputSelector.class,
 		Pipeline.class,
 		PlayBin.class,

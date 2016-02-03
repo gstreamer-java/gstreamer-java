@@ -122,6 +122,13 @@ public class VideoComponent extends Canvas implements BusSyncHandler, DisposeLis
 		this(parent, style, false);
 	}
 
+	@Override
+	public boolean setParent(final Composite parent) {
+		boolean ret = super.setParent(parent);
+		setOverlay();
+		return ret;
+	}
+
 	/**
 	 * Dispose this Widget
 	 */

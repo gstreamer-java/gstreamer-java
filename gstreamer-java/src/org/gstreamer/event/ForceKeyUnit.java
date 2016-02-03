@@ -19,7 +19,6 @@ package org.gstreamer.event;
 
 import org.gstreamer.ClockTime;
 import org.gstreamer.Event;
-import org.gstreamer.Format;
 import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Pointer;

@@ -19,7 +19,6 @@
 
 package org.gstreamer;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -200,15 +199,15 @@ public class ElementFactoryTest {
         Element elem = ElementFactory.make("typefind", "foo");
         assertTrue("typefind element not instance of TypeFind", elem instanceof TypeFind);
     }
-    @Test
-    public void getStaticPadTemplates() {
-        ElementFactory f = ElementFactory.find("fakesink");
-        List<StaticPadTemplate> templates = f.getStaticPadTemplates();
-        assertTrue("No static pad templates found", !templates.isEmpty());
-        StaticPadTemplate t = templates.get(0);
-        assertEquals("Not a sink", "sink", t.getName());
-        assertEquals("Not a sink", PadDirection.SINK, t.getDirection());
-    }
+//    @Test
+//    public void getStaticPadTemplates() {
+//        ElementFactory f = ElementFactory.find("fakesink");
+//        List<StaticPadTemplate> templates = f.getStaticPadTemplates();
+//        assertTrue("No static pad templates found", !templates.isEmpty());
+//        StaticPadTemplate t = templates.get(0);
+//        assertEquals("Not a sink", "sink", t.getName());
+//        assertEquals("Not a sink", PadDirection.SINK, t.getDirection());
+//    }
 
     @Test
     public void listGetElement() {

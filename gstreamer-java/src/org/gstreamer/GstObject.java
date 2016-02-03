@@ -139,6 +139,7 @@ public class GstObject extends GObject {
      * @param listener The listener being added.
      * @param proxy Proxy for the event listener.
      */
+    @SuppressWarnings("rawtypes")
     protected synchronized void addListenerProxy(Class<? extends EventListener> listenerClass, EventListener listener, EventListenerProxy proxy) {
         Map<EventListener, EventListenerProxy> map = getListenerMap().get(listenerClass);
         /*
@@ -160,6 +161,7 @@ public class GstObject extends GObject {
      * @param listener The listener the proxy was added for.
      * @return The proxy that was removed, or null if no proxy was found.
      */
+    @SuppressWarnings("rawtypes")
     protected synchronized EventListenerProxy removeListenerProxy(Class<? extends EventListener> listenerClass, EventListener listener) {
         Map<EventListener, EventListenerProxy> map = getListenerMap().get(listenerClass);
         if (map == null) {
@@ -178,6 +180,7 @@ public class GstObject extends GObject {
         }
         return proxy;
     }
+    @SuppressWarnings("rawtypes")
     private Map<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>> getListenerMap() {
         if (listenerMap == null) {
             listenerMap = new HashMap<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>>();
@@ -185,6 +188,7 @@ public class GstObject extends GObject {
         return listenerMap;
     }
     
+    @SuppressWarnings("rawtypes")
     private Map<Class<? extends EventListener>, Map<EventListener, EventListenerProxy>> listenerMap;
 
 }

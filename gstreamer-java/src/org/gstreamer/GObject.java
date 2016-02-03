@@ -51,6 +51,8 @@ import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
 
 import com.sun.jna.Callback;
+import com.sun.jna.CallbackThreadInitializer;
+import com.sun.jna.Native;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
@@ -447,6 +449,8 @@ public abstract class GObject extends RefCountedObject {
         return GOBJECT_API.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
 
+    private final static CallbackThreadInitializer cbi = new CallbackThreadInitializer(true, false, "GCallback");
+
     abstract protected class GCallback {
         protected final Callback cb;
         protected final NativeLong id;
@@ -527,6 +531,7 @@ public abstract class GObject extends RefCountedObject {
     }
     
     public synchronized <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
+        Native.setCallbackThreadInitializer(cb, cbi);
         addCallback(listenerClass, listener, new SignalCallback(signal, cb));
     }
     
@@ -627,7 +632,6 @@ public abstract class GObject extends RefCountedObject {
                     }
                     methodParameters[i] = javaParam;
                 }
-                
                 return method.invoke(closure, methodParameters);
             } catch (Throwable t) {
                 return Integer.valueOf(0);

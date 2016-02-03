@@ -17,13 +17,8 @@
  */
 package org.gstreamer.event;
 
-import static org.junit.Assert.*;
-
-import org.gstreamer.Bus;
 import org.gstreamer.ClockTime;
-import org.gstreamer.Element;
 import org.gstreamer.Gst;
-import org.gstreamer.lowlevel.GstEventAPI;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,12 +37,14 @@ public class ForceKeyUnitTest
         Gst.deinit();
     }
     
+    @SuppressWarnings("unused")
     @Test
     public void testUpstreamEventHasUpstreamType()
     {
         final ForceKeyUnit event = new ForceKeyUnit(ClockTime.NONE, true, 0);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testUpstreamEventHasDownstreamType()
     {
