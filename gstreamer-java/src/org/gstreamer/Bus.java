@@ -82,8 +82,8 @@ public class Bus extends GstObject {
     private static interface API extends GstBusAPI, GstMessageAPI, GstMiniObjectAPI {}
     private static final API gst = GstNative.load(API.class);
 
-    private final Object lock = new Object();
-    private boolean watchAdded = false;
+//    private final Object lock = new Object();
+//    private boolean watchAdded = false;
 
     /**
      * This constructor is used internally by gstreamer-java
@@ -704,7 +704,7 @@ public class Bus extends GstObject {
                         }
                     });
                 }
-       	    }
+            }
             //
             // Unref the message, since we are dropping it.
             // (the normal GC will drop other refs to it)
@@ -762,7 +762,7 @@ public class Bus extends GstObject {
         MessageProxy proxy = new MessageProxy(type, (BusCallback) callback);
         m.put(listener, proxy);
         messageProxies.add(proxy);
-        addWatch();
+        //addWatch();
     }
     
     @Override
@@ -779,7 +779,7 @@ public class Bus extends GstObject {
                 messageProxies.remove(proxy);
             }
             if (m.isEmpty()) {
-                removeWatch();
+                //removeWatch();
                 signals.remove(listenerClass);
             }
         }
@@ -822,46 +822,46 @@ public class Bus extends GstObject {
         return signalListeners;
     }
     
-    @Override
-    public void dispose() {
-        removeWatch();
-        super.dispose();
-    }
-
-    /**
-     * Adds the bus signal watch.
-     * This will reference the bus until the signal watch is removed
-     * and so will stop the Bus being GC'd and disposed.
-     */
-    private void addWatch()
-    {
-        synchronized (lock)
-        {
-            if (!watchAdded)
-            {
-                log.fine("Add watch");
-                gst.gst_bus_add_signal_watch(this);
-                watchAdded = true;
-            }
-        }
-    }
-    
-    /**
-     * Removes the bus signal watch (which will remove the bus reference
-     * held by the signal watch).
-     */
-    private void removeWatch()
-    {
-        synchronized (lock)
-        {
-            if (watchAdded)
-            {
-                log.fine("Remove watch");
-                gst.gst_bus_remove_signal_watch(this);
-                watchAdded = false;
-            }
-        }
-    }
+//    @Override
+//    public void dispose() {
+//        removeWatch();
+//        super.dispose();
+//    }
+//
+//    /**
+//     * Adds the bus signal watch.
+//     * This will reference the bus until the signal watch is removed
+//     * and so will stop the Bus being GC'd and disposed.
+//     */
+//    private void addWatch()
+//    {
+//        synchronized (lock)
+//        {
+//            if (!watchAdded)
+//            {
+//                log.fine("Add watch");
+//                gst.gst_bus_add_signal_watch(this);
+//                watchAdded = true;
+//            }
+//        }
+//    }
+//    
+//    /**
+//     * Removes the bus signal watch (which will remove the bus reference
+//     * held by the signal watch).
+//     */
+//    private void removeWatch()
+//    {
+//        synchronized (lock)
+//        {
+//            if (watchAdded)
+//            {
+//                log.fine("Remove watch");
+//                gst.gst_bus_remove_signal_watch(this);
+//                watchAdded = false;
+//            }
+//        }
+//    }
     
     private Map<Class<?>, Map<Object, MessageProxy>> signalListeners;
     private List<MessageProxy> messageProxies = new CopyOnWriteArrayList<MessageProxy>();
