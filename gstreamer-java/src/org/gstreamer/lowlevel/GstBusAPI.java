@@ -20,6 +20,7 @@
 package org.gstreamer.lowlevel;
 
 import org.gstreamer.Bus;
+import org.gstreamer.BusSyncReply;
 import org.gstreamer.ClockTime;
 import org.gstreamer.Message;
 import org.gstreamer.MessageType;
@@ -54,9 +55,14 @@ public interface GstBusAPI extends com.sun.jna.Library {
     interface BusCallback extends GstCallback {
         boolean callback(Bus bus, Message msg, Pointer data);
     }
+    public interface BusSyncHandler extends GstCallback {
+    	BusSyncReply callback(Bus bus, Message msg, Pointer userData);
+    }
     NativeLong gst_bus_add_watch(Bus bus, BusCallback function, Pointer data);
     void gst_bus_set_sync_handler(Bus bus, GstCallback function, Pointer data);
     void gst_bus_enable_sync_message_emission(Bus bus);
     void gst_bus_disable_sync_message_emission(Bus bus);
-    
+
+    void gst_bus_add_signal_watch(Bus bus);
+    void gst_bus_remove_signal_watch(Bus bus);
 }

@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 
 import org.gstreamer.event.BusSyncHandler;
 import org.gstreamer.lowlevel.GstAPI.GErrorStruct;
-import org.gstreamer.lowlevel.GstAPI.GstCallback;
 import org.gstreamer.lowlevel.GstBusAPI;
 import org.gstreamer.lowlevel.GstBusAPI.BusCallback;
 import org.gstreamer.lowlevel.GstMessageAPI;
@@ -39,6 +38,8 @@ import org.gstreamer.lowlevel.GstMiniObjectAPI;
 import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Callback;
+import com.sun.jna.CallbackThreadInitializer;
+import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
@@ -80,6 +81,9 @@ public class Bus extends GstObject {
     // Create an API with just the subset needed.
     private static interface API extends GstBusAPI, GstMessageAPI, GstMiniObjectAPI {}
     private static final API gst = GstNative.load(API.class);
+
+    private final Object lock = new Object();
+    private boolean watchAdded = false;
 
     /**
      * This constructor is used internally by gstreamer-java
@@ -684,26 +688,29 @@ public class Bus extends GstObject {
     public void setSyncHandler(BusSyncHandler handler) {
         syncHandler = handler;
     }
-    private static GstCallback syncCallback = new GstCallback() {
-        @SuppressWarnings("unused")
-        public int callback(final Bus bus, final Message msg, Pointer data) {
-        	if (bus.syncHandler != null) {
-	            BusSyncReply reply = bus.syncHandler.syncMessage(msg);
-	            
-	            if (reply != BusSyncReply.DROP) {
-	                Gst.getExecutor().execute(new Runnable() {
-	                    public void run() {
-	                        bus.dispatchMessage(msg);
-	                    }
-	                });
-	            }
-        	}
+    private static GstBusAPI.BusSyncHandler syncCallback = new GstBusAPI.BusSyncHandler() {
+        {
+            Native.setCallbackThreadInitializer(this,
+                new CallbackThreadInitializer(true, false, "GstBus"));
+        }
+        public BusSyncReply callback(final Bus bus, final Message msg, Pointer userData) {
+            if (bus.syncHandler != null) {
+                BusSyncReply reply = bus.syncHandler.syncMessage(msg);
+            
+                if (reply != BusSyncReply.DROP) {
+                    Gst.getExecutor().execute(new Runnable() {
+                        public void run() {
+                            bus.dispatchMessage(msg);
+                        }
+                    });
+                }
+       	    }
             //
             // Unref the message, since we are dropping it.
             // (the normal GC will drop other refs to it)
             //
             gst.gst_mini_object_unref(msg);
-            return BusSyncReply.DROP.intValue();
+            return BusSyncReply.DROP;
         }
     };
     
@@ -755,6 +762,7 @@ public class Bus extends GstObject {
         MessageProxy proxy = new MessageProxy(type, (BusCallback) callback);
         m.put(listener, proxy);
         messageProxies.add(proxy);
+        addWatch();
     }
     
     @Override
@@ -771,6 +779,7 @@ public class Bus extends GstObject {
                 messageProxies.remove(proxy);
             }
             if (m.isEmpty()) {
+                removeWatch();
                 signals.remove(listenerClass);
             }
         }
@@ -799,7 +808,7 @@ public class Bus extends GstObject {
             this.type = type;
             this.callback = callback;
         }
-        public void busMessage(Bus bus, Message msg) {
+        public void busMessage(final Bus bus, final Message msg) {
             if ((type.intValue() & msg.getType().intValue()) != 0) {
                 callback.callback(bus, msg, null);
             }
@@ -811,6 +820,47 @@ public class Bus extends GstObject {
             signalListeners = new ConcurrentHashMap<Class<?>, Map<Object, MessageProxy>>();
         }
         return signalListeners;
+    }
+    
+    @Override
+    public void dispose() {
+        removeWatch();
+        super.dispose();
+    }
+
+    /**
+     * Adds the bus signal watch.
+     * This will reference the bus until the signal watch is removed
+     * and so will stop the Bus being GC'd and disposed.
+     */
+    private void addWatch()
+    {
+        synchronized (lock)
+        {
+            if (!watchAdded)
+            {
+                log.fine("Add watch");
+                gst.gst_bus_add_signal_watch(this);
+                watchAdded = true;
+            }
+        }
+    }
+    
+    /**
+     * Removes the bus signal watch (which will remove the bus reference
+     * held by the signal watch).
+     */
+    private void removeWatch()
+    {
+        synchronized (lock)
+        {
+            if (watchAdded)
+            {
+                log.fine("Remove watch");
+                gst.gst_bus_remove_signal_watch(this);
+                watchAdded = false;
+            }
+        }
     }
     
     private Map<Class<?>, Map<Object, MessageProxy>> signalListeners;
