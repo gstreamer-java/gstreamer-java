@@ -65,60 +65,62 @@ public class VideoComponent extends Canvas {
 
 			public void paintControl(PaintEvent event) {
 				Point cSize = getSize();
-				if (currentImage != null) {
-					event.gc.setFont(font);
-					newX = 0;
-					newY = 0;
-					int fps = 0;
-
-					int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
-					ImageData imgdata
-						= new ImageData(currentImage.getWidth(), currentImage.getHeight(), 24,
-										new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
-					imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
-
-					if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
-						sizeX = cSize.x;
-						sizeY = cSize.y;
-						event.gc.setInterpolation(SWT.HIGH);
-						if (keepAspect) {
-							if (((float) currentImage.getWidth() / (float) cSize.x)
-								> ((float) currentImage.getHeight() / (float) cSize.y)) {
-								sizeY = cSize.x * currentImage.getHeight() / currentImage.getWidth();
-								newY = (cSize.y - sizeY) / 2;
-							} else {
-								sizeX = cSize.y * currentImage.getWidth() / currentImage.getHeight();
-								newX = (cSize.x - sizeX) / 2;
+				if (!isDisposed() && cSize.x != 0 && cSize.y != 0) {
+					if (currentImage != null) {
+						event.gc.setFont(font);
+						newX = 0;
+						newY = 0;
+						int fps = 0;
+	
+						int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
+						ImageData imgdata
+							= new ImageData(currentImage.getWidth(), currentImage.getHeight(), 24,
+											new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+						imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
+	
+						if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
+							sizeX = cSize.x;
+							sizeY = cSize.y;
+							event.gc.setInterpolation(SWT.HIGH);
+							if (keepAspect) {
+								if (((float) currentImage.getWidth() / (float) cSize.x)
+									> ((float) currentImage.getHeight() / (float) cSize.y)) {
+									sizeY = cSize.x * currentImage.getHeight() / currentImage.getWidth();
+									newY = (cSize.y - sizeY) / 2;
+								} else {
+									sizeX = cSize.y * currentImage.getWidth() / currentImage.getHeight();
+									newX = (cSize.x - sizeX) / 2;
+								}
 							}
+							imgdata = imgdata.scaledTo(sizeX, sizeY);
 						}
-						imgdata = imgdata.scaledTo(sizeX, sizeY);
-					}
-
-					if (alpha != event.gc.getAlpha()) {
-						event.gc.setAlpha(alpha);
-					}
-					Image image = new Image(parent.getDisplay(), imgdata);
-					event.gc.drawImage(image, newX, newY);
-
-					if (showFPS) {
-						fps = (int) (1000 / (System.currentTimeMillis() - start));
-					}
-
-					if (showOverlay) {
-						event.gc.drawText(ovText, newX + 5, newY + 5, false);
-						newY += 20;
-					}
-					if (showFPS) {
-						event.gc.drawText(" FPS:" + fps, newX + 5, newY + 5, false);
-					}
-					image.dispose();
-					if (showFPS) {
-						start = System.currentTimeMillis();
-					}
-				} else {
-					if (bgColor != null) {
-						event.gc.setBackground(bgColor);
-						event.gc.fillRectangle(0, 0, cSize.x, cSize.y);
+	
+						if (alpha != event.gc.getAlpha()) {
+							event.gc.setAlpha(alpha);
+						}
+						Image image = new Image(parent.getDisplay(), imgdata);
+						event.gc.drawImage(image, newX, newY);
+	
+						if (showFPS) {
+							fps = (int) (1000 / (System.currentTimeMillis() - start));
+						}
+	
+						if (showOverlay) {
+							event.gc.drawText(ovText, newX + 5, newY + 5, false);
+							newY += 20;
+						}
+						if (showFPS) {
+							event.gc.drawText(" FPS:" + fps, newX + 5, newY + 5, false);
+						}
+						image.dispose();
+						if (showFPS) {
+							start = System.currentTimeMillis();
+						}
+					} else {
+						if (bgColor != null) {
+							event.gc.setBackground(bgColor);
+							event.gc.fillRectangle(0, 0, cSize.x, cSize.y);
+						}
 					}
 				}
 			}
