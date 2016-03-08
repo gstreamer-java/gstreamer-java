@@ -18,17 +18,14 @@
 
 package org.gstreamer.swt;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
 import java.nio.IntBuffer;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -38,11 +35,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.gstreamer.elements.RGBDataSink;
 
 public class VideoComponent extends Canvas {
-
-	private BufferedImage currentImage = null;
+	
+	private ImageData currentImageData = null;
+	private Object currentImageDataLock = new Object();
+	private Image currentImage;
 	private final RGBDataSink videosink;
-	private final Lock bufferLock = new ReentrantLock();
-	private boolean updatePending = false;
 	private int alpha = 255;
 	private String ovText;
 	private long start = System.currentTimeMillis();
@@ -52,86 +49,52 @@ public class VideoComponent extends Canvas {
 	private Color bgColor;
 	private int sizeX = 0, sizeY = 0;
 	private int newX = 0, newY = 0;
-
+	private Font gcFont;
+	private int redrawFps;
+	private int redrawInterval;
+	
 	public VideoComponent(final Composite parent, int style) {
+		this(parent, style, 25);
+	}
+	
+	public VideoComponent(final Composite parent, int style, int redrawFps) {
 		super(parent, style | SWT.DOUBLE_BUFFERED);
-
+		setRedrawFps(redrawFps);
 		videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
 		videosink.setPassDirectBuffer(true);
-
-		final Font font = new Font(getDisplay(), "Arial", 13, SWT.NORMAL);
-
-		this.addPaintListener(new PaintListener() {
-
-			public void paintControl(PaintEvent event) {
-				Point cSize = getSize();
-				if (!isDisposed() && cSize.x != 0 && cSize.y != 0) {
-					if (currentImage != null) {
-						event.gc.setFont(font);
-						newX = 0;
-						newY = 0;
-						int fps = 0;
-	
-						int[] Frame = ((DataBufferInt) currentImage.getRaster().getDataBuffer()).getData();
-						ImageData imgdata
-							= new ImageData(currentImage.getWidth(), currentImage.getHeight(), 24,
-											new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
-						imgdata.setPixels(0, 0, currentImage.getWidth() * currentImage.getHeight(), Frame, 0);
-	
-						if ((currentImage.getWidth() != cSize.x) || (currentImage.getHeight() != cSize.y)) {
-							sizeX = cSize.x;
-							sizeY = cSize.y;
-							event.gc.setInterpolation(SWT.HIGH);
-							if (keepAspect) {
-								if (((float) currentImage.getWidth() / (float) cSize.x)
-									> ((float) currentImage.getHeight() / (float) cSize.y)) {
-									sizeY = cSize.x * currentImage.getHeight() / currentImage.getWidth();
-									newY = (cSize.y - sizeY) / 2;
-								} else {
-									sizeX = cSize.y * currentImage.getWidth() / currentImage.getHeight();
-									newX = (cSize.x - sizeX) / 2;
-								}
-							}
-							imgdata = imgdata.scaledTo(sizeX, sizeY);
-						}
-	
-						if (alpha != event.gc.getAlpha()) {
-							event.gc.setAlpha(alpha);
-						}
-						Image image = new Image(parent.getDisplay(), imgdata);
-						event.gc.drawImage(image, newX, newY);
-	
-						if (showFPS) {
-							fps = (int) (1000 / (System.currentTimeMillis() - start));
-						}
-	
-						if (showOverlay) {
-							event.gc.drawText(ovText, newX + 5, newY + 5, false);
-							newY += 20;
-						}
-						if (showFPS) {
-							event.gc.drawText(" FPS:" + fps, newX + 5, newY + 5, false);
-						}
-						image.dispose();
-						if (showFPS) {
-							start = System.currentTimeMillis();
-						}
-					} else {
-						if (bgColor != null) {
-							event.gc.setBackground(bgColor);
-							event.gc.fillRectangle(0, 0, cSize.x, cSize.y);
-						}
-					}
-				}
-			}
-		});
+		gcFont = new Font(getDisplay(), "Arial", 13, SWT.NORMAL);
+		addPaintListener();
+		addDisposeListener();
+		startRedrawCycle();
 	}
-
-	public int getSizeX() { return sizeX; }
-	public int getSizeY() { return sizeY; }
-	public int getNewX() { return newX; }
-	public int getNewY() { return newY; }
-
+	
+	public int getRedrawFps() {
+		return redrawFps;
+	}
+	
+	public void setRedrawFps(int redrawFps) {
+		if (redrawFps < 1000 && redrawFps >= 1) {
+			this.redrawFps = redrawFps;
+			redrawInterval = 1000 / redrawFps;
+		}
+	}
+	
+	public int getSizeX() {
+		return sizeX;
+	}
+	
+	public int getSizeY() {
+		return sizeY;
+	}
+	
+	public int getNewX() {
+		return newX;
+	}
+	
+	public int getNewY() {
+		return newY;
+	}
+	
 	/**
 	 * Retrieves the Gstreamer element, representing the video component
 	 * 
@@ -140,16 +103,16 @@ public class VideoComponent extends Canvas {
 	public RGBDataSink getElement() {
 		return videosink;
 	}
-
+	
 	/**
 	 * Set to keep aspect ratio
 	 * 
 	 * @param keepAspect
 	 */
 	public void setKeepAspect(boolean keepAspect) {
-			this.keepAspect = keepAspect;
+		this.keepAspect = keepAspect;
 	}
-
+	
 	/**
 	 * Set the aplpha value of the video component. It works fine when overlay
 	 * is turned off.
@@ -159,7 +122,7 @@ public class VideoComponent extends Canvas {
 	public void setAlpha(int alpha) {
 		this.alpha = alpha;
 	}
-
+	
 	/**
 	 * Set the overlay text of the video component. It works fine when overlay
 	 * is turned off.
@@ -169,7 +132,7 @@ public class VideoComponent extends Canvas {
 	public void setOverlay(String text) {
 		this.ovText = text;
 	}
-
+	
 	/**
 	 * Set show FPS of the video component. It works fine when overlay is turned
 	 * off.
@@ -179,7 +142,7 @@ public class VideoComponent extends Canvas {
 	public void showFPS(boolean bn) {
 		this.showFPS = bn;
 	}
-
+	
 	/**
 	 * Set show overlay text. It works fine when overlay is turned off.
 	 * 
@@ -188,7 +151,7 @@ public class VideoComponent extends Canvas {
 	public void showOverlay(boolean bn) {
 		this.showOverlay = bn;
 	}
-
+	
 	/**
 	 * Retrieves the alpha value of the video component
 	 * 
@@ -197,35 +160,7 @@ public class VideoComponent extends Canvas {
 	public int getAlpha() {
 		return alpha;
 	}
-
-	private final Runnable update = new Runnable() {
-
-		public void run() {
-			bufferLock.lock();
-			try {
-				if (!isDisposed()) {
-					redraw();
-				}
-				updatePending = false;
-			} finally {
-				bufferLock.unlock();
-			}
-		}
-	};
-
-	private BufferedImage getBufferedImage(int width, int height) {
-		if (currentImage != null && currentImage.getWidth() == width
-				&& currentImage.getHeight() == height) {
-			return currentImage;
-		}
-		if (currentImage != null) {
-			currentImage.flush();
-		}
-		currentImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		currentImage.setAccelerationPriority(0.0f);
-		return currentImage;
-	}
-
+	
 	/**
 	 * Sets the background color
 	 * 
@@ -234,7 +169,7 @@ public class VideoComponent extends Canvas {
 	public void setBackGroundColor(Color bgColor) {
 		this.bgColor = bgColor;
 	}
-
+	
 	/**
 	 * Gets the background color
 	 * 
@@ -243,28 +178,115 @@ public class VideoComponent extends Canvas {
 	public Color getBackGroundColorColor() {
 		return bgColor;
 	}
-
+	
+	public Image getCurrentImage() {
+		synchronized (currentImageDataLock) {
+			if (currentImageData != null)
+				return new Image(getDisplay(), currentImageData);
+		}
+		return null;
+	}
+	
+	public ImageData getCurrentImageData() {
+		synchronized (currentImageDataLock) {
+			if (currentImageData != null)
+				return (ImageData) currentImageData.clone();
+		}
+		return null;
+	}
+	
+	private void addPaintListener() {
+		addPaintListener(new PaintListener() {
+			public void paintControl(PaintEvent event) {
+				if (!isDisposed()) {
+					GC gc = event.gc;
+					Point size = getSize();
+					if (size.x != 0 && size.y != 0) {
+						if (gcFont != null && !gcFont.isDisposed())
+							gc.setFont(gcFont);
+						if (bgColor != null) {
+							gc.setBackground(bgColor);
+							gc.fillRectangle(0, 0, size.x, size.y);
+						}
+						synchronized (currentImageDataLock) {
+							if (currentImageData != null) {
+								if (currentImage != null && !currentImage.isDisposed())
+									currentImage.dispose();
+								newX = 0;
+								newY = 0;
+								int fps = 0;
+								int currentWidth = currentImageData.width;
+								int currentHeight = currentImageData.height;
+								if ((currentWidth != size.x) || (currentHeight != size.y)) {
+									sizeX = size.x;
+									sizeY = size.y;
+									gc.setInterpolation(SWT.HIGH);
+									if (keepAspect) {
+										if (((float) currentWidth / (float) size.x) > ((float) currentHeight
+												/ (float) size.y)) {
+											sizeY = (int) ((float) size.x * (float) currentHeight
+													/ (float) currentWidth);
+											newY = (int) (((float) size.y - (float) sizeY) / 2f);
+										} else {
+											sizeX = (int) ((float) size.y * (float) currentWidth
+													/ (float) currentHeight);
+											newX = (int) (((float) size.x - (float) sizeX) / 2f);
+										}
+									}
+									currentImageData = currentImageData.scaledTo(sizeX, sizeY);
+								}
+								
+								if (alpha != gc.getAlpha())
+									gc.setAlpha(alpha);
+									
+								currentImage = new Image(getDisplay(), currentImageData);
+								gc.drawImage(currentImage, newX, newY);
+								
+								if (showFPS)
+									fps = (int) (1000 / (System.currentTimeMillis() - start));
+									
+								if (showOverlay) {
+									gc.drawText(ovText, newX + 5, newY + 5, false);
+									newY += 20;
+								}
+								if (showFPS) {
+									gc.drawText(" FPS:" + fps, newX + 5, newY + 5, false);
+									start = System.currentTimeMillis();
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	
+	private void addDisposeListener() {
+		if (gcFont != null && !gcFont.isDisposed())
+			gcFont.dispose();
+		if (currentImage != null && !currentImage.isDisposed())
+			currentImage.dispose();
+	}
+	
+	private void startRedrawCycle() {
+		getDisplay().timerExec(redrawInterval, new Runnable() {
+			public void run() {
+				if (!isDisposed()) {
+					redraw();
+					getDisplay().timerExec(redrawInterval, this);
+				}
+			}
+		});
+	}
+	
 	private class RGBListener implements RGBDataSink.Listener {
-
+		
 		public void rgbFrame(boolean isPrerollFrame, int width, int height, IntBuffer rgb) {
-			if (!bufferLock.tryLock()) {
-				return;
-			}
-			if (updatePending && !isPrerollFrame) {
-				bufferLock.unlock();
-				return;
-			}
-			try {
-				final BufferedImage renderImage = getBufferedImage(width, height);
-				int[] pixels = ((DataBufferInt) renderImage.getRaster().getDataBuffer()).getData();
-				rgb.get(pixels, 0, width * height);
-				updatePending = true;
-			} finally {
-				bufferLock.unlock();
-			}
-			// Tell Canvas to use the new buffer
-			if (!isDisposed()) {
-				getDisplay().asyncExec(update);
+			synchronized (currentImageDataLock) {
+				int[] pixels = new int[width * height];
+				rgb.get(pixels);
+				currentImageData = new ImageData(width, height, 24, new PaletteData(0xFF0000, 0x00FF00, 0x0000FF));
+				currentImageData.setPixels(0, 0, width * height, pixels, 0);
 			}
 		}
 	}
