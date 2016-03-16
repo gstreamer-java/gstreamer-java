@@ -121,7 +121,7 @@ public class PipelinePositionModel extends DefaultBoundedRangeModel {
         // position from the poll
         //
         if (!updating && !isSeeking.get()) {
-            long pos = TimeUnit.SECONDS.toNanos(getValue());
+            long pos = scaleUnit.toNanos(getValue());
             if (pos != seekingPos) {
                 seekTo(pos);
             }
