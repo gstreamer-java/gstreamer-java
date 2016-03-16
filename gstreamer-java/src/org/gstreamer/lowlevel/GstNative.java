@@ -44,12 +44,13 @@ public final class GstNative {
     }
 
     public static <T extends Library> T load(String libraryName, Class<T> interfaceClass) {
+        UnsatisfiedLinkError ule = new UnsatisfiedLinkError("Could not load library: " + libraryName);
         for (String format : nameFormats)
             try {
                 return GNative.loadLibrary(String.format(format, libraryName), interfaceClass, options);
             } catch (UnsatisfiedLinkError ex) {
-                continue;
+                ule.addSuppressed(ex);
             }
-        throw new UnsatisfiedLinkError("Could not load library: " + libraryName);
+        throw ule;
     }
 }
