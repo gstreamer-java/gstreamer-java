@@ -324,8 +324,9 @@ public class Pipeline extends Bin {
      * @return The current position or -1 if the query failed. 
      */
     public long queryPosition(Format format) {
+    	Format[] fmt = { format };
         long[] pos = { 0 };
-        return gst.gst_element_query_position(this, format, pos) ? pos[0] : -1L;
+        return gst.gst_element_query_position(this, fmt, pos) ? pos[0] : -1L;
     }
     
     /**
@@ -354,8 +355,9 @@ public class Pipeline extends Bin {
      * @return The total duration of the current media stream.
      */
     public long queryDuration(Format format) {
+    	Format[] fmt = { format };
         long[] dur = { 0 };
-        return gst.gst_element_query_duration(this, format, dur) ? dur[0] : -1L;
+        return gst.gst_element_query_duration(this, fmt, dur) ? dur[0] : -1L;
     }
 
     /**
