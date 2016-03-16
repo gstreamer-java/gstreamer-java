@@ -84,6 +84,10 @@ public class VideoComponent extends javax.swing.JComponent {
     private volatile boolean updatePending = false;
     private final boolean useVolatile;
     
+    private RGBListener rgbListener;
+    private PropertyChangeListener propListener;
+    private ComponentAdapter componentAdapter;
+    
     private final static Class<?> oglGraphicsConfigClass;
     private final static Map<RenderingHints.Key, Object> openglHints = new HashMap<RenderingHints.Key, Object>() {
 
@@ -118,10 +122,10 @@ public class VideoComponent extends javax.swing.JComponent {
         oglGraphicsConfigClass = cls;
     }
     
-    
     /** Creates a new instance of GstVideoComponent */
     public VideoComponent() {
-        videosink = new RGBDataSink("GstVideoComponent", new RGBListener());
+        rgbListener = new RGBListener();
+        videosink = new RGBDataSink("GstVideoComponent", rgbListener);
         videosink.setPassDirectBuffer(true);
         // Limit the lateness of frames to no more than 20ms (half a frame at 25fps)
         videosink.getSinkElement().setMaximumLateness(20, TimeUnit.MILLISECONDS);
@@ -150,13 +154,13 @@ public class VideoComponent extends javax.swing.JComponent {
         // Listen for the child changing its preferred size to the size of the 
         // video stream.
         //
-        renderComponent.addPropertyChangeListener("preferredSize", new PropertyChangeListener() {
-
+        propListener = new PropertyChangeListener() {
             public void propertyChange(PropertyChangeEvent evt) {
                 setPreferredSize(renderComponent.getPreferredSize());
                 scaleVideoOutput();
             }
-        });
+        };
+        renderComponent.addPropertyChangeListener("preferredSize", propListener);
         renderComponent.addMouseListener(mouseListener);
         renderComponent.addMouseMotionListener(mouseListener);
         renderComponent.addKeyListener(keyListener);
@@ -164,14 +168,13 @@ public class VideoComponent extends javax.swing.JComponent {
         //
         // Scale the video output in response to this component being resized
         //
-        addComponentListener(new ComponentAdapter() {
-
+        componentAdapter = new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent arg0) {
                 scaleVideoOutput();
             }
-            
-        });
+        };
+        addComponentListener(componentAdapter);
         renderComponent.setBounds(getBounds());
         setOpaque(true);
         setBackground(Color.BLACK);
@@ -571,10 +574,24 @@ public class VideoComponent extends javax.swing.JComponent {
                     Fraction pixelAspectRatio = capsStruct.getFraction("pixel-aspect-ratio");
                     scaledWidth = scaledWidth * pixelAspectRatio.getNumerator() / pixelAspectRatio.getDenominator();
                 }
+                videoCaps.dispose();
             }
 
             // Tell swing to use the new buffer
             update(scaledWidth, currentImage.getHeight());
         } 
+    }
+    
+    public void destroy() {
+        renderComponent.removePropertyChangeListener(propListener);
+        renderComponent.removeMouseListener(mouseListener);
+        renderComponent.removeMouseMotionListener(mouseListener);
+        renderComponent.removeKeyListener(keyListener);
+        removeKeyListener(keyListener);
+        removeComponentListener(componentAdapter);
+        remove(renderComponent);
+        resourceTimer.removeActionListener(resourceReaper);
+        resourceTimer.stop();
+        videosink.removeListener();
     }
 }
