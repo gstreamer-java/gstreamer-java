@@ -688,5 +688,139 @@ public class Element extends GstObject {
     public void setStartTime(ClockTime time) {
     	gst.gst_element_set_start_time(this, time);
     }
+
+    /**
+     * Sets the position in the media stream to time.
+     * 
+     * @param time The time to change the position to.
+     * @return true if seek is successful
+     */
+    public boolean seek(ClockTime time) {
+        return seek(time.convertTo(TimeUnit.NANOSECONDS), TimeUnit.NANOSECONDS);
+    }
+    
+    /**
+     * Sets the current position in the media stream.
+     * 
+     * @param time the time to change the position to.
+     * @param unit the {@code TimeUnit} the <tt>time</tt> is expressed in.
+     * @return true if seek is successful
+     */
+    public boolean seek(long time, TimeUnit unit) {
+        return seek(1.0, Format.TIME, SeekFlags.FLUSH | SeekFlags.KEY_UNIT, 
+            SeekType.SET, TimeUnit.NANOSECONDS.convert(time, unit), 
+            SeekType.NONE, -1);
+    }
+    
+    /**
+     * Seeks to a new position in the media stream.
+     * 
+     * <p>
+     * The <tt>start</tt> and <tt>stop</tt> values are expressed in <tt>format</tt>.
+     * <p>
+     * A <tt>rate</tt> of 1.0 means normal playback rate, 2.0 means double speed.
+     * Negative values means backwards playback. A value of 0.0 for the
+     * rate is not allowed and should be accomplished instead by PAUSING the
+     * pipeline.
+     * <p>
+     * A pipeline has a default playback segment configured with a start
+     * position of 0, a stop position of -1 and a rate of 1.0. The currently
+     * configured playback segment can be queried with #GST_QUERY_SEGMENT. 
+     * <p>
+     * <ttstartType</tt> and <tt>stopType</tt> specify how to adjust the currently configured 
+     * start and stop fields in <tt>segment</tt>. Adjustments can be made relative or
+     * absolute to the last configured values. A type of {@link SeekType#NONE} means
+     * that the position should not be updated.
+     * <p>
+     * When the rate is positive and <tt>start</tt> has been updated, playback will start
+     * from the newly configured start position. 
+     * <p>
+     * For negative rates, playback will start from the newly configured <tt>stop<tt>
+     * position (if any). If the stop position if updated, it must be different from
+     * -1 for negative rates.
+     * <p>
+     * It is not possible to seek relative to the current playback position, to do
+     * this, PAUSE the pipeline, query the current playback position with
+     * {@link org.gstreamer.Pipeline#queryPosition queryPosition} and update the playback segment 
+     * current position with a {@link SeekType#SET} to the desired position.
+     * 
+     * @param rate the new playback rate
+     * @param format the format of the seek values
+     * @param flags the optional seek flags
+     * @param startType the type and flags for the new start position
+     * @param start the value of the new start position
+     * @param stopType the type and flags for the new stop position
+     * @param stop the value of the new stop position
+     * @return true if seek is successful
+     */
+    public boolean seek(double rate, Format format, int flags,
+            SeekType startType, long start, SeekType stopType, long stop) {
+        
+        return gst.gst_element_seek(this, rate, format, flags, 
+            startType, start, stopType, stop);
+    }
+    
+    /**
+     * Gets the current position in the media stream in units of time.
+     * 
+     * @return the ClockTime representing the current position.
+     */
+    public ClockTime queryPosition() {
+        return ClockTime.valueOf(queryPosition(Format.TIME), TimeUnit.NANOSECONDS);
+    }
+    
+    /**
+     * Gets the current position in the media stream.
+     * 
+     * @param unit the {@code TimeUnit} to return the position in terms of.
+     * @return a time value representing the current position in units of <tt>unit</tt>.
+     */
+    public long queryPosition(TimeUnit unit) {
+        return unit.convert(queryPosition(Format.TIME), TimeUnit.NANOSECONDS);
+    }
+    
+    /**
+     * Gets the current position in terms of the specified {@link Format}.
+     * 
+     * @param format The {@link Format} to return the position in.
+     * @return The current position or -1 if the query failed. 
+     */
+    public long queryPosition(Format format) {
+    	Format[] fmt = { format };
+        long[] pos = { 0 };
+        return gst.gst_element_query_position(this, fmt, pos) ? pos[0] : -1L;
+    }
+    
+    /**
+     * Gets the time duration of the current media stream.
+     * 
+     * @return The total duration of the current media stream.
+     */
+    public ClockTime queryDuration() {
+        return ClockTime.valueOf(queryDuration(Format.TIME), TimeUnit.NANOSECONDS);
+    }
+    
+    /**
+     * Gets the time duration of the current media stream.
+     * 
+     * @param unit the {@code TimeUnit} to return the position in.
+     * @return The total duration of the current media stream.
+     */
+    public long queryDuration(TimeUnit unit) {
+        return unit.convert(queryDuration(Format.TIME), TimeUnit.NANOSECONDS);
+    }
+
+    /**
+     * Gets the duration of the current media stream in terms of the specified {@link Format}.
+     * 
+     * @param format the {@code Format} to return the duration in.
+     * @return The total duration of the current media stream.
+     */
+    public long queryDuration(Format format) {
+    	Format[] fmt = { format };
+        long[] dur = { 0 };
+        return gst.gst_element_query_duration(this, fmt, dur) ? dur[0] : -1L;
+    }
+
 }
 
