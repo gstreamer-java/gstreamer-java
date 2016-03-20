@@ -6,9 +6,9 @@
   <artifactId>gstreamer-java</artifactId>
   <packaging>jar</packaging>
   <name>Gstreamer Java</name>
-  <version>1.6-SNAPSHOT</version>
+  <version>1.6</version>
   <description>Java binding for the Gstreamer framework</description>
-  <url>http://code.google.com/p/gstreamer-java</url>
+  <url>https://github.com/gstreamer-java/gstreamer-java</url>
   <developers>
     <developer>
       <id>wmeissner</id>
@@ -60,9 +60,9 @@
     </license>
   </licenses>
   <scm>
-    <url>http://code.google.com/p/gstreamer-java/source/browse</url>
-    <connection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</connection>
-    <developerConnection>scm:svn:https://gstreamer-java.googlecode.com/svn/trunk/gstreamer-java</developerConnection>
+    <url>https://github.com/gstreamer-java/gstreamer-java</url>
+    <connection>scm:git:https://github.com/gstreamer-java/gstreamer-java.git</connection>
+    <developerConnection>scm:git:git@github.com:gstreamer-java/gstreamer-java.git</developerConnection>
   </scm>
   <dependencies>
     <dependency>
