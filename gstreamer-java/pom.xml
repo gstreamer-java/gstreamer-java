@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.github.gstreamer-java</groupId>
+  <groupId>com.googlecode.gstreamer-java</groupId>
   <artifactId>gstreamer-java</artifactId>
   <packaging>jar</packaging>
   <name>Gstreamer Java</name>
@@ -185,25 +185,61 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.3</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <distributionManagement>
 
     <!-- maintainer note: Run following to stage on sonatype (replace xxx): 
-         Have the following in your ~/.m2/settings.xml: ===================================== 
-         <servers> <server> <id>sonatype-nexus-staging</id> <username>my-sonatype-nexus-username</username> 
-         <password>my-sonatype-nexus-passwd</password> </server> </servers> ===================================== 
-         Then from a shell in the gstreamer-java subdir: ============================================================================================ 
-         tanaka> LANG=en_GB.UTF-8 mvn -Dgpg.Dkeyname=xxx@example.com \ -Dgpg.passphrase=xxxx 
-         \ -Darguments="-Dgpg.passphrase=xxxx" \ -DconnectionUrl=scm:svn:https://gstreamer-java.googlecode.com/svn/branches/maven-release-1.x 
-         \ release:perform ============================================================================================ -->
+         Have the following merged into your ~/.m2/settings.xml:
+
+          ===================================== 
+
+            <settings>
+              <profiles>
+                <profile>
+                  <id>ossrh</id>
+                  <activation>
+                    <activeByDefault>true</activeByDefault>
+                  </activation>
+                  <properties>
+                    <gpg.passphrase>{gpg-password}</gpg.passphrase>
+                  </properties>
+                </profile>
+              </profiles>
+              <servers>
+                <server>
+                  <id>ossrh</id>
+                  <username>{sonatype-jira-uid}</username>
+                  <password>{sontype-jira-passwd}</password>
+                </server>
+              </servers>
+            </settings>
+
+           ============================================================================================
+
+           Then from a shell in the gstreamer-java subdir (you will need to have: 1. created an account at sonatype, 2. registered the project com.googlecode.gstreamer-java, 3. have GPG default key setup):
+
+           tanaka> mvn clean deploy
+           tanaka> mvn nexus-staging:release
+      -->
     <repository>
-      <id>sonatype-nexus-staging</id>
+      <id>ossrh</id>
       <name>Nexus Release Repository</name>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
     <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
+      <id>ossrh</id>
       <name>Nexus Snapshot Repository</name>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
