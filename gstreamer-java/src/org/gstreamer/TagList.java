@@ -272,6 +272,7 @@ public class TagList extends Structure {
                     if (value[0] == null) {
                         return null;
                     }
+                    @SuppressWarnings("deprecation")
                     String ret = value[0].getString(0, false);
                     GLIB_API.g_free(value[0]);
                     return ret;

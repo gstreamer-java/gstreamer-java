@@ -689,10 +689,10 @@ public class Bus extends GstObject {
         syncHandler = handler;
     }
     private static GstBusAPI.BusSyncHandler syncCallback = new GstBusAPI.BusSyncHandler() {
-        {
-            Native.setCallbackThreadInitializer(this,
-                new CallbackThreadInitializer(true, false, "GstBus"));
-        }
+//        {
+//            Native.setCallbackThreadInitializer(this,
+//                new CallbackThreadInitializer(true, false, "GstBus"));
+//        }
         public BusSyncReply callback(final Bus bus, final Message msg, Pointer userData) {
             if (bus.syncHandler != null) {
                 BusSyncReply reply = bus.syncHandler.syncMessage(msg);

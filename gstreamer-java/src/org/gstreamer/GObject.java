@@ -449,7 +449,7 @@ public abstract class GObject extends RefCountedObject {
         return GOBJECT_API.g_signal_connect_data(this, signal, callback, null, null, 0);
     }
 
-    private final static CallbackThreadInitializer cbi = new CallbackThreadInitializer(true, false, "GCallback");
+//    private final static CallbackThreadInitializer cbi = new CallbackThreadInitializer(true, false, "GCallback");
 
     abstract protected class GCallback {
         protected final Callback cb;
@@ -531,7 +531,7 @@ public abstract class GObject extends RefCountedObject {
     }
     
     public synchronized <T> void connect(String signal, Class<T> listenerClass, T listener, Callback cb) {
-        Native.setCallbackThreadInitializer(cb, cbi);
+//        Native.setCallbackThreadInitializer(cb, cbi);
         addCallback(listenerClass, listener, new SignalCallback(signal, cb));
     }
     
