@@ -26,6 +26,7 @@ import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.FlowReturn;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.Structure;
@@ -139,7 +140,7 @@ public class RGBDataAppSink extends Bin {
      *
      */
     class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(AppSink elem)
+        public FlowReturn newBuffer(AppSink elem)
         {
             Buffer buffer = sink.pullBuffer();
 
@@ -149,7 +150,7 @@ public class RGBDataAppSink extends Bin {
             int width = struct.getInteger("width");
             int height = struct.getInteger("height");
             if (width < 1 || height < 1) {
-                return;
+                return FlowReturn.OK;
             }
             IntBuffer rgb;
             if (passDirectBuffer) {
@@ -166,6 +167,7 @@ public class RGBDataAppSink extends Bin {
             // allocated before the java GC kicks in
             //
             buffer.dispose();
+            return FlowReturn.OK;
         }
     }
 }

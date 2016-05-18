@@ -25,6 +25,7 @@ import org.gstreamer.Buffer;
 import org.gstreamer.Caps;
 import org.gstreamer.Element;
 import org.gstreamer.ElementFactory;
+import org.gstreamer.FlowReturn;
 import org.gstreamer.GhostPad;
 import org.gstreamer.Pipeline;
 import org.gstreamer.lowlevel.GstBinAPI;
@@ -128,7 +129,7 @@ public class ByteDataAppSink extends Bin {
      *
      */
     class AppSinkNewBufferListener implements AppSink.NEW_BUFFER {
-        public void newBuffer(AppSink elem)
+        public FlowReturn newBuffer(AppSink elem)
         {
             Buffer buffer = sink.pullBuffer();
 
@@ -136,7 +137,7 @@ public class ByteDataAppSink extends Bin {
             int n = buffer.getSize();
             
             if (n < 1) {
-                return;
+                return FlowReturn.OK;
             }
             
             ByteBuffer data;
@@ -154,6 +155,7 @@ public class ByteDataAppSink extends Bin {
             // allocated before the java GC kicks in
             //
             buffer.dispose();
+            return FlowReturn.OK;
         }
     }
 }

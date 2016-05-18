@@ -38,8 +38,6 @@ import org.gstreamer.lowlevel.GstMiniObjectAPI;
 import org.gstreamer.lowlevel.GstNative;
 
 import com.sun.jna.Callback;
-import com.sun.jna.CallbackThreadInitializer;
-import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
 
