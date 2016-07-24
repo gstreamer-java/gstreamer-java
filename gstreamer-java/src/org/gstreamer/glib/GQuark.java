@@ -29,7 +29,7 @@ public class GQuark {
         return value;
     }
     
-    public GQuark valueOf(String quark) {
+    public static GQuark valueOf(String quark) {
         return GObjectAPI.GOBJECT_API.g_quark_from_string(quark);
     }
     
