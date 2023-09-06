@@ -25,6 +25,12 @@ import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 import static org.gstreamer.lowlevel.GSignalAPI.GSIGNAL_API;
 import static org.gstreamer.lowlevel.GValueAPI.GVALUE_API;
 
+import com.sun.jna.Callback;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.PointerByReference;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
@@ -35,7 +41,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.gstreamer.glib.GQuark;
 import org.gstreamer.lowlevel.EnumMapper;
 import org.gstreamer.lowlevel.GObjectAPI;
@@ -49,12 +54,6 @@ import org.gstreamer.lowlevel.GstTypes;
 import org.gstreamer.lowlevel.IntPtr;
 import org.gstreamer.lowlevel.NativeObject;
 import org.gstreamer.lowlevel.RefCountedObject;
-
-import com.sun.jna.Callback;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.PointerByReference;
 
 /**
  * This is an abstract class providing some GObject-like facilities in a common 
@@ -87,7 +86,15 @@ public abstract class GObject extends RefCountedObject {
      * Gives the type value.
      */
     public GType getType() {
-    	return new GType(new GObjectStruct(this).g_type_instance.g_class.getNativeLong(0).longValue());
+        Pointer g_class = new GObjectStruct(this).g_type_instance.g_class;
+        if(Native.SIZE_T_SIZE == 8) {
+            return GType.valueOf(g_class.getLong(0));
+        } else if (Native.SIZE_T_SIZE == 4) {
+            return GType.valueOf( ((long) g_class.getInt(0)) & 0xffffffffL );
+        } else {
+            throw new IllegalStateException("SIZE_T size not supported: " + Native.SIZE_T_SIZE);
+        }
+//        return new GType(new GObjectStruct(this).g_type_instance.g_class.getNativeLong(0).longValue());
     }
     /**
      * Gives the type name.

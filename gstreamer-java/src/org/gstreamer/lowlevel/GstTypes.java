@@ -22,12 +22,12 @@ package org.gstreamer.lowlevel;
 
 import static org.gstreamer.lowlevel.GObjectAPI.GOBJECT_API;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
-import com.sun.jna.Pointer;
 
 /**
  *
@@ -75,7 +75,14 @@ public class GstTypes {
         // Retrieve ptr->g_class
         Pointer g_class = ptr.getPointer(0);
         // Now return g_class->gtype
-        return GType.valueOf(g_class.getNativeLong(0).longValue());
+        if(Native.SIZE_T_SIZE == 8) {
+            return GType.valueOf(g_class.getLong(0));
+        } else if (Native.SIZE_T_SIZE == 4) {
+            return GType.valueOf( ((long) g_class.getInt(0)) & 0xffffffffL );
+        } else {
+            throw new IllegalStateException("SIZE_T size not supported: " + Native.SIZE_T_SIZE);
+        }
+        //return GType.valueOf(g_class.getNativeLong(0).longValue());
     }
     public static final Class<? extends NativeObject> classFor(Pointer ptr) {
         Pointer g_class = ptr.getPointer(0);
@@ -84,7 +91,15 @@ public class GstTypes {
             return cls;
         }
 
-        GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
+        GType type;
+        if(Native.SIZE_T_SIZE == 8) {
+            type = GType.valueOf(g_class.getLong(0));
+        } else if (Native.SIZE_T_SIZE == 4) {
+            type = GType.valueOf( ((long) g_class.getInt(0)) & 0xffffffffL );
+        } else {
+            throw new IllegalStateException("SIZE_T size not supported: " + Native.SIZE_T_SIZE);
+        }
+        //GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
         logger.finer("Type of " + ptr + " = " + type);
         while (cls == null && !type.equals(GType.OBJECT) && !type.equals(GType.INVALID)) {
             cls = find(type);
