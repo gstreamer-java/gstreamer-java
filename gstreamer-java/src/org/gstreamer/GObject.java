@@ -94,7 +94,6 @@ public abstract class GObject extends RefCountedObject {
         } else {
             throw new IllegalStateException("SIZE_T size not supported: " + Native.SIZE_T_SIZE);
         }
-//        return new GType(new GObjectStruct(this).g_type_instance.g_class.getNativeLong(0).longValue());
     }
     /**
      * Gives the type name.

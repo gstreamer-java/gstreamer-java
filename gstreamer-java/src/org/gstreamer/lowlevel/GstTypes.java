@@ -99,7 +99,6 @@ public class GstTypes {
         } else {
             throw new IllegalStateException("SIZE_T size not supported: " + Native.SIZE_T_SIZE);
         }
-        //GType type = GType.valueOf(g_class.getNativeLong(0).longValue());
         logger.finer("Type of " + ptr + " = " + type);
         while (cls == null && !type.equals(GType.OBJECT) && !type.equals(GType.INVALID)) {
             cls = find(type);
