@@ -6,7 +6,7 @@
   <artifactId>gstreamer-java</artifactId>
   <packaging>jar</packaging>
   <name>Gstreamer Java</name>
-  <version>1.6</version>
+  <version>1.7</version>
   <description>Java binding for the Gstreamer framework (0.10 compatible)</description>
   <url>https://github.com/gstreamer-java/gstreamer-java</url>
   <developers>

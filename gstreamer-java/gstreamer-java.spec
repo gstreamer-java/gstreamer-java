@@ -2,7 +2,7 @@
 
 Summary:	Java interface to the gstreamer framework
 Name:		gstreamer-java
-Version:	1.6
+Version:	1.7
 Release:	1%{?dist}
 License:	LGPLv3 and CC-BY-SA
 Group:		System Environment/Libraries
@@ -20,9 +20,9 @@ ExcludeArch:	ppc ppc64
 # Don't build debuginfo packages since it's actualy a noarch package
 %global debug_package %{nil}
 
-Requires:	java >= 1:1.6.0, jpackage-utils, jna
+Requires:	java >= 1:1.8.0, jpackage-utils, jna
 Requires:	gstreamer, gstreamer-plugins-base, gstreamer-plugins-good
-BuildRequires:	java-devel >= 1:1.6.0, jpackage-utils, jna
+BuildRequires:	java-devel >= 1:1.8.0, jpackage-utils, jna
 BuildRequires:	gstreamer-devel, gstreamer-plugins-base-devel, gstreamer-plugins-good
 BuildRequires:	ant, ant-junit
 %if 0%{?fedora} >= 9 || 0%{?rhel} > 5
